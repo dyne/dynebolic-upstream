@@ -64,7 +64,10 @@ notice "loading kernel modules"
 # the first thing we want to load are alsa modules
 # btaudio and modem devices should be secondary
 # so we push on top of the list snd-* 
-BOGUS_SOUND="btaudio|i8x0m|modem"
+BOGUS_SOUND="btaudio|8x0m|modem"
+
+# we exclude the modules that crash some machines
+BAD_MODULES="i810_rng"
 
 # load alsa modules first
 for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do
@@ -73,7 +76,7 @@ for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; d
 done
 
 # then load all other modules (alsa overrides oss this way)
-for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE "$BOGUS_SOUND"`; do
+for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE "$BOGUS_SOUND" | grep -ivE "$BAD_MODULES"`; do
   loadmod $i 
   sync
 done

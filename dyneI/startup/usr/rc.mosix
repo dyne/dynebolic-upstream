@@ -12,7 +12,7 @@ FILE_ID="\$Id$"
 
 source /lib/libdyne.sh
 
-if [ "`pcimodules | grep -i ethernet`" ]; then
+if [ "`lspci | grep -i ethernet`" ]; then
   notice "activating OpenMosix clustering on local network"
   echo 0 > /proc/self/lock
   /usr/mosix/openmosix start

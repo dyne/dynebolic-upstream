@@ -185,7 +185,7 @@ fi
 # you can also put it in a floppy a:\dynebol.sh
 # and then uncomment the proper lines in /etc/rc.S
 if [ -e /etc/rc.local ]; then
-  source /etc/rc.local
+  /etc/rc.local
 fi
 
 sync

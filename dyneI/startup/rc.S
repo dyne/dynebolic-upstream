@@ -180,6 +180,10 @@ got_home() {
     else unset NEST; fi
     
     if [ $NEST ]; then
+	echo
+	echo
+	echo
+	echo	
 	echo -n "[?] use the dyne:bolic nest in ${NEST} (Y/n)"
 	getkey 10
 	if [ $? = 1 ]; then
@@ -295,7 +299,7 @@ check_system_version() {
 
 
     DEV=$1 # use /dev/$DEV for full path
-    CD_MNT=$2 # mountpoint including the dyne directory
+    DOCK=$2 # mountpoint including the dyne directory: /mnt/dynebolic/dyne
     DOCKS_FOUND=0
 
 
@@ -320,7 +324,10 @@ check_system_version() {
 	    if [ ! -x ${HD}/dyne ]; then
 		continue
 	    else 
-		
+		echo
+		echo
+		echo
+		echo	
 		if [ -r ${HD}/dyne/VERSION ]; then
 		    source ${HD}/dyne/VERSION
 		    notice "Harddisk ${HD} has dyne:bolic dock version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
@@ -328,8 +335,9 @@ check_system_version() {
 		    notice "Harddisk ${HD} has an OLD version of the dyne:bolic system"
 		fi
 
-		if [ "$CD_SYS_VER" == "$DYNE_SYS_VER" ]; then ask_update=yes; fi
-		if [ "$CD_INITRD_VER" == "$DYNE_INITRD_VER" ]; then ask_update=yes; fi
+		ask_update=no
+		if [ "$CD_SYS_VER" != "$DYNE_SYS_VER" ]; then ask_update=yes; fi
+		if [ "$CD_INITRD_VER" != "$DYNE_INITRD_VER" ]; then ask_update=yes; fi
 
 		if [ x$ask_update == xyes ]; then
 		    echo -n "[?] UPDATE this system from the CD (y/N)"
@@ -344,7 +352,10 @@ check_system_version() {
 			echo " ... NO."
 		    fi
 		fi
-		
+		echo
+		echo
+		echo
+		echo	
 		echo -n "[?] RUN the system docked on this harddisk (Y/n)"
 		getkey 5
 		if [ $? = 1 ]; then
@@ -386,9 +397,16 @@ mount_cdrom() {
         # if we can't mount it, we add it to the automounted volumes
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
-        add_volume cd "/rem/cd${CD_NUM}" 
-        return
+        add_volume cd "/rem/cd${CD_NUM}"
+	# add symlink /dev/dvd to the first dvd found
+	if [ "`dmesg|grep $DEV|grep DVD`" ]; then
+	    if [ ! -r /dev/dvd ]; then
+		ln -s "/dev/$DEV" /dev/dvd;
+	    fi
+	fi
+	return
     fi
+
 
     # have you got brand new home in this cd?
     got_home ${MNT}
@@ -437,7 +455,7 @@ mount_xbox() {
     XBOX_NUM="`expr $XBOX_NUM + 1`"
     MNT="/vol/hd${XBOX_NUM}"
     mkdir ${MNT}
-    mount -t fatx "/dev/${XBOX_DEV}" ${MNT} 1>/dev/null 2>/dev/null
+    mount -t fatx -o umask=777 "/dev/${XBOX_DEV}" ${MNT} 1>/dev/null 2>/dev/null
     
     if [ $? != 0 ]; then
 	echo "[!] can't mount partition (not a fatx?)"
@@ -772,7 +790,8 @@ if [ -z `mount | grep -i "type squashfs"` ]; then
     echo
     error "dyne:bolic couldn't find the dynebol.sys file on any device"
     error "maybe you are running on a system that's not supported yet?"
-    error "anyway dyne:bolic does'nt works on yours,"
+    error "or your CD is corrupted by scratches."
+    error "anyway dyne:bolic does'nt works on yours :("
     error "try to ask for help on our mailinglist detailing your system."
     echo
     error "Also consider that SCSI and Serial ATA devices are not supported."
