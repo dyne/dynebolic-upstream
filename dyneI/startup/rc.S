@@ -1,6 +1,6 @@
 #!/bin/sh --no-zle
 #
-# LICENSE STUFF (for what is worth on a shell script):
+# dyne:bolic startup script
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -16,35 +16,36 @@
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
 #
-#
 # this was originally the Bolic1 startup
 #
-# SEVERAL modification followed, this file is no more the same but we all
-# love to remember where it comes, because here everything gets started :^)
+# SEVERAL modifications followed, this file is no more the same but we all
+# love to remember where it comesfrom, as here everything gets started :^)
 #
 # this is the first file executed by the init(8) process
 #
-# it's mission is to recognize the attached storage devices, find the dynebolic
-# system and mount it in /usr
+# it's mission is to recognize the attached storage devices,
+# find the dynebolic system and mount it in /usr,
+# find nests and mount them on /etc and /home
+# (or setup the standard environment from cd or hd docks)
+# and while it seeks for these things, it also detects storage devices.
 #
 # it tries if any filesystem contains a /dynebolic.sys file in the root
 # in case there is, dynebolic.sys is mounted via loopback device on /usr
-# the devices are scanned in order: first harddisks, then cdroms, all IDE
+# the devices are scanned in order: first IDE harddisks, then IDE cdroms,
 # (HINT: many other storages for the system may be supported, read further)
 #
-# it exits when the /dynebol.sys is loopback mounted on /usr
-# it exits from many points of the file, not only the end ;^)
 #
 # after this script, init goes to runlevel 2 and executes rc.M
 #
 #
 # if you are concerned about programming style, this file it's a dirty hack.
 # but HEY! bash scripting is not meant for elegance anyway.
+# I also write C code, if you are concerned about that.
 #
 # if you are peeking in here because some people say that dyne:bolic
 # is the fastest live-cd around, well that's not the best place where to
 # discover why.
-#  
+#
 # that's a bash script, as you see it's fairly commented
 # now blame me, or read the matrix // jaromil, 25feb04 
 #
@@ -121,12 +122,113 @@ add_volume() {
   WMNUM="`expr $WMNUM + 1`"
 }
 
+got_home() {
+# $1 = path where to take home.tgz and var.tgz
+# this check if a home has been found
+# if not, use the home.tgz and var.tgz from the given path
+
+    # we don't need a nest, something is allready there
+    if [ -r /home/.xinitrc ]; then return; fi
+
+    if [ -r ${1}/dynebol.nst ]; then
+	# TODO: mount the nest
+	NEST="${1}/dynebol.nst"
+	echo -n "[?] mount the dyne:bolic nest in ${NEST}"
+	getkey 10
+	if [ $? = 1 ]; then
+	    echo " ... SKIPPED"
+	else
+	    echo " ... OK"
+	    
+        # parses the values in a config file, if present
+        # this is needed just to know if the nest is encrypted
+	# source "`echo ${NEST}|cut -d. -f1`.cfg"
+	    
+	    notice "activating dyne:bolic nest in ${NEST}"
+	    
+	    if [ $ENCRYPT ]; then
+		act "encrypted with algo $ENCRYPT"
+		cat <<EOF
+
+
+
+
+*******************************************************************************
+An $ENCRYPT encrypted nest
+has been detected in $DYNEBOL_NST
+access is password restricted, please supply your passphrase now
+
+EOF
+		for i in 1 2 3; do
+		    mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
+		    case $? in
+			0) notice "valid password entered, activating nest!"
+			    sleep 1
+			    break
+			    ;;
+			32) error "Invalid password"
+			    sleep 2
+			    continue
+			    ;;
+			*) error "mount failed with exitcode $?"
+			    sleep 2
+			    continue
+		    esac
+		done
+		
+	    else # nest is not encrypted
+		echo -n "[*] mounting nest over loopback device"
+		mount -o loop ${NEST} /mnt/nest
+		if [ $? != 0 ]; then
+		    error "mount failed with exitcode $?"
+		    sleep 2
+		else echo " ... OK"; fi
+	    fi
+	    
+	    if [ "`mount|grep dynebol.nst`" ]; then
+		act "nest succesfully mounted"
+		DYNE_NEST_PATH=${NEST}
+		DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
+		return
+	    fi
+	fi
+    fi
+
+    if [ ! -r ${1}/home.tgz ]; then return; fi
+    if [ ! -r ${1}/var.tgz ]; then return; fi
+    
+    # (from the former rc.vfs)
+    notice "initializing virtual filesystem in memory"
+    RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
+    SHMSIZE=`expr $RAMSIZE / 1024 / 4`
+    act "RAM detected: `expr $RAMSIZE / 1024` Mb"
+    act "VFS size: $SHMSIZE Mb"
+    echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
+    cp -f /boot/fstab /etc
+    mount /dev/shm
+    
+    # creating /var /tmp and /home
+    act "populating /var from CD"
+    tar xfz "${1}/var.tgz" -C /dev/shm
+    mount -o bind /dev/shm/var /var
+    
+    act "populating /home from CD"
+    tar xfz "${1}/home.tgz" -C /dev/shm
+    mount -o bind /dev/shm/home /home
+    
+    act "building /tmp"
+    mkdir /dev/shm/tmp
+    mount -o bind /dev/shm/tmp /tmp
+}
+
 CD_NUM=0
 mount_cdrom() {
 # $1 = device, without partition number (es: hdc)
+    act "scanning CD ${DEV} (${CDFS})"
     DEV=$1
     CD_NUM="`expr $CD_NUM + 1`"
-    mkdir "/rem/cd${CD_NUM}"
+    MNT="/rem/cd${CD_NUM}"
+    mkdir ${MNT}
     
   # even if we can't mount it,
   # we add the device to the automount table
@@ -135,87 +237,58 @@ mount_cdrom() {
     
   # the filesystem can be mounted: add it to the list of
   # available storage devices allready from here
-    add_volume cd "/rem/cd${CD_NUM}"
+    add_volume cd ${MNT}
 
-    echo -n " .  scanning CD ${DEV} (${CDFS}) ... "
-    MNT="/rem/cd${CD_NUM}"
     mount -t "$CDFS" -o ro "/dev/${DEV}" ${MNT} 1>/dev/null 2>/dev/null
+
+    # can't mount the device, it's likely a void cd reader    
+    if [ $? != 0 ]; then return; fi
+
+    # if there is a dyne subdirectory, then enter that
+    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
     
-    if [ $? != 0 ]; then
-	echo "can't mount device"
-    elif ! [ -r "${MNT}/dynebol.sys" ]; then
-	echo "system not found"
+    # have you got brand new home in this cd?
+    got_home ${MNT}
+
+    if ! [ -r "${MNT}/dynebol.sys" ]; then
+	act "the dynebolic system is not here"
 	umount ${MNT}
-    else
-	echo "FOUND"
-
-	if [ -z $DYNE_SYS_DEV ]; then
-	    # there was no system found on other storage media
-	    # so we use the one on the original dynebolic CD
-	    act "mounting dynebolic system from CDROM ${DEV}"
-	    mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
-	    
-	    if [ $? != 0 ]; then
-		echo
-		error "a problem occurred while mounting the dynebol.sys"
-		error "it looks like your CD is corrupted!"
-		echo
-		error "burn it more carefully: less speed and don't do ANYTHING else"
-		error "with your computer while burning. refer to the USER UPDATED FAQ"
-		error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
-		error "may the source be with you :^)"
-		echo; echo;
-		sleep 10
-	    else
-		DYNE_SYS_DEV="/dev/${DEV}"
-		DYNE_SYS_MNT=${MNT}
-		DYNE_SYS_MEDIA="cd"
-	    fi
-	fi
+	return
+    elif [ ! -x /usr/bin/dynesplash ]; then
+	notice "FOUND dynebolic system on CD: ${MNT}/dynebol.sys"	
 	
-      # check if a nest is used
-      # if not, use the home.tgz and var.tgz from this CD
-	if [ -z $DYNE_NEST_PATH ]; then
-	    # (from the former rc.vfs)
-	    notice "initializing virtual RAM filesystem"
-	    RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
-	    SHMSIZE=`expr $RAMSIZE / 1024 / 4`
-	    act "RAM detected: `expr $RAMSIZE / 1024` Mb"
-	    act "VFS size: $SHMSIZE Mb"
-	    echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
-	    cp /boot/fstab /etc
-
-	    mount /dev/shm
-
-      # creating /var /tmp and /home
-	    act "populating /var from CD"
-	    tar xfz "${MNT}/var.tgz" -C /dev/shm
-	    mount -o bind /dev/shm/var /var
-	    
-	    act "populating /home from CD"
-	    tar xfz "${MNT}/home.tgz" -C /dev/shm
-	    mount -o bind /dev/shm/home /home
-	    
-	    act "building /tmp"
-	    mkdir /dev/shm/tmp
-	    mount -o bind /dev/shm/tmp /tmp
-
+	# there was no system found on other storage media
+	# so we use the one on the original dynebolic CD
+	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
+	
+	if [ $? != 0 ]; then
+	    echo
+	    error "a problem occurred while mounting the dynebol.sys"
+	    error "it looks like your CD is corrupted!"
+	    echo
+	    error "burn it more carefully: less speed and don't do ANYTHING else"
+	    error "with your computer while burning. refer to the USER UPDATED FAQ"
+	    error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
+	    error "may the source be with you :^)"
+	    echo; echo;
+	    sleep 10
+	else
+	    # the system has been correctly mounted
+	    DYNE_SYS_DEV="/dev/${DEV}"
+	    DYNE_SYS_MNT=${MNT}
+	    DYNE_SYS_MEDIA="cd"
+            # bring home the goodies in the CD
+	    if [ -e "/rem/cd${CD_NUM}/extras" ]; then
+		mount -o bind "/rem/cd${CD_NUM}/extras" /home/extras
+	    fi	
 	fi
-    fi	
-    
-    if [ $DYNE_SYS_DEV ]; then
-	# this is the dyne:bolic CD
-	# no system is used from it
+    else
+	# this is a dynebolic CD, but a system
+	# is allready mounted from another media
 	# so we can eject this cdrom!
 	umount ${MNT}
 	eject "/dev/${DEV}"
-    else
-        # link the goodies in it
-	if [ -e "${MNT}/extras" ]; then
-	    mount -o bind "${MNT}/extras" /home/extras
-	fi
     fi
-    
 }
 
 XBOX_NUM=0
@@ -225,31 +298,35 @@ mount_xbox() {
     
     if ! [ -e "/dev/${XBOX_DEV}" ]; then return; fi
     
-    echo -n " .  scanning XBOX HD ${XBOX_DEV} ... "
+    act "scanning XBOX HD ${XBOX_DEV}"
     XBOX_NUM="`expr $XBOX_NUM + 1`"
-    mkdir "/vol/hd${XBOX_NUM}"
-    mount -t fatx "/dev/${XBOX_DEV}" "/vol/hd${XBOX_NUM}" 1>/dev/null 2>/dev/null
+    MNT="/vol/hd${XBOX_NUM}"
+    mkdir ${MNT}
+    mount -t fatx "/dev/${XBOX_DEV}" ${MNT} 1>/dev/null 2>/dev/null
     
     if [ $? != 0 ]; then
 	echo "[!] can't mount partition (not a fatx?)"
-	rm -r "/vol/hd${XBOX_NUM}"
+	rm -r ${MNT}
 	XBOX_NUM="`expr $XBOX_NUM - 1`"
 	return
     fi 
     
   # a mountable haddisk partition has been found!
-    add_volume hdisk "/vol/hd${XBOX_NUM}"
+    add_volume hdisk ${MNT}
     
+    # if there is a dyne subdirectory, then enter that
+    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
+
+    got_home ${MNT}
     
   # if the system has been allready mounted you can go on
-    if [ $DYNE_SYS_DEV ]; then return; fi
     
-    if ! [ -r "/vol/hd${XBOX_NUM}/dynebol.sys" ]; then
-	echo "system not found"
-    else
-	echo "FOUND!"
+    if ! [ -r "${MNT}/dynebol.sys" ]; then
+	act "the dynebolic system is not here"
+	return
+    elif [ ! -x /usr/bin/dynesplash ]; then
+	notice "FOUND dynebolic system on partition mounted on /vol/hd${XBOX_NUM}"
 	
-	act "using dynebolic system on ${XBOX_DEV} mounted on /vol/hd${XBOX_NUM}"
 	mount -o loop -t squashfs "/vol/hd${XBOX_NUM}/dynebol.sys" /usr
 	
 	if [ $? != 0 ]; then
@@ -265,9 +342,9 @@ mount_xbox() {
 	  # system successfully mounted
 	    DYNE_SYS_DEV="/dev/${DEV}"
 	    DYNE_SYS_MEDIA="hd"
+	    DYNE_SYS_MNT=${MNT}
 	fi
-    fi
-    
+    fi    
 } 
 
 HD_NUM=0
@@ -300,48 +377,54 @@ mount_harddisk() {
                | grep -i -v swap \
                | cut -d' ' -f1`; do
 
-    echo -n " .  scanning HD ${PART} ... "
+    act "scanning HD partition ${PART}"
     HD_NUM="`expr $HD_NUM + 1`"
     MNT="/vol/hd${HD_NUM}"
     mkdir ${MNT}
     mount "$PART" ${MNT} 1>/dev/null 2>/dev/null
     
     if [ $? != 0 ]; then
-      echo "can't mount device"
-      rm -r ${MNT}
-      HD_NUM="`expr $HD_NUM - 1`"
-      continue
+	error "can't mount device"
+	rm -r ${MNT}
+	HD_NUM="`expr $HD_NUM - 1`"
+	continue
     fi
     
     # a mountable harddisk partition has been found!
     add_volume hdisk ${MNT}
 
-    # if the system has been allready mounted you can go on
-    if [ $DYNE_SYS_DEV ]; then return; fi
+    # if there is a dyne subdirectory, then enter that
+    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
     
-    # ok now keep on checking if the system is there
+    # have you got a home there?
+    got_home ${MNT}
+
+    # if the system has been allready mounted you can go on
+    if [ -x /usr/bin/dynesplash ]; then continue; fi
+
+    # if the system is not here we are done with this partition
     if ! [ -r "${MNT}/dynebol.sys" ]; then
-	echo "system not found"
+	act "the dynebolic system is not here"
+	continue
+    fi
+    
+    notice "FOUND dynebolic system on partition mounted on ${MNT}"
+    
+    mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
+    
+    if [ $? != 0 ]; then
+	echo
+	error "a problem occurred while mounting the dynebol.sys"
+	error "dynebolic found a corrupted dynebol.sys on ${PART}"
+	error "copy it again from a working dynebolic CD"
+	echo; echo;
+	sleep 10
+	continue
     else
-	echo "FOUND"
-	
-	act "using dynebolic system on ${PART} mounted on ${MNT}"
-	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
-	
-	if [ $? != 0 ]; then
-	    echo
-	    error "a problem occurred while mounting the dynebol.sys"
-	    error "dynebolic found a corrupted dynebol.sys on ${PART}"
-	    error "copy it again from a working dynebolic CD"
-	    echo; echo;
-	    sleep 10
-	    continue
-	else
-	    # system succesfully mounted
-	    DYNE_SYS_DEV=${PART}
-	    DYNE_SYS_MEDIA="hd"
-	    DYNE_SYS_MNT=${MNT}
-	fi
+	# system succesfully mounted
+	DYNE_SYS_DEV=${PART}
+	DYNE_SYS_MEDIA="hd"
+	DYNE_SYS_MNT=${MNT}
     fi
     
     sync
@@ -502,10 +585,11 @@ echo "DYNE_SYS_VER=`cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv
 echo "DYNE_SYS_DEV=${DYNE_SYS_DEV}" >> /boot/dynenv
 echo "DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}" >> /boot/dynenv
 echo "DYNE_SYS_MNT=${DYNE_SYS_MNT}" >> /boot/dynenv
-if [ -z $DYNE_NEST_PATH ]; then
-    echo "DYNE_INITRD_VER=`cat /etc/DYNEBOLIC`" >> /boot/dynenv
-else
-    echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
+echo "DYNE_INITRD_VER=`cat /etc/DYNEBOLIC`" >> /boot/dynenv
+if [ $DYNE_NEST_VER ]; then
     echo "DYNE_NEST_VER=${DYNE_NEST_VER}" >> /boot/dynenv
+fi
+if [ $DYNE_NEST_PATH ]; then
+    echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
 fi
 exit 1

@@ -74,7 +74,7 @@ loadmod() {
 	echo -n "[?] load kernel module $1 " | tee -a $LOG
 	getkey 10
 	if [ $? = 1 ]; then echo " ... SKIPPED" | tee -a $LOG
-	elif [ $? = 2 ]; then echo " ... SKIPPED (timeout)" | tee -a $LOG
+#	elif [ $? = 2 ]; then echo " ... SKIPPED (timeout)" | tee -a $LOG
 	else # YES, if y or any other key but 'n' is typed
 	    modprobe $1 1>>$LOG 2>>$LOG
 	    if [ $? = 0 ]; then
