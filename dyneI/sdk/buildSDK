@@ -38,6 +38,7 @@ if [ "`echo $UID`" != "0" ]; then
     error "you must be ROOT on your machine to use dyne:bolic SDK"
 fi
 
+[ "$1" == "-c" -o "$1" == "-a" ] || CBSOPTS="$1" && CBSOPTS=""
 CURRENTDIR=`pwd`
 WORKINGDIR=$CURRENTDIR/dynebolic
 
@@ -52,8 +53,8 @@ function basic_steps() {
 		umount $WORKINGDIR/dev &> /dev/null
 	fi
 	[ -d $WORKINGDIR ] && notice "going to remove '${WORKINGDIR}'. proceed?[S/n]"
-	read SINO
-	[ $SINO == "n" ] || rm -fr $WORKINGDIR
+	read -t 5 SINO
+	[ "${SINO}" == 'n' ] || rm -fr $WORKINGDIR
 	
 	# start from an empty dir
 	[ -d $WORKINGDIR ] || mkdir $WORKINGDIR
@@ -62,7 +63,7 @@ function basic_steps() {
 	if ! [ -f $WORKINGDIR/etc/gentoo-release ] ; then
 		if ! [ -f $CURRENTDIR/stage1-x86-2004.1.tar.bz2 ] ; then
 			notice "do you have a valid stage1 ?\nPlease provide '/ full / path / to / it.bz2'\nor leave blank to download a brand new"
-			read GIVE_PATH
+			read -t 5  GIVE_PATH
 			if [ -z $GIVE_PATH ] ; then
 				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2 || error "Download error :/"
 
@@ -80,7 +81,6 @@ function basic_steps() {
 }
 
 function get_ready_chroot() {
-		CBSOPTS=$1
 		if [ `cat /proc/mounts | grep dynebolic | wc -l` == "0" ] ; then
 			 mount -o bind /proc $WORKINGDIR/proc
 			 mount -o bind /dev $WORKINGDIR/dev
@@ -88,6 +88,8 @@ function get_ready_chroot() {
 		[ -f $WORKINGDIR/etc/resolv.conf ] || cp -a /etc/resolv.conf $WORKINGDIR/etc/
 
 cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
+
+
 #!/bin/sh
 # createbasesystem.sh
 # dyne:bolic software development kit - the commandline tool
@@ -113,20 +115,22 @@ cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
 #
 
 INSTDIR=/home/the_root
+if ! [ -d "\${INSTDIR}/var/dynebolic" ]; then
+	mkdir "\${INSTDIR}/var/dynebolic"
+fi
+CHECKPATH=\${INSTDIR}/var/dynebolic
 
 ########################################################################
 # standard output message routines
 # it's always useful to wrap them, in case we change behaviour later
 #
-notice() { echo -e "\\033[31m [*] \$1\\033[37m"; }
-act() { echo -e "\\033[32m . \$1\\033[37m"; }
-error() { echo -e "\\033[31m [!] \$1\\033[37m"; exit 1; }
-func() { if [ \$DEBUG ]; then echo -e "\\033[32m [D] \$1\\033[31m"; fi }
+notice() { echo -e "\033[31m [*] \$1\033[37m"; }
+act() { echo -e "\033[32m . \$1\033[37m"; }
+error() { echo -e "\033[31m [!] \$1\033[37m"; exit 1; }
+func() { if [ \$DEBUG ]; then echo -e "\033[32m [D] \$1\033[31m"; fi }
 
 function debug() {
-	echo -e "\\a\\a\\a\$?"
-	read OK
-	unset \$OK
+	echo -e "\a\a\a\$?"
 }
 
 ########################################################################
@@ -134,10 +138,10 @@ function debug() {
 ########################################################################
 
 function set_flags() {
-	notice "Quali CFLAG settiamo? default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
-	read CFLAG_SET
+	notice "choose which CFLAG to set. default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
+	read -t 15 CFLAG_SET
 	[ -z \$CFLAG_SET ] && export CFLAG_SET="-O2 -mcpu=i586 -fomit-frame-pointer -pipe" 
-	act "\$CFLAG_SET  ...ok! modifico /etc/make.conf"
+	act "\$CFLAG_SET  ...ok! modifying /etc/make.conf"
 
 cat > /etc/make.conf << EOF
 # These settings were set by the catalyst build script that automatically built this stage
@@ -158,60 +162,53 @@ function install_configuration_files(){
 	ROOT=\$INSTDIR emerge baselayout-db
 }
 
-function initrd_root_check() {
-	if [ ! -f /var/dynebolic/.initrd_root ]; then
-		return 1
+function check_step() {
+	if ! [ -f "\${CHECKPATH}"/."\${CHECK}" ]; then
+		error "something wicked happened. my checkpath is '\$CHECKPATH' and my check is '\$CHECK'\n"
 	fi
-
-	return 0
+	act "my checkpath is '\$CHECKPATH' and my check is '\$CHECK'. going to unset"
+	unset \$CHECK
 }
+
 
 # get portage and bootstrap your compiling env
 function initrd_root() {
+	act "entering initrd_root"
 	if [ -d /usr/portage ] ; then
 		notice "there is allready a dir '/usr/portage'. Should I use it?(N/s)"
-		read YESNO
-		if ! [ \$YESNO == "s" -o \$YESNO == "S" ] ; then
+		read -t 5 YESNO
+		if ! [ "\${YESNO}" == "s" -o "\${YESNO}" == "S" ] ; then
 			emerge sync || error "Emerge error :/"
 		fi
 	else 
 		emerge sync || error "Emerge error :/"
 	fi
 
-	debug act "questo e' function initrd_root dopo emerge sync"
-
 	if ! [ -d /var/tmp/portage/ ] ; then
 		/usr/portage/scripts/bootstrap.sh
 	else 
 		notice "esiste gia' /var/tmp/portage. hai gia' compilato il bootstrap?(S/n)"
-		read YES_NO
-		if  [ \$YES_NO == "n" ] ; then
+		read -t 5 YES_NO
+		if  [ "\${YES_NO}" == "n" ] ; then
 			/usr/portage/scripts/bootstrap.sh
 		fi
 	fi
-	debug act "questo e' function initrd_root dopo bootstrap.sh"
 	emerge gentoolkit || error "Emerge error :/"
 
-	[ -d \$INSTDIR ] || mkdir \$INSTDIR
+	[ -d "\${INSTDIR}" ] || mkdir "\${INSTDIR}" && act "'\${INSTDIR}' exist."
 	# TODO avere baselayout-dynebolic.ebuild
 	# ROOT=\$INSTDIR emerge baselayout-dynebolic
-	cp -a /var/db \$INSTDIR/var
+	cp -a /var/db \$INSTDIR/var && act "copy var/db in the_root ..success!" 
 
-	touch ./var/dynebolic/.initrd_root
+	touch "\${CHECKPATH}"/.initrd_root
+	CHECK="initrd_root" ; act "setting check flag to \$CHECK"
 }
 
 
 # install the base sources to have a 1 level FSH ready for becoming an initrd
-function install_initrd_pkg_check () {
-	if [ ! -f /var/dynebolic/.install_initrd_pkg ]; then
-		return 1
-	fi
-
-	return 0
-}
 
 function install_initrd_pkg () {
-	
+	check_step
 	cat > /tmp/.initrd.lst << EOF
 linux-headers
 devfsd
@@ -225,35 +222,37 @@ glib
 expat
 grep
 gawk
+zlib
 EOF
-	
 	for PKG in \`cat /tmp/.initrd.lst\` ; do
-		ROOT=\$INSTDIR emerge \$PKG || error "Emerge \$PKG error :/"; 
+		ROOT="\${INSTDIR}" emerge "\${PKG}" || error "Emerge '\${PKG}' error :/";
 	done
-
 	rm /tmp/.initrd.lst 
-
-	touch ./var/dynebolic/.install_initrd_pkg
+	touch "\${CHECKPATH}"/.install_initrd_pkg ;
+	export CHECK="install_initrd_pkg"
 }
 
-function build_xfree_check() {
-	if [ ! -f /var/dynebolic/.build_xfree ]; then
-		return 1
-	fi
-
-	return 0
-}
 
 function build_xfree() {
+	check_step
 	# We must copy this file 'couse else the libpam won't compile
 	if ! [ -f \$INSTDIR/usr/lib/libglib.a ] ; then
 		act "Goin' to copy the \$WORKINDIR/usr/lib/libglib.a in \$INSTDIR/usr/lib/libglib.a"
-		cp -a \$WORKINGDIR/usr/lib/libglib.a \$INSTDIR/usr/lib/libglib.a  
+		cp -a \$WORKINGDIR/usr/lib/libglib.a \$INSTDIR/usr/lib/libglib.a || error "can't find libglib.a" 
 	fi
 	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers || error "Emerge 'X' error :/"
 	# Inserire qui la parte di autoconfigurazione (XFree86 -configure chrootato in /home/the_root/)
 
-	touch ./var/dynebolic/.build_xfree
+	touch \${CHECKPATH}/.build_xfree
+	export CHECK="build_xfree"
+}
+function install_configuration_files(){
+	check_step
+	if ! [ -f \$WORKINGDIR/baselayout-db.tgz ] ; then
+		wget http://www.autistici.org/bolic1/baselayout-db.tgz 
+	fi
+	tar -zxvf baselayout-db.tgz 
+	ROOT=\$INSTDIR emerge baselayout-db
 }
 
 ###############################################################################
@@ -263,49 +262,49 @@ function build_xfree() {
 ##############################################################################
 # siamo dentro lo stage1. e' dove decidiamo i CFLAGS, per costruire prima l'ambiente di compilazione
 # gentoo da cui poi deriviamo in /home/the_root la dynebolic.
-# ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciasun passaggio
+# ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciascun passaggio
 
-if [ ! -d /var/dynebolic ]; then
-	mkdir /var/dynebolic
-fi
 
 	case \$1 in
-		-v)	head -n 22 \$0 | tail -n 21 ;;
 		-d)	
-			initrd_root_check || error "Non hai completato l'SDK correttamente"
-			install_initrd_pkg_check || error "Non hai completato l'initrd_root"
-			build_xfree_check || error "Non hai completato l'xfree"
+			CHECK="initrd_root" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
+			CHECK="install_initrd_pkg" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
+			CHECK="build_xfree" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
 	
-			initrd_root_v=no
-			install_initrd_pkg_v=no
-			build_xfree_v=no
+			INITRD_ROOT_V=no
+			INSTALL_INITRD_PKG_V=no
+			BUILD_XFREE_V=no
 			;;
 		-f)	set_flags 
 			exit 0
 			;;
-		-x)	
-			initrd_root_check || error "Non hai completato l'SDK correttamente"
-			install_initrd_pkg_check || error "Non hai completato l'initrd_root"
-	
-			initrd_root_v=no
-			install_initrd_pkg_v=no
-			build_xfree_v=yes
-			;;
-		-i)	
-			initrd_root_check || error "Non hai completato l'SDK correttamente"
-	
-			initrd_root_v=no
-			install_initrd_pkg_v=yes
-			build_xfree_v=yes
-			;;
-		*|-h|--help)
+		-h|--help)
 			act "-h show this help"
 			act "-d restart from configuration files (baselayout-db)" 
 		 	act "-f set flags"
-			act "-x restart from xfree"
 			act "-i restart from initrd" 
+			act "-x restart from xfree"
 			exit 1
 			;;
+		-i)	
+			CHECK="initrd_root" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
+	
+			INITR_ROOT_V=no
+			INSTALL_INITRD_PKG_V=yes
+			BUILD_XFREE_V=yes
+			;;
+		-x)	
+			CHECK="initrd_root" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
+			CHECK="install_initrd_pkg" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
+	
+			INITRD_ROOT_V=no
+			INSTALL_INITRD_PKG_V=no
+			BUILD_XFREE_V=yes
+			;;
+		-v)	head -n 22 \$0 | tail -n 21 ;;
+		*)	INITRD_ROOT_V=yes;
+			INSTALL_INITRD_PKG_V=yes
+			BUILD_XFREE_V=yes
 
 	esac
 
@@ -315,24 +314,24 @@ source /etc/profile
 
 set_flags
 
-if test \$initrd_root_v = yes; then
-	initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "qualcosa e' andato storto. non e' stata colpa mia"
+if [ "\${INITRD_ROOT_V}" == "yes" ] ; then
+	initrd_root && notice "done with initrd_root." || error "something wrong with initrd_root."
 fi
 
-if test \$install_initrd_pkg_v = yes; then
-	install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+if [ "\${INSTALL_INITRD_PKG_V}" == "yes" ] ; then
+	install_initrd_pkg && notice "install_initrd_pkg complete." || error "something wrong with install_initrd_pkg."
 fi
 
-if test \$build_xfree_v = yes; then
-	build_xfree  && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+if [ "\${BUILD_XFREE_V}" == "yes" ] ; then
+	build_xfree  && notice "build_xfree complete." || error "something wrong with build_xfree."
 fi
 
-install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "qualcosa e' andato storto. non e' stata colpa mia" 
+install_configuration_files && notice "installation complete. now launch mkinitrd" || error "something wrong with baselayout-db" 
 
 E0F
 
-		chmod 740 $WORKINGDIR/sbin/createbasesystem.sh		
-		chroot $WORKINGDIR ./sbin/createbasesystem.sh $CBSOPTS
+		chmod 740 "${WORKINGDIR}"/sbin/createbasesystem.sh		
+		chroot "${WORKINGDIR}" ./sbin/createbasesystem.sh "${CBSOPTS}"
 }
 
 ######################################################################
@@ -344,12 +343,12 @@ case $1 in
 		act "entering basic_steps"
 		basic_steps
 		act "entering get_ready_chroot"
-		get_ready_chroot
-		umount $WORKINGDIR/proc ;;
+		get_ready_chroot 
+		;;
 	-c) # Done with basic stuff, let's get into the chroot for compiling
 		act "entering get_ready_chroot"
-		get_ready_chroot
-		umount $WORKINGDIR/proc ;;
+		get_ready_chroot 
+		;;
 	-h|--help)
 		act "COMMON TASKS:"
 	 	act "-h show this help"
@@ -360,11 +359,19 @@ case $1 in
 	 	act "-f set flags (you must have allready an sdk installed)"
 		act "-i restart from initrd" 
 	 	act "-x build Xfree86 (you must have allready an sdk installed)"
-		act "-d get latest baselayout-db and build it (you must have allready an sdk installed)" ;;
-	-d)	get_ready_chroot -d ;;
-	-f)	get_ready_chroot -f ;;
-	-i)	get_ready_chroot -i ;;
-	-x)	get_ready_chroot -x ;;
-	-v)     head -n 22 $0 | tail -n 21 ;;
-	*)	error "read help with -h or --help!" ;;
+		act "-d get latest baselayout-db and build it (you must have allready an sdk installed)" 
+		;;
+		# options to pass to createbasesystem.sh
+	-d)	get_ready_chroot -d 
+		;;
+	-f)	get_ready_chroot -f 
+		;;
+	-i)	get_ready_chroot -i 
+		;;
+	-x)	get_ready_chroot -x 
+		;;
+	-v)     head -n 22 $0 | tail -n 21 
+		;;
+	*)	error "read help with -h or --help!" 
+		;;
 esac
