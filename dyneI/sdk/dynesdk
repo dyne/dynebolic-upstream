@@ -36,10 +36,10 @@ error() { echo "[!] $1"; }
 func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
 notice "$PACKAGE version $VERSION - software development kit"
-act "Copyleft 2003 by jaromil - http://dynebolic.org"
+act "Copyleft 2003-2004 by jaromil - http://dynebolic.org"
 act "$ID"
 
-OPTS=`getopt -o hvp:u:h: -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o hvp:u:r:i:q -n 'dynesdk' -- "$@"`
 
 #eval set -- "$OPTS"
 
@@ -52,7 +52,8 @@ while true; do
 	    act "-p     path to the sdk base directory (default ./)"
 	    act "-u     username for online operations"
 	    act "-r     server hosting the online sdk"
-	    act "-i     dynebolic iso (default ./dynebolic-dev.iso) "
+	    act "-i     dynebolic iso (default ./dynebolic-dev.iso)"
+            act "-q     be quick and skip checksums and crypto sigs"
 	    notice "macro COMMANDS:"
 	    act "checkout: download the sdk from an online server"
 	    act "commit: uploads the current sdk to the server (be careful!)"
@@ -81,6 +82,7 @@ while true; do
 	-u) USER=$2; shift 2 ;;
 	-r) REPOSITORY="$2::dynebolic-dev"; shift 2 ;;
 	-i) ISO="$2"; shift 2 ;;
+        -q) QUICK=yes; shift 1; break ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
     esac
@@ -153,14 +155,18 @@ mkinitrd() {
     act "setup startup files"
     if [ ! -x $PFX/../startup ]; then
       error "no startup files present in $PFX/../startup"
+      error "you can place the dynebolic cvs in the parent directory"
+      error "in order to automatically update from there"
       sleep 2
     else
+      act "updating from cvs startup from parent directory"
       cp -f $PFX/../startup/rc.* $PFX/initrd/etc
       cp -f $PFX/../startup/inittab $PFX/initrd/etc
       cp -f $PFX/../startup/libdyne.sh $PFX/initrd/lib
     fi
 
     cd $PFX/initrd
+    act "cleaning up configs and logs"
     rm -rf tmp/*
     rm -f etc/XF86Config
     rm -f etc/HOSTNAME etc/NETWORK
@@ -216,34 +222,37 @@ mksquash() {
       cp -f $PFX/../startup/usr/rc.* $PFX/usr/etc
     fi
     act "start compressing: `date`"
-    $MKSQUASHFS $PFX/usr $PFX/cdrom/dyne/dynebol.sys -noappend
+    $MKSQUASHFS $PFX/usr $PFX/cdrom/dyne/dynebol.sys -noappend -all-root
     chmod -x $PFX/cdrom/dyne/dynebol.sys
     act "end: `date`"
-    act "`stat $PFX/dyne/dynebol.sys`"
+    act "`stat $PFX/cdrom/dyne/dynebol.sys`"
     sync
 }
 
 mkiso() {
     notice "making the dynebolic ISO"
     cp -f $0 $PFX/cdrom/devel/
-    echo "Forged by $USER on `hostname`.`dnsdomainname`" | tee $PFX/cdrom/VERSION
-    echo "`date`" | tee -a $PFX/cdrom/VERSION
-    echo "using `$MKISOFS --version`" | tee -a $PFX/cdrom/VERSION
-    echo >> $PFX/cdrom/VERSION
+    echo "# Forged on `hostname`.`dnsdomainname` the `date` " | tee $PFX/cdrom/dyne/VERSION
+    echo "# using `$MKISOFS --version` on `uname -srm`" | tee -a $PFX/cdrom/dyne/VERSION
+    echo >> $PFX/cdrom/dyne/VERSION
     DYNE_SYS_VER="`cat $PFX/usr/etc/DYNEBOLIC`"
-    echo "system version $DYNE_SYS_VER" | tee -a $PFX/cdrom/VERSION
+    echo "DYNE_SYS_VER=$DYNE_SYS_VER" | tee -a $PFX/cdrom/dyne/VERSION
 #    echo "MD5: `md5sum $PFX/cdrom/dyne/dynebol.sys`" | tee -a $PFX/cdrom/VERSION
 #    echo >> $PFX/cdrom/VERSION
     DYNE_INITRD_VER="`cat $PFX/initrd/etc/DYNEBOLIC`"
-    echo "ramdisk version $DYNE_INITRD_VER" | tee -a $PFX/cdrom/VERSION
-# generate md5sum hashes and gpg signatures in separate files
-    rm $PFX/cdrom/dyne/*.md5 2>/dev/null 1>/dev/null
-    rm $PFX/cdrom/dyne/*.asc 2>/dev/null 1>/dev/null
-    md5sum $PFX/cdrom/dyne/dynebol.sys > $PFX/cdrom/dyne/dynebol.sys.md5
-    md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
-    gpg -b -a $PFX/cdrom/dyne/dynebol.sys.md5
-    gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
-
+    echo "DYNE_INITRD_VER=$DYNE_INITRD_VER" | tee -a $PFX/cdrom/dyne/VERSION
+    if [ -z $QUICK ]; then
+    # generate md5sum hashes and gpg signatures in separate files
+      rm $PFX/cdrom/dyne/*.md5 2>/dev/null 1>/dev/null
+      rm $PFX/cdrom/dyne/*.asc 2>/dev/null 1>/dev/null
+      echo "please wait while generating md5 sums"
+      md5sum $PFX/cdrom/dyne/dynebol.sys > $PFX/cdrom/dyne/dynebol.sys.md5
+      md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
+      echo "cryptographically signing the md5 sums"
+      gpg -b -a $PFX/cdrom/dyne/dynebol.sys.md5
+      gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
+    fi
+    echo "proceeding to pack the ISO image"
     $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
