@@ -227,7 +227,7 @@ mount_cdrom() {
     act "scanning CD ${DEV} (${CDFS})"
     DEV=$1
     CD_NUM="`expr $CD_NUM + 1`"
-    MNT="/vol/cd${CD_NUM}"
+    MNT="/mnt/dynebolic"
     if [ ! -x ${MNT} ]; then mkdir ${MNT}; fi
    
     mount -t "$CDFS" -o ro "/dev/${DEV}" ${MNT} 1>/dev/null 2>/dev/null
@@ -250,8 +250,8 @@ mount_cdrom() {
 
     if ! [ -r "${MNT}/dynebol.sys" ]; then
 	act "the dynebolic system is not here"
-	umount ${MNT}
-	rm -r ${MNT}
+	umount "/mnt/dynebolic"
+	rm -r "/mnt/dynebolic"
 	# then we add it anyway to the automounted volumes
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
@@ -260,12 +260,9 @@ mount_cdrom() {
     elif [ ! -x /usr/bin/dynesplash ]; then
 	# there was no system found so far on other storage media
 	# so we use the one on this CD, remounting on /mnt/dynebolic
-	notice "FOUND dynebolic system on CD: ${MNT}/dynebol.sys"
-	umount ${MNT}
-	if [ ! -x /mnt/dynebolic ]; then mkdir /mnt/dynebolic; fi
-        mount -t "$CDFS" -o ro "/dev/${DEV}" /mnt/dynebolic 1>/dev/null 2>/dev/null
+	notice "FOUND dynebolic system on CD ${DEV}"
 
-	mount -o loop -t squashfs "/mnt/dynebolic/dynebol.sys" /usr
+	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
 	
 	if [ $? != 0 ]; then
 	    echo
@@ -292,7 +289,8 @@ mount_cdrom() {
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
 	# so we can eject this cdrom and put the volume in automount
-	umount ${MNT}
+	umount "/mnt/dynebolic"
+	rm -r "/mnt/dynebolic"
 	eject "/dev/${DEV}"
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
