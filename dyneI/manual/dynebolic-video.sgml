@@ -176,6 +176,15 @@ ways, and further down explained their peculiarities.
 </tgroup>
 </table>
 
+<para>
+I'm also writing an extensive research on the topic of streaming video
+with free software, the latest version is published online at the address
+<ulink url="http://korova.dyne.org/video_streaming">
+korova.dyne.org/video_streaming</ulink>
+and available as well as a downloadable and printable document:
+<ulink url="http://korova.dyne.org/video_streaming.pdf">
+korova.dyne.org/video_streaming.pdf</ulink>.
+</para>
 
 &mp4live;
 

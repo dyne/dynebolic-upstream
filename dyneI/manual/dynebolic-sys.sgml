@@ -7,31 +7,30 @@
 <para>
 Dyne:bolic is a preconfigured GNU/Linux system which runs without
 installing anything on you harddisks, to run it doesn't need to make
-any permanent change of your data and in fact you can also boot it on
-diskless computers. The whole operating system fits on a single CD
-which has to remain in your CDROM player during its use. You can't
-remove or add applications to dyne:bolic while at the same time there
-is no risk for system misconfiguration: the system comes as is, aiming
+any change to your stored data, in fact you can also boot it on
+diskless computers. The whole operating system fits on a single CD.
+It can also run from harddisk, without the need to change its
+partition geometry: just store a local copy of one file big ~600MB.
+This makes dyne:bolic very easy to be employed, while there
+is no risk for misconfiguration: the system comes as it is, 
 to provide you with a slick desktop full of applications ready to use.
 </para>
 
 <para>
-The desktop interface follows the <emphasis>GNUStep</emphasis>
-paradigm to build a different flavour of interaction which distincts
-dyne:bolic from other common graphical environments. For instance you
-have multiple desktops than you can also switch using the key
-combination <emphasis>ALT+2</emphasis> and following numbers.
+The desktop is managed by
+<ulink url="http://www.windowmaker.org">WindowMaker</ulink>,
+it offers you multiple desktops (try alt+2 and other numbers)
+and a menu that you can recall by clicking the right mouse button on
+the background. On the upper right corner you have your storage devices
+which you can access with a double click, on the lower right corner you
+have a system monitor informing about your computer usage.
 </para>
 
 <para>
-By clicking the right mouse button on the desktop background an
-application menu will appear. The menu is organized by task in
-media-type categories. Audio and video have a fixed organization in
-subcategories deejay, play, record, edit, stream; communication tools
-are distributed in a couple of subcategories; while other group of
-tools can collect applications on the first level of choice. This way
-to organize applications lets users easily find the right tool for the
-task they need to solve.
+The menu of dyne:bolic is organized by tasks, in categories.
+You can easily find software to play, record, edit and stream both
+audio and video, communicate and publish text, webpages, 3d animations
+and more. And of course you have also games ;)
 </para>
 
 </section>
@@ -40,116 +39,138 @@ task they need to solve.
 <title>Access your data</title>
 
 <para>
-With dyne:bolic you have your harddisk partitions automatically
-mounted in the <emphasis>/vol</emphasis> directory and you can easily
-browse them using the harddisk buttons in the upper-right corner of
-your desktop.  Access to the data contained in them is both read and
-write, alltough some win2k partitions are only readable.
+With dyne:bolic your <emphasis>/home</emphasis> directory resides
+in your RAM memory
+and every new file you write into it will not be there at the next
+boot, unless you create a <emphasis>nest</emphasis>
+<footnote><para>
+(see the chapter following about 'nesting your home and settings').
+</para></footnote>
+where to store your data and settings on harddisk or usb storage
+devices.
 </para>
 
 <para>
-Usb storage devices like usb pens, smartcards and digital photo
-cameras are supported, you can access their content by clicking on the
-blue button with a usb symbol on it. Once connected, such devices are
-automatically mounted in your system directory
-<emphasis>/rem/usb1</emphasis>.
+You can easily browse your stored data (harddisks, cd, floppy, usb)
+using the buttons in the upper right corner of your desktop.
+Your harddisk partitions are automatically
+mounted in the <emphasis>/vol</emphasis> directory and
+you can both read and write the data inside them,
+alltough NTFS partitions are non writable (use FAT32 instead!).
+</para>
+
+<para>
+Usb storage devices (like usb pens, smartcards and digital photo
+cameras) are generally supported
+<foootnote><para>
+see <ulink url="http://www.linux-usb.org">www.linux-usb.org</ulink>
+if your model is compatible with the Linux kernel.
+</para></footnote>
+: just double click the blue button with a usb symbol on it, the
+connected device is automatically mounted in the removable media
+directory <emphasis>/rem/usb</emphasis>.
 </para>
 
 <para>
 Data on floppy disks can be accessed as well using the floppy button,
-the disk is automounted when you access your system directory
-<emphasis>/rem/floppy</emphasis>.
+the disk is automounted when you access the directory <emphasis>/rem/floppy</emphasis>.
 </para>
 
 <para>
-If you have more than one CDROM player on your computer (other than
-the one used to boot dyne:bolic), then you can browse CDs with it
-using the CD button: they are automatically mounted in
-<emphasis>/rem/cd-hd*</emphasis> directories. In case you have a CD
-burner, then you should use a special option mentioned at dyne:bolic
-boot prompt to have it properly working for its function.
+If you have an unused cdrom player on your computer (other than
+the one booting dyne:bolic, or in case you docked the system
+<footnote>
+<para>see the chapter about 'docking your system'</para>
+</footnote>),
+then you can access, browse, play and rip a compact disc as well.
+The cd is automatically mounted in
+<emphasis>/rem/cd*</emphasis>
+directories, where the star is a number starting from 1 in case you
+have multiple readers.
+If you have a cd burner, you can also use it to create cd and
+you can even clone the dyne:bolic from the running system.
 </para>
 
 <para>
-Your <emphasis>/home</emphasis> directory resides in your RAM memory
-and every new file you write into it will not be there at the next
-boot, unless you create a <emphasis>nest</emphasis> where to store
-your data and settings on harddisk or usb storage devices (see next
-chapter on the topic of nesting).
-</para>
-
-<para>
-A <emphasis>samba</emphasis> filesharing daemon is running on your
+The <emphasis>Samba</emphasis> filesharing daemon is running on your
 dyne:bolic: everything contained in the
 <emphasis>/home/shared</emphasis> directory is accessible (read and
 write) as a shared folder on the network you are connected, without
-any password protection.
+any password protection - the share is called 'dyne:bolic casbah'.
 </para>
 
 </section>
 
 <section>
-<title>Nest your home on harddisk or USB</title>
+<title>Nest your home and settings</title>
 
 <para>
-Given this system environment you have a full range of applications
-which will get further explained in the following chapters of this
-manual, but first we should have a look at the
-<emphasis>nesting</emphasis> function offered by dyne:bolic, a quite
-simple but totally new concept for the way operating systems usually
-worked until now.
+The <emphasis>nesting</emphasis> function offered by dyne:bolic is a quite
+simple but revolutionary concept for the way operating systems usually
+worked until now, which dyne:bolic was the first (but no more the only)
+GNU/Linux distribution really implementing it.
 </para>
 
 <para>
-In fact <emphasis>nesting</emphasis> is a truly revolutionary approach
-to the way operating systems have been shaped so far, and dyne:bolic
-is the first (and so far only) distribution really implementing it.
+The concept is simple: you cannot modify the operating system, you
+use it as it comes and you update it all in once with new versions,
+it is a whole compressed file, which is only readable.
+The writable part, where you store your data and settings, is stored
+in a separated way, inside another file of variable size which you
+can store on a usb key or an harddisk. This is a nest.
+If the nest you stored is
+found by dyne:bolic while booting, then you use its space for
+your /home and settings, which are no more lost in volatile RAM at the
+next boot.
 </para>
 
 <para>
-The concept is simple: you don't install anymore the whole operating
-system and applications on your harddisk, the tools you use are only
-present on the CD and they are accessed from it. What you really need
-to be able to modify and save is just your home directory and your
-configuration settings! then with dyne:bolic you can simply store them
-in a nest and find them back at every boot.
-</para>
-
-<para>
-In this way if you want to upgrade your system you simply have to get
+In this way when you upgrade your system you simply have to get
 a new dyne:bolic version, all your data is not affected by any
-re-installation process, safely stored in your nest.
+re-installation process and is safely stored in your nest, while
+you don't risk to break your operating system with an upgrade
+(which is a common case with many other solutions around).
 </para>
 
 <para>
-Nesting let's you save space on your storage devices, provides better
-stability and avoids misconfigurations of the operating system: the
-application files and libraries are safely stored in a non writable
-device, they are allready installed and working inside dyne:bolic.
-</para>
-
-<para>
-Furthermore, the way nesting is implemented is very efficient: you
-just create one single file, of the size you want, in a partition of
-your choice. The available space for your nest is found by dyne:bolic
-thru your partitions on harddisk or usb storage devices (like usb
-pens, smartcards or even photo cameras!). This approach doesn't
+The way nesting is implemented is very efficient: you
+just create one single file, the size you want, in a writable partition
+of your choice
+<footnote><para>
+Supported partition formats are: Dos, Fat32, Ext2, ReiserFS, Beos (BeFS) and
+BSD (UFS).</para>
+</footnote>
+. Making a nest doesn't
 requires any change in the data structure of the partitions: just one
-file is created, no matter which operating system is allready
-installed on your computer. The nest file will be called
-<emphasis>dynebol.nst</emphasis> and will keep all your home and
-settings inside (/home, /etc, /var, /tmp) and, last but not least, it
-can be encrypted (<emphasis>AES128</emphasis>) using a 20 chars
-passphrase to secure all the data you store inside it.
+file is created in the root
+<footnote><para>
+it means the very beginning of a storage unit, like C:\ the drive letter
+followed by a single backslash in the DOS filesystem, or / in Unix.
+</para></footnote>
+, it will be called <emphasis>dynebol.nst</emphasis> and will keep all
+your home and settings inside (/home, /etc, /var, /tmp).
 </para>
 
 <para>
-All this is possible in dyne:bolic in a few clicks by using the
-graphical installer included in the config tools, and if you want to
-erase your nest you can just delete the dynebol.nst file in the root
-directory of the partition where you installed it.
+To get rid of a nest you can simply delete it from a system outside
+dyne:bolic. And if you are concerned about the privacy of the data
+you store inside it, then you can also encrypt it (<emphasis>AES128</emphasis>)
+using a 20 chars passphrase required every time dyne:bolic tries to
+access it.
 </para>
 
+<para>
+In dyne:bolic it is very easy to create a nest just with a few clicks
+of the mouse, using the graphical installer included: you'll find it
+in the menu <emphasis>System -> Nesting</emphasis>.
+</para>
+</section>
+
+<section>
+<title>Dock your system</title>
+<para>
+
+</para>
 </section>
 
 <section>
