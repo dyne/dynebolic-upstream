@@ -5,6 +5,7 @@
 #
 # Copyright (C) 2004  Federico Prando bomboclat@malasystem.com
 #                     Francesco Rana  c1cc10@malasystem.com
+#                     Andrea Marchesini bakunin@autistici.org
 #                  
 #
 # This source code is free software; you can redistribute it and/or
@@ -25,9 +26,9 @@
 # standard output message routines
 # it's always useful to wrap them, in case we change behaviour later
 #
-notice() { echo -e "'\033[32m\a [*] \033[37m $1 "; }
+notice() { echo -e "\033[32m\a [*] \033[37m $1 "; }
 act() { echo -e "\033[32m\a . \033[37m $1 "; }
-error() { echo -e "\033[31m\a\a [!] \033[37m $1"; }
+error() { echo -e "\033[31m\a\a [!] \033[37m $1"; exit 1; }
 func() { if [ $DEBUG ]; then echo -e "\033[32m [D] \033[37m $1"; fi }
 ### END
 
@@ -35,7 +36,6 @@ func() { if [ $DEBUG ]; then echo -e "\033[32m [D] \033[37m $1"; fi }
 # some checks
 if [ "`echo $UID`" != "0" ]; then
     error "you must be ROOT on your machine to use dyne:bolic SDK"
-    exit -1
 fi
 
 CURRENTDIR=`pwd`
@@ -45,12 +45,17 @@ WORKINGDIR=$CURRENTDIR/dynebolic
 # BASIC FUNCTIONS
 #######################################################################
 function basic_steps() {
+	# did you already try with no success? let's check
 	if [ `cat /proc/mounts | grep dynebolic | wc -l` != "0" ] ; then
-		umount $WORKINGDIR/proc
-		umount $WORKINGDIR/dev
-		rm -fr $WORKINGDIR
 		act "umounting proc and dev from previous attempt"
+		umount $WORKINGDIR/proc &> /dev/null
+		umount $WORKINGDIR/dev &> /dev/null
 	fi
+	[ -d $WORKINGDIR ] && notice "going to remove '${WORKINGDIR}'. proceed?[S/n]"
+	read SINO
+	[ $SINO == "n" ] || rm -fr $WORKINGDIR
+	
+	# start from an empty dir
 	[ -d $WORKINGDIR ] || mkdir $WORKINGDIR
 	act "creating $WORKINGDIR"
 
@@ -59,21 +64,23 @@ function basic_steps() {
 			notice "do you have a valid stage1 ?\nPlease provide '/ full / path / to / it.bz2'\nor leave blank to download a brand new"
 			read GIVE_PATH
 			if [ -z $GIVE_PATH ] ; then
-				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2
+				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2 || error "Download error :/"
+
 			elif ! [ `file $GIVE_PATH | cut -d" " -f2` != "bzip2" ] ; then
 				error "wrong path!"
 				act "Proceding to download.."
-				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2
+				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2 || error "Download error :/"
 			fi
 		fi
- 		act "found allready downloaded stage1. proceding to untar $GIVE_PATH into $WORKINGDIR"
+ 		act "found downloaded stage1. proceding to untar $GIVE_PATH into $WORKINGDIR"
 		tar xvjf $CURRENTDIR/stage1-x86-2004.1.tar.bz2 -C $WORKINGDIR &> /dev/null 
-		! [ -d $WORKINGDIR/home/the_root ] && mkdir $WORKINGDIR/home/the_root
+                ! [ -d $WORKINGDIR/home/the_root ] && mkdir $WORKINGDIR/home/the_root
 	fi
 		
 }
 
 function get_ready_chroot() {
+		CBSOPTS=$1
 		if [ `cat /proc/mounts | grep dynebolic | wc -l` == "0" ] ; then
 			 mount -o bind /proc $WORKINGDIR/proc
 			 mount -o bind /dev $WORKINGDIR/dev
@@ -81,13 +88,13 @@ function get_ready_chroot() {
 		[ -f $WORKINGDIR/etc/resolv.conf ] || cp -a /etc/resolv.conf $WORKINGDIR/etc/
 
 cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
-
 #!/bin/sh
 # createbasesystem.sh
 # dyne:bolic software development kit - the commandline tool
 #
 # Copyright (C) 2004  Federico Prando bomboclat@malasystem.com
 #                     Francesco Rana  c1cc10@malasystem.com
+#                     Andrea Marchesini bakunin@autistici.org
 #                  
 #
 # This source code is free software; you can redistribute it and/or
@@ -111,15 +118,15 @@ INSTDIR=/home/the_root
 # standard output message routines
 # it's always useful to wrap them, in case we change behaviour later
 #
-notice() { echo -e "[*] \$1"; }
-act() { echo ". \$1"; }
-error() { echo "[!] \$1"; }
-func() { if [ \$DEBUG ]; then echo "[D] \$1"; fi }
+notice() { echo -e "\\033[31m [*] \$1\\033[37m"; }
+act() { echo -e "\\033[32m . \$1\\033[37m"; }
+error() { echo -e "\\033[31m [!] \$1\\033[37m"; exit 1; }
+func() { if [ \$DEBUG ]; then echo -e "\\033[32m [D] \$1\\033[31m"; fi }
 
 function debug() {
-	echo -e "\a\a\a\$?"
+	echo -e "\\a\\a\\a\$?"
 	read OK
-	unset $OK
+	unset \$OK
 }
 
 ########################################################################
@@ -142,6 +149,7 @@ EOF
 
 }
 
+# TODO this function will be replaced with baselayout-dynebolic
 function install_configuration_files(){
 	if ! [ -f \$WORKINGDIR/baselayout-db.tgz ] ; then
 		wget http://www.autistici.org/bolic1/baselayout-db.tgz 
@@ -150,16 +158,24 @@ function install_configuration_files(){
 	ROOT=\$INSTDIR emerge baselayout-db
 }
 
-# get portage and bootstrap your compiling env 
+function initrd_root_check() {
+	if [ ! -z /var/dynebolic/.initrd_root ]; then
+		return 1
+	fi
+
+	return 0
+}
+
+# get portage and bootstrap your compiling env
 function initrd_root() {
 	if [ -d /usr/portage ] ; then
 		notice "there is allready a dir '/usr/portage'. Should I use it?(N/s)"
 		read YESNO
 		if ! [ \$YESNO == "s" -o \$YESNO == "S" ] ; then
-			emerge sync
+			emerge sync || error "Emerge error :/"
 		fi
 	else 
-		emerge sync
+		emerge sync || error "Emerge error :/"
 	fi
 
 	debug act "questo e' function initrd_root dopo emerge sync"
@@ -174,20 +190,29 @@ function initrd_root() {
 		fi
 	fi
 	debug act "questo e' function initrd_root dopo bootstrap.sh"
-	emerge gentoolkit
+	emerge gentoolkit || error "Emerge error :/"
+
 	[ -d \$INSTDIR ] || mkdir \$INSTDIR
 	# TODO avere baselayout-dynebolic.ebuild
 	# ROOT=\$INSTDIR emerge baselayout-dynebolic
-	mkdir \$INSTDIR/boot \$INSTDIR/cdrom \$INSTDIR/dev \$INSTDIR/etc \$INSTDIR/floppy \$INSTDIR/home \$INSTDIR/mnt \ 
-		\$INSTDIR/proc \$INSTDIR/root \$INSTDIR/usr \$INSTDIR/var
 	cp -a /var/db \$INSTDIR/var
+
+	touch ./var/dynebolic/.initrd_root
 }
 
 
 # install the base sources to have a 1 level FSH ready for becoming an initrd
 function install_initrd_pkg () {
+	if [ ! -z /var/dynebolic/.install_initrd_pkg ]; then
+		return 1
+	fi
+
+	return 0
+}
+
+function install_initrd_pkg () {
 	
-cat > /tmp/.initrd.lst << EOF
+	cat > /tmp/.initrd.lst << EOF
 linux-headers
 devfsd
 glibc
@@ -198,22 +223,30 @@ iputils
 net-tools
 EOF
 	
-for PKG in \`cat /tmp/.initrd.lst\` ; do
-	ROOT=\$INSTDIR emerge \$PKG ;
-done
+	for PKG in \`cat /tmp/.initrd.lst\` ; do
+		ROOT=\$INSTDIR emerge \$PKG || error "Emerge \$PKG error :/"; 
+	done
 
-rm /tmp/.initrd.lst 
+	rm /tmp/.initrd.lst 
 
+	touch ./var/dynebolic/.install_initrd_pkg
 }
 
+function build_xfree_check() {
+	if [ ! -z /var/dynebolic/.build_xfree ]; then
+		return 1
+	fi
+
+	return 0
+}
 
 function build_xfree() {
 	set_flags
-	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers
+	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers || error "Emerge 'X' error :/"
 
+	touch ./var/dynebolic/.build_xfree
 }
 
-# TODO this function will be replaced with baselayout-dynebolic
 ###############################################################################
 
 ##############################################################################
@@ -223,23 +256,77 @@ function build_xfree() {
 # gentoo da cui poi deriviamo in /home/the_root la dynebolic.
 # ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciasun passaggio
 
+if [ ! -d /var/dynebolic ]; then
+	mkdir /var/dynebolic
+fi
+
+	case \$1 in
+		-h|--help)
+			act "-h show this help"
+			act "-d restart from configuration files (baselayout-db)" 
+		 	act "-f set flags"
+			act "-x restart from xfree"
+			act "-i restart from initrd" 
+			exit 1;
+			;;
+		-v)	head -n 22 \$0 | tail -n 21 ;;
+		-d)	
+			initrd_root_check || error "Non hai completato l'SDK correttamente"
+			install_initrd_pkg_check || error "Non hai completato l'initrd_root"
+			build_xfree_check || error "Non hai completato l'xfree"
+	
+			initrd_root_v=no
+			install_initrd_pkg_v=no
+			build_xfree_v=no
+		;;
+		-f)	set_flags ;;
+		-x)	
+			initrd_root_check || error "Non hai completato l'SDK correttamente"
+			install_initrd_pkg_check || error "Non hai completato l'initrd_root"
+	
+			initrd_root_v=no
+			install_initrd_pkg_v=no
+			build_xfree_v=yes
+			;;
+		-i)	
+			initrd_root_check || error "Non hai completato l'SDK correttamente"
+	
+			initrd_root_v=no
+			install_initrd_pkg_v=yes
+			build_xfree_v=yes
+			;;
+		*)
+			initrd_root
+			install_initrd_pkg
+			build_xfree
+			install_configuration_files
+			;;
+	esac
+
 env-update
 
 source /etc/profile
 
 set_flags
 
-install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "baselayout-db: qualcosa e' andato storto. non e' stata colpa mia" 
+if test \$initrd_root_v = yes; then
+	initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "qualcosa e' andato storto. non e' stata colpa mia"
+fi
 
-initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "initrd_root: qualcosa e' andato storto. non e' stata colpa mia"
+if test \$install_initrd_pkg_v = yes; then
+	install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+fi
 
-install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "install_initrd_pkg: qualcosa e' andato storto. non e' stata colpa mia"
+if test \$build_xfree_v = yes; then
+	build_xfree  && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+fi
 
-build_xfree  && notice "Ho completato l'installazione di X" || error "build_xfree: qualcosa e' andato storto. non e' stata colpa mia"
+install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "qualcosa e' andato storto. non e' stata colpa mia" 
 
 E0F
+
 		chmod 740 $WORKINGDIR/sbin/createbasesystem.sh		
-		chroot $WORKINGDIR ./sbin/createbasesystem.sh
+		chroot $WORKINGDIR ./sbin/createbasesystem.sh $CBSOPTS
 }
 
 ######################################################################
@@ -253,17 +340,25 @@ case $1 in
 		act "entering get_ready_chroot"
 		get_ready_chroot
 		umount $WORKINGDIR/proc ;;
-	-c) # Done with basic stuff, let's get into the compiling env
+	-c) # Done with basic stuff, let's get into the chroot for compiling
 		act "entering get_ready_chroot"
 		get_ready_chroot
 		umount $WORKINGDIR/proc ;;
 	-h|--help)
+		act "COMMON TASKS:"
 	 	act "-h show this help"
 	      	act "-a start the entire process from beginning (WARN! will delete previous attempts)"
-	      	act "-c allready downloaded and untarred, chroot me"
-	 	act "-v show details" ;;
+	      	act "-c already downloaded and untarred. chroot me!"
+	 	act "-v show details"
+		act "particular purpose commands:"
+	 	act "-f set flags (you must have allready an sdk installed)"
+		act "-i restart from initrd" 
+	 	act "-x build Xfree86 (you must have allready an sdk installed)"
+		act "-d get latest baselayout-db and build it (you must have allready an sdk installed)" ;;
+	-d)	get_ready_chroot -d ;;
+	-f)	get_ready_chroot -f ;;
+	-i)	get_ready_chroot -i ;;
+	-x)	get_ready_chroot -x ;;
 	-v)     head -n 22 $0 | tail -n 21 ;;
-	*)	error "read help with -h or --help!"
+	*)	error "read help with -h or --help!" ;;
 esac
-
-
