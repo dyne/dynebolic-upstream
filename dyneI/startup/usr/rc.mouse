@@ -16,18 +16,29 @@
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
 
-# if there are some mouse stuff, it runs gpm adequately
-
-
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
+if [ "`grep -i nohid /proc/cmdline`" ]; then
+  exit 1 
+fi
+
+# in interactive mode we ask 
+if [ "`grep -i interactive /proc/cmdline`" ]; then 
+  echo -n "[?] do you want support for USB human interface devices? (mouse, keyboard, etc)" | tee -a $LOG
+  getkey 10
+  if [ $? = 1 ]; then
+    echo " ... SKIPPED" | tee -a $LOG
+    exit 0
+  else
+    echo " ... ACTIVATING" | tee -a $LOG
+  fi
+fi 
+
 if [ -z "`uname -a | grep xbox`" ]; then
-  notice "enabling input device support"
+  notice "enabling USB human interface device support"
   loadmod hid
   loadmod mousedev
   loadmod keybdev
 fi
-#loadmod mousedev
-#loadmod keybdev
 

@@ -10,18 +10,17 @@ if [ ! -z "`uname -a | grep xbox`" ]; then
   notice "launching ssh daemon"
   if [ ! -e /home/.ssh/identity ]; then
     act "generating ssh identity key in background"
-    (ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""; sshd) &
-  else
-    sshd &
+    ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
   fi
+  sshd
 
 else
 
 # no xbox, so we don't launch the sshd automatically
 # this improves security
   if [ ! -e /home/.ssh/identity ]; then
-    act "generating ssh identity key in background"
-    ssh-keygen -t dsa -q -f /home/.ssh/identity -N "" &
+    act "generating ssh identity key"
+    ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
   fi
 
 fi

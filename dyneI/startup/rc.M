@@ -32,6 +32,8 @@ if [ -z `mount | grep "type squashfs"` ]; then
     exit 1
 fi
 
+# configure language
+/usr/etc/rc.language
 
 echo "dyne:bolic setup on `date`" >> $LOG
 echo "$LIBDYNE_ID" >> $LOG
@@ -60,7 +62,7 @@ cp /boot/auto.removable /etc
 
 act "startup log file in /var/log"
 mv ${LOG} /var/log
-LOG="/var/log/dynebolic.log"
+LOG="/var/log/${LOG}"
 
 
 notice "setup network loopback device"
@@ -71,11 +73,6 @@ sync
 echo -n "[*] "; /usr/sbin/autofs start
 
 sync
-
-# scan for nests
-#/usr/etc/rc.nest
-#sync
-
 
 
 # detect xbox
@@ -104,7 +101,12 @@ else
 fi
 
 # detect and mount swap partitions
-/usr/etc/rc.swap
+/usr/etc/rc.swap &
+
+sync
+
+# configure videocard
+/usr/etc/rc.vga &
 
 sync
 
@@ -114,8 +116,8 @@ sync
 
 sync
 
-# configure videocard
-/usr/etc/rc.vga
+# configure firewire
+/usr/etc/rc.firewire &
 
 sync
 
@@ -124,43 +126,33 @@ sync
 
 sync
 
-# configure firewire
-/usr/etc/rc.firewire
-
-sync
-
-# configure language
-/usr/etc/rc.language
-
-sync
-
 # configure ssh client
-/usr/etc/rc.ssh
+/usr/etc/rc.ssh &
 
 sync
 
 # configure cups daemon
-/usr/etc/rc.cupsd
+/usr/etc/rc.cupsd &
 
 sync
 
 # start samba services
-/usr/etc/rc.samba
+/usr/etc/rc.samba &
 
 sync
 
 # start http boa daemon
-/usr/etc/rc.httpd
+/usr/etc/rc.httpd &
 
 sync
 
 # configure your sound card
-/usr/etc/rc.sound
+/usr/etc/rc.sound &
 
 sync
 
 # configure openmosix clustering
-/usr/etc/rc.mosix
+/usr/etc/rc.mosix &
 
 sync
 

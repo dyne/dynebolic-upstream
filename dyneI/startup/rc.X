@@ -1,7 +1,24 @@
 #!/bin/sh
+#
+# dyne:bolic X startup script
+# by jaromil
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
 
 
-FILE_ID="\$Id $"
+FILE_ID="\$Id$"
 
 source /lib/libdyne.sh
 source /etc/LANGUAGE
@@ -46,8 +63,6 @@ error "the X graphical interface cannot start automatically"
 error "you can try to configure it by yourself using the command"
 error "'xf86cfg -textmode' and choose your video hardware devices"
 error "from a list of supported cards."
-error "if you are online, please also do 'db-bugreport' so that"
-error "dynebolic developers will be able to examine your case!"
 echo
 notice "good luck!"
 echo

@@ -122,14 +122,18 @@ add_volume() {
 
 activate_nest() {
   # we mounted the nest! now link the directories!
-  # i forgot this in 1.2, thanks to David Santinoli
-  # for being the first one spotting this bug.
-  # e queste comunque so' tutte le canne
-  # che mi faccio ad amsterdam.
   echo " ... OK";
-  if [ -x /mnt/nest/etc/rc.nestclean ]; then
-  	/mnt/nest/etc/rc.nestclean
+
+  # rc.nestclean now is here:
+  #zap old logs
+  if [ -r /mnt/nest/var/log/dynebolic.log ]; then
+    rm /mnt/nest/var/log/dynebolic.log
   fi
+  # wipe out /tmp
+  if [ -x /mnt/nest/tmp ]; then
+    rm -rf /mnt/nest/tmp/*
+  fi
+
   if [ ! -e /mnt/nest/home ]; then
 	  warning "nest is missing home, skipping"
   else
@@ -164,7 +168,7 @@ got_home() {
 # this check if a home has been found
 # if not, use the home.tgz and var.tgz from the given path
 
-    # we don't need a nest, something is allready there
+    # do we allready have a home? if yes just return
     if [ -r /home/.xinitrc ]; then return; fi
 
     if [ -r ${1}/dynebol.nst ]; then
@@ -234,8 +238,6 @@ EOF
 	    if [ "`mount | grep /mnt/nest`" ]; then
 		act "nest succesfully mounted"
 		DYNE_NEST_PATH=${NEST}
-		DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
-		return
 	    fi
 	fi
 	
@@ -266,6 +268,12 @@ EOF
 	act "building /tmp"
 	mkdir /dev/shm/tmp
 	mount -o bind /dev/shm/tmp /tmp
+
+	DYNE_NEST_PATH=${1}
+    fi
+
+    if [ -r /etc/DYNEBOLIC ]; then
+      DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
     fi
 }
 
@@ -338,6 +346,7 @@ mount_cdrom() {
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
 	# so we can eject this cdrom and put the volume in automount
+        notice "system is found on a storage device, CD is free now"
 	umount "/mnt/dynebolic"
 	eject "/dev/${DEV}"
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
@@ -384,7 +393,7 @@ mount_xbox() {
     elif [ ! -x /usr/bin/dynesplash ]; then
 	notice "FOUND dynebolic system on partition mounted on /vol/hd${XBOX_NUM}"
 	
-	mount -o loop -t squashfs "/vol/hd${XBOX_NUM}/dynebol.sys" /usr
+	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
 	
 	if [ $? != 0 ]; then
 	    echo
@@ -619,8 +628,8 @@ if [ "`cat /proc/pci | grep USB`" ]; then
   loadbootmod /boot/vfat.o
   sync
   sleep 4
-  sync
   mount -t usbdevfs usbdevfs /proc/bus/usb
+  sync
 
   USBUSED="N"
   foreach DEV in /dev/sd?1 ;
@@ -742,13 +751,8 @@ echo "DYNE_SYS_VER=`cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv
 echo "DYNE_SYS_DEV=${DYNE_SYS_DEV}" >> /boot/dynenv
 echo "DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}" >> /boot/dynenv
 echo "DYNE_SYS_MNT=${DYNE_SYS_MNT}" >> /boot/dynenv
-echo "DYNE_INITRD_VER=`cat /etc/DYNEBOLIC`" >> /boot/dynenv
-if [ $DYNE_NEST_VER ]; then
-    echo "DYNE_NEST_VER=${DYNE_NEST_VER}" >> /boot/dynenv
-fi
-if [ $DYNE_NEST_PATH ]; then
-    echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
-fi
+echo "DYNE_NEST_VER=${DYNE_NEST_VER}" >> /boot/dynenv
+echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
 
 exit 1
 
