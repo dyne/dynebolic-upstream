@@ -117,10 +117,11 @@ EOF
 # ANZI. questo sara' un aspetto da baselayout-dynebolic.ebuild, quindi dal cvs dovremo rendere 
 # possibile la raccolta dei file che vanno in /etc.
 function install_configuration_files(){
-	if ! [ -f $WORKINGDIR/etc.tgz ] ; then
-		wget http://www.autistici.org/bolic1/etc.tgz 
+	if ! [ -f $WORKINGDIR/baselayout-db.tgz ] ; then
+		wget http://www.autistici.org/bolic1/baselayout-db.tgz
 	fi
-	tar -zxvf etc.tgz -C home/the_root/ 
+	tar -zxvf baselayout-db.tgz -C $INSTDIR
+	ROOT=$INSTDIR emerge baselayout-db
 }
 ###############################################################################
 
