@@ -26,8 +26,8 @@
 
 #include <libdyne.sh>
 #FILE_ID="\$Id$"
-if [ -e /home/jaromil/devel/dynebolic/initrd_tree/lib/libdyne.sh ]; then
-    source /home/jaromil/devel/dynebolic/initrd_tree/lib/libdyne.sh
+if [ -e /home/jaromil/devel/dynebolic/startup/libdyne.sh ]; then
+    source /home/jaromil/devel/dynebolic/startup/libdyne.sh
 elif [ -e /lib/libdyne.sh ]; then
     source /lib/libdyne.sh
 else
@@ -236,8 +236,12 @@ sleep 1
     mount -t ext2  /dev/loop/${LODEV} /mnt/nest
     
     echo -n " .  "
-#    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
-    cp -ra /home /mnt/nest
+    # copy hidden files
+    cp -ra /home/.* /mnt/nest
+    # omit the extras directory 
+    for i in `ls /home | grep -v extras`; do
+      cp -ra /home/$i /mnt/nest
+    done
     echo -n "home, "
     cp -ra /etc /mnt/nest
     echo -n "etc, "
