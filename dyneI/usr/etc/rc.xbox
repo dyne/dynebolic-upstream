@@ -24,8 +24,11 @@ source /lib/libdyne.sh
 
 notice "launching dyne:bolic on XBOX!"
 
-act "loading i2c-xbox modules"
-loadmod i2c-xbox
+#act "loading i2c-xbox modules"
+#loadmod i2c-xbox
+
+act "loading autofs4 module"
+loadmod autofs4
 
 act "loading network card module"
 loadmod nvnet
@@ -41,12 +44,15 @@ cp -f /etc/XF86Config.xbox /etc/XF86Config
 
 sync
 
-notice "setup the screen at 640x480 PAL"
+notice "setup the screen at 800x600 PAL"
+act "to switch to NTSC use the MENU->SYSTEM->Xbox NTSC selection"
 # Date: Mon, 28 Apr 2003 12:09:36 +0200
 # To: jaromil@dyne.org
 # From: Lo Smilzo <smilzo@sfrajone.org>
 # Subject: gestione video
 # questo va' lanciato prima di x con la seguente riga di comando
-/usr/sbin/xbv -PAL -auto 640 480 9.0 9.0
+# /usr/sbin/xbv -PAL -auto 640 480 9.0 9.0
+#/usr/sbin/xbv -PALBDGHI -auto 800 600 15.00 15.00
 
+sleep 2
 

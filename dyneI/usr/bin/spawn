@@ -1,0 +1,111 @@
+#!/bin/sh
+
+#!/bin/sh
+#
+# spawn - script to SPAWN dyne:bolic ISO from running CD
+#
+#  * Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
+#  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
+#  * 
+#  * This source code is free software; you can redistribute it and/or
+#  * modify it under the terms of the GNU Public License as published 
+#  * by the Free Software Foundation; either version 2 of the License,
+#  * or (at your option) any later version.
+#  *
+#  * This source code is distributed in the hope that it will be useful,
+#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  * Please refer to the GNU Public License for more details.
+#  *
+#  * You should have received a copy of the GNU Public License along with
+#  * this source code; if not, write to:
+#  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+if [ -e /lib/libdyne.sh ]; then
+    source /lib/libdyne.sh
+else
+    source ../../initrd_tree/lib/libdyne.sh
+fi
+
+PATH=.:$PATH:/usr/X11R6/bin
+PIXMAP=/usr/share/dynebolic/pixmaps/aidoru.xpm
+source /usr/etc/DYNEBOLIC
+
+notice "dyne:bolic spawn version $DYNEBOL_VER"
+
+if [ -z $1 ]; then
+  Xdialog --center --icon $PIXMAP --title 'spawn :: generate a dyne:bolic iso from the runnig CD' --stdout --wrap --yesno 'With this tool you can choose a directory where to generate a ISO file from your running dyne:bolic, then you can burn more copies out of it. If you want to update is good to save bandwidth on slow connections: it downloads only differences.\n
+ Do you want to proceed selecting the directory where to SPAWN?' 20 55
+  if [ $? != 0 ]; then # no
+    exit 1
+  fi
+  TARGET="`Xdialog --center --stdout --title \
+           'choose where to create the spawned dyne:bolic ISO' --dselect ~ 30 50`"
+  xterm -tn linux -bg darkgrey -fg black -T "spawning dyne:bolic in $TARGET" \
+        -geometry 118x20 -e "/usr/bin/spawn $TARGET"
+  exit 0
+fi
+
+if [ ! -e $1 ]; then
+  error "invalid directory: $1"
+  sleep 3
+  exit 1
+fi
+
+if [ ! -e /boot/dynemount ]; then
+  error  "It seems you are not currently running from a correct CD boot."
+  error  "Operation ABORTED"
+  sleep 3
+  exit 1
+fi
+
+ISO="${1}dynebolic-${DYNEBOL_VER}.iso"
+DEV="/dev/`cat /boot/dynemount`"
+
+notice "Generating a spawned dyne:bolic in $ISO"
+act    "The following procedure will take some time, depending from"
+act    "your CDROM speed, to complete. Tt will generate an ISO file"
+act    "of the running dyne:bolic, ready to be burned, in the location"
+act    "you selected. Please be patient while performing this operation ..."
+dd if=$DEV of=$ISO
+#DEBUG=1
+if [ $? = 0 -o ! -z $DEBUG ]; then
+  notice "ISO succesfully created in $ISO"
+else
+  error "An error occurred while creating your ISO, maybe you don't"
+  error "have write permission on the directory ?"
+  sleep 30
+  exit 1
+fi
+
+Xdialog --center --title "remote sync with the up-to-date online version?" \
+  --stdout --icon $PIXMAP --wrap --yesno \
+  "Your ISO image is now in ${ISO}\n
+   If you are online, you can query the main dynebolic repository
+   to see if there is a more recent version!\n
+   It is better than downloading the whole ISO from the net,
+   only the differences between the two versions are transferred.\n
+   Do you want to proceed?\n
+   **you are stronly encouraged to use this method to download new versions" \
+   20 65
+
+if [ $? = 0 ]; then
+  notice "Updating the ISO from cyclope.montevideo.nl::dynebolic --port 6969"
+  UPDATE_VER="`lynx --dump http://dynebolic.dyne.org/dynebolic-latest.ver`"
+  UPDATE_SRC="`lynx --dump http://dynebolic.dyne.org/dynebolic-latest.src`"
+  act    "Your version is $DYNEBOL_VER - latest online version is $UPDATE_VER"
+  echo -n "[?] proceed with downloading updates?"; getkey 20
+  if [ $? = 0 ]; then 
+    echo " ... OK"
+    act  "please standby while transferring data:"
+    rsync --progress "$UPDATE_SRC"/dynebolic-latest.iso \
+          --port 6969 $ISO
+    act "rsync completed."
+  else
+    echo " ... network update aborted"
+  fi
+fi
+
+notice "ok! generation completed for ISO $ISO"
+sleep 10
+

@@ -47,6 +47,11 @@ create_window1 (void)
   GtkWidget *getstart;
   GtkWidget *hbox2;
   GtkWidget *why_support;
+  GtkWidget *rsync_frame;
+  GtkWidget *vbox13;
+  GtkWidget *rsync_label;
+  GtkWidget *pixmap6;
+  GtkWidget *button_spawn;
   GtkWidget *frame6;
   GtkWidget *vbox12;
   GtkWidget *label_donate;
@@ -137,7 +142,7 @@ create_window1 (void)
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame2", frame2,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame2);
-  gtk_box_pack_start (GTK_BOX (vbox1), frame2, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox1), frame2, TRUE, TRUE, 0);
   gtk_frame_set_shadow_type (GTK_FRAME (frame2), GTK_SHADOW_NONE);
 
   pressmouse = gtk_button_new_with_label (_("WELCOME TO YOUR DYNE:BOLIC DESKTOP\nPRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU"));
@@ -291,14 +296,57 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox2), why_support, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (why_support, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (why_support), NULL, NULL, NULL,
-                   _("The dyne:bolic developers rely on funding from\nnon-profit, grant-making and business\norganizations willing to sustain development of\nfree and opensource software.\n\nWe rely on support from individuals like you to\npreserve, protect and promote the freedom to\nshare the software we do.\n   \nIf you find dyne:bolic useful, please make a\ndonation today.\n\nIf you have a job, please encourage your company\nto become a patron of the dyne:bolic project.\n\nIf you redistribute it, please give us some shares\non sells: you'll be happy to see the new versions\ncoming out.\n\nWe hope you understand the importance of all this\nto keep ongoing our ecosystem of generosity.\nThanks! a thousand flowers will blossom!"), -1);
+                   _("\nThe dyne:bolic developers rely on\nfunding from nonprofit and business\norganizations willing to sustain\ndevelopment of free software.\n\nSupport from individuals like you\nor organizations like yours is\ncrucial to preserve, protect and\npromote the freedom to share the\nsoftware we do.\n   \nIf you find dyne:bolic useful, please\nmake a donation today.\nIf all users do it works well!\n\nWe hope you understand how this\nis important to keep ongoing our\necosystem of generosity.\n\nThanks,\na thousand flowers will blossom!\n"), -1);
+
+  rsync_frame = gtk_frame_new (_("Get the latest!"));
+  gtk_widget_ref (rsync_frame);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "rsync_frame", rsync_frame,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (rsync_frame);
+  gtk_box_pack_start (GTK_BOX (hbox2), rsync_frame, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (rsync_frame), 3);
+  gtk_frame_set_label_align (GTK_FRAME (rsync_frame), 0.1, 0.5);
+  gtk_frame_set_shadow_type (GTK_FRAME (rsync_frame), GTK_SHADOW_IN);
+
+  vbox13 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox13);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox13", vbox13,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox13);
+  gtk_container_add (GTK_CONTAINER (rsync_frame), vbox13);
+
+  rsync_label = gtk_label_new (_("Use the 'spawn' tool embedded\nin dyne:bolic to generate ISO\nCD images from the running\nsystem.\n\nYou can also update to the last\nonline version downloading\ndifferences (save bandwidth!)\n"));
+  gtk_widget_ref (rsync_label);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "rsync_label", rsync_label,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (rsync_label);
+  gtk_box_pack_start (GTK_BOX (vbox13), rsync_label, TRUE, FALSE, 0);
+  gtk_label_set_justify (GTK_LABEL (rsync_label), GTK_JUSTIFY_LEFT);
+  gtk_label_set_line_wrap (GTK_LABEL (rsync_label), TRUE);
+
+  pixmap6 = create_pixmap (window1, "spawn.xpm");
+  gtk_widget_ref (pixmap6);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "pixmap6", pixmap6,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (pixmap6);
+  gtk_box_pack_start (GTK_BOX (vbox13), pixmap6, FALSE, FALSE, 0);
+
+  button_spawn = gtk_button_new_with_label (_("OK, i want the newest"));
+  gtk_widget_ref (button_spawn);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "button_spawn", button_spawn,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_spawn);
+  gtk_box_pack_start (GTK_BOX (vbox13), button_spawn, FALSE, FALSE, 0);
+  gtk_widget_set_usize (button_spawn, -2, 40);
+  gtk_tooltips_set_tip (tooltips, button_spawn, _("launch the 'spawn' application to generate and network-update the dyne:bolic CD ISO"), NULL);
 
   frame6 = gtk_frame_new (_("How all this can be free?"));
   gtk_widget_ref (frame6);
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame6", frame6,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame6);
-  gtk_box_pack_start (GTK_BOX (hbox2), frame6, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox2), frame6, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame6), 3);
   gtk_frame_set_label_align (GTK_FRAME (frame6), 0.1, 0.5);
   gtk_frame_set_shadow_type (GTK_FRAME (frame6), GTK_SHADOW_IN);
 
@@ -309,7 +357,7 @@ create_window1 (void)
   gtk_widget_show (vbox12);
   gtk_container_add (GTK_CONTAINER (frame6), vbox12);
 
-  label_donate = gtk_label_new (_("it's easy thru paypal to donate a small amount and it can help  a lot!\njust a few coins: if all users do it works,\nTHANKS!"));
+  label_donate = gtk_label_new (_("\nit's easy thru paypal\nto donate a small amount\nand it can help  a lot!\njust a few coins.\n\nAlso hardware donations\nare very welcome, see\n dyne.org/donate.php"));
   gtk_widget_ref (label_donate);
   gtk_object_set_data_full (GTK_OBJECT (window1), "label_donate", label_donate,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -336,7 +384,7 @@ create_window1 (void)
   gtk_widget_set_usize (button_donate, -2, 40);
   gtk_tooltips_set_tip (tooltips, button_donate, _("donate online with paypal, it's easy and secure!"), NULL);
 
-  support = gtk_label_new (_("  Support us  "));
+  support = gtk_label_new (_("  Have more!  "));
   gtk_widget_ref (support);
   gtk_object_set_data_full (GTK_OBJECT (window1), "support", support,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -358,7 +406,7 @@ create_window1 (void)
   gtk_widget_show (hbox3);
   gtk_box_pack_start (GTK_BOX (vbox4), hbox3, TRUE, TRUE, 0);
 
-  frame9 = gtk_frame_new (_("Hall of Fame "));
+  frame9 = gtk_frame_new (_("this is RASTA SOFTWARE by:"));
   gtk_widget_ref (frame9);
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame9", frame9,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -366,7 +414,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox3), frame9, FALSE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame9), 3);
 
-  label_team = gtk_label_new (_("Denis \"jaromil\" Rojo\n  author of dyne:bolic\n  HasciiCam MuSE FreeJ\n\nFederico \"bomboclat\" Prando\n  bolic1, dyne:bolic\n\nFrancesco \"c1cc10\" Rana\n  bolic1, dyne:bolic\n\nAlex \"smilzo\" Gnoli\n  dyne:bolic console support\n\n...and a brave GNU world!\nfree software is made out\nof many people efforts and\nLOTS of LOVE!"));
+  label_team = gtk_label_new (_("Jaromil - rastasoft.org\n  author of dyne:bolic\n  HasciiCam MuSE FreeJ\n\nSmilzo - sfrajone.org\n  game console support\n\nBomboclat - autistici.org\n  author of bolic1\n\nC1cc10 - autistici.org\n  author of bolic1\n\n...and all the people\naround this GNU world\nmaking free software!\n"));
   gtk_widget_ref (label_team);
   gtk_object_set_data_full (GTK_OBJECT (window1), "label_team", label_team,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -398,7 +446,7 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), credits);
   GTK_WIDGET_UNSET_FLAGS (credits, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (credits), NULL, NULL, NULL,
-                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people also contributed to development:\n  Lobo (karma and knowledge)\n  Sandolo and Rageman (scripts and tricks)\n  Nightolo and Rubik (MuSE interface coders)\n  Maox (logo and graphics)\n  Eni and Newmark (watching horizons)\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nSUPPORT in development was given by the following\norganizazions:\n  TENOVIS (Intl) http://tenovis.com\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  MALASystem (Milano) http://malasystem.com\n  SERVUS.at (Linz) http://servus.at\n  OSSA (Intl) http://streamingalliance.org\n  Montevideo (Amsterdam) http://montevideo.nl\n  Stream on the fly (EU project)\n  JuX project (Vienna) http://netbridge.at\n  European Social Forum http://www.fse-esf.org\n  The city of Firenze\nand individuals:\n  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,\n  Markus Panholzer, Zeljko Blace and Blicero\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
+                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people directly contributed to development: \n  Lobo (karma and knowledge)\n  Maox (logo and pix)\n  MiSt (xbox mentor)\n  Newmark (perl alla romana)\n  Nightolo (muse gtk)\n  Rubik (muse ncurses)\n  Tx0 (frozen camel)\n.. and more: Alpt, Grzesiek, Kysucix, Martin, Sandolo, Rageman\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nImportant support in development of 1.0 version was given\nby the following organizations and individuals:\n\n       == SPONSOR\n  TENOVIS (Intl) http://tenovis.com\n\n       == PARTNER SUPPORT\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  SERVUS.at (Linz) http://servus.at\n\n       == TACTICAL SUPPORT\n  Digimetrica (Pescara) http://www.digimetrica.com\n  European Social Forum http://www.fse-esf.org\n  JuX project (Vienna) http://netbridge.at\n  Ljudmila (Ljubljana) http://www.ljudmila.org\n  Makrolab (Anywhere) http://makrolab.ljudmila.org\n  MALASystem (Milano) http://malasystem.com\n  MAMA institute (Zagreb) http://mi2.hr\n  Montevideo (Amsterdam) http://montevideo.nl\n  Mur.at (Graz) http://mur.at\n  OSSA (Intl) http://streamingalliance.org\n  Stream on the fly (EU) http://streamonthefly.com\n  Xs4All (Amsterdam) http://xs4all.nl\n\n       == INDIVIDUAL SUPPORT\n  Adam Hyde, Blicero, Fedor Veltman, Marko Peljhan,\n  Markus Panholzer, Massimo di Bernardo, Robert de\n  Geus, Roland Alton-Scheidl, Stefano Chiccarelli,\n  Zeljko Blace\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
 
   sponsor = gtk_frame_new (_("DEVELOPMENT SUPPORTED BY"));
   gtk_widget_ref (sponsor);
@@ -501,6 +549,9 @@ create_window1 (void)
                       NULL);
   gtk_signal_connect (GTK_OBJECT (conf_screen), "released",
                       GTK_SIGNAL_FUNC (on_conf_screen_released),
+                      NULL);
+  gtk_signal_connect (GTK_OBJECT (button_spawn), "released",
+                      GTK_SIGNAL_FUNC (on_button_spawn_released),
                       NULL);
   gtk_signal_connect (GTK_OBJECT (button_donate), "released",
                       GTK_SIGNAL_FUNC (on_button_donate_released),

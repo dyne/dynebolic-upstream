@@ -20,6 +20,12 @@ notice "detecting VGA video card:"
 VGACARD="`lspci | grep VGA`"
 act "${VGACARD}"
 
+if [ ! -z "`lspci | grep -i ' vmware'`" ]; then
+  act "using Xfree86 'vmware' driver for your virtual machine"
+  sed "s/fbdev/vmware/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
 if [ ! -z "`echo ${VGACARD} | grep Unknown`" ]; then
   act "using framebuffer video device for unknown card"
   exit 0;
@@ -83,9 +89,15 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' savage'`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep ' Virge'`" ]; then
-  act "using XFree86 's3virge' driver for your S3 card"
+if [ ! -z "`echo ${VGACARD} | grep -i ' Virge'`" ]; then
+  act "using XFree86 's3virge' driver for your S3 Virge card"
   sed "s/fbdev/s3virge/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' s3 '`" ]; then
+  act "using XFree86 'S3' driver for your S3 card"
+  sed "s/fbdev/s3/g" $DISTCFG > $CFG
   exit 0;
 fi
 
@@ -102,7 +114,7 @@ if [ ! -z "`echo ${VGACARD} | grep ' SiS'`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep -i 'voodoo'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep -i ' voodoo'`" ]; then
   act "using XFree86 'tdfx' driver for your Voodoo card"
   sed "s/fbdev/tdfx/g" $DISTCFG > $CFG
   act "loading 3dfx direct rendering module"
@@ -110,11 +122,55 @@ if [ ! -z "`echo ${VGACARD} | grep -i 'voodoo'`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`lspci | grep -i ' vmware'`" ]; then
-  act "using Xfree86 'vmware' driver for your virtual machine"
-  sed "s/fbdev/vmware/g" $DISTCFG > $CFG
+if [ ! -z "`echo ${VGACARD} | grep -i ' cirrus'`" ]; then
+  act "using XFree86 'cirrus' driver for your Cirrus card"
+  sed "s/fbdev/cirrus/g" $DISTCFG > $CFG
   exit 0;
 fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' cyrix'`" ]; then
+  act "using XFree86 'cyrix' driver for your Cirrus card"
+  sed "s/fbdev/cyrix/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' i128'`" ]; then
+  act "using XFree86 'i128' driver for your I128 card"
+  sed "s/fbdev/i128/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -iE ' intel.*74'`" ]; then
+  act "using XFree86 'i740' driver for your i740 card"
+  sed "s/fbdev/i740/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' rendition'`" ]; then
+  act "using XFree86 'rendition' driver for your Rendition card"
+  sed "s/fbdev/rendition/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -iE ' silicon.*motion'`" ]; then
+  act "using XFree86 'siliconmotion' driver for your SiliconMotion card"
+  sed "s/fbdev/siliconmotion/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`lspci | grep -i ' trident '`" ]; then
+  act "using Xfree86 'trident' driver for your Trident card"
+  sed "s/fbdev/trident/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`lspci | grep -i ' tseng '`" ]; then
+  act "using Xfree86 'tseng' driver for your Tseng card"
+  sed "s/fbdev/tseng/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+
 
 # fallback to framebuffer device
 # the link is not forced: if we put our own XF86Config

@@ -98,6 +98,7 @@ if test -x /usr/sbin/pcimodules; then
     sync
 
 # configure mouse
+# now is all compiled into the kernel
     /usr/etc/rc.mouse
     
     sync
@@ -144,6 +145,11 @@ if test -x /usr/sbin/pcimodules; then
     
 # configure your sound card
     /usr/etc/rc.sound
+
+    sync
+
+# configure openmosix clustering
+    /usr/etc/rc.mosix
     
     dyne_close_boot
     

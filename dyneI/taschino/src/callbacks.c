@@ -74,9 +74,8 @@ static struct partition usb[64];
 static int part_num = 0, usb_num = 0;
 static int part_sel = 0, usb_sel = 0;
 static int media_sel = 0;
-#define HD 3
-#define USB 2
-#define FD 1
+#define HD 2
+#define USB 1
 
 
 int hd_selector(const struct dirent *dir) {
@@ -322,14 +321,14 @@ int nest_selected() {
     }
     break;
 
-  case FD: /* FLOPPY */
+    /*  case FD:  FLOPPY
     {
       GtkWidget *notimpl;
       fprintf(stderr,"  install on FLOPPY!\n");
       notimpl = create_notimplemented();
       gtk_widget_show(notimpl);
     }
-    break;
+    break; */
 
   default:
     fprintf(stderr,"ERROR: wrong selection\n");

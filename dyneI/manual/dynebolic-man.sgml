@@ -20,6 +20,7 @@
 <!ENTITY nuvrec SYSTEM "dynebolic-nuvrec.sgml">
 <!-- edit -->
 <!ENTITY cinelerra SYSTEM "dynebolic-cinelerra.sgml">
+<!ENTITY lives SYSTEM "dynebolic-lives.sgml">
 <!-- stream -->
 <!ENTITY mp4live SYSTEM "dynebolic-mp4live.sgml">
 <!ENTITY mp4creator SYSTEM "dynebolic-mp4creator.sgml">

@@ -37,11 +37,6 @@ create_win_select (void)
   GtkWidget *label_usb;
   GtkWidget *pix_usb;
   GtkWidget *radio_usb;
-  GtkWidget *frame3;
-  GtkWidget *hbox3;
-  GtkWidget *label3;
-  GtkWidget *pix_floppy;
-  GtkWidget *radio_floppy;
   GtkWidget *button1;
   GtkTooltips *tooltips;
 
@@ -70,7 +65,7 @@ create_win_select (void)
   gtk_widget_show (vbox1);
   gtk_container_add (GTK_CONTAINER (mainframe), vbox1);
 
-  label_intro = gtk_label_new (_("With nesting you have 3 possibilities to save your data and settings: dyne:bolic can nest on different media and in different ways, then detects the nest and activates it at every boot."));
+  label_intro = gtk_label_new (_("With nesting you have 2 possibilities to save your data and settings: dyne:bolic can nest on different media and in different ways, then detects the nest and activates it at every boot."));
   gtk_widget_ref (label_intro);
   gtk_object_set_data_full (GTK_OBJECT (win_select), "label_intro", label_intro,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -175,49 +170,6 @@ create_win_select (void)
   gtk_container_set_border_width (GTK_CONTAINER (radio_usb), 5);
   GTK_WIDGET_UNSET_FLAGS (radio_usb, GTK_CAN_FOCUS);
   gtk_tooltips_set_tip (tooltips, radio_usb, _("select nesting on usb pen"), NULL);
-
-  frame3 = gtk_frame_new (_("Nest on floppy"));
-  gtk_widget_ref (frame3);
-  gtk_object_set_data_full (GTK_OBJECT (win_select), "frame3", frame3,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (frame3);
-  gtk_box_pack_start (GTK_BOX (vbox2), frame3, TRUE, TRUE, 0);
-  gtk_frame_set_label_align (GTK_FRAME (frame3), 1, 0.5);
-
-  hbox3 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox3);
-  gtk_object_set_data_full (GTK_OBJECT (win_select), "hbox3", hbox3,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox3);
-  gtk_container_add (GTK_CONTAINER (frame3), hbox3);
-
-  label3 = gtk_label_new (_("Nest your mail, bookmarks and encryption settings, reformatting your floppy with a compressed filesystem to fit in more space"));
-  gtk_widget_ref (label3);
-  gtk_object_set_data_full (GTK_OBJECT (win_select), "label3", label3,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label3);
-  gtk_box_pack_start (GTK_BOX (hbox3), label3, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label3), GTK_JUSTIFY_LEFT);
-  gtk_label_set_line_wrap (GTK_LABEL (label3), TRUE);
-  gtk_misc_set_padding (GTK_MISC (label3), 3, 0);
-
-  pix_floppy = create_pixmap (win_select, "floppy.xpm");
-  gtk_widget_ref (pix_floppy);
-  gtk_object_set_data_full (GTK_OBJECT (win_select), "pix_floppy", pix_floppy,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (pix_floppy);
-  gtk_box_pack_start (GTK_BOX (hbox3), pix_floppy, TRUE, TRUE, 0);
-
-  radio_floppy = gtk_radio_button_new_with_label (nest_sel_group, "");
-  nest_sel_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_floppy));
-  gtk_widget_ref (radio_floppy);
-  gtk_object_set_data_full (GTK_OBJECT (win_select), "radio_floppy", radio_floppy,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (radio_floppy);
-  gtk_box_pack_start (GTK_BOX (hbox3), radio_floppy, FALSE, FALSE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (radio_floppy), 5);
-  GTK_WIDGET_UNSET_FLAGS (radio_floppy, GTK_CAN_FOCUS);
-  gtk_tooltips_set_tip (tooltips, radio_floppy, _("select nesting on floppy"), NULL);
 
   button1 = gtk_button_new_with_label (_("- O K -"));
   gtk_widget_ref (button1);

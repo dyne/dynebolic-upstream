@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# This file is released under the GPL Licence version 2 or above
+# Please read the Licence Terms at www.gnu.org
+# jaromil@dyne.org
+#
+# help was given by Alpt to activate mosix clustering
+#
+# /usr/etc/rc.mosix: OpenMosix clustering initialization script.
+
+FILE_ID="\$Id$"
+
+notice "activating OpenMosix clustering on local network"
+echo 0 > /proc/self/lock
+mount /mfs
+/usr/mosix/openmosix start
+

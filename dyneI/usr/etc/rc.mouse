@@ -22,8 +22,10 @@
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
-notice "enabling input device support"
-loadmod hid
-loadmod mousedev
-loadmod keybdev
+if [ -z "`uname -a | grep xbox`" ]; then
+  notice "enabling input device support"
+  loadmod hid
+fi
+#loadmod mousedev
+#loadmod keybdev
 

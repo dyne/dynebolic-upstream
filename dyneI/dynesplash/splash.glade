@@ -109,8 +109,8 @@
 	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 	<child>
 	  <padding>0</padding>
-	  <expand>False</expand>
-	  <fill>False</fill>
+	  <expand>True</expand>
+	  <fill>True</fill>
 	</child>
 
 	<widget>
@@ -356,28 +356,29 @@ network and other things from the buttons here --------------&gt;</text>
 	<class>GtkText</class>
 	<name>why_support</name>
 	<editable>False</editable>
-	<text>The dyne:bolic developers rely on funding from
-non-profit, grant-making and business
-organizations willing to sustain development of
-free and opensource software.
+	<text>
+The dyne:bolic developers rely on
+funding from nonprofit and business
+organizations willing to sustain
+development of free software.
 
-We rely on support from individuals like you to
-preserve, protect and promote the freedom to
-share the software we do.
+Support from individuals like you
+or organizations like yours is
+crucial to preserve, protect and
+promote the freedom to share the
+software we do.
    
-If you find dyne:bolic useful, please make a
-donation today.
+If you find dyne:bolic useful, please
+make a donation today.
+If all users do it works well!
 
-If you have a job, please encourage your company
-to become a patron of the dyne:bolic project.
+We hope you understand how this
+is important to keep ongoing our
+ecosystem of generosity.
 
-If you redistribute it, please give us some shares
-on sells: you'll be happy to see the new versions
-coming out.
-
-We hope you understand the importance of all this
-to keep ongoing our ecosystem of generosity.
-Thanks! a thousand flowers will blossom!</text>
+Thanks,
+a thousand flowers will blossom!
+</text>
 	<child>
 	  <padding>0</padding>
 	  <expand>True</expand>
@@ -387,14 +388,97 @@ Thanks! a thousand flowers will blossom!</text>
 
       <widget>
 	<class>GtkFrame</class>
+	<name>rsync_frame</name>
+	<border_width>3</border_width>
+	<label>Get the latest!</label>
+	<label_xalign>0.1</label_xalign>
+	<shadow_type>GTK_SHADOW_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox13</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>rsync_label</name>
+	    <label>Use the 'spawn' tool embedded
+in dyne:bolic to generate ISO
+CD images from the running
+system.
+
+You can also update to the last
+online version downloading
+differences (save bandwidth!)
+</label>
+	    <justify>GTK_JUSTIFY_LEFT</justify>
+	    <wrap>True</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkPixmap</class>
+	    <name>pixmap6</name>
+	    <filename>spawn.xpm</filename>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <build_insensitive>True</build_insensitive>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkButton</class>
+	    <name>button_spawn</name>
+	    <height>40</height>
+	    <tooltip>launch the 'spawn' application to generate and network-update the dyne:bolic CD ISO</tooltip>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>released</name>
+	      <handler>on_button_spawn_released</handler>
+	      <last_modification_time>Mon, 25 Aug 2003 02:53:29 GMT</last_modification_time>
+	    </signal>
+	    <label>OK, i want the newest</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
 	<name>frame6</name>
+	<border_width>3</border_width>
 	<label>How all this can be free?</label>
 	<label_xalign>0.1</label_xalign>
 	<shadow_type>GTK_SHADOW_IN</shadow_type>
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
-	  <fill>True</fill>
+	  <fill>False</fill>
 	</child>
 
 	<widget>
@@ -407,9 +491,15 @@ Thanks! a thousand flowers will blossom!</text>
 	    <class>GtkLabel</class>
 	    <name>label_donate</name>
 	    <width>139</width>
-	    <label>it's easy thru paypal to donate a small amount and it can help  a lot!
-just a few coins: if all users do it works,
-THANKS!</label>
+	    <label>
+it's easy thru paypal
+to donate a small amount
+and it can help  a lot!
+just a few coins.
+
+Also hardware donations
+are very welcome, see
+ dyne.org/donate.php</label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>True</wrap>
 	    <xalign>0.5</xalign>
@@ -466,7 +556,7 @@ THANKS!</label>
       <class>GtkLabel</class>
       <child_name>Notebook:tab</child_name>
       <name>support</name>
-      <label>  Support us  </label>
+      <label>  Have more!  </label>
       <justify>GTK_JUSTIFY_LEFT</justify>
       <wrap>False</wrap>
       <xalign>0.5</xalign>
@@ -496,7 +586,7 @@ THANKS!</label>
 	  <class>GtkFrame</class>
 	  <name>frame9</name>
 	  <border_width>3</border_width>
-	  <label>Hall of Fame </label>
+	  <label>this is RASTA SOFTWARE by:</label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	  <child>
@@ -508,23 +598,23 @@ THANKS!</label>
 	  <widget>
 	    <class>GtkLabel</class>
 	    <name>label_team</name>
-	    <label>Denis &quot;jaromil&quot; Rojo
+	    <label>Jaromil - rastasoft.org
   author of dyne:bolic
   HasciiCam MuSE FreeJ
 
-Federico &quot;bomboclat&quot; Prando
-  bolic1, dyne:bolic
+Smilzo - sfrajone.org
+  game console support
 
-Francesco &quot;c1cc10&quot; Rana
-  bolic1, dyne:bolic
+Bomboclat - autistici.org
+  author of bolic1
 
-Alex &quot;smilzo&quot; Gnoli
-  dyne:bolic console support
+C1cc10 - autistici.org
+  author of bolic1
 
-...and a brave GNU world!
-free software is made out
-of many people efforts and
-LOTS of LOVE!</label>
+...and all the people
+around this GNU world
+making free software!
+</label>
 	    <justify>GTK_JUSTIFY_LEFT</justify>
 	    <wrap>False</wrap>
 	    <xalign>0.5</xalign>
@@ -569,32 +659,49 @@ and analog informations.
 It takes birth as a grassroot effort to spread free software
 and the spirit of sharing informations.
 
-The following people also contributed to development:
+The following people directly contributed to development: 
   Lobo (karma and knowledge)
-  Sandolo and Rageman (scripts and tricks)
-  Nightolo and Rubik (MuSE interface coders)
-  Maox (logo and graphics)
-  Eni and Newmark (watching horizons)
+  Maox (logo and pix)
+  MiSt (xbox mentor)
+  Newmark (perl alla romana)
+  Nightolo (muse gtk)
+  Rubik (muse ncurses)
+  Tx0 (frozen camel)
+.. and more: Alpt, Grzesiek, Kysucix, Martin, Sandolo, Rageman
 
 Help with online documentation was given by: Isazi, Quique,
 Ali Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,
 Tommaso Gagliardi, Patrice.
 
-SUPPORT in development was given by the following
-organizazions:
+Important support in development of 1.0 version was given
+by the following organizations and individuals:
+
+       == SPONSOR
   TENOVIS (Intl) http://tenovis.com
+
+       == PARTNER SUPPORT
   PUBLIC VOICE Lab (Vienna) http://pvl.at
-  MALASystem (Milano) http://malasystem.com
   SERVUS.at (Linz) http://servus.at
-  OSSA (Intl) http://streamingalliance.org
-  Montevideo (Amsterdam) http://montevideo.nl
-  Stream on the fly (EU project)
-  JuX project (Vienna) http://netbridge.at
+
+       == TACTICAL SUPPORT
+  Digimetrica (Pescara) http://www.digimetrica.com
   European Social Forum http://www.fse-esf.org
-  The city of Firenze
-and individuals:
-  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,
-  Markus Panholzer, Zeljko Blace and Blicero
+  JuX project (Vienna) http://netbridge.at
+  Ljudmila (Ljubljana) http://www.ljudmila.org
+  Makrolab (Anywhere) http://makrolab.ljudmila.org
+  MALASystem (Milano) http://malasystem.com
+  MAMA institute (Zagreb) http://mi2.hr
+  Montevideo (Amsterdam) http://montevideo.nl
+  Mur.at (Graz) http://mur.at
+  OSSA (Intl) http://streamingalliance.org
+  Stream on the fly (EU) http://streamonthefly.com
+  Xs4All (Amsterdam) http://xs4all.nl
+
+       == INDIVIDUAL SUPPORT
+  Adam Hyde, Blicero, Fedor Veltman, Marko Peljhan,
+  Markus Panholzer, Massimo di Bernardo, Robert de
+  Geus, Roland Alton-Scheidl, Stefano Chiccarelli,
+  Zeljko Blace
 
 Our waves and cheers also go to:
 NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)

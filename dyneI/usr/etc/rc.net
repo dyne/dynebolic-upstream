@@ -42,7 +42,7 @@ notice "start exim for simple mail transport"
 if [ ! -e /etc/exim.conf ]; then
   sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist > /etc/exim.conf
 fi
-/usr/exim/bin/exim -bd -C /etc/exim.conf
+/usr/exim/bin/exim -bd -C /etc/exim.conf &
 
 #notice "loading point to point protocol kernel modules"
 #loadmod ppp_generic

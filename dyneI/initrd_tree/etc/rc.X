@@ -35,8 +35,8 @@ echo
 echo
 echo "[!] the X graphical interface cannot start automatically"
 echo "[!] you can try to configure it by yourself using the command"
-echo "[!] 'xf86cfg' which hopefully can launch a visual tool to choose"
-echo "[!] video hardware devices from a list of supported cards."
+echo "[!] 'xf86cfg -textmode' and choose your video hardware devices"
+echo "[!] from a list of supported cards."
 echo "[!] if you are online, please also do 'db-bugreport' so that"
 echo "[!] dynebolic developers will be able to examine your case!"
 echo

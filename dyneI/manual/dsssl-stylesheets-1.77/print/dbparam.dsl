@@ -82,9 +82,10 @@
   ;; AUTHOR N/A
   ;; /REFENTRY
   (list (normalize "table")
-(normalize "figure")
-(normalize "example")
-(normalize "equation")))
+ (normalize "figure")
+ (normalize "example")
+ (normalize "equation")
+))
 
 (define %generate-part-toc% 
   ;; REFENTRY generate-part-toc

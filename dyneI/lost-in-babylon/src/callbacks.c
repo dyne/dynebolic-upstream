@@ -16,7 +16,7 @@
  * this source code; if not, write to:
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * "Header: $"
+ * "$Header$"
  */
 
 
@@ -286,14 +286,17 @@ on_button_ok_released                  (GtkButton       *button,
     fprintf(stderr,"[!] error writing /etc/LANGUAGE: %s\n",strerror(errno));
   } else {
     fputs("# dyne:bolic language configuration file\n",rc);
-    snprintf(tmp,256,"# %s version %s by jaromil\n",PACKAGE,VERSION);
+    snprintf(tmp,256,"# %s version %s\n",PACKAGE,VERSION);
     fputs(tmp,rc);
     fputs("# DO NOT EDIT BY HAND THIS FILE\n",rc);
     fputs("# write 'lost-in-babylon' in your XTERM instead!\n\n",rc);
+    setenv("LC_ALL",langs[current_lang_num].lang,1);
     snprintf(tmp,256,"export LC_ALL=\"%s\"\n",langs[current_lang_num].lang);
     fputs(tmp,rc);
+    setenv("LANG",current_lang,1);
     snprintf(tmp,256,"export LANG=\"%s\"\n",current_lang);
     fputs(tmp,rc);
+    setenv("KEYB",keybs[current_keyb_num].kbd,1);
     snprintf(tmp,256,"export KEYB=\"%s\"\n",keybs[current_keyb_num].kbd);
     fputs(tmp,rc);
     fputs("\n# gooo rastammannn! faiddababylon!\n",rc);
@@ -301,14 +304,17 @@ on_button_ok_released                  (GtkButton       *button,
     fprintf(stderr," .  settings succesfully saved\n");
   }
 
-  proc = fork();
-  if(proc==0) {
-    execlp("setxkbmap","setxkbmap","-layout",keybs[current_keyb_num].kbd);
-    _exit(1);
-  }
-  wait(&res);
+  //  proc = fork();
+  //  if(proc==0) {
+  execlp("setxkbmap","setxkbmap","-layout",keybs[current_keyb_num].kbd,NULL);
+
+  execlp("source","source","/etc/LANGUAGE",NULL);
+    //    sleep(1);
+    //    _exit(1);
+    //  }
+    //  wait(&res);
   
-  fprintf(stderr," .  keyboard settings succesfully activated\n");
+  fprintf(stderr," .  keyboard settings activated\n");
   gtk_main_quit();
   
 }

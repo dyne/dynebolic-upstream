@@ -19,7 +19,6 @@
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# "Header: $"
 
 # this script should always create a /boot/nest file
 # containing the full path to the nest being used
@@ -57,7 +56,6 @@ scan_media() {
 	echo -n " .  $MOUNT -> "
 	if [ -e "$MOUNT/$DYNEBOL_CFG" ]; then
 	    echo "nest found!"
-	    sleep 1
 	    dyne_mount_nest "$MOUNT/$DYNEBOL_CFG"
 	    return $?
 	else
@@ -97,7 +95,7 @@ if [ -e /vol/hd1 ]; then
     scan_media "/vol" "hd"
 fi
 
-notice "scan for nests on mounted floppy"
-if [ -e /rem/fd0 ]; then
-    scan_media "/rem" "fd"
-fi
+#notice "scan for nests on mounted floppy"
+#if [ -e /rem/fd0 ]; then
+#    scan_media "/rem" "fd"
+#fi

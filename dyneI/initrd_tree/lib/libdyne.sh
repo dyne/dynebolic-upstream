@@ -19,15 +19,16 @@
 #  * You should have received a copy of the GNU Public License along with
 #  * this source code; if not, write to:
 #  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-#  *
-#  * "$Header$"
+
 
 LIBDYNE_ID="\$Id$"
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 DYNEBOL_LOG="/boot/dynebol.log"
 DYNEBOL_NST="dynebol.nst"
 DYNEBOL_CFG="dynebol.cfg"
+DYNEBOL_VER="1.0"
 WMCFG="/boot/WMState"
+STATICWM=true
 
 # logging functions
 if [ ! -z $FILE_ID ]; then
@@ -48,12 +49,15 @@ error() {
 
 # bootsequence initialization
 dyne_init_boot() {
+
+  if [ -z $STATICWM ]; then # STATICWM true: don't generate the dock
 # setup starting files
     if [ -e /boot/wmdock-pos ]; then rm -f /boot/wmdock-pos; fi
 
     if [ -e /boot/WMState ]; then rm -r /boot/WMState; fi
     cp /usr/share/dynebolic/templates/WMState.head /boot/WMState
-
+  fi
+  
 # setup the automount configuration template
 # auto.removable gets edited by the rc.cdrom, floppy, usbkey 
     if [ -e /etc/auto.removable ]; then rm -f /etc/auto.removable; fi
@@ -81,33 +85,58 @@ dyne_init_boot() {
 }
 
 dyne_close_boot() {
+  if [ -z $STATICWM ]; then
     # completing WindowMaker dock configuration footer
     cat /usr/share/dynebolic/templates/WMState.foot >> /boot/WMState
-    
-# copy the WindowMaker dock configuration in place
+    # copy the WindowMaker dock configuration in place
     cp /boot/WMState /home/GNUstep/Defaults/WMState
+  else
+    cp /usr/share/dynebolic/templates/WMState.static \
+       /home/GNUstep/Defaults/WMState
+  fi
 
-    echo "[*] boot sequence completed on `date`" >> $DYNEBOL_LOG
-    echo >> $DYNEBOL_LOG
-    echo "=== kernel modules loaded:" >> $DYNEBOL_LOG
-    lsmod >> $DYNEBOL_LOG
-    echo "===" >> $DYNEBOL_LOG
-    echo >> $DYNEBOL_LOG
-    echo "=== mounted filesystems:" >> $DYNEBOL_LOG
-    mount >> $DYNEBOL_LOG
-    echo "===" >> $DYNEBOL_LOG
-    echo >> $DYNEBOL_LOG
+  echo "[*] boot sequence completed on `date`" >> $DYNEBOL_LOG
+  echo >> $DYNEBOL_LOG
+  echo "=== kernel modules loaded:" >> $DYNEBOL_LOG
+  lsmod >> $DYNEBOL_LOG
+  echo "===" >> $DYNEBOL_LOG
+  echo >> $DYNEBOL_LOG
+  echo "=== mounted filesystems:" >> $DYNEBOL_LOG
+  mount >> $DYNEBOL_LOG
+  echo "===" >> $DYNEBOL_LOG
+  echo >> $DYNEBOL_LOG
 }
 
 # module loading wrapper
 loadmod() {
-    echo -n " .  loading kernel module $1 ... " | tee -a $DYNEBOL_LOG
-    modprobe $1 1>>$DYNEBOL_LOG 2>>$DYNEBOL_LOG
-    if [ $? = 0 ]; then
-	echo "OK" | tee -a $DYNEBOL_LOG
+    if [ ! -z "`grep $1 /etc/modules.deny`" ]; then
+	# skip modules included in /etc/modules.deny
+	act "skipping kernel module $1 (included in /etc/modules.deny)"
+    elif [ -z "`grep interactive /proc/cmdline`" ]; then 
+	# go straight, no interaction on module loading
+	echo -n " .  loading kernel module $1 ... " | tee -a $DYNEBOL_LOG
+	modprobe $1 1>>$DYNEBOL_LOG 2>>$DYNEBOL_LOG
+	if [ $? = 0 ]; then
+	    echo "OK" | tee -a $DYNEBOL_LOG
+	else
+	    echo
+	    error "ERROR loading $1 kernel module"
+	fi
     else
-	echo
-	error "error in loading $1 kernel module"
+	# ask before loading each module
+	echo -n "[?] load kernel module $1 " | tee -a $DYNEBOL_LOG
+	getkey 10
+	if [ $? = 1 ]; then echo " ... SKIPPED" | tee -a $DYNEBOL_LOG
+	elif [ $? = 2 ]; then echo " ... SKIPPED (timeout)" | tee -a $DYNEBOL_LOG
+	else # YES, if y or any other key but 'n' is typed
+	    modprobe $1 1>>$DYNEBOL_LOG 2>>$DYNEBOL_LOG
+	    if [ $? = 0 ]; then
+		echo " ... OK" | tee -a $DYNEBOL_LOG
+	    else
+		echo
+		error "ERROR loading $1 kernel module"
+	    fi
+	fi
     fi
 }
 
@@ -115,17 +144,26 @@ loadmod() {
 dyne_mount_nest() {
   # $1 = full path to dyne:bolic nest configuration (dynebol.cfg)
   # returns 1 on failure, 0 on success
-  if [ ! -e $1 ]; then return; fi
+  if [ ! -e $1 ]; then return 1; fi
   if [ -e /boot/nest ]; then
-    echo "[!] another nest found on $1"
-    echo " .  it overlaps an allready mounted nest, skipped!"
-    return 1
+      error "a nest is allready mounted from `cat /boot/nest`"
+      act "it overlaps an allready mounted nest, skipped!"
+      return 1
   fi
-  echo "[*] activating dyne:bolic nest in $1"
+  echo -n "[?] mount the dyne:bolic nest in $1 " | tee -a $DYNEBOL_LOG
+  getkey 10
+  if [ $? = 1 -o $? = 2 ]; then # timeout or 'n' typed
+      echo " ... SKIPPED" | tee -a $DYNEBOL_LOG
+      return 1
+  fi
+  echo " ... OK"
   source $1
+  notice "activating dyne:bolic nest in $1"
+  act "nested from version $DYNEBOL_VER"
+  
   # TODO : controllare che il file di conf abbia tutto apposto
   if [ ! -z $DYNEBOL_ENCRYPT ]; then
-    clear
+  act "encrypted with algo $DYNEBOL_ENCRYPT"
     cat <<EOF
 
 
@@ -137,24 +175,43 @@ has been detected in $DYNEBOL_NST
 access is password restricted, please supply your passphrase now
 
 EOF
-    mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NEST /mnt/nest
-    if [ $? != 0 ]; then
-      echo
-      echo "Invalid password or corrupted file"
-    fi
-  else
+    for i in 1 2 3; do
+        mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NEST /mnt/nest
+        case $? in
+          0) notice "valid password entered, activating nest!"
+      	     sleep 1
+	     NEST_MOUNTED=true
+	     break
+	     ;;
+          32) error "Invalid password"
+              sleep 2
+              continue
+              ;;
+          *) error "mount failed with exitcode $?"
+             sleep 2
+	     continue
+         esac
+    done
+
+  else # nest is not encrypted
     mount -o loop $DYNEBOL_NEST /mnt/nest
+    if [ $? != 0 ]; then
+      error "mount failed with exitcode $?"
+      sleep 2
+    else
+      $NEST_MOUNTED=true
+    fi
   fi
   
-  if [ $? != 0 ]; then 
-    echo "[!] can't mount nest, skipping"
+  if [ "$NEST_MOUNTED" != "true" ]; then 
+      error "can't mount nest, skipping"
     # ce ne andiamo senza togliere le variabili di ambiente
     # il che le rende inaffidabili per detctare la presenza di un nido montato
     # USARE /boot/nest per quello!
-    return 1
+      return 1
   fi
-  
-  echo " .  nest succesfully mounted"
+
+  act "nest succesfully mounted"
 
   # ok, success! we mount the nest
   sync
@@ -173,10 +230,10 @@ EOF
     mv /boot/fstab /etc
     mv /boot/auto.removable /etc
     mv /boot/mtab /etc 
-    echo " .  nested /etc directory bind"
+    act "nested /etc directory bind"
   else
-    echo "[!] nest is missing /etc directory"
-    echo " .  fix nest by populating etc"
+    error "nest is missing /etc directory"
+    act "fix nest by populating etc"
     cp -a /etc /mnt/nest
     mount -o bind /mnt/nest/etc /etc
   fi 
@@ -186,31 +243,31 @@ EOF
 #  if [ ! -z "`mount | grep home`" ]; then
 #      umount /home; fi
   if [ ! -e /mnt/nest/home ]; then
-    echo "[!] nest is missing /home directory"
-    echo " .  fix nest by populating home"
+    error "nest is missing /home directory"
+    act "fix nest by populating home"
     tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
   fi
   mount -o bind /mnt/nest/home /home
-  echo " .  nested /home directory bind"
+  act "nested /home directory bind"
 
   if [ ! -e /mnt/nest/var ]; then
-    echo "[!] nest is missing /var directory"
-    echo " .  fix nest by populating var"
+    error "nest is missing /var directory"
+    act "fix nest by populating var"
     tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
   fi 
   mount -o bind /mnt/nest/var /var
-  echo " .  nested /var directory bind"
+  act "nested /var directory bind"
 
   if [ ! -e /mnt/nest/tmp ]; then
-    echo "[!] nest is missing /tmp directory"
-    echo " .  fix nest by creating tmp"
+    error "nest is missing /tmp directory"
+    act "fix nest by creating tmp"
     mkdir /mnt/nest/tmp
   fi 
   mount -o bind /mnt/nest/tmp /tmp
-  echo " .  nested /tmp directory bind"
+  act "nested /tmp directory bind"
 
   echo "$1" > /boot/nest
-  echo " .  nest activated"
+  notice "nest activated"
   return 0
 }
 
@@ -220,7 +277,7 @@ EOF
 dyne_add_volume() {
   # $1 = media type (hdisk|floppy|usbkey)
   # $2 = mount point
-  echo "[*] adding new $1 volume $2"
+    notice "adding new $1 volume $2"
   if [ -e /boot/wmdock-pos ]; then
       WMPOS="`cat /boot/wmdock-pos`"
   else WMPOS=1; fi
@@ -280,7 +337,7 @@ dyne_add_volume() {
 	  ;;
 
       *)
-	  echo "[!] invalid call to dyne_gen_wmaker_dock() in libdyne.sh"
+	  error "invalid call to dyne_gen_wmaker_dock() in libdyne.sh"
 	  return 0
 	  ;;
   esac

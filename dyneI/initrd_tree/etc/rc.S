@@ -7,6 +7,8 @@
 	
 CDFS="iso9660"
 
+cp /etc/fstab.dist /etc/fstab
+
 echo "[*] mounting /proc filesystem"
 mount /proc
 
@@ -36,9 +38,11 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
        echo " .  found! loading loopback device module"
        echo -n " .  " 
        if [ -z "`uname -a | grep xbox`" ]; then
-         insmod /boot/loop-aes.o max_loop=128
+         insmod /boot/loop-aes.o \
+	        max_loop=128 lo_prealloc=100,1,500,6,200 lo_nice=-10
        else
-         insmod /boot/loop-aes-xbox.o max_loop=128
+         insmod /boot/loop-aes-xbox.o \
+	        max_loop=128 lo_prealloc=100,1,1000,6,200 lo_nice=-10
        fi
 
        echo " .  mounting squashedfs loopback filesystem"

@@ -58,6 +58,13 @@ year
 
 
 <para>
+       Palantir is a client-server streaming system designed to transmit live
+       video, audio and data over a TCP/IP network, as well as to control
+       remote devices.
+       It is named after a word invented by J.&nbsp;R.&nbsp;R. Tolkien and
+       mentioned in his tales, whose meaning is <emphasis>far-seer</emphasis>.
+       The correct pronounciation requires the "i" in "tir" to be accented.
+</para><para>
        Video streaming in Palantir was designed with performance in mind. Even
        a low-end machine can directly sustain the load of many hundreds of
        clients, without the need for an intermediate buffering server.
@@ -71,13 +78,6 @@ year
        present it to the user in graphical form. Examples of these devices
        include pan/tilt/zoom machinery, flood lights, temperature sensors,
        strain gauges, etc..
-</para><para>
-       Palantir is a client-server streaming system designed to transmit live
-       video, audio and data over a TCP/IP network, as well as to control
-       remote devices.
-       It is named after a word invented by J.&nbsp;R.&nbsp;R. Tolkien and
-       mentioned in his tales, whose meaning is <emphasis>far-seer</emphasis>.
-       The correct pronounciation requires the "i" in "tir" to be accented.
 </para>
 
 </section> <!-- Palantir -->

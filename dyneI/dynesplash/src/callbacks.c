@@ -181,3 +181,17 @@ on_button_donate_released              (GtkButton       *button,
   }
 }
 
+
+void
+on_button_spawn_released               (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("spawn","spawn",NULL);
+    perror("can't open spawner script");
+    _exit(1);
+  }
+}
+

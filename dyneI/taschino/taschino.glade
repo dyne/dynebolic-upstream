@@ -48,7 +48,7 @@
 	<class>GtkLabel</class>
 	<name>label_intro</name>
 	<width>435</width>
-	<label>With nesting you have 3 possibilities to save your data and settings: dyne:bolic can nest on different media and in different ways, then detects the nest and activates it at every boot.</label>
+	<label>With nesting you have 2 possibilities to save your data and settings: dyne:bolic can nest on different media and in different ways, then detects the nest and activates it at every boot.</label>
 	<justify>GTK_JUSTIFY_LEFT</justify>
 	<wrap>True</wrap>
 	<xalign>0.5</xalign>
@@ -199,75 +199,6 @@
 	      <name>radio_usb</name>
 	      <border_width>5</border_width>
 	      <tooltip>select nesting on usb pen</tooltip>
-	      <label></label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>nest_sel</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkFrame</class>
-	  <name>frame3</name>
-	  <label>Nest on floppy</label>
-	  <label_xalign>1</label_xalign>
-	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-
-	  <widget>
-	    <class>GtkHBox</class>
-	    <name>hbox3</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>label3</name>
-	      <label>Nest your mail, bookmarks and encryption settings, reformatting your floppy with a compressed filesystem to fit in more space</label>
-	      <justify>GTK_JUSTIFY_LEFT</justify>
-	      <wrap>True</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>3</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmap</class>
-	      <name>pix_floppy</name>
-	      <filename>floppy.xpm</filename>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <build_insensitive>True</build_insensitive>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radio_floppy</name>
-	      <border_width>5</border_width>
-	      <tooltip>select nesting on floppy</tooltip>
 	      <label></label>
 	      <active>False</active>
 	      <draw_indicator>True</draw_indicator>
