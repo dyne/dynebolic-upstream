@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cat /boot/dynebol.log | \
+ bzip2 -9 | \
+ uuencode dynebol.log | \
+ mail dynebolic-bugs@dyne.org -s "BUGREPORT `date`"
+
+echo "[*] bugreport sent"
+echo " .  if you are online will reach destination"
+

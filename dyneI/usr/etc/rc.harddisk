@@ -14,25 +14,25 @@ rm -r /vol/hd* 2>/dev/null 1>/dev/null
 PART="Linux|NTFS|FAT|BSD"
 
 if [ "`fdisk -l | grep -i FAT`" ]; then
-    modprobe -k vfat
+    loadmod vfat
 fi
 if [ "`fdisk -l | grep -i NTFS`" ]; then
-    modprobe -k ntfs
+    loadmod ntfs
 fi
 if [ "`fdisk -l | grep -i BSD`" ]; then
-    modprobe -k ufs
+    loadmod ufs
 fi
 
 HD_NUM=0
 
-echo "[*] harddisk detection"
+notice "harddisk detection"
 # this script also creates dock icons for each mounted harddisk
 # in a format that windowmaker understands
 # in GNUstep/Deafaults/WMState
 if [ ! -z "`uname -a | grep xbox`" ]; then
 # WE ARE ON XBOX
     if [ -r /dev/hda50 ]; then
-	echo " .  Enabling XBOX ide harddisk"
+	act "enabling XBOX ide harddisk"
 	mkdir /vol/hd1
 	mount -t fatx /dev/hda50 /vol/hd1
 	dyne_add_volume hdisk /vol/hd1

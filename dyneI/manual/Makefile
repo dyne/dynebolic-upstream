@@ -29,7 +29,6 @@ dynebolic-gftp.sgml \
 dynebolic-gimp.sgml \
 dynebolic-gmp4player.sgml \
 dynebolic-gnuchess.sgml \
-dynebolic-gnusound.sgml \
 dynebolic-gpg.sgml \
 dynebolic-gqview.sgml \
 dynebolic-hack.sgml \
@@ -42,6 +41,7 @@ dynebolic-index.sgml \
 dynebolic-intro.sgml \
 dynebolic-iptraf.sgml \
 dynebolic-irssi.sgml \
+dynebolic-kino.sgml \
 dynebolic-kismet.sgml \
 dynebolic-lbreakout.sgml \
 dynebolic-lftp.sgml \

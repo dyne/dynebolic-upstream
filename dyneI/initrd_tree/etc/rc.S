@@ -3,9 +3,8 @@
 #
 # Bolic1 startup
 #
-
-PATH=/bin:/sbin:/usr/bin:/usr/sbin
-
+# "$Id$"
+	
 CDFS="iso9660"
 
 echo "[*] mounting /proc filesystem"
@@ -46,8 +45,8 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
        mount -o loop -t squashfs /mnt/dynebolic/squashedfs /usr
        if [ "$?" != "0" ]; then
          echo "[!] seems a problem occurred in mounting the squashedfs"
-	 echo " .  command issued was mount -o loop -t squashfs /mnt/dynebolic/squashedfs /usr"
-	 echo " .  this is fatal :("
+	 echo "[!] command issued was mount -o loop -t squashfs /mnt/dynebolic/squashedfs /usr"
+	 echo "[!] this is fatal :("
        else
          echo "[*] dyne:bolic succesfully mounted from CD ${DEV}"
          if [ -e /boot/dynemount ]; then rm -f /boot/dynemount; fi
@@ -86,7 +85,5 @@ if [ ! -r /boot/dynemount ]; then
    halt
 fi
 
-echo [*] setup network loopback device
+echo "[*] setup network loopback device"
 ifconfig lo 127.0.0.1
-
-

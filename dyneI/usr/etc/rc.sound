@@ -1,14 +1,19 @@
 #!/bin/sh
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 # check if alsa drivers are loaded
 ISALSA=`lsmod | grep -i snd-`
 
 if [ ! -z "$ISALSA" ]; then
-  echo "[*] Loading ALSA-OSS emulation modules"
-  modprobe -k snd-pcm-oss
-  modprobe -k snd-mixer-oss
+  notice "loading alsa-oss emulation modules"
+  loadmod snd-pcm-oss
+  loadmod snd-mixer-oss
 fi
 
-echo " . Initializing sound levels"
-if [ -e /dev/mixer ]; then aumix -v 80 -w 80 -i 80 ; fi
+act "Initializing sound levels"
+if [ -e /dev/mixer ]; then
+    aumix -v 80 -w 80 -i 80
+ fi
 

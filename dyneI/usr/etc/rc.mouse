@@ -18,8 +18,12 @@
 
 # if there are some mouse stuff, it runs gpm adequately
 
-echo "[*] loading mouse support (PS2, USB and serial)"
-modprobe -k hid
-modprobe -k mousedev
 
+FILE_ID="\\$Id$"
+source /lib/libdyne.sh
+
+notice "enabling input device support"
+loadmod hid
+loadmod mousedev
+loadmod keybdev
 

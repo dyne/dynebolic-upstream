@@ -1,10 +1,13 @@
 #!/bin/sh
 # mount swap partitions
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 for gh in `fdisk -l | grep -i "$PART" | grep -i swap | awk '{print $1}'`; do
-  echo "[*] Activating swap partition on $gh"
-  echo "$gh none swap sw 0 0" >> /etc/fstab
-  swapon $gh
+    notice "activating swap partition on $gh"
+    echo "$gh none swap sw 0 0" >> /etc/fstab
+    swapon $gh
 done
 
 

@@ -2,6 +2,7 @@
 # mount cd volumes
 # by jaromil - 4 july 2003 - GNU GPL
 
+FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
 # controlla se e' stato settato in emulazione ide-scsi da opzione al boot
@@ -12,14 +13,13 @@ for GU in `cat /proc/cmdline`; do
 done
 
 if [ ! -z $CDRW ]; then # se c'e' una device da emulare ide-scsi
-  echo "[*] Enabling ide-scsi device emulation for burner"
-  echo "cdrw-$CDRW -fstype=iso9660 :/dev/sr${CDRW_NUM}" >> /etc/auto.removable
-  echo " .  cdrw on sr$CDRW_NUM -> /rem/cdrw-$CDRW"
-  touch /boot/cdrw
-  echo "$CDRW" >> /boot/cdrw
-  dyne_add_volume cd "cdrw-$CDRW"
-  echo " .  loading module sd_mod"
-  modprobe sd_mod
+    notice "enabling ide-scsi device emulation for burner"
+    echo "cdrw-$CDRW -fstype=iso9660 :/dev/sr${CDRW_NUM}" >> /etc/auto.removable
+    act "cdrw on sr$CDRW_NUM -> /rem/cdrw-$CDRW"
+    touch /boot/cdrw
+    echo "$CDRW" >> /boot/cdrw
+    dyne_add_volume cd "cdrw-$CDRW"
+    loadmod sd_mod
 #  echo " .  loading module ide-scsi"
 #  modprobe ide-scsi
 fi
@@ -31,18 +31,15 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
   # controlla che sia un ide cdrom
   if [ "$DEV" != "`cat /boot/dynemount`" \
      -a "`cat /proc/ide/$DEV/media`" = "cdrom" ]; then
-     
-    for rwcheck in `cat /boot/cdrw`; do
-    # controlla che non sia un burner in emulazione ide-scsi
-      if [ "$rwcheck" == "$DEV" ]; then break; fi
-    done
+
+    # controlla che non sia un burner in emulazione ide-scsi     
+      if [ ! -z "`cat /boot/cdrw | grep $rwcheck`" ]; then continue; fi
 
     # e' un cdrom e non e' quello di dynebolic
-    echo "[*] Enabling ide device for extra cdrom"
+    notice "enabling ide device for extra cdrom"
     echo "cd-${DEV} -fstype=iso9660,ro :/dev/${DEV}" >> /etc/auto.removable	
-    echo " .  cdrom on ${DEV} -> /rem/cd-${DEV}"
+    act "cdrom on ${DEV} -> /rem/cd-${DEV}"
     dyne_add_volume cd "cd-${DEV}"
-
   fi
 done
 

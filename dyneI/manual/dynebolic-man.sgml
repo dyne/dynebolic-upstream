@@ -15,6 +15,7 @@
 <!ENTITY mplayer SYSTEM "dynebolic-mplayer.sgml">
 <!ENTITY gmp4player SYSTEM "dynebolic-gmp4player.sgml">
 <!-- record -->
+<!ENTITY kino SYSTEM "dynebolic-kino.sgml">
 <!ENTITY mencoder SYSTEM "dynebolic-mencoder.sgml">
 <!ENTITY nuvrec SYSTEM "dynebolic-nuvrec.sgml">
 <!-- edit -->

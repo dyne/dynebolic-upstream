@@ -1,0 +1,79 @@
+
+<section>
+<title>kino :: DV recorder and editor</title>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://kino.schirmacher.de"></ulink> </entry>
+<!-- MAN  --> <entry> kino </entry>
+<!-- BY   --> <entry> Arne Schirmachers </entry>
+<!-- YEAR --> <entry> 2001 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+ Kino is a non-linear DV editor for GNU/Linux. It features excellent
+ integration with IEEE-1394 for capture, VTR control, and recording
+ back to the camera. It captures video to disk in RawDV and AVI
+ format, in both type-1 DV and type-2 DV (separate audio stream)
+ encodings.
+</para>
+<para>
+You can load multiple video clips, cut and paste portions of
+video/audio, and save it to an edit decision list (SMIL XML
+format). Most edit and navigation commands are mapped to equivalent vi
+key commands. Also, Kino can load movies and export the composite
+movie in a number of formats: DV over IEEE 1394, Raw DV, DV AVI, still
+frames, WAV, MP3, Ogg Vorbis, MPEG-1, MPEG-2, and DivX. Still frame
+export uses Imlib1, which has built-in support for PPM, JPEG, PNG,
+TIFF, GIF, and whatever your ImageMagick installation supports. MP3
+requires lame. Ogg Vorbis requires oggenc. MPEG-1, MPEG-2, and DivX
+require mjpegtools 1.6.0.
+</para>
+
+</section>

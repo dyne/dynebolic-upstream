@@ -1,16 +1,19 @@
 #!/bin/sh
 # setup language and keyboard from user settings
 
-echo "[*] setup language environment"
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+notice "setup language environment"
 if ! [ -e /etc/LANGUAGE ]; then
-  echo "[!] /etc/LANGUAGE not present, run lost in babylon!"
+  error "/etc/LANGUAGE not present, run lost in babylon!"
 else
   source /etc/LANGUAGE
 fi
 
 export LANG
 export LC_ALL
-echo " .  language: $LANG"
+act "language: $LANG"
 export KEYB
-echo " .  keyboard layout: $KEYB"
+act "keyboard layout: $KEYB"
 # keyboard is setted up in .xinitrc

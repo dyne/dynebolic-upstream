@@ -4,16 +4,14 @@
 # script to handlepresence of usb dongles and smart cards
 # puts them in automount (just the first device) in /rem/usbkey
 
+FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
-echo "[*] adding removable usb volume"
+notice "adding removable usb volume"
 
-echo " .  loading module sd_mod"
-modprobe sd_mod
-echo " .  loading module usb-storage"
-modprobe usb-storage
-echo " .  loading module vfat"
-modprobe vfat
+loadmod sd_mod
+loadmod usb-storage
+loadmod vfat
 
 sync
 

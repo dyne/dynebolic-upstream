@@ -18,31 +18,19 @@
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
 
+source /lib/libdyne.sh
+
 # does the CD usrfs has been mounted correctly?
 if test -x /usr/sbin/pcimodules; then
     
-# setup starting volumes id
-    if [ -e /boot/wmdock-pos ]; then rm -f /boot/wmdock-pos; fi
-    echo "1" > /boot/wmdock-pos
-    
-# setup WindowMaker dock configuration header
-    if [ -e /boot/WMState ]; then rm -r /boot/WMState; fi
-    cp /usr/share/dynebolic/templates/WMState.head /boot/WMState
-    
-    sync
+    dyne_init_boot
     
 # launch harddisk detection
 # (also fills the WMaker dock configuration)
     /usr/etc/rc.harddisk
     
     sync
-    
-# setup the automount configuration template
-# auto.removable gets edited by the rc.cdrom, floppy, usbkey 
-    if [ -e /etc/auto.removable ]; then rm -f /etc/auto.removable; fi
-# in case of nesting this is rescued by /usr/etc/rc.nest
-    cp /etc/auto.removable.dist /etc/auto.removable
-    
+        
     if [ -z "`uname -a | grep xbox`" ]; then 
   # if it's not an XBOX detect more devices
 	
@@ -64,10 +52,8 @@ if test -x /usr/sbin/pcimodules; then
     sync
     
 # echo "[*] Launcing automounter daemon"
+    echo -n "[*] "
     /usr/sbin/autofs start
-    
-# completing WindowMaker dock configuration footer
-    cat /usr/share/dynebolic/templates/WMState.foot >> /boot/WMState
     
     sync
     
@@ -79,13 +65,8 @@ if test -x /usr/sbin/pcimodules; then
 	/usr/etc/rc.vfs
     fi    
 
-# copy the WindowMaker dock configuration in place
-    cp /boot/WMState /home/GNUstep/Defaults/WMState
-
     sync
     
-    /usr/bin/dmesg -n 1
-
 # detect xbox
 # in case we're on xbox then executes just the
 # script for it, avoiding modules detection and
@@ -110,12 +91,7 @@ if test -x /usr/sbin/pcimodules; then
 # /usr/etc/rc.powman
 	
     fi
-    
-# setup the fstab configuration template
-# fstab gets edited by the rc.swap script
-    if [ -e /etc/fstab ]; then rm -f /etc/fstab; fi
-    cp /etc/fstab.dist /etc/fstab
-    
+        
 # detect and mount swap partitions
     /usr/etc/rc.swap
    
@@ -164,13 +140,15 @@ if test -x /usr/sbin/pcimodules; then
 # configure your sound card
     /usr/etc/rc.sound
     
+    dyne_close_boot
+    
 else # the usrfs has not been mounted correctly
     
     sync
     
-    echo "[!] Cannot mount /usr, falling down to reduced shell, sorry!"
-    echo "[!] Please report the problem and your system configuration"
-    echo "[!] to the support mailinglist <dynebolic@dyne.org>."
+    error "[!] Cannot mount /usr, falling down to reduced shell, sorry!"
+    error "[!] Please report the problem and your system configuration"
+    error "[!] to the support mailinglist <dynebolic@dyne.org>."
     /bin/zsh
     
 fi

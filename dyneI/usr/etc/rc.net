@@ -10,17 +10,15 @@
 # as of mant suggestions i received, drazen pantic among the others
 # is a better idea to use pump, brings better luck
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 if [ -e /etc/NETWORK ]; then
   source /etc/NETWORK
 else
 
-echo "[*] check for dhcp network"
+notice "start scanning for dhcp network"
 /usr/sbin/pump -c /usr/etc/pump.conf
-
-report="`ifconfig | grep -v "127.0.0.1" | grep inet`"
-if [ ! -z "$report" ]; then
-  echo " .  DHCP network succesfully configured"
-fi
 
 # setup hostname from /etc/HOSTNAME or randomize with the eth0 MAC address if needed
 if [ -e /etc/HOSTNAME ]; then
@@ -30,7 +28,7 @@ else
 fi
 
 hostname "$HOSTNAME"
-echo "[*] your hostname is $HOSTNAME"
+notice "your hostname is $HOSTNAME"
 
 fi # if no configuration found
 
@@ -39,12 +37,12 @@ fi # if no configuration found
 if [ -e /etc/samba/smb.conf ]; then rm -f /etc/samba/smb.conf; fi
 cat /etc/samba/smb.conf.dist | sed "s/dynesamba/$HOSTNAME/g" > /etc/samba/smb.conf
 
-echo "[*] loading point to point protocol kernel modules"
-modprobe ppp_generic
-modprobe ppp_async
-modprobe ppp_deflate
-echo "[*] loading iptables nat and masquerading kernel modules"
-modprobe iptable_filter
-modprobe iptable_nat
-modprobe iptable_mangle
+#notice "loading point to point protocol kernel modules"
+#loadmod ppp_generic
+#loadmod ppp_async
+#loadmod ppp_deflate
+#notice "loading iptables nat and masquerading kernel modules"
+#loadmod iptable_filter
+#loadmod iptable_nat
+#loadmod iptable_mangle
 

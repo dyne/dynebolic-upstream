@@ -19,6 +19,9 @@
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 # here they go the harddisks
 MNT="/vol"
 
@@ -32,15 +35,15 @@ if ! [ -x $MNT ]; then mkdir $MNT; fi
 PART="Linux|NTFS|FAT|BSD"
 
 if [ "`fdisk -l | grep -i FAT`" ]; then
-  modprobe -k vfat
+    loadmod vfat
 fi
 
 if [ "`fdisk -l | grep -i NTFS`" ]; then
-  modprobe -k ntfs
+    loadmod ntfs
 fi
 
 if [ "`fdisk -l | grep -i BSD`" ]; then
-  modprobe -k ufs
+    loadmod ufs
 fi
 
 
@@ -54,7 +57,7 @@ CFGHEAD=/usr/share/dynebolic/templates/WMState.head
 CFGFOOT=/usr/share/dynebolic/templates/WMState.foot
 if [ "$TEST" = "1" ]; then
  CFG="WMState.test"
- echo "[*] debug mode dumping to WMState.test"
+ notice "debug mode dumping to WMState.test"
 else
  CFG=/home/GNUstep/Defaults/WMState
 fi

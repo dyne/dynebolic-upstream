@@ -3,7 +3,7 @@
 # miscellaneous procedures called by dyne:bolic initialization scripts
 #
 #  * Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
-#  * and Alex Gnoli aka smilzo <smilzo@sfrajone.org>
+#  * some ideas contributed by Alex Gnoli aka smilzo <smilzo@sfrajone.org>
 #  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
 #  * 
 #  * This source code is free software; you can redistribute it and/or
@@ -20,22 +20,96 @@
 #  * this source code; if not, write to:
 #  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #  *
-#  * "Header: $"
+#  * "$Header$"
 
-
-# by jaromil & smilzo - 6 july 2003
-
+LIBDYNE_ID="\$Id$"
+PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+DYNEBOL_LOG="/boot/dynebol.log"
 DYNEBOL_NST="dynebol.nst"
 DYNEBOL_CFG="dynebol.cfg"
-
-# wmaker dock stuff
-if [ -e /boot/wmdock-pos ]; then
-    WMPOS="`cat /boot/wmdock-pos`";
-else
-    WMPOS=0;
-fi
 WMCFG="/boot/WMState"
 
+# logging functions
+if [ ! -z $FILE_ID ]; then
+    echo "RC: $FILE_ID" >> $DYNEBOL_LOG
+fi
+
+notice() {
+    echo "[*] ${1}" | tee -a $DYNEBOL_LOG
+}
+act() {
+    echo " .  ${1}" | tee -a $DYNEBOL_LOG
+}
+error() {
+    echo "[!] ${1}" | tee -a $DYNEBOL_LOG
+}
+
+# bootsequence initialization
+dyne_init_boot() {
+# setup starting files
+    if [ -e /boot/wmdock-pos ]; then rm -f /boot/wmdock-pos; fi
+
+    if [ -e /boot/WMState ]; then rm -r /boot/WMState; fi
+    cp /usr/share/dynebolic/templates/WMState.head /boot/WMState
+
+# setup the automount configuration template
+# auto.removable gets edited by the rc.cdrom, floppy, usbkey 
+    if [ -e /etc/auto.removable ]; then rm -f /etc/auto.removable; fi
+# in case of nesting this is rescued by /usr/etc/rc.nest
+    cp /etc/auto.removable.dist /etc/auto.removable
+
+    if [ -e /boot/$DYNEBOL_LOG ]; then rm -f /boot/$DYNEBOL_LOG; fi
+    touch $DYNEBOL_LOG
+    echo "dyne:bolic boot starting on `date`" >> $DYNEBOL_LOG
+    echo "$LIBDYNE_ID" >> $DYNEBOL_LOG
+    echo "kernel:`uname -a`" >> $DYNEBOL_LOG
+    echo "CPU:`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`" >> $DYNEBOL_LOG
+    echo "flags:`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
+    echo "=== devices detected on pci bus:" >> $DYNEBOL_LOG
+    lspci >> $DYNEBOL_LOG
+    echo "===" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
+    dmesg -n 1
+
+    # setup the fstab configuration template
+    if [ -e /etc/fstab ]; then rm -f /etc/fstab; fi
+    cp /etc/fstab.dist /etc/fstab
+
+}
+
+dyne_close_boot() {
+    # completing WindowMaker dock configuration footer
+    cat /usr/share/dynebolic/templates/WMState.foot >> /boot/WMState
+    
+# copy the WindowMaker dock configuration in place
+    cp /boot/WMState /home/GNUstep/Defaults/WMState
+
+    notice "[*] boot sequence completed on `date`" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
+    echo "=== kernel modules loaded:" >> $DYNEBOL_LOG
+    lsmod >> $DYNEBOL_LOG
+    echo "===" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
+    echo "=== mounted filesystems:" >> $DYNEBOL_LOG
+    mount >> $DYNEBOL_LOG
+    echo "===" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
+}
+
+# module loading wrapper
+loadmod() {
+    echo -n " .  loading kernel module $1 ... " | tee -a $DYNEBOL_LOG
+    modprobe $1 1>>$DYNEBOL_LOG 2>>$DYNEBOL_LOG
+    if [ $? = 0 ]; then
+	echo "OK" | tee -a $DYNEBOL_LOG
+    else
+	echo
+	error "error in loading $1 kernel module"
+    fi
+}
+
+# nesting function, mounts a nest to be used
 dyne_mount_nest() {
   # $1 = full path to dyne:bolic nest configuration (dynebol.cfg)
   # returns 1 on failure, 0 on success
@@ -138,10 +212,17 @@ EOF
   return 0
 }
 
+
+
+
 dyne_add_volume() {
   # $1 = media type (hdisk|floppy|usbkey)
   # $2 = mount point
   echo "[*] adding new $1 volume $2"
+  if [ -e /boot/wmdock-pos ]; then
+      WMPOS="`cat /boot/wmdock-pos`"
+  else WMPOS=1; fi
+
   case "$1" in
       "hdisk")
 	  echo "," >> $WMCFG;

@@ -6,6 +6,9 @@
 # TODO:
 # + support multihead systems with multiple VGA cards
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 CFG="/etc/XF86Config"
 DISTCFG="/etc/XF86Config.dist"
 
@@ -13,69 +16,69 @@ DISTCFG="/etc/XF86Config.dist"
 
 if [ -e $CFG ]; then exit 1; fi
 
-echo "[*] detecting VGA video card:"
+notice "detecting VGA video card:"
 VGACARD="`lspci | grep VGA`"
-echo " .  ${VGACARD}"
+act "${VGACARD}"
 
 if [ ! -z "`echo ${VGACARD} | grep Unknown`" ]; then
-  echo " .  using framebuffer video device for unknown card"
+  act "using framebuffer video device for unknown card"
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -iE ' nvidia| riva| viper| tnt| geforce' | grep -v Unknown`" ]; then
-  echo " .  using XFree86 'nv' driver for your nVidia card"
+  act "using XFree86 'nv' driver for your nVidia card"
   sed "s/fbdev/nv/g" $DISTCFG > $CFG
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' matrox'`" ]; then
-  echo " .  using XFree86 'mga' driver for your Matrox card"
+  act "using XFree86 'mga' driver for your Matrox card"
   # write the X config
   sed "s/fbdev/mga/g" $DISTCFG > $CFG
   # load the kernel DRM module
-  modprobe mga
+  loadmod mga
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' intel'`" ]; then
-  echo " .  using XFree86 'i810' driver for your Intel card"
+  act "using XFree86 'i810' driver for your Intel card"
   sed "s/fbdev/i810/g" $DISTCFG > $CFG
-  modprobe i810
-  modprobe i830
+  loadmod i810
+  loadmod i830
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' neomagic'`" ]; then
-  echo " .  using XFree86 'neomagic' driver for your Neomagiccard"
+  act "using XFree86 'neomagic' driver for your Neomagiccard"
   sed "s/fbdev/neomagic/g" $DISTCFG > $CFG
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' radeon'`" ]; then
-  echo " .  using XFree86 'radeon' driver for your Radeon card"
+  act "using XFree86 'radeon' driver for your Radeon card"
   sed "s/fbdev/radeon/g" $DISTCFG > $CFG
-  echo " .  loading Radeon direct rendering module"
-  modprobe radeon
+  act "loading Radeon direct rendering module"
+  loadmod radeon
   exit 0;
 fi
  
 if [ ! -z "`echo ${VGACARD} | grep -i ' r128 '`" ]; then
-  echo " .  using the XFree86 'r128' driver for your r128 card" 
+  act "using the XFree86 'r128' driver for your r128 card" 
   sed "s/fbdev/r128/g" $DISTCFG > $CFG
-  echo " .  loading R128 direct rendering module"
-  modprobe r128
+  act "loading R128 direct rendering module"
+  loadmod r128
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' ati'`" ]; then
- echo " .  using XFree86 'ati' driver for your Ati card"
+ act "using XFree86 'ati' driver for your Ati card"
   sed "s/fbdev/ati/g" $DISTCFG > $CFG
   exit 0;
 fi
 
 
 if [ ! -z "`echo ${VGACARD} | grep -E 'S3|Virge'`" ]; then
-  echo " .  using XFree86 's3virge' driver for your S3 card"
+  act "using XFree86 's3virge' driver for your S3 card"
   sed "s/fbdev/s3virge/g" $DISTCFG > $CFG
   exit 0;
 fi
@@ -86,23 +89,23 @@ if [ ! -z "`echo ${VGACARD} | grep 'SiS'`" ]; then
   # it is a device present on some gericom laptop //jrml 12/5/03 zagreb
   if [ ! -z "`echo ${VGACARD} | grep -i ' 6325'`" ]; then exit 0; fi
   
-  echo " .  using XFree86 'sis' driver for your SiS card"
+  act "using XFree86 'sis' driver for your SiS card"
   sed "s/fbdev/sis/g" $DISTCFG > $CFG
-  echo " .  loading SiS direct rendering module"
-  modprobe sis
+  act "loading SiS direct rendering module"
+  loadmod sis
   exit 0;
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i 'voodoo'`" ]; then
-  echo " .  using XFree86 'rdfx' driver for your Voodoo card"
+  act "using XFree86 'rdfx' driver for your Voodoo card"
   sed "s/fbdev/tdfx/g" $DISTCFG > $CFG
-  echo " .  loading 3dfx direct rendering module"
-  modprobe tdfx
+  act "loading 3dfx direct rendering module"
+  loadmod tdfx
   exit 0;
 fi
 
 if [ ! -z "`lspci | grep -i ' vmware'`" ]; then
-  echo " .  using Xfree86 'vmware' driver for your virtual machine"
+  act "using Xfree86 'vmware' driver for your virtual machine"
   sed "s/fbdev/vmware/g" $DISTCFG > $CFG
   exit 0;
 fi
@@ -110,8 +113,8 @@ fi
 # fallback to framebuffer device
 # the link is not forced: if we put our own XF86Config
 # it will be used, overriding the fbdev fallback
-echo " .  no special driver needed, using VESA framebuffer device"
-echo " .  (you can't change resolutions other than 800x600x16bpp)"
+act "no special driver needed, using VESA framebuffer device"
+act "(you can't change resolutions other than 800x600x16bpp)"
 cp $DISTCFG $CFG
 
 

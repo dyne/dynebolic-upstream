@@ -19,6 +19,9 @@
 #
 # launched by the init after hardware detection and before spawning ttys
 
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
 # first apply fixes:
 
    # FIX es1988 driver (found on a hp omnibook xe3
@@ -40,21 +43,17 @@
 # btaudio and such devices should be secondary
 # so we push on top of the list snd-* 
 
+notice "loading sound support into kernel"
+
 # the raw list of modules
 MODULES=`pcimodules|sort -r|uniq`
 for i in `pcimodules|sort -r|uniq|grep snd-`; do
-  modprobe $i 
+  loadmod $i 
 done
 
-modprobe -k snd-pcm-oss
-modprobe -k snd-mixer-oss
-
 for i in `pcimodules|sort -r|uniq|grep -v snd-`; do
-  modprobe $i
+    loadmod $i
 done
 
 # creates a symlink on devfs /dev/video -> /dev/video0
-ln -s /dev/video0 /dev/video
-
-
-
+ln -s /dev/video0 /dev/video/0
