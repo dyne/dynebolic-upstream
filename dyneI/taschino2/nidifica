@@ -236,18 +236,21 @@ sleep 1
     mount -t ext2  /dev/loop/${LODEV} /mnt/nest
     
     echo -n " .  "
+    mkdir /mnt/nest/home
     # copy hidden files
-    cp -ra /home/.* /mnt/nest
+    cp -ra /home/.* /mnt/nest/home
     # omit the extras directory 
     for i in `ls /home | grep -v extras`; do
-      cp -ra /home/$i /mnt/nest
+      cp -ra /home/$i /mnt/nest/home
     done
     echo -n "home, "
+
     cp -ra /etc /mnt/nest
     echo -n "etc, "
-#    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
+
     cp -ra /var /mnt/nest
     echo -n "var, "
+
     mkdir /mnt/nest/tmp
     chmod a+rwt /mnt/nest/tmp
     echo "tmp"
@@ -265,7 +268,7 @@ sleep 1
     act "here is your new dyne:bolic nest:"
     stat "$LOCATION/${NESTNAME}" | tee -a $DYNEBOLIC_LOG
     
-    report_success "Dynebolic nest succesfully created in ${LOCATION}/${NESTNAME} :: `file ${LOCATION}/${NESTNAME}|cut -d: -f2` :: NOW REBOOT DYNEBOLIC TO ACTIVATE YOUR NEST!"
+    report_success "Dynebolic nest succesfully created in ${LOCATION}/${NESTNAME} :: `file ${LOCATION}/${NESTNAME}|cut -d: -f2` :: CLOSE ALL APPLICATIONS AND REBOOT TO ACTIVATE YOUR NEST!"
     notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
 
 
