@@ -56,7 +56,7 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
      else # in case squashedfs is not found
 
        echo " .  not found, looking somewhere else"
-       umount /mnt/dynebolic
+       umount /mnt/dynebolic 1>/dev/null 2>/dev/null
        
      fi
 

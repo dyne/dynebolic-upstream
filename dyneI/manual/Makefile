@@ -108,6 +108,7 @@ dynebolic-xwelltris.sgml
 all : pdf
 
 html : $(DEPS)
+	rm -f html/*.html
 	docbook2html -d dsssl-stylesheets-1.77/html/docbook.dsl \
 		-o html dynebolic-man.sgml
 

@@ -212,7 +212,7 @@ if ! [ -z "`dmesg |grep fd0`" ]; then
     suca $ID "${REM}/fd0" "floppy"
 fi
 
-echo "[*] launcing automounter daemon"
+echo -n "[*] "
 /usr/sbin/autofs start
 
 #close the conditional, if an XBOX or not

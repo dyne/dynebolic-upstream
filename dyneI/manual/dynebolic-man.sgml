@@ -155,24 +155,23 @@
 <authorgroup>
 <author>
 <othername>Jaromil</othername>
-<authorblurb><para>http://korova.dyne.org</para></authorblurb>
-<affiliation><orgname>dyne.org</orgname></affiliation>
+<authorblurb><para>http://rastasoft.org</para></authorblurb>
+<affiliation>
+<orgname>dyne.org / rastasoft.org</orgname>
+</affiliation>
 </author>
 </authorgroup>
 
 <edition>
 Dynebolic GNU/Linux User's Guide
-<ulink url="http://dynebolic.org">http://dynebolic.org</ulink>
-<emphasis>
-"$Id $"
-</emphasis>
+<emphasis>"$Id$"</emphasis>
 </edition>
 
 <date>2003</date>
 
 <copyright>
 <year>2003</year>
-<holder>Denis "jaromil" Rojo - http://korova.dyne.org</holder>
+<holder>Denis "jaromil" Rojo - http://rastasoft.org</holder>
 </copyright>
 
 </bookinfo>
@@ -228,10 +227,76 @@ to them and an overview of the main features.
 </para>
 
 <para>
-Concise, to the point, and extensively indexed, readers will find this
-volume packed with informations gathered from not previously available
-in any other single reference source.
+Concise and to the point, readers will find this volume packed with
+informations gathered from not previously available in any other
+single reference source.
 </para>
+
+<para>
+And what about dyne:bolic? it's a GNU/Linux bootable CD distribution
+containing a wide range of tools like:
+</para>
+
+<para><programlisting>
+Video { Veejay, Play, Record, Edit, Stream }
+FreeJ :: set the veejay free!
+HasciiCam :: (h)ascii for the masses!
+EffecTV :: real time video effector
+Synaesthesia :: light glow oscillator
+MPlayer :: mpeg video viewer
+XawTV :: television viewer
+Gmp4Player :: mpeg4 rtsp player
+MEncoder :: nuv -> mpeg encoder
+NuvRec :: nuv - live video-in recorder
+Cinelerra :: non-linear video editing
+Kino :: DV recorder and editor
+Mp4live :: mpeg4 video rtsp streamer
+Mp4creator :: mpeg4 video encoder
+Palantir :: web video streaming
+
+Audio { DeeJay, Play, Record, Edit, Stream }
+TerminatorX :: digital turntables
+SoundTracker :: tracker / sequencer
+GDam :: digital DJ
+PD :: pure data signal processing
+PD + GEM :: pd + opengl video engine
+Trommler :: drum machine
+XMMS :: hifi audio player
+Ogg123 :: commandline ogg player
+MADplay :: commandline mp3 player
+GRip :: graphical cd ripper
+Rami :: simple commandline recorder
+RIP :: simple commandline audio cd ripper
+OggEnc :: ogg/vorbis encoder
+Audacity :: multitrack audio editor
+ReZound :: audio file editor
+GNUSound :: gnu sound editor
+MuSE :: the Multiple Streaming Engine
+Icecast :: streaming server
+PublicVoice.fm :: streaming server
+
+Graphic tools { 2d & 3d image manipulation }
+Gimp :: GNU Image Manipulation Program 
+Blender :: 3d modeling and rendering tool
+
+Text tools { read, edit and publish texts }
+RTF, PDF, DOC, HTML, ASCII with AbiWord,
+Ted, Bluefish, NEdit, Tetradraw
+
+Comunication tools { web, mail and privacy }
+surf the web, mail encryption, filesharing
+and chat with Phoenix, Links, Sylpheed,
+GnuPg, Lopster, XChat, GFtp, Vnc
+
+World atlas navigator and factbook
+
+Games! : have phun :) with Anatolia, FreeCiv
+Freecraft, FrozenBubble, LBreakout, LTris,
+Matanza, Nethack, PowerManga, GnuChess,
+XMahjongg, XWellTris, FooBillard, CSmash
+
+all in dyne:bolic GNU/Linux http://dynebolic.org
+</programlisting></para>
 
 
 </colophon>

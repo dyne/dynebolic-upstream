@@ -16,7 +16,7 @@
  * this source code; if not, write to:
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * "Header: $"
+ * "$Header$"
  */
 
 #ifdef HAVE_CONFIG_H

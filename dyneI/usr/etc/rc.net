@@ -40,7 +40,7 @@ echo "127.0.0.1		$HOSTNAME" >> /etc/hosts
 
 notice "start exim for simple mail transport"
 if [ ! -e /etc/exim.conf ]; then
-  sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist /etc/exim.conf
+  sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist > /etc/exim.conf
 fi
 /usr/exim/bin/exim -bd -C /etc/exim.conf
 

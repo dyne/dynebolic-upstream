@@ -33,7 +33,9 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
      -a "`cat /proc/ide/$DEV/media`" = "cdrom" ]; then
 
     # controlla che non sia un burner in emulazione ide-scsi     
-      if [ ! -z "`cat /boot/cdrw | grep $rwcheck`" ]; then continue; fi
+      if [ -e /boot/cdrw ]; then
+        if [ ! -z "`cat /boot/cdrw | grep $CDRW`" ]; then continue; fi
+      fi
 
     # e' un cdrom e non e' quello di dynebolic
     notice "enabling ide device for extra cdrom"

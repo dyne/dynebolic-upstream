@@ -1,41 +1,188 @@
 <chapter>
-<title>System architecture</title>
+<title>Discover the dyne:bolic system</title>
+
+<section>
+<title>Your desktop environment</title>
 
 <para>
 Dyne:bolic is a preconfigured GNU/Linux system which runs without
-installing anything on you harddisks, alltough you can see your
-partitions automatically mounted in the <emphasis>/vol</emphasis>
-directory.
+installing anything on you harddisks, to run it doesn't need to make
+any permanent change of your data and in fact you can also boot it on
+diskless computers. The whole operating system fits on a single CD
+which has to remain in your CDROM player during its use. You can't
+remove or add applications to dyne:bolic while at the same time there
+is no risk for system misconfiguration: the system comes as is, aiming
+to provide you with a slick desktop full of applications ready to use.
 </para>
 
 <para>
-Your <emphasis>/home</emphasis> directory resides in  your RAM memory
-and everything new contained in it will not be there at the next boot.
+The desktop interface follows the <emphasis>GNUStep</emphasis>
+paradigm to build a different flavour of interaction which distincts
+dyne:bolic from other common graphical environments. For instance you
+have multiple desktops than you can also switch using the key
+combination <emphasis>ALT+2</emphasis> and following numbers.
 </para>
 
 <para>
-A <emphasis>samba</emphasis> filesharing daemon is running:
-everything contained in your <emphasis>/home/shared</emphasis>
-directory is made accessible (read and write) on the network without
-any password.
+By clicking the right mouse button on the desktop background an
+application menu will appear. The menu is organized by task in
+media-type categories. Audio and video have a fixed organization in
+subcategories deejay, play, record, edit, stream; communication tools
+are distributed in a couple of subcategories; while other group of
+tools can collect applications on the first level of choice. This way
+to organize applications lets users easily find the right tool for the
+task they need to solve.
+</para>
+
+</section>
+
+<section>
+<title>Access your data</title>
+
+<para>
+With dyne:bolic you have your harddisk partitions automatically
+mounted in the <emphasis>/vol</emphasis> directory and you can easily
+browse them using the harddisk buttons in the upper-right corner of
+your desktop.  Access to the data contained in them is both read and
+write, alltough some win2k partitions are only readable.
 </para>
 
 <para>
-The Graphical environment is XFree86 with WindowMaker, the interface
-follows the OpenStep paradigm to build a different flavour of
-interaction which distincts d:b from other common graphical
-environments. For instance you have multiple desktops than you can
-also switch using the key combination <emphasis>ALT+2</emphasis> and
-other numbers.
+Usb storage devices like usb pens, smartcards and digital photo
+cameras are supported, you can access their content by clicking on the
+blue button with a usb symbol on it. Once connected, such devices are
+automatically mounted in your system directory
+<emphasis>/rem/usb1</emphasis>.
 </para>
 
 <para>
-Application menu is organized by task in media-type categories. Audio
-and video have a fixed organization in subcategories deejay, play,
-record, edit, stream; communication tools are distributed in a couple
-of subcategories; while other group of tools can collect applications
-on the first level of choice.
+Data on floppy disks can be accessed as well using the floppy button,
+the disk is automounted when you access your system directory
+<emphasis>/rem/floppy</emphasis>.
 </para>
 
+<para>
+If you have more than one CDROM player on your computer (other than
+the one used to boot dyne:bolic), then you can browse CDs with it
+using the CD button: they are automatically mounted in
+<emphasis>/rem/cd-hd*</emphasis> directories. In case you have a CD
+burner, then you should use a special option mentioned at dyne:bolic
+boot prompt to have it properly working for its function.
+</para>
 
+<para>
+Your <emphasis>/home</emphasis> directory resides in your RAM memory
+and every new file you write into it will not be there at the next
+boot, unless you create a <emphasis>nest</emphasis> where to store
+your data and settings on harddisk or usb storage devices (see next
+chapter on the topic of nesting).
+</para>
+
+<para>
+A <emphasis>samba</emphasis> filesharing daemon is running on your
+dyne:bolic: everything contained in the
+<emphasis>/home/shared</emphasis> directory is accessible (read and
+write) as a shared folder on the network you are connected, without
+any password protection.
+</para>
+
+</section>
+
+<section>
+<title>Nest your home</title>
+
+<para>
+Given this system environment you have a full range of applications
+which will get further explained in the following chapters of this
+manual, but first we should have a look at the
+<emphasis>nesting</emphasis> function offered by dyne:bolic, a quite
+simple but totally new concept for the way operating systems usually
+worked until now.
+</para>
+
+<para>
+In fact <emphasis>nesting</emphasis> is a truly revolutionary approach
+to the way operating systems have been shaped so far, and dyne:bolic
+is the first (and so far only) distribution really implementing it.
+</para>
+
+<para>
+The concept is simple: you don't install anymore the whole operating
+system and applications on your harddisk, the tools you use are only
+present on the CD and they are accessed from it. What you really need
+to be able to modify and save is just your home directory and your
+configuration settings! then with dyne:bolic you can simply store them
+in a nest and find them back at every boot.
+</para>
+
+<para>
+In this way if you want to upgrade your system you simply have to get
+a new dyne:bolic version, all your data is not affected by any
+re-installation process, safely stored in your nest.
+</para>
+
+<para>
+Nesting let's you save space on your storage devices, provides better
+stability and avoids misconfigurations of the operating system: the
+application files and libraries are safely stored in a non writable
+device, they are allready installed and working inside dyne:bolic.
+</para>
+
+<para>
+Furthermore, the way nesting is implemented is very efficient: you
+just create one single file, of the size you want, in a partition of
+your choice. The available space for your nest is found by dyne:bolic
+thru your partitions on harddisk or usb storage devices (like usb
+pens, smartcards or even photo cameras!). This approach doesn't
+requires any change in the data structure of the partitions: just one
+file is created, no matter which operating system is allready
+installed on your computer. The nest file will be called
+<emphasis>dynebol.nst</emphasis> and will keep all your home and
+settings inside (/home, /etc, /var, /tmp) and, last but not least, it
+can be encrypted (<emphasis>AES128</emphasis>) using a 20 chars
+passphrase to secure all the data you store inside it.
+</para>
+
+<para>
+All this is possible in dyne:bolic in a few clicks by using the
+graphical installer included in the config tools, and if you want to
+erase your nest you can just delete the dynebol.nst file in the root
+directory of the partition where you installed it.
+</para>
+
+</section>
+
+<section>
+<title>A closer look to details</title>
+
+<para>
+Now if you are wondering how it runs all the above the best way to
+discover it is to boot a dyne:bolic CD and have a closer look inside
+it, after all it's all FREE ;) and people familiar with GNU/Linux
+systems will easily recognize the system architecture which, even if
+it is not structured in a completely standard way compared to other
+distributions, contains a lot more of documentation on every program
+and fully accessible settings and scripts.
+</para>
+
+<para>
+Dyne:bolic is a GNU/Linux system made completely from scratch, i'm
+maniacal enough to compile everything contained in it using GCC 3.2
+and i take care to optimize all the bytecode to run on i586 MMX
+processors, also all the booting and configuration scripts are
+rewritten from scratch and this helped much to achieve a better
+performance for the particular setup needed for this software.
+</para>
+
+<para>
+Of course to work on dyne:bolic i needed to use up much CPU cycles and
+to buy myself some expensive hardware, so if you think you can
+contribute at least with some finance then you are very welcome to
+give me a donation, looking for a sustainable model to keep up my
+development this is the only way i found so far - i can't really
+organize any merchandising or commercial infrastructure and keep some
+time for code. thanks ;)
+</para>
+
+</section>
 </chapter>

@@ -13,16 +13,15 @@ more ;)
 </para>
 
 <para>
-Surf, stream and broadcast both sound and video; record, edit, encode
-and stream, all just in one CD you have simply to boot.
+Surf, stream, record, edit, encode and broadcast both sound and video,
+all just in one CD you have simply to boot.
 </para>
 
 <para>
-dyne:bolic 1.0 it is shaped on the needs of media activists
-to stimulate the production and not only the fruition of digital
-and analog informations.
-It takes birth as a grassroot effort to spread free software
-and the spirit of sharing informations.
+dyne:bolic 1.0 it is shaped on the needs of media activists to
+stimulate the production and not only the fruition of digital and
+analog informations.  It takes birth as a grassroot effort to spread
+free software and the spirit of sharing informations.
 </para>
 
 <para>
@@ -140,17 +139,92 @@ older softwares are more reliable and developed.
 </section>
 
 <section>
-<title>The authors of dyne:bolic</title>
-<para>Denis "jaromil" Rojo - <ulink url="http://korova.dyne.org">korova.dyne.org</ulink></para>
-<para>Federico "bomboclat" Prando - <ulink url="http://www.autistici.org/loa/bomboclat">autistici.org/loa/bomboclat</ulink></para>
-<para>Francesco "c1cc10" Rana - <ulink url="http://www.autistici.org/loa/c1cc10">autistici.org/loa/c1cc10</ulink></para>
+<title>The author of dyne:bolic</title>
+<para>
+Just to boost a bit my ego i should now mention again who is the
+author of dyne:bolic, well it's me: Denis "jaromil" Rojo. I created
+and i'm currently mantainer of dyne:bolic GNU/Linux, coded its 
+scripts and tools and shaped its architecture from scratch.
+I'm also the author of three softwares contained in it: FreeJ,
+HasciiCam and MuSE.
+</para>
 
 <para>
-The following people also contributed to development: Lo Smilzo (hack
-to make it work on XBOX), Lobo (karma and knowledge), Sandolo and
-Rageman (scripts and tricks), Nightolo and Rubik (MuSE interface
-coders), Maox (logo and graphics), Eni and Newmark (watching
-horizons).
+Of course i've received significant contributions and help from
+friends and developers getting interested in my efforts and joining
+development, in the spirit of the GNU General Public License.
+From here on i'll just tell you a bit about all of us, in case
+you are really interested to know.
+</para>
+
+<para>
+I'm a south italian emigrant and <ulink
+url="http://rastasoft.org">rastaman</ulink> lost in babylon, i code in
+C/C++ since quite a while and i have a decent experience of multimedia
+development under GNU/Linux. I try to make a living out of it,
+alltough is not my first aim. My motivation in doing free software so
+far comes mainly from the idea to give people free access to their
+creativity and to promote free speech, adding my little effort to
+break cultural and economical monopolies on information and technology.
+Some other efforts i invest in participating to projects like
+<ulink url="http://italy.indymedia.org">italy.indymedia.org</ulink>
+and with <ulink url="http://tazebao.dyne.org">collectives</ulink>
+orbiting around it.
+</para>
+
+<para>
+If you want to support my activity you can offer me ospitality, invite
+me to give presentations, performances (i'm a quite photogenical
+audio/visual performer, see what one has to do to make a living
+today!), <ulink url="https://rastasoft.org/donate.php">
+make a donation thru paypal</ulink>,
+<ulink url="http://www.dynebolic.org/index.php?show=cust">pay me to customize my software</ulink> to fit it to your needs or to help you using it, invite me at dinner,
+<ulink url="http://www.dynebolic.org/index.php?show=cust">call me to teach in a class</ulink>,
+help me to submit a grant, let me into your theatre company to work on
+multimedia setups (i've made a <ulink url="http://dyne.org/perform.php">fairly good experience in theatre</ulink> so far), encourage your company or organization to be a patron of the dyne:bolic project.
+</para>
+
+<para>
+Enough about me, now i'd like to mention the great support and help
+given by <ulink url="http://www.autistici.org/loa/bomboclat">Federico
+"Bomboclat" Prando</ulink> and <ulink
+url="http://www.autistici.org/loa/c1cc10">Francesco "C1cc10"
+Rana</ulink> for the development of dyne:bolic. Together with Liw they
+are the authors of <ulink
+url="http://autistici.org/bolic1">bolic1</ulink> which is another
+bootable GNU/Linux distribution reduced to fit just in a small
+cardsized CD and aiming to give slick tools to analyze and tweak
+networks. The <ulink
+url="http://www.hackmeeting.org">hackmeeting</ulink> is the place
+where we met, it is also where they presented bolic1 spawning in me
+and Lobo the idea of dyne:bolic.
+</para>
+
+<para>
+Bomboclat and C1cc10 helped me to compile and configure dyne:bolic,
+giving suggestions and testing it on hardwares. Most important thing
+has been the great friendship between us which made it very funny to
+meet and hack together on common projects.
+</para>
+
+<para>
+I'm happy to mention here also the contribution of <ulink
+url="http://sfrajone.org">Alexander "Smilzo" Gnoli</ulink> who
+recently joined the project making dyne:bolic run on XBOX game
+consoles, with the help of the documentation produced by another great
+project: <ulink url="http://xbox-linux.sf.net">xbox-linux</ulink>. We
+spend some time hacking together and sharing visions about dyne:bolic,
+while he is planning to keep is focus support for game consoles.
+</para>
+
+<para>
+The following people also directly contributed to development: Lobo
+(karma and knowledge), Sandolo and Rageman (scripts and tricks),
+Nightolo and Rubik (MuSE interface coders), Maox (logo and graphics),
+Eni and Newmark (watching horizons). I'm very sorry i can't say more
+about them, alltough it would be worth, i know them fairly well and
+they are all great hackers - probably i'll write more story here in
+some future.
 </para>
 
 <para>
@@ -178,7 +252,7 @@ Markus Panholzer, Zeljko Blace and Blicero
 </para>
 
 <para>
-Waves and cheers also go to:
+And finally we get to the waves and cheers:
 NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)
 littlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org
 Tommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,

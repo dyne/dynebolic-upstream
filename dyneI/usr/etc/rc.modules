@@ -37,6 +37,11 @@ source /lib/libdyne.sh
    # FIX VIA Rhine ethernet cards
    /usr/fixes/viarhine-fix.sh
 
+   # FIX for nforce onboard audio and ethernet from nvidia
+   # those are very popular, expecially on compact EPIA mini-ITX m/b
+   # dirty fix by jrml 14 08 2003
+   /usr/fixes/nforce.sh
+
 ### NOW WITH PCIMODULES
 # 27 maggio 2003 - jaromil e mose'
 # the first thing we want to load are alsa modules
@@ -51,7 +56,7 @@ for i in `pcimodules|sort -r|uniq|grep snd-`; do
   loadmod $i 
 done
 
-for i in `pcimodules|sort -r|uniq|grep -v snd-`; do
+for i in `pcimodules | sort -r | uniq | grep -v snd-`; do
     loadmod $i
 done
 
