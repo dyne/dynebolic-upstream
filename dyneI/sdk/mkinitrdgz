@@ -1,0 +1,242 @@
+#!/bin/sh 
+
+# Script per la creazione di un initrd.gz da inserire
+# nel live cd. Naturale conseguenza di basti-o-matic.
+# by clatto e c1 onthe Thu Oct  2 15:35:44 GMT 2003
+
+# Variabili d'ambiente generali
+WORKINGDIR=`pwd`
+ISODIR=$WORKINGDIR/cdrom
+TMP=$ISODIR/tmp
+
+########################################################################
+# FUNZIONI VIDEO
+########################################################################
+function colora_rosso(){
+	echo -e "\033[31m"
+	echo -e $1
+	echo -e "\033[37m"
+}
+function colora_verde(){
+	echo -e "\033[32m"
+	echo -e $1
+	echo -e "\033[37m"
+}
+
+function colora_giallo(){
+	echo -e "\033[33m"
+	echo -e $1
+	echo -e "\033[37m"
+}
+
+# Le successive 5 righe sono state prese da dynesdk by jaromil 2003
+# standard output message routines
+# always useful to wrap them, in case we change behaviour later
+notice() { colora_verde "[*] $1"; }
+warn() { colora_giallo "[W] $1"; }
+act() { echo " .  $1"; }
+error() { colora_rosso "[!] $1"; }
+#######################################################################
+
+########################################################################
+# FUNZIONI PRINCIPALI
+########################################################################
+
+# Presentazione / Banner
+function intro(){
+#cat > << EOF
+echo -e "
+\t\t****************************************
+\t\t****************************************
+\t\t**            mkinitrdgz    	      **
+\t\t**   Crea initrd.gz, squashedfs e     **
+\t\t**    /cdrom      		      **
+\t\t** ---------------------------------- **
+\t\t**        by il gatto & la volpe      **
+\t\t****************************************
+\t\t****************************************"
+#EOF
+}
+
+# Error Handling
+function controllo_errore () {
+	if ! [ $1 == "0" ] ; then
+		error "La creazione di initrd in $WORKINGDIR non e' andata a buon fine... esco!\n"
+		exit $1
+	fi
+	notice "OK!"
+}
+
+# Presa da dynesdk
+# function to check for required softwares
+check_sw() {
+    notice "controllo la presenza di $1"
+    CHECK_SW="`which $1`"
+    if [ -z $CHECK_SW ]; then
+	error "$1 not found"
+	RET=0
+    else
+	act "$1 found in $CHECK_SW"
+	RET=$CHECK_SW
+    fi
+}
+
+# Controlliamo se stiamo parlando di numeri o cifre. Non so se e' proprio ortodosso,
+# ma, hey, that's the FUN part of it ;^))
+function controlla_stringa () {
+CONTROLLO=`echo "$1" | grep [^0-9]`
+if ! [ -z "$CONTROLLO" ] ; then
+	error "Il valore deve essere NUMERICO! Esco...\n" 
+	exit 2
+fi
+}
+
+# Come spiega bene anche il nome, questa funzione crea un initrd con dd, da formattare
+# Accetta come parametro la grandezza del file in KB
+function creainitrd () {
+	controlla_stringa $1
+	mkdir $ISODIR
+	dd if=/dev/zero of=$ISODIR/initrd count=$1 bs=1024
+	controllo_errore $? 
+	notice "Procedo alla formattazione di initrd...\n"
+	act "start: `date`"
+	mke2fs -F -i 1024 -m 0 $ISODIR/initrd
+	controllo_errore $?
+	act "end: `date`"
+	# Creiamo la directory temporanea in cui montare initrd in loopback
+	if ! [ -d "$TMP" ] ; then
+		mkdir "$TMP"
+	fi
+	mount -o loop $ISODIR/initrd $TMP
+	controllo_errore $?
+	notice "Copia del sistema in corso.... Attendere prego...\n"
+	act "start: `date`"
+	cp -a "$ROOTDIR"/* $TMP
+	controllo_errore $?
+	act "end: `date`"
+	notice "Umount di initrd... !\n"
+	umount $ISODIR/initrd
+	controllo_errore $?
+	notice "Procedo allo zippaggio..."
+	act "start: `date`"
+	gzip $ISODIR/initrd
+	controllo_errore $?
+	act "end: `date`"
+}
+
+function clean_initrd_base(){
+	# Iniziamo a lavorarci /usr: viene spostata e calcolata a parte e poi segue le sue regole di formattazione.
+	act "Estraggo /usr da $ROOTDIR!"
+	mv $ROOTDIR/usr $WORKINGDIR/home/
+	controllo_errore $?
+	# du -h $WORKINGDIR/usr
+	# PESOUSR=`du -s $ROOTDIR | awk '{ print $1 }'` 
+	
+	act "Estraggo /var/cache da $ROOTDIR!"
+	mv $ROOTDIR/var/cache $WORKINGDIR/home
+	controllo_errore $?
+	
+	act "Estraggo /var/db da $ROOTDIR!"
+	mv $ROOTDIR/var/db $WORKINGDIR/home
+	controllo_errore $?
+}
+
+function rebuild_compile_sys(){
+	act "Risistemo /var/cache..."
+	mv $WORKINGDIR/home/cache $ROOTDIR/var/
+	controllo_errore $?
+	act "Risistemo /var/db"
+	mv $WORKINGDIR/home/db $ROOTDIR/var/
+	controllo_errore $?
+	act "Risistemo /usr..."
+	mv $WORKINGDIR/home/usr $ROOTDIR/
+	controllo_errore $?
+}
+
+# presa da dynesdk, crea uno squashfs di usr
+mksquash() {
+    notice "making the /usr squashed filesystem (please wait, takes long!)"
+    act "start: `date`"
+    $MKSQUASHFS $ROOTDIR/usr $ISODIR/squashedfs -noappend
+    chmod -x $ISODIR/squashedfs
+    act "end: `date`"
+    act "`ls -lh /squashedfs`"
+}
+
+#########################################################################################
+
+##########################################################################################
+# START!
+##########################################################################################
+
+# CONTROLLO DELLE OPZIONI
+intro
+
+if [ -z "$1" ] ; then
+	ROOTDIR=$WORKINGDIR/the_root
+	warn "La directory target non e' stata specificata, uso $ROOTDIR\n"	
+elif [ $1 == "help" -o $1 == "-h" ] ; then
+	intro
+	echo -e "$0 [directory the_root]\tDirectory da cui creare l'initrd.gz\n"
+	exit 1
+else 
+	ROOTDIR=$1
+fi
+# Siamo daccordo che e' inutile, ma tant'e' ;^))
+if ! [ -z "$2" ] ; then 
+	colora_rosso "NO! Solo il parametro della directory di sistema va inserito\n"
+	exit 1
+fi
+
+# CONTROLLI DI SISTEMA
+
+if [ "`whoami`" != "root" ]; then
+    error "you must be ROOT on your machine to use dyne:bolic SDK"
+    exit -1
+fi
+
+if [ -z $MKSQUASHFS ]; then
+    check_sw "mksquashfs";
+    if [ $RET ]; then 
+    	MKSQUASHFS=$RET; 
+    else
+    	exit 1
+    fi
+fi
+
+notice "Verifico se initrd e' gia' montato"
+CONTROLLOMOUNT=`mount | grep initrd`
+if ! [ -z "$CONTROLLOMOUNT" ] ; then
+	error "initrd e' gia' montato. Potresti avere dei problemi. Premi un qualunque tasto per continuare\n"
+	read RISPOSTA
+else
+	act "initrd non e' montato... "
+fi
+
+notice "Pulisco initrd"
+clean_initrd_base
+
+notice "Calcolo la grandezza della directory $1\n"
+
+PESOROOTDIR=`du -s $ROOTDIR | awk '{ print $1 }'`
+PESOINITRD=`echo $PESOROOTDIR+2048 | bc` # Famo un buon peso, signo', non si sa MAI 8^))
+echo -e "La rootdir e' di: $PESOROOTDIR KB\nl'initrd creato sara' di: $PESOINITRD KB\nConfermi?[S/n]"
+read -t 10 RISPOSTA
+if [ -z "$RISPOSTA" ] ; then
+	notice "Creo il file initrd da $PESOINITRD\n"
+	creainitrd "$PESOINITRD"
+elif [ $RISPOSTA == "S" -o $RISPOSTA == "s" ] ; then
+	notice "Creo il file initrd da $PESOINITRD\n"
+	creainitrd "$PESOINITRD"
+else
+	echo -e "Inserisci la grandezza di initrd in KB, prego. Ctrl+c per fermare :\n"
+	read -t 10 PESOPROPOSTO
+	creainitrd "$PESOPROPOSTO"
+fi
+
+notice "Risistemo il sistema installato"
+rebuild_compile_sys
+
+notice "Creo lo squashfs di usr..."
+mksquash
+notice "\n\n\n\nOperazione TERMINATA con SUCCESSO!!!\nOra Edita i file di avvio in $ISODIR e lancia mkiso per concludere\n"

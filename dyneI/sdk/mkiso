@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -z $1 ] ; then
+	echo "Please insert the name of the iso as the first parameter and
+		the name of the directory as the second one i.e. $0 filename.iso directoryname";
+	exit 1;
+fi
+
+if [ -z $2 ] ; then
+	echo "Please insert the name of the iso as the first parameter and
+		the name of the directory as the second one $0 filename.iso directoryname";
+	exit 1;
+fi
+
+mkisofs -o $1 -b isolinux.bin -J -R -c boot.cat \
+                -no-emul-boot -boot-load-size 4 -boot-info-table \
+                -iso-level 2 $2 
+
