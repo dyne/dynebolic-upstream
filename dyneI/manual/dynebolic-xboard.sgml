@@ -1,0 +1,18 @@
+<section>
+<title>xboard</title>
+<subtitle>Chess graphical interface</subtitle>
+<para>
+This software is a graphical interface to a chess engine, normally
+gnuchess, or a fics server that permit to play via network with other
+people or in tourney. It have a very intuitive interface and have a
+lot of option. 
+</para>
+<para>
+If you want play versus computer or versus a friend of yours just
+type xboard. If you want to log on a Fics server type:
+xboard -ics -icshost ficshostname
+</para>
+<para>
+Freechess.org is a really good free Fics server where you can log.
+</para>
+</section>

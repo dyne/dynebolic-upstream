@@ -1,4 +1,10 @@
 <section>
-<title>gnuchess</title>
-<para>to be written</para>
+<title>Gnuchess</title>
+<subtitle>Gnu chess program</subtitle>
+<para>
+This is one of the best chess engine on the net. You can use it alone
+or with a chess game interface like xboard (included in dynebolic). 
+If you want have a game just type gnuchess and give your moves in chess
+notation form, a tiny ascii chess board will appear to you for every move.
+</para>
 </section>
