@@ -131,24 +131,27 @@ got_home() {
     if [ -r /home/.xinitrc ]; then return; fi
 
     if [ -r ${1}/dynebol.nst ]; then
-	# TODO: mount the nest
 	NEST="${1}/dynebol.nst"
-	echo -n "[?] mount the dyne:bolic nest in ${NEST}"
-	getkey 10
-	if [ $? = 1 ]; then
-	    echo " ... SKIPPED"
-	else
-	    echo " ... OK"
-	    
+    elif [ -r ${1}/dynebolE.nst ]; then
+	NEST="${1}/dynebolE.nst"
+	ENCRYPT="AES=128"
+    fi
+    echo -n "[?] mount the dyne:bolic nest in ${NEST}"
+    getkey 10
+    if [ $? = 1 ]; then
+	echo " ... SKIPPED"
+    else
+	echo " ... OK"
+	
         # parses the values in a config file, if present
         # this is needed just to know if the nest is encrypted
 	# source "`echo ${NEST}|cut -d. -f1`.cfg"
 	    
-	    notice "activating dyne:bolic nest in ${NEST}"
-	    
-	    if [ $ENCRYPT ]; then
-		act "encrypted with algo $ENCRYPT"
-		cat <<EOF
+	notice "activating dyne:bolic nest in ${NEST}"
+	
+	if [ $ENCRYPT ]; then
+	    act "encrypted with algo $ENCRYPT"
+	    cat <<EOF
 
 
 
@@ -159,41 +162,40 @@ has been detected in $DYNEBOL_NST
 access is password restricted, please supply your passphrase now
 
 EOF
-		for i in 1 2 3; do
-		    mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
-		    case $? in
-			0) notice "valid password entered, activating nest!"
-			    sleep 1
-			    break
-			    ;;
-			32) error "Invalid password"
-			    sleep 2
-			    continue
-			    ;;
-			*) error "mount failed with exitcode $?"
-			    sleep 2
-			    continue
-		    esac
-		done
-		
-	    else # nest is not encrypted
-		echo -n "[*] mounting nest over loopback device"
-		mount -o loop ${NEST} /mnt/nest
-		if [ $? != 0 ]; then
-		    error "mount failed with exitcode $?"
+	    for i in 1 2 3; do
+		mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
+		case $? in
+		    0) notice "valid password entered, activating nest!"
+			sleep 1
+			break
+			;;
+		    32) error "Invalid password"
+			sleep 2
+			continue
+			;;
+		    *) error "mount failed with exitcode $?"
 		    sleep 2
-		else echo " ... OK"; fi
-	    fi
+		    continue
+		esac
+	    done
 	    
-	    if [ "`mount|grep dynebol.nst`" ]; then
-		act "nest succesfully mounted"
-		DYNE_NEST_PATH=${NEST}
-		DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
-		return
-	    fi
+	else # nest is not encrypted
+	    echo -n "[*] mounting nest over loopback device"
+	    mount -o loop ${NEST} /mnt/nest
+	    if [ $? != 0 ]; then
+		error "mount failed with exitcode $?"
+		sleep 2
+	    else echo " ... OK"; fi
+	fi
+	
+	if [ "`mount|grep dynebol.nst`" ]; then
+	    act "nest succesfully mounted"
+	    DYNE_NEST_PATH=${NEST}
+	    DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
+	    return
 	fi
     fi
-
+    
     if [ ! -r ${1}/home.tgz ]; then return; fi
     if [ ! -r ${1}/var.tgz ]; then return; fi
     
@@ -242,12 +244,13 @@ mount_cdrom() {
         return
     fi
 
-    # if there is a dyne subdirectory, then use that
-    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
-    
     # have you got brand new home in this cd?
     got_home ${MNT}
+    # if there is a dyne subdirectory, then use that
+    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
+    got_home ${MNT}    
 
+    ###### now the SYSTEM
     if ! [ -r "${MNT}/dynebol.sys" ]; then
 	act "the dynebolic system is not here"
 	umount "/mnt/dynebolic"
@@ -289,7 +292,7 @@ mount_cdrom() {
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
 	# so we can eject this cdrom and put the volume in automount
-	umount "/mnt/dynebolic"
+umount "/mnt/dynebolic"
 	rm -r "/mnt/dynebolic"
 	eject "/dev/${DEV}"
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
@@ -321,12 +324,14 @@ mount_xbox() {
   # a mountable haddisk partition has been found!
     add_volume hdisk ${MNT}
     
+
+    got_home ${MNT}    
     # if there is a dyne subdirectory, then enter that
     if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
-
     got_home ${MNT}
     
-  # if the system has been allready mounted you can go on
+
+   # if the system has been allready mounted you can go on
     
     if ! [ -r "${MNT}/dynebol.sys" ]; then
 	act "the dynebolic system is not here"
@@ -400,6 +405,8 @@ mount_harddisk() {
     # a mountable harddisk partition has been found!
     add_volume hdisk ${MNT}
 
+    # have you got a home there?
+    got_home ${MNT}
     # if there is a dyne development subdirectory, then use that
     if [ -x "${MNT}/dyne/sdk/cdrom/dyne" ]; then
         MNT="${MNT}/dyne/sdk/cdrom/dyne"
@@ -407,8 +414,7 @@ mount_harddisk() {
     elif [ -x "${MNT}/dyne" ]; then
         MNT="${MNT}/dyne"
     fi
-    
-    # have you got a home there?
+    # try also inside the /dyne directory found
     got_home ${MNT}
 
     # if the system has been allready mounted you can go on

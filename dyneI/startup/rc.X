@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-FILE_ID="\$IdL $"
+FILE_ID="\$Id $"
 
 source /lib/libdyne.sh
 source /etc/LANGUAGE

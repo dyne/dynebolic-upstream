@@ -36,6 +36,9 @@ fi
 # load dynebolic environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
 
+# load dynebolic language settings
+if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
+
 
 # logging functions
 if [ ! -z $FILE_ID ]; then
