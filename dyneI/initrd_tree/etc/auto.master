@@ -1,0 +1,8 @@
+# this is the auto.master configuration file for the autofs script
+# it assigns a master-directory to another configuration file which
+# will define the mountpoints in it
+# man auto.master autofs automount
+# // jaromil 26 marzo 2003
+
+/rem /etc/auto.removable
+

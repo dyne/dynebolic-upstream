@@ -1,0 +1,8 @@
+root:x:0:0:root:/home:/bin/zsh
+daemon:*:1:1:daemon:/usr/sbin:/usr/bin/false
+bin:*:2:2:bin:/bin:/bin/sh
+sys:*:3:3:sys:/dev:/bin/sh
+sync:*:4:0:sync:/sbin:/usr/bin/sync
+sshd:*:5:5:sshd:/var/empty:/dev/null
+nobody:*:65534:65534:nobody:/home:/usr/bin/false
+lp:*:65535:65535:lp:/home:/usr/bin/false

@@ -1,0 +1,13 @@
+root::0:
+daemon::1:
+bin::2:
+sys::3:
+sync::4:
+sshd::5:
+tty::6:
+audio::7:
+video::8:
+cdrw::9:
+nogroup::65533:
+nobody::65534:
+lp::65535:

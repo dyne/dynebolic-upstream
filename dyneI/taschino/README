@@ -1,0 +1,28 @@
+
+
+this is taschino, a user friendly program to create 'nests',
+included inside dyne:bolic GNU/Linux
+
+copyleft 2003 denis rojo < jaromil @ dyne . org >
+
+short notes on taschino, this documentation is still incomplete!
+
+
+With nesting you have 3 possibilities to save your data and settings: dyne:bolic can nest on different media and in different ways, then detects the nest and activates it at every boot.
+
+nest on harddisk
+
+Nest your /home and all your settings, the nest can be password secured with encryption and doesn't needs repartitioning, to keep your data you just use a variable amount of space by creating one simple file: the .dynebolic.nest
+
+nest on usb pen
+
+Nest your /home and all your settings, it will place your /home directory and other settings in your usb pen filesystem and you'll be able to access them also from outside dyne:bolic system
+
+nest on floppy
+
+Nest your mail, bookmarks and encryption settings, reformatting your floppy with a compressed filesystem to have more available space
+
+
+if you are interested in the concept of NESTING
+refer to discussion going on http://lists.dyne.org/dynebolic
+

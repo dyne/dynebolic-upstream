@@ -1,0 +1,141 @@
+Section "ServerLayout"
+        Identifier      "Default Layout"
+        Screen          "Screen0"
+        InputDevice     "Keyboard0"
+        InputDevice     "Configured Mouse"
+#        InputDevice     "Generic Mouse"
+EndSection
+
+
+
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	ModulePath   "/usr/X11R6/lib/modules"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/cyrillic/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/truetype"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Speedo/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/PEX/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/CID/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/100dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/latin2/100dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/latin2/75dpi/"
+EndSection
+
+Section "Module"
+   Load  "extmod"
+   Load  "xie"
+   Load  "pex5"
+   Load  "glx"
+   Load  "dri"
+   Load  "dbe"
+   Load  "speedo"
+   Load  "type1"
+   Load  "freetype"
+EndSection
+
+Section "DRI"
+   Mode 0666
+EndSection
+
+Section "ServerFlags"
+
+#    Option "NoTrapSignals"
+#    Option "DontZap"
+#    Option "Dont Zoom"
+#    Option "DisableVidModeExtension"
+#    Option "AllowNonLocalXvidtune"
+#    Option "DisableModInDev"
+#    Option "AllowNonLocalModInDev"
+
+EndSection
+
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "keyboard"
+	Option	    "CoreKeyboard"
+EndSection
+
+Section "InputDevice"
+        Identifier      "Configured Mouse"
+        Driver          "mouse"
+        Option          "CorePointer"
+        Option          "Device"                "/dev/misc/psaux"
+        Option          "Protocol"              "PS/2"
+        Option          "Emulate3Buttons"       "true"
+        Option          "Buttons"               "5"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+Section "InputDevice"   
+        Identifier      "Generic Mouse"
+        Driver          "mouse"
+        Option          "SendCoreEvents"        "true"
+        Option          "Device"                "/dev/input/mice"
+        Option          "Device"                "/dev/ttyS0"
+        Option          "Protocol"              "Microsoft"
+       Option          "Emulate3Buttons"       "true"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+
+Section "Monitor"
+	Identifier   "Monitor0"
+	VendorName   "Monitor Vendor"
+	ModelName    "Monitor Model"
+
+	Modeline "320x200"     12.75  320 324 372 388  200 204 206 210 doublescan
+	Modeline "224x224"     12.75  224 228 276 288  224 228 230 236 doublescan
+	Modeline "256x224"     12.75  256 260 308 320  224 228 230 236 doublescan
+	Modeline "288x224"     12.75  288 292 340 352  224 228 230 236 doublescan
+	Modeline "320x224"     12.75  320 324 372 388  224 228 230 236 doublescan
+	Modeline "256x240"     15.00  256 260 308 320  240 244 246 254 doublescan
+	Modeline "292x240"     16.75  292 296 344 356  240 244 246 254 doublescan
+	Modeline "320x240"     16.75  320 324 372 388  240 244 246 254 doublescan
+	Modeline "336x240"     18.00  336 344 392 417  240 244 246 254 doublescan
+	Modeline "384x224"     20.00  384 388 436 480  224 228 230 236 doublescan
+	Modeline "384x240"     20.00  384 388 436 480  240 244 246 254 doublescan
+	Modeline "360x288"     20.00  360 364 412 444  288 292 298 302 doublescan
+	Modeline "360x256"     18.00  360 364 412 444  256 260 266 270 doublescan
+	Modeline "400x300"     19.00  400 412 476 500  300 303 306 317
+	Modeline "400x256"     22.00  400 416 480 504  256 259 262 269 doublescan
+	Modeline "400x224"     20.00  400 416 480 500  224 228 230 234 doublescan
+	Modeline "512x384"     25.00  512 516 580 632  384 385 388 400
+	ModeLine "640x240"     31.50  640 644 708 788  240 244 246 254 doublescan
+	ModeLine "672x240"     31.50  672 676 740 820  240 244 246 254 doublescan
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor"
+	VendorName   "your monitor"
+	ModelName    "your monitor model"
+EndSection
+
+Section "Device"
+	Identifier  "FB"
+	Driver	    "i810"
+	Option	    "DRI" "True"
+EndSection
+
+Section "Screen"
+	Identifier "Screen0"
+	Device     "FB"
+	Monitor    "Monitor0"
+	DefaultDepth 16
+	SubSection "Display"
+		Depth     8
+		Modes	  "1024x768" "800x600" "640x480" "400x300"
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+		Modes	  "1024x768" "800x600" "640x480" "400x300"
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+		Modes	  "1024x768" "800x600" "640x480" "400x300"
+	EndSubSection
+EndSection
+

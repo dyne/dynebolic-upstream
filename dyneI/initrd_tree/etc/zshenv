@@ -1,0 +1,79 @@
+# [dyne:bolic] shell profile
+
+# Search path for the cd command
+cdpath=(.. ~)
+
+# Use hard limits, except for a smaller stack and no core dumps
+unlimit
+limit stack 8192
+limit core 0
+limit -s
+
+umask 022
+alias ls='ls --color'
+setenv() { export $1=$2 } # csh compatibility
+
+# ssh hosts completion - i know you love it ;)
+function c_ssh_knownhosts {
+   reply=(`sed -e 's/ .*$//' \
+          -e 's/,[0-9]\{3\}\..*//' ~/.ssh/known_hosts`);
+}
+
+# normal environment
+export HOME="/home"
+export HOSTNAME="dynebolic"
+export HOSTTYPE="i586"
+export LANG="POSIX"
+#export LC_ALL="POSIX"
+export LOGNAME="root"
+export MACHTYPE="i586-pc-linux-gnu"
+export MANPATH="/usr/share/man:/usr/X11R6/man"
+export OSTYPE="linux-gnu"
+export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin"
+export PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'
+export RPROMPT='%T'
+export TERM="xterm-color"
+export USER="root"
+export XWINHOME="/usr/X11R6"
+export X11HOME="$XWINHOME"
+export SHELL="/bin/zsh"
+
+
+# java
+# export CLASSPATH="/usr/lib/blackdown-jre-1.3.1/lib/rt.jar:.:."
+# export JAVA_HOME="/usr/lib/blackdown-jre-1.3.1"
+
+# Set/unset  shell options
+setopt   notify globdots correct pushdtohome cdablevars autolist
+setopt   list_types list_ambiguous correct autocd recexact longlistjobs
+setopt   print_exit_value autoresume histignoredups pushdsilent noclobber
+setopt   autopushd pushdminus extendedglob rcquotes mailwarning
+setopt   bash_auto_list list_packed nohup
+unsetopt bgnice autoparamslash
+
+# Setup some basic programmable completions.  To see more examples
+# of these, check Misc/compctl-examples in the zsh distribution.
+compctl -g '*(-/)' cd pushd
+compctl -g '*(/)' rmdir dircmp
+compctl -j -P '%' -x 's[-] p[1]' -k signals -- kill
+compctl -j -P '%' fg bg wait jobs disown
+compctl -A shift
+compctl -caF type whence which
+compctl -F unfunction
+compctl -a unalias
+compctl -v unset typeset declare vared readonly export integer
+compctl -e disable
+compctl -d enable
+compctl -K c_ssh_knownhosts ssh
+compctl -x 'n[0,:]' -f - 'n[0,@],s[]' -K c_ssh_knownhosts -S: + -f -- scp
+compctl -g ':completion:*:complete:ssh:*:hosts' hosts $hosts
+
+# sets up paths for /opt cd modules
+# this is very old! when .bol were still used
+#if [ -x /opt ]; then
+#   for i in `cat /opt/.optlist`; do
+#      export PATH="$PATH:/opt/$i/bin"
+#   done
+#fi
+
+cd

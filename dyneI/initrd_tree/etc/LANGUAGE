@@ -1,0 +1,10 @@
+# dyne:bolic language configuration file
+# lost-in-babylon version 0.1 by jaromil
+# DO NOT EDIT BY HAND THIS FILE
+# write 'lost-in-babylon' in your XTERM instead!
+
+LANG="english"
+LC_ALL="POSIX"
+KEYB="us"
+
+# gooo rastammannn! faiddababylon!

@@ -1,0 +1,169 @@
+#!/bin/sh
+# script to NEST dyne:bolic in various forms
+# initiated by jaromil on 1st july 2003
+# GNU GPL
+ 
+SUCCESS="/var/log/setup/nidifica.success"
+LOG="/var/log/setup/nidifica.log"
+rm -f $SUCCESS 2>/dev/null
+
+echo "[*] Nidifica 0.1 - create dyne:bolic nest" | tee $LOG
+echo " .  Copyleft 2003 by jaromil @ dyne.org" | tee -a $LOG
+echo "[*] invoked with args '$@'" >> $LOG
+echo " .  running on `date`" >> $LOG
+
+OPTS=`getopt -o hvm:s:l:e: --long help,version,mode:,size:,loc:,encrypt: \
+      -n 'nidifica' -- "$@"`
+
+eval set -- "$OPTS"
+
+while true; do
+  case "$1" in
+    -h)
+      echo " .  nidifica [-hv] -m hd|usb|fd -s mbytes -l location"
+      echo " .  -v, --version print out application info"
+      echo " .  -h, --help    print this small usage guide"
+      echo " .  -m, --mode    choose nest mode (hd=hdisk, usb=usbkey, fd=floppy)"
+      echo " .  -s, --size    size of nest in megabytes"
+      echo " .  -l, --loc     location where to nest, varies with modes:"
+      echo " .                hd = mounted directory, usb & fd = device"
+      echo " .  -e, --encrypt encrypt nest with algo (see man losetup)"
+      exit 2
+      ;;
+    -v)
+      exit 2
+      ;;
+    -m)
+      MODE=$2
+      shift 2
+      ;;
+    -s)
+      SIZE=$2
+      shift 2
+      ;;
+    -l)
+      LOCATION=$2
+      shift 2
+      ;;
+    -e)
+      ENCRYPT=$2
+      shift 2
+      ;;
+    --) shift; break ;;
+    *) echo "[!] error in given options"; exit 1 ;;
+  esac
+done
+
+# check presence of all needed parameters
+FATAL=0
+if [ -z $MODE ]; then
+  echo "[!] must specify mode" | tee -a $LOG
+  FATAL=1
+fi
+if [ -z $LOCATION ]; then
+  echo "[!] must specify location" | tee -a $LOG
+  FATAL=1
+else
+  if [ -e "$LOCATION" ]; then
+    echo "[!] file $LOCATION allready exists" | tee -a $LOG
+    FATAL=1
+  fi
+fi
+if [ $FATAL == 1 ]; then
+  echo " .  fatal error, abort operation" | tee -a $LOG
+  sleep 4
+  exit 1
+fi
+
+case "$MODE" in 
+  
+  hd)
+    echo "--- harddisk nesting" | tee -a $LOG
+    sleep 1
+
+    if [ -z $SIZE ]; then
+      echo "[!] must specify size" | tee -a $LOG
+      exit 1
+    else
+      SIZE_4k=` echo "($SIZE*1000)/4"|bc`
+      echo "[*] generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)" | tee -a $LOG
+    fi
+
+    echo " .  dd if=/dev/zero of=$LOCATION bs=4k count=$SIZE_4k" | tee -a $LOG
+    dd if=/dev/zero of="$LOCATION" bs=4k count="$SIZE_4k"
+    sleep 1
+
+    if [ $? == 0 -a -e ${LOCATION} ]; then
+      echo " .  OK: `ls -l ${LOCATION}`" | tee -a $LOG
+    else
+      echo "[!] dd reported error, operation failed" | tee -a $LOG
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] mounting loopback device" | tee -a $LOG
+    sleep 1
+    if ! [ -z $ENCRYPT ]; then
+      echo " .  using AES 128bit encryption" | tee -a $LOG
+      echo " .  YOU MUST INSERT YOUR ENCRYPTION PASSPHRASE NOW" | tee -a $LOG
+      echo " .   =====  CAN'T BE LESS THAN 20 LETTERS! ====="   | tee -a $LOG
+      sleep 1
+      losetup -e "$ENCRYPT" -T /dev/loop5 "$LOCATION"
+      # here password gets asked twice by the losetup program
+      # input from user is taken from stdin
+    else
+      losetup /dev/loop5 "$LOCATION"
+    fi
+    
+    if [ $? == 0 ]; then
+      if ! [ -z $ENCRYPT ]; then
+        echo " .  OK, REMEMBER YOUR PASSPHRASE OR YOU WILL LOOSE" | tee -a $LOG
+        echo " .  ALL THE DATA CONTAINED IN THIS NEST !" | tee -a $LOG
+      fi
+    else
+      echo "[!] losetup reported error, operation failed" | tee -a $LOG
+      rm "$LOCATION"
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] creating the EXT2 internal filesystem" | tee -a $LOG
+    sleep 1
+    mkfs -t ext2 -L "dyne:bolic nest" /dev/loop5
+    if [ $? == 0 ]; then
+      echo " .  OK, loopback device succesfully formatted" | tee -a $LOG
+    else
+      echo "[!] mkfs reported error, operation aborted" | tee -a $LOG
+      losetup -d /dev/loop5
+      rm "$LOCATION"
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] done!" | tee -a $LOG
+    sleep 1
+    losetup -d /dev/loop5
+    
+    echo " .  your new dyne:bolic nest is in $LOCATION" | tee -a $LOG
+    echo " .  `file $LOCATION`" | tee -a $LOG | tee $SUCCESS
+
+    
+    ;;
+
+
+  usb)
+    echo "[*] usb key nesting"
+    ;;
+  fd)
+    echo "[*] floppy nesting"
+    ;;
+  *)
+    echo "[!] error in mode, must be 'hd' | 'usb' | 'fd'"
+    echo " .  see help for more informations"
+    exit 1
+    ;;
+esac
+
+sleep 6
+exit 0
+

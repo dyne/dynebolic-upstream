@@ -1,0 +1,7 @@
+# /etc/fstab: static file system information.
+# this is now calculated runtime depending from the detected RAM size:
+#tmpfs		/dev/shm	tmpfs	defaults,size=16m		0	0
+#
+# <file system>	<mount point>   <type>  <options>            <dump> <pass>
+/dev/ramdisk	/		ext2	defaults	     1	    1
+proc            /proc           proc    defaults	     0	    0

@@ -1,0 +1,105 @@
+# /etc/modules.devfs
+# Richard Gooch  <rgooch@atnf.csiro.au>		3-JUL-2000
+#
+# THIS IS AN AUTOMATICALLY GENERATED FILE. DO NOT EDIT!!!
+# THIS FILE WILL BE OVERWRITTEN EACH TIME YOU INSTALL DEVFSD!!!
+# Modify /etc/modules.conf instead.
+# This file comes with devfsd-vDEVFSD-VERSION which is available from:
+# http://www.atnf.csiro.au/~rgooch/linux/
+# or directly from:
+# ftp://ftp.atnf.csiro.au/pub/people/rgooch/linux/daemons/devfsd-vDEVFSD-VERSION.tar.gz
+
+###############################################################################
+#   Sample configurations that you may want to place in /etc/modules.conf
+#
+#alias		/dev/sound		sb
+#alias		/dev/v4l		bttv
+#alias		/dev/misc/watchdog	pcwd
+#alias		gen-md			raid0
+#alias		/dev/joysticks		joystick
+#probeall	scsi-hosts		sym53c8xx
+
+###############################################################################
+#                   Generic section: do not change or copy
+#
+# All HDDs
+probeall  /dev/discs		scsi-hosts sd_mod ide-probe-mod ide-disk DAC960
+
+# All CD-ROMs
+probeall  /dev/cdroms		scsi-hosts sr_mod ide-probe-mod ide-cd
+
+# All tapes
+probeall  /dev/tapes		scsi-hosts st ide-probe-mod ide-tape
+
+# All SCSI devices
+probeall  /dev/scsi		scsi-hosts sd_mod sr_mod st sg
+
+# All IDE devices
+probeall  /dev/ide		ide-probe-mod ide-disk ide-cd ide-tape ide-floppy
+
+# SCSI HDDs
+probeall  /dev/sd		scsi-hosts sd_mod
+alias     /dev/sd*		/dev/sd
+
+# SCSI CD-ROMs
+probeall  /dev/sr		scsi-hosts sr_mod
+alias     /dev/sr*		/dev/sr
+
+# SCSI tapes
+probeall  /dev/st		scsi-hosts st
+alias     /dev/st*		/dev/st
+alias     /dev/nst*		/dev/st
+
+# SCSI generic
+probeall  /dev/sg		scsi-hosts sg
+alias     /dev/sg*		/dev/sg
+
+# Floppies
+alias     /dev/floppy		floppy
+alias     /dev/fd*		floppy
+
+# RAMDISCs
+alias     /dev/rd		rd
+alias     /dev/ram*		rd
+
+# Loop devices
+alias     /dev/loop*		loop
+
+# Meta devices
+alias     /dev/md*		gen-md
+
+# Parallel port printers
+alias     /dev/printers*	lp
+alias     /dev/lp*		/dev/printers
+
+# Soundcard
+alias     /dev/audio		/dev/sound
+alias     /dev/mixer		/dev/sound
+alias     /dev/dsp		/dev/sound
+alias     /dev/dspW		/dev/sound
+alias     /dev/midi		/dev/sound
+
+# Joysticks
+alias     /dev/js*		/dev/joysticks
+
+# Serial ports
+alias     /dev/tts*		serial
+alias     /dev/ttyS*		/dev/tts
+alias     /dev/cua*		/dev/tts
+
+# Miscellaneous devices
+alias     /dev/misc/atibm	atixlmouse
+alias     /dev/misc/inportbm	msbusmouse
+alias     /dev/misc/logibm	busmouse
+
+# PPP devices
+alias     /dev/ppp*		ppp_generic
+
+# Video capture devices
+alias     /dev/video*		/dev/v4l
+alias     /dev/vbi*		/dev/v4l
+
+# Pull in the configuration file.
+# Do this last because modprobe(8) processes in per reverse order
+# and the sysadmin may want to over-ride what is in the generic file
+include /etc/modules.conf
