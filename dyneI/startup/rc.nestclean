@@ -4,8 +4,8 @@
 # after the nest is found, but before it is fully mounted, so the nest
 # contents are in /mnt/nest/
 #
-# You can modify this file to change the defaul behavior if you have any
-# special reuirements.
+# You can modify this file to change the default behavior if you have any
+# special requirements.
 
 # zap old logs
 rm /mnt/nest/var/log/dynebolic.log
