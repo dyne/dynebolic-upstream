@@ -38,7 +38,8 @@ if [ "`echo $UID`" != "0" ]; then
     error "you must be ROOT on your machine to use dyne:bolic SDK"
 fi
 
-[ "$1" == "-c" -o "$1" == "-a" ] || CBSOPTS="$1" && CBSOPTS=""
+#[ "$1" == "-c" -o "$1" == "-a" ] || CBSOPTS="$1" && CBSOPTS=""
+CBSOPTS="$1"
 CURRENTDIR=`pwd`
 WORKINGDIR=$CURRENTDIR/dynebolic
 
@@ -116,7 +117,7 @@ cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
 
 INSTDIR=/home/the_root
 if ! [ -d "\${INSTDIR}/var/dynebolic" ]; then
-	mkdir "\${INSTDIR}/var/dynebolic"
+	mkdir -p "\${INSTDIR}/var/dynebolic"
 fi
 CHECKPATH=\${INSTDIR}/var/dynebolic
 
@@ -278,14 +279,7 @@ function install_configuration_files(){
 		-f)	set_flags 
 			exit 0
 			;;
-		-h|--help)
-			act "-h show this help"
-			act "-d restart from configuration files (baselayout-db)" 
-		 	act "-f set flags"
-			act "-i restart from initrd" 
-			act "-x restart from xfree"
-			exit 1
-			;;
+	
 		-i)	
 			CHECK="initrd_root" ; [ -f \`ls "\${CHECKPATH}"/."\${CHECK}"\` ] || error "\$CHECK not complete!"
 	
@@ -302,10 +296,20 @@ function install_configuration_files(){
 			BUILD_XFREE_V=yes
 			;;
 		-v)	head -n 22 \$0 | tail -n 21 ;;
-		*)	INITRD_ROOT_V=yes;
+		-a)	INITRD_ROOT_V=yes;
 			INSTALL_INITRD_PKG_V=yes
 			BUILD_XFREE_V=yes
-
+			;;
+		*)	error "read help with -h or --help!" 
+			;;
+		-h|--help)
+			act "-h show this help"
+			act "-d restart from configuration files (baselayout-db)" 
+		 	act "-f set flags"
+			act "-i restart from initrd" 
+			act "-x restart from xfree"
+			exit 1
+			;;
 	esac
 
 env-update
@@ -331,7 +335,13 @@ install_configuration_files && notice "installation complete. now launch mkinitr
 E0F
 
 		chmod 740 "${WORKINGDIR}"/sbin/createbasesystem.sh		
-		chroot "${WORKINGDIR}" ./sbin/createbasesystem.sh "${CBSOPTS}"
+		if [ "${CBSOPTS}" == "-f" -o "${CBSOPTS}" == "-x" -o "${CBSOPTS}" == "-i" -o "${CBSOPTS}" == "-d" ] ; then
+			chroot "${WORKINGDIR}" ./sbin/createbasesystem.sh "${CBSOPTS}"
+		else
+			notice "No option for createbasesystem.sh... Starting all the d::b process from the beginning!"	
+			act "${CBSOPTS}"
+			chroot "${WORKINGDIR}" ./sbin/createbasesystem.sh -a
+		fi
 }
 
 ######################################################################
