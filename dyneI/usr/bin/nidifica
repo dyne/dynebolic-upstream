@@ -197,7 +197,7 @@ EOF
     else
       echo " .  please enter once again your password"
       mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
-      while [ $? != 0 ]; then
+      while [ $? != 0 ]; do
         echo "[!] wrong password! retype it correct (ctrl-c to abort)"
         mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
       done
@@ -207,13 +207,12 @@ EOF
     tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
     echo -n "home, "
     cp -a /etc /mnt/nest
-    echo -n "etc"
+    echo "etc"
     umount /mnt/nest
 
     echo "[*] done!" | tee -a $LOG
     sleep 1
     losetup -d /dev/loop6
-
 
     dyne_mount_nest "$LOCATION/$DYNEBOL_CFG"
 

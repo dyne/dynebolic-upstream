@@ -35,6 +35,7 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
      if [ -r /mnt/dynebolic/squashedfs ]; then
 
        echo " .  found! loading loopback device module"
+	echo -n " .  " 
        insmod /boot/loop-aes.o max_loop=128
 
        echo " .  mounting squashedfs loopback filesystem"

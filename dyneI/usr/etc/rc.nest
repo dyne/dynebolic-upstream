@@ -49,14 +49,16 @@ if [ -e /boot/nest ]; then rm -f /boot/nest; fi
 
 # scans the in $1 the given prefix ($2) of mounted media looking for nests
 scan_media() {
-    for HD in `ls --color=none ${1}* | grep $2`; do
-	MOUNT="$1/${HD}"
+    for VOL in `ls --color=none ${1} | grep $2`; do
+	MOUNT="${1}/${VOL}"
 	echo -n " .  $MOUNT -> "
 	if [ -e "$MOUNT/$DYNEBOL_CFG" ]; then
 	    echo "nest found!"
 	    dyne_mount_nest "$MOUNT/$DYNEBOL_CFG"
 	    return $?
 #	    if [ $? == 1 ]; then break; fi
+	else
+	    echo "no nest"
 	fi
     done
     return 0
@@ -81,19 +83,18 @@ scan_media() {
 #	    echo -n " no nest"
 #	fi
 #    done
-}
 
-if [ -e /rem/usbkey ]; then
-    echo "[*] Scan for nests on mounted usbkey"
+echo "[*] Scan for nests on mounted usbkey"
+if [ -e /rem/usb1 ]; then
     scan_media "/rem" "usb"
 fi
 
+echo "[*] Scan for nests on mounted harddisks"
 if [ -e /vol/hd1 ]; then
-    echo "[*] Scan for nests on mounted harddisks"
     scan_media "/vol" "hd"
 fi
 
+echo "[*] Scan for nests on mounted floppy"
 if [ -e /rem/fd0 ]; then
-    echo "[*] Scan for nests on mounted floppy"
     scan_media "/rem" "fd"
 fi

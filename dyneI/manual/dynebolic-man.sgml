@@ -37,6 +37,7 @@
 <!ENTITY ogg123 SYSTEM "dynebolic-ogg123.sgml">
 <!ENTITY madplay SYSTEM "dynebolic-madplay.sgml">
 <!-- record -->
+<!ENTITY grip SYSTEM "dynebolic-grip.sgml">
 <!ENTITY rami SYSTEM "dynebolic-rami.sgml">
 <!ENTITY rip SYSTEM "dynebolic-rip.sgml">
 <!ENTITY oggenc SYSTEM "dynebolic-oggenc.sgml">

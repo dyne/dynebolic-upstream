@@ -7,49 +7,50 @@
 # Le partizioni riconosciute dal kernel, verranno montate lasciando che 
 # il tipo di file system venga riconosciuto automaticamente
 
-source libdyne.sh
+source /lib/libdyne.sh
+
+rm -r /vol/hd* 2>/dev/null 1>/dev/null
 
 PART="Linux|NTFS|FAT|BSD"
 
 if [ "`fdisk -l | grep -i FAT`" ]; then
-  modprobe -k vfat
+    modprobe -k vfat
 fi
 if [ "`fdisk -l | grep -i NTFS`" ]; then
-  modprobe -k ntfs
+    modprobe -k ntfs
 fi
 if [ "`fdisk -l | grep -i BSD`" ]; then
-  modprobe -k ufs
+    modprobe -k ufs
 fi
 
 HD_NUM=0
 
-echo "[*] Mounting harddisk partitions"
+echo "[*] harddisk detection"
 # this script also creates dock icons for each mounted harddisk
 # in a format that windowmaker understands
 # in GNUstep/Deafaults/WMState
 if [ ! -z "`uname -a | grep xbox`" ]; then
 # WE ARE ON XBOX
-if [ -r /dev/hda50 ]; then
-  echo "[*] Enabling ide harddisk"
-  mkdir /vol/hd1
-  mount -t fatx /dev/hda50 /vol/hd1
-  dyne_add_volume hdisk /vol/hd1
-fi
-
-
+    if [ -r /dev/hda50 ]; then
+	echo " .  Enabling XBOX ide harddisk"
+	mkdir /vol/hd1
+	mount -t fatx /dev/hda50 /vol/hd1
+	dyne_add_volume hdisk /vol/hd1
+    fi
+    
+    
 else
 
 
 # we are on a normal PC
-echo "[*] Activate hardisk partitions"
-for gh in `fdisk -l | grep -iE "$PART" | grep -i -v swap | awk '{print $1}'`; do
+    for gh in `fdisk -l | grep -iE "$PART" | grep -i -v swap | awk '{print $1}'`; do
 	HD_NUM="`expr $HD_NUM + 1`"; HDEV="hd${HD_NUM}"
         mkdir "/vol/$HDEV" 
         mount "$gh" "/vol/$HDEV"
 	if [ "$?" = "0" ]; then
 	    dyne_add_volume hdisk "$HDEV"
 	fi
-done
-
+    done
+    
 fi # xbox or not
 

@@ -16,18 +16,15 @@ mount /dev/shm
 # creating /var /tmp and /home
 echo " .  populating /var"
 tar xfz /mnt/dynebolic/var.tgz -C /dev/shm
-if [ -e /var ]; then rm -r /var; fi
-ln -s /dev/shm/var /var
+mount -o bind /dev/shm/var /var
 
 echo " .  populating /home"
 tar xfz /mnt/dynebolic/home.tgz -C /dev/shm
-if [ -e /home ]; then rm -r /home; fi
-ln -s /dev/shm/home /home
+mount -o bind /dev/shm/home /home
 if [ -e /mnt/dynebolic/extras ]; then ln -s /mnt/dynebolic/extras /home; fi
 
 echo " .  building /tmp"
 mkdir /dev/shm/tmp
-if [ -e /tmp ]; then rm -r /tmp; fi
-ln -s /dev/shm/tmp /tmp
+mount -o bind /dev/shm/tmp /tmp
 
 

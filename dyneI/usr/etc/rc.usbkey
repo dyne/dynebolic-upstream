@@ -3,7 +3,6 @@
 # by jaromil - 4 july 2003 - GNU GPL
 # script to handlepresence of usb dongles and smart cards
 # puts them in automount (just the first device) in /rem/usbkey
-# feel free to modify to have more than sda1
 
 source /lib/libdyne.sh
 

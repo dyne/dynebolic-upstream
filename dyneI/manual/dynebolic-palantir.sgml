@@ -1,7 +1,84 @@
 <section>
-<title>palantir :: live webcam</title>
-<subtitle>software by David Santinoli (2001)</subtitle>
+<title>Palantir :: web video streaming</title>
+<subtitle>A video/audio/data interactive streaming server</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.fastpath.it/products/palantir"></ulink>
+</entry>
+<!-- MAN  --> <entry> palantir </entry>
+<!-- BY   --> <entry> Fastpath Research </entry>
+<!-- YEAR --> <entry> 2001 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
 <para>
-Live webcam (multipart jpeg), see <command>palantir -h</command>.
+       Video streaming in Palantir was designed with performance in mind. Even
+       a low-end machine can directly sustain the load of many hundreds of
+       clients, without the need for an intermediate buffering server.
+       Regular web browsers can display the live video stream which is produced
+       in multipart jpeg format.
+       The availability of a full-duplex, telephone-quality audio channel
+       permits communication between server and one client at a time.
+</para><para>
+       A supplementary data channel enables clients to operate hardware devices
+       connected to the server, as well as to get feedback from them and
+       present it to the user in graphical form. Examples of these devices
+       include pan/tilt/zoom machinery, flood lights, temperature sensors,
+       strain gauges, etc..
+</para><para>
+       Palantir is a client-server streaming system designed to transmit live
+       video, audio and data over a TCP/IP network, as well as to control
+       remote devices.
+       It is named after a word invented by J.&nbsp;R.&nbsp;R. Tolkien and
+       mentioned in his tales, whose meaning is <emphasis>far-seer</emphasis>.
+       The correct pronounciation requires the "i" in "tir" to be accented.
 </para>
-</section>
+
+</section> <!-- Palantir -->
+

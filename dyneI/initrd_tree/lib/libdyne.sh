@@ -29,8 +29,11 @@ DYNEBOL_NST="dynebol.nst"
 DYNEBOL_CFG="dynebol.cfg"
 
 # wmaker dock stuff
-if [ -e /boot/wmdock-pos ]; WMPOS="`cat /boot/wmdock-pos`"
-else WMPOS=0; fi
+if [ -e /boot/wmdock-pos ]; then
+    WMPOS="`cat /boot/wmdock-pos`";
+else
+    WMPOS=0;
+fi
 WMCFG="/boot/WMState"
 
 dyne_mount_nest() {
@@ -40,11 +43,12 @@ dyne_mount_nest() {
   if [ -e /boot/nest ]; then
     echo "[!] another nest found on $1"
     echo " .  it overlaps an allready mounted nest, skipped!"
+    return 1
   fi
   echo "[*] activating dyne:bolic nest in $1"
   source $1
   # TODO : controllare che il file di conf abbia tutto apposto
-  if [ -z $DYNEBOL_ENCRYPT ]; then
+  if [ ! -z $DYNEBOL_ENCRYPT ]; then
     clear
     cat <<EOF
 
@@ -57,13 +61,13 @@ has been detected in $DYNEBOL_NST
 access is password restricted, please supply your passphrase now
 
 EOF
-    mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NST /mnt/nest -t loop-aes
+    mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NEST /mnt/nest
     if [ $? != 0 ]; then
       echo
       echo "Invalid password or corrupted file"
     fi
   else
-    mount -o loop $DYNEBOL_NST /mnt/nest -t loop-aes
+    mount -o loop $DYNEBOL_NEST /mnt/nest
   fi
   
   if [ $? != 0 ]; then 
@@ -77,8 +81,8 @@ EOF
   echo " .  nest succesfully mounted"
 
   # ok, success! we mount the nest
-
-
+  sync
+  
   if [ -e /mnt/nest/etc ]; then
     cp /etc/fstab /tmp
     cp /etc/auto.removable /tmp
@@ -89,12 +93,16 @@ EOF
     # quantomeno allo shutdown si dovranno smontare a mano le dir del nest
     mount -o bind /mnt/nest/etc /etc
     mv /tmp/fstab /etc
-    mv /tmp/auto.removable /tmp
+    mv /tmp/auto.removable /etc
     echo " .  nested /etc directory bind"
   else
     echo "[!] nest is missing /etc directory"
   fi 
 
+  sync
+
+  if [ ! -z "`mount | grep home`" ]; then
+      umount /home; fi
   if [ -e /mnt/nest/home ]; then
     mount -o bind /mnt/nest/home /home
     echo " .  nested /home directory bind"
@@ -127,31 +135,31 @@ dyne_add_volume() {
 	  ;;
       "floppy")
 	  echo "$2 -fstype=auto :/dev/${2}" >> /etc/auto.removable
-	  echo "," >>$CFG;
-	  echo "{" >> $CFG;
-	  echo "Name = \"${2}.FloppyDisk\";" >>$CFG
-	  echo "Lock = yes;" >>$CFG
-	  echo "Autolaunch = no;" >>$CFG
-	  echo "Command = \"xwc /rem/${2}\";" >>$CFG
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"${2}.FloppyDisk\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc /rem/${2}\";" >>$WMCFG
 	  WMPOS="`expr $WMPOS + 1`"
-	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
-	  echo "Forced = no;" >>$CFG;
-	  echo "BuggyApplication = no;" >>$CFG;
-	  echo "}" >>$CFG;
+	  echo "Position = \"0,${WMPOS}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
 	  ;;
       "usb")
 #	  echo "$2 -fstype=auto :/dev/sda1" >> /etc/auto/removable
-	  echo "," >>$CFG;
-	  echo "{" >> $CFG;
-	  echo "Name = \"${2}.UsbStorage\";" >>$CFG
-	  echo "Lock = yes;" >>$CFG
-	  echo "Autolaunch = no;" >>$CFG
-	  echo "Command = \"xwc /rem/${2}\";" >>$CFG
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"${2}.UsbStorage\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc /rem/${2}\";" >>$WMCFG
 	  WMPOS="`expr $WMPOS + 1`"
-	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
-	  echo "Forced = no;" >>$CFG;
-	  echo "BuggyApplication = no;" >>$CFG;
-	  echo "}" >>$CFG;
+	  echo "Position = \"0,${WMPOS}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
 
 	  ;;
       *)

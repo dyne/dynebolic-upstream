@@ -13,5 +13,4 @@ export LC_ALL
 echo " .  language: $LANG"
 export KEYB
 echo " .  keyboard layout: $KEYB"
-setxkbmap -layout $KEYB
-
+# keyboard is setted up in .xinitrc

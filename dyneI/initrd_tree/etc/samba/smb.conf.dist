@@ -1,6 +1,6 @@
 workgroup = DYNEBOLIC
-server string = dynebolic
-log file = /var/log/log.%m
+server string = dynesamba
+log file = /var/log/samba.%m
 max log size = 50
 encrypt passwords = no
 smb passwd file = /etc/samba/private/smbpasswd
