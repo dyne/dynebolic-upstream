@@ -1,4 +1,63 @@
 <section>
 <title>gaim</title>
-<para>to be written</para>
+<subtitle>multi-protocol instant messaging client</subtitle>
+
+<table><title></title>
+<tgroup cols=4 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+http://gaim.sourceforge.net/</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+gaim
+</entry>
+
+<entry>
+<inemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+Rob Flynn and more (see the project for the full list)
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+1999
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- URL  --> <entry> <ulink url="http://gaim.sourceforge.net">http://gaim.sourceforge.net</ulink> </entry>
+<!-- MAN  --> <entry> gaim </entry>
+<!-- BY   --> <entry> Rob Flynn </entry>
+<!-- YEAR --> <entry> 1999 </entry>
+
+
+<para>
+Gaim is a multi-protocol instant messaging client for Linux, BSD, MacOS X, and Windows.
+It is compatible with AIM (Oscar and TOC protocols), ICQ, MSN Messenger, Yahoo, IRC, Jabber, Gadu-Gadu, and Zephyr networks.
+</para>
+
+<para>
+Gaim users can log in to multiple accounts on multiple IM networks simultaneously. This means that you can be chatting with
+friends on AOL Instant Messenger, talking to a friend on Yahoo Messenger, and sitting in an IRC channel all at the same time.
+</para>
+
+<para>
+Gaim supports many features of the various networks, such as file transfer (coming soon), away messages, typing notification, 
+and MSN window closing notification. It also goes beyond that and provides many unique features. A few popular features are 
+Buddy Pounces, which give the ability to notify you, send a message, play a sound, or run a program when a specific buddy goes
+away, signs online, or returns from idle; and plugins, consisting of text replacement, a buddy ticker, extended message
+notification, iconify on away, and more.
+</para>
+
 </section>
