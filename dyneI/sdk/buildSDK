@@ -103,8 +103,6 @@ cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-echo "SONO ENTRATO IN CREATEBASESYSTEM"
-exit 0
 
 INSTDIR=/home/the_root
 
@@ -140,6 +138,14 @@ CHOST="i586-pc-linux-gnu"
 CXXFLAGS="\${CFLAGS}"
 EOF
 
+}
+
+function install_configuration_files(){
+	if ! [ -f \$WORKINGDIR/baselayout-db.tgz ] ; then
+		wget http://www.autistici.org/bolic1/baselayout-db.tgz 
+	fi
+	tar -zxvf baselayout-db.tgz -C \$INSTDIR
+	ROOT=\$INSTDIR emerge baselayout-db
 }
 
 # get portage and bootstrap your compiling env 
@@ -206,12 +212,6 @@ function build_xfree() {
 }
 
 # TODO this function will be replaced with baselayout-dynebolic
-function install_configuration_files(){
-	if ! [ -f \$WORKINGDIR/etc.tgz ] ; then
-		wget http://www.autistici.org/bolic1/etc.tgz 
-	fi
-	tar -zxvf etc.tgz -C home/the_root/ 
-}
 ###############################################################################
 
 ##############################################################################
@@ -227,14 +227,14 @@ source /etc/profile
 
 set_flags
 
-initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "qualcosa e' andato storto. non e' stata colpa mia"
+install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "baselayout-db: qualcosa e' andato storto. non e' stata colpa mia" 
 
-install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "initrd_root: qualcosa e' andato storto. non e' stata colpa mia"
 
-build_xfree  && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "install_initrd_pkg: qualcosa e' andato storto. non e' stata colpa mia"
 
-# TODO this function will be replaced with baselayout-dynebolic
-install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "qualcosa e' andato storto. non e' stata colpa mia" 
+build_xfree  && notice "Ho completato l'installazione di X" || error "build_xfree: qualcosa e' andato storto. non e' stata colpa mia"
+
 E0F
 		chmod 755 $WORKINGDIR/sbin/createbasesystem.sh		
 		chroot $WORKINGDIR ./sbin/createbasesystem.sh
@@ -260,7 +260,7 @@ case $1 in
 	      	act "-a start the entire process from beginning (WARN! will delete previous attempts)"
 	      	act "-c allready downloaded and untarred, chroot me"
 	 	act "-v show details" ;;
-	-v)     head -22 $0 | tail -n 21 ;;
+	-v)     head -n 22 $0 | tail -n 21 ;;
 	*)	error "read help with -h or --help!"
 esac
 
