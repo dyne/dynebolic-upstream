@@ -2,7 +2,8 @@
 # mksdk.sh
 # by bomboclat & c1cc10
 
-WORKINGDIR=`pwd`
+WORKINGDIR=`dirname $0`
+
 if [ "`whoami`" != "root" ]; then
     error "you must be ROOT on your machine to use dyne:bolic SDK"
     exit -1
@@ -12,7 +13,7 @@ fi
 if ! [ -f $WORKINGDIR/stage1-x86-2004.1.tar.bz2 ] ; then
 	wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2
 fi
-tar xvjf stage1-x86-2004.1.tar.bz2
+tar xvjf stage1-x86-2004.1.tar.bz2 -C $WORKINGDIR
 # Fine punto 1
 
 # Punto 2
