@@ -161,8 +161,7 @@ void apply_nest(int sel) {
   if(!proc) {
     execlp("xterm","taschino","-tn","linux","-bg","lightgrey","-fg","black",
 	   "-T",mesg,"-geometry","118x20",
-	   "-e","nidifica", "-m","nest",
-	   "-s",size_str, "-l", parts[sel].path,
+	   "-e","nidifica", "-s",size_str, "-l", parts[sel].path,
 	   (crypt) ? "-e" : NULL, (crypt) ? "AES128" : NULL, NULL);
     perror("can't fork to launch docking command");
     _exit(1);

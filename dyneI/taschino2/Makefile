@@ -17,7 +17,7 @@ taschino: $(OBJS)
 
 translation:
 	xgettext -a translatable.c
-	msginit -i messages.pot
+	msginit -i messages.po
 
 %.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -c -o $@ $<

@@ -38,6 +38,8 @@ else
     exit 1
 fi
 
+LODEV=12 # always choose a free one! there are 0-128
+NESTNAME="dynebol.nst" # that's the default name, dynebolE.nst is encrypted
 
 report_success() {
 # $1 success string
@@ -69,127 +71,6 @@ report_error() {
     return 1
 }
 
-make_nest() {
-
-    if [ -z $SIZE ]; then
-	report_error "missing size as argument to nidifica -m nest"
-	exit 1
-    fi
-    
-    if [ -e $LOCATION/dynebol.nst ]; then
-	echo -n "[?] You want to overwrite the existing nest?"
-	getkey 10
-	if [ $? == 1 ]; then # getkey returns 1 when no, 2 timeout, 0 yes
-	    report_error "User aborted operation: shouldn't overwrite existing nest"
-	    exit 1
-	fi
-    fi
-    
-
-    SIZE_4k=` echo "($SIZE*1000)/4"|bc`
-    notice "generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)"
-    act "dd if=/dev/zero of=${LOCATION}/dynebol.nst bs=4k count=$SIZE_4k"
-    echo -n " .  "
-    dd if=/dev/zero of=${LOCATION}/dynebol.nst bs=4k count=${SIZE_4k}
-    
-    sync
-
-    
-   if [ $? -eq 0 -a -e "${LOCATION}/dynebol.nst" ]; then
-	act "OK: `ls -l ${LOCATION}/dynebol.nst`"
-   else
-	report_error "Error creating the nest file ${LOCATION}/dynebol.nst : (dd if=/dev/zero of=${LOCATION}/dynebol.nst bs=4k count=$SIZE_4k)"
-	sleep 4
-	exit 1
-    fi
-    
-    notice "mounting loopback device"
-    
-    if ! [ -z $ENCRYPT ]; then
-	# LA MADONNA E' SENZ'ALTRO UNA PUTTANA: NON C'E' ALTERNATIVA ALCUNA!
-	# 3 giorni persi a trovare una parentesi { chiusa con una )
-	# grazie ALE ! OOO ALEEE OOOO 29 feb 2004 //jrml+ale muenchen
-	act " .  using ${ENCRYPT} encryption"
-	act " .  YOU MUST INSERT YOUR ENCRYPTION PASSPHRASE NOW"
-	act " .   =====  CANNOT BE LESS THAN 20 LETTERS! ====="
-	sleep 1
-	losetup -e "$ENCRYPT" -T /dev/loop/6 "$LOCATION/dynebol.nst"
-      # here password gets asked twice by the losetup program
-      # input from user is taken from stdin
-    else
-	losetup /dev/loop/6 "$LOCATION/dynebol.nst"
-    fi
-
-
-
-
-    
-    if [ $? == 0 ]; then
-	if ! [ -z $ENCRYPT ]; then
-	    act "OK, REMEMBER YOUR PASSPHRASE OR YOU WILL LOOSE"
-	    act "ALL THE DATA THAT YOU WILL PUT IN THIS NEST !"
-		# setup the encryption for the configuration file
-		# (it takes all DYNEBOL_ variables, without prefix
-		# as new settings) 
-	    NEST_CRYPT="$ENCRYPT" #QUAA
-	fi
-    else
-	report_error "Error in mounting nest loopback device : (losetup /dev/loop/6 $LOCATION/dynebol.nst) with encryption set to $ENCRYPT"
-	rm "$LOCATION/$DYNEBOL_NST"
-	sleep 4
-	exit 1
-    fi
-    
-    sync
-    
-    notice "Creating the EXT2 internal filesystem"
-    mkfs.ext2  -L "dyne:bolic nest" /dev/loop/6
-    if [ $? == 0 ]; then
-	act "OK, loopback device succesfully formatted"
-    else
-	losetup -d /dev/loop/6
-	result_error "Error formatting the nest (mkfs /dev/loop/6)"
-	rm "$LOCATION/$DYNEBOL_NST"
-	sleep 4
-	exit 1
-    fi
-    
-    sync
-    
-    notice "Mount the nest and populate it"
-    mount -t ext2  /dev/loop/6 /mnt/nest
-    
-    act -n "establishing: "
-    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
-    echo -n "home, "
-    cp -a /etc /mnt/nest
-    echo -n "etc, "
-    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
-    echo -n "var, "
-    mkdir /mnt/nest/tmp
-    chmod a+rwt /mnt/nest/tmp
-    echo "tmp"
-    
-    sync
-    umount /mnt/nest
-    sync
-    
-    notice "done!"
-    
-    losetup -d /dev/loop/6
-    
-    sync
-    
-    act "here is your new dyne:bolic nest:"
-    stat "$LOCATION/dynebol.nst" | tee -a $DYNEBOLIC_LOG
-    
-    report_success "Dynebolic nest succesfully created in ${LOCATION}/dynebol.nst : `file ${LOCATION}/dynebol.nst`"
-    notice "Configuring nest in ${LOCATION}/dynebol.cfg"
-    NEST_ACTIVE=1
-    dyne_gen_conf $LOCATION
-    notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
-}
-
 
 ############################
 ### main()
@@ -200,7 +81,7 @@ act "(c)2003,2004 by jaromil - RASTASOFT.org"
 act "invoked with args \"$*\" "
 act "running on `date`"
 
-OPTS=`getopt -o hvm:s:l:e: --long help,version,mode:,size:,loc:,encrypt: -n 'nidifica' -- "$@"`
+OPTS=`getopt -o hvs:l:e: --long help,version,size:,loc:,encrypt: -n 'nidifica' -- "$@"`
 
 eval set -- "$OPTS"
 
@@ -217,10 +98,6 @@ while true; do
 	    ;;
 	-v)
 	    exit 2
-	    ;;
-	-m)
-	    MODE=$2
-	    shift 2
 	    ;;
 	-s)
 	    SIZE=$2
@@ -241,10 +118,6 @@ done
 
 # check presence of all needed parameters
 FATAL=0
-if [ -z $MODE ]; then
-    error "must specify mode"
-    FATAL=1
-fi
 if [ -z $LOCATION ]; then
     error "must specify location"
     FATAL=1
@@ -256,10 +129,141 @@ if [ $FATAL != 0 ]; then
     exit 1
 fi
 
+if [ $ENCRYPT ]; then
+    NESTNAME="dynebolE.nst"
+fi
 
 notice "--- nesting to $LOCATION"
 sleep 1
-make_nest
+
+
+
+
+    if [ -z "$SIZE" ]; then
+	report_error "missing size as argument to nidifica -m nest"
+	exit 1
+    fi
+    
+    if [ ! -x $LOCATION ]; then
+        report_error "Location $LOCATION does not exist or is not a directory"
+	exit 1
+    fi
+
+    if [ -e "$LOCATION/${NESTNAME}" ]; then
+	echo -n "[?] You want to overwrite the existing nest?"
+	getkey 10
+	if [ $? != 0 ]; then # getkey returns 1 when no, 2 timeout, 0 yes
+	    echo " no"
+	    report_error "User aborted operation: should not overwrite existing nest"
+	    exit 1
+	else
+            echo " yes"
+	fi
+    fi
+    
+
+    SIZE_4k=` echo "($SIZE*1000)/4"|bc`
+    notice "generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)"
+    act "dd if=/dev/zero of=${LOCATION}/${NESTNAME} bs=4k count=$SIZE_4k"
+    echo -n " .  "
+    dd if=/dev/zero of=${LOCATION}/${NESTNAME} bs=4k count=${SIZE_4k}
+    
+    sync
+
+    
+   if [ $? -eq 0 -a -e "${LOCATION}/${NESTNAME}" ]; then
+	act "OK: `ls -l ${LOCATION}/${NESTNAME}`"
+   else
+	report_error "Error creating the nest file ${LOCATION}/${NESTNAME} : (dd if=/dev/zero of=${LOCATION}/${NESTNAME} bs=4k count=$SIZE_4k)"
+	sleep 4
+	exit 1
+    fi
+    
+    notice "mounting loopback device"
+    
+    if ! [ -z $ENCRYPT ]; then
+	# LA MADONNA E' SENZ'ALTRO UNA PUTTANA: NON C'E' ALTERNATIVA ALCUNA!
+	# 3 giorni persi a trovare una parentesi { chiusa con una )
+	# grazie ALE@INCAL ! ALEEE OOOO 29 feb 2004 //jrml+ale+ganja @ muenchen
+	act " .  using ${ENCRYPT} encryption"
+	act " .  YOU MUST INSERT YOUR ENCRYPTION PASSPHRASE NOW"
+	act " .   =====  CANNOT BE LESS THAN 20 LETTERS! ====="
+	sleep 1
+	losetup -e "$ENCRYPT" -T /dev/loop/${LODEV} "$LOCATION/${NESTNAME}"
+      # here password gets asked twice by the losetup program
+      # input from user is taken from stdin
+    else
+	losetup /dev/loop/${LODEV} "$LOCATION/${NESTNAME}"
+    fi
+
+
+
+
+    
+    if [ $? = 0 ]; then
+	if ! [ -z $ENCRYPT ]; then
+	    act "OK, REMEMBER YOUR PASSPHRASE OR YOU WILL LOOSE"
+	    act "ALL THE DATA THAT YOU WILL PUT IN THIS NEST !"
+		# setup the encryption for the configuration file
+		# (it takes all DYNEBOL_ variables, without prefix
+		# as new settings) 
+	    NEST_CRYPT="$ENCRYPT" #QUAA
+	fi
+    else
+	report_error "Error in mounting nest loopback device : (losetup /dev/loop/${LODEV} $LOCATION/${NESTNAME}) with encryption set to $ENCRYPT"
+	rm "$LOCATION/$DYNEBOL_NST"
+	sleep 4
+	exit 1
+    fi
+    
+    sync
+    
+    notice "Creating the EXT2 internal filesystem"
+    mkfs.ext2  -L "dyne:bolic nest" /dev/loop/${LODEV}
+    if [ $? = 0 ]; then
+	act "OK, loopback device succesfully formatted"
+    else
+	losetup -d /dev/loop/${LODEV}
+	report_error "Error formatting the nest (mkfs /dev/loop/$LODEV)"
+	rm "$LOCATION/$DYNEBOL_NST"
+	sleep 4
+	exit 1
+    fi
+    
+    sync
+    
+    notice "Mount the nest and populate it"
+    mount -t ext2  /dev/loop/${LODEV} /mnt/nest
+    
+    echo -n " .  "
+#    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
+    cp -ra /home /mnt/nest
+    echo -n "home, "
+    cp -ra /etc /mnt/nest
+    echo -n "etc, "
+#    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
+    cp -ra /var /mnt/nest
+    echo -n "var, "
+    mkdir /mnt/nest/tmp
+    chmod a+rwt /mnt/nest/tmp
+    echo "tmp"
+    
+    sync
+    umount /mnt/nest
+    sync
+    
+    notice "done!"
+    
+    losetup -d /dev/loop/${LODEV}
+    
+    sync
+    
+    act "here is your new dyne:bolic nest:"
+    stat "$LOCATION/${NESTNAME}" | tee -a $DYNEBOLIC_LOG
+    
+    report_success "Dynebolic nest succesfully created in ${LOCATION}/${NESTNAME} :: `file ${LOCATION}/${NESTNAME}|cut -d: -f2` :: NOW REBOOT DYNEBOLIC TO ACTIVATE YOUR NEST!"
+    notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
+
 
 sleep 5
 exit 0
