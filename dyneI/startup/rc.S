@@ -180,7 +180,7 @@ got_home() {
     else unset NEST; fi
     
     if [ $NEST ]; then
-	echo -n "[?] mount the dyne:bolic nest in ${NEST}"
+	echo -n "[?] use the dyne:bolic nest in ${NEST} (Y/n)"
 	getkey 10
 	if [ $? = 1 ]; then
 	    echo " ... SKIPPED"
@@ -277,6 +277,76 @@ EOF
     fi
 }
 
+check_system_version() {
+# this function is called by the cdrom detection when a system is found on CD
+# it goes thru the harddisks detected and check if they have a system
+# match versions and ask user what to do if they are different (use cd | hd | update hd)
+# setup DYNE_SYS_* variables in order to have the system mounted at the end of rc.S
+    DEV=$1 # use /dev/$DEV for full path
+    MNT=$2 # mountpoint including the dyne directory
+    DOCKS_FOUND=0
+
+    if [ ! -r ${MNT}/VERSION ]; then
+	error "CD version can't be verified! ${MNT}/VERSION file is missing"
+    else
+	source ${MNT}/VERSION
+	notice "CD-ROM ${DEV} has system version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
+	if [ ${DYNE_INITRD_VER} != `cat /etc/DYNEBOLIC` ]; then
+	    act "you are running a different ramdisk version `cat /etc/DYNEBOLIC`"
+	    act "so you are not booting dyne:bolic from this CD"
+	fi
+    fi
+
+    if [ -r /vol/hd1 ]; then # we have at least one harddisk
+	for HD in /vol/hd*; do
+	# skip if the /dyne dir is not present
+	    if [ ! -x ${HD}/dyne ]; then
+		continue
+	    else 
+		
+		if [ -r ${HD}/dyne/VERSION ]; then
+		    source ${HD}/dyne/VERSION
+		    notice "Harddisk ${HD} system version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
+		else
+		    notice "Harddisk ${HD} has an OLD version of the dyne:bolic system"
+		fi
+
+		echo
+		
+		echo -n "[?] UPDATE this system from the CD (y/N)"
+		getkey 5 # 0=yes, 1=no, 2=timeout
+		if [ $? = 0 ]; then
+		    echo " ... UPDATING!"
+		    notice "The docked system on harddisk ${HD} will be updated using CD-ROM ${DEV}"
+		    act "please wait, this operation will take a couple of minutes ...."
+		    cp -rfv ${MNT} ${HD}
+		    act "DONE! if you see no errors above your dock has been updated succesfully."
+		else # default
+		    echo " ... NO."
+		fi
+		
+		echo -n "[?] RUN the system from this harddisk (Y/n)"
+		getkey 5
+		if [ $? = 1 ]; then
+		    echo " ... NO, skipping harddisk dock"
+		else # default		
+		    echo " ... YES, activating harddisk dock on ${HD}"
+		    DYNE_SYS_MEDIA="hd"
+		    DYNE_SYS_MNT="${HD}"
+		    DYNE_SYS_DEV="`mount | grep '${HD}' | cut -d' ' -f1`"
+		    return
+		fi
+		
+	    fi
+	done
+    fi
+    # if we are here, no harddisk system is being used
+    # so let's use the CD where we found the system!
+    DYNE_SYS_MEDIA="cd"
+    DYNE_SYS_MNT="/mnt/dynebolic"
+    DYNE_SYS_DEV=${DEV}
+}
+
 CD_NUM=0
 mount_cdrom() {
 # $1 = device, without partition number (es: hdc)
@@ -315,27 +385,10 @@ mount_cdrom() {
     elif [ ! -x /usr/bin/dynesplash ]; then
 	# there was no system found so far on other storage media
 	# so we use the one on this CD, remounting on /mnt/dynebolic
-	notice "FOUND dynebolic system on CD ${DEV}"
+	notice "FOUND dynebolic system on CD!"
 
-	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
-	
-	if [ $? != 0 ]; then
-	    echo
-	    error "a problem occurred while mounting the dynebol.sys"
-	    error "it looks like your CD is corrupted!"
-	    echo
-	    error "burn it more carefully: less speed and don't do ANYTHING else"
-	    error "with your computer while burning. refer to the USER UPDATED FAQ"
-	    error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
-	    error "may the source be with you :^)"
-	    echo; echo;
-	    sleep 10
-	else
-	    # the system has been correctly mounted
-	    DYNE_SYS_DEV="/dev/${DEV}"
-	    DYNE_SYS_MNT=/mnt/dynebolic
-	    DYNE_SYS_MEDIA="cd"
-	fi
+	check_system_version ${DEV} ${MNT} 
+
     else
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
@@ -415,20 +468,20 @@ mount_harddisk() {
 # load the filesystem kernel modules needed  
   TESTFS=`fdisk -l /dev/${DEV}`
   if [ "`echo $TESTFS|grep -i DOS`" ]; then
-      insmod /boot/msdos.o
+      loadbootmod /boot/msdos.o
   fi
   if [ "`echo $TESTFS|grep -i FAT`" ]; then
-      insmod /boot/fat.o
-      insmod /boot/vfat.o
+      loadbootmod /boot/fat.o
+      loadbootmod /boot/vfat.o
   fi
   if [ "`echo $TESTFS|grep -i NTFS`" ]; then
-      insmod /boot/ntfs.o
+      loadbootmod /boot/ntfs.o
   fi
   if [ "`echo $TESTFS|grep -i BSD`" ]; then
-      insmod /boot/ufs.o
+      loadbootmod /boot/ufs.o
   fi
   if [ "`echo $TESTFS|grep -i BEOS`" ]; then
-      insmod /boot/bfs.o
+      loadbootmod /boot/bfs.o
   fi
   
   # cycle thru partitions
@@ -466,34 +519,6 @@ mount_harddisk() {
 	# try also inside the /dyne directory found
 	got_home ${MNT}
     fi
-
-    # if the system has been allready mounted you can go on
-    if [ -x /usr/bin/dynesplash ]; then continue; fi
-
-    # if the system is not here we are done with this partition
-    if ! [ -r "${MNT}/dynebol.sys" ]; then
-	act "the dynebolic system is not here"
-	continue
-    fi
-    
-    notice "FOUND dynebolic system on partition mounted on ${MNT}"
-    
-    mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
-    
-    if [ $? != 0 ]; then
-	echo
-	error "a problem occurred while mounting the dynebol.sys"
-	error "dynebolic found a corrupted dynebol.sys on ${PART}"
-	error "copy it again from a working dynebolic CD"
-	echo; echo;
-	sleep 10
-	continue
-    else
-	# system succesfully mounted
-	DYNE_SYS_DEV=${PART}
-	DYNE_SYS_MEDIA="hd"
-	DYNE_SYS_MNT=${MNT}
-    fi
     
     sync
 
@@ -523,7 +548,7 @@ add_usbvolume() {
 loadbootmod() {
     # in interactive mode we ask 
     if [ "`grep -i interactive /proc/cmdline`" ]; then 
- 	echo -n "[?] do you want to load kernel module $1 " | tee -a $LOG
+ 	echo -n "[?] do you want to load kernel module $1 (Y/n)" | tee -a $LOG
 	getkey 10
 	if [ $? = 1 ]; then
 	    echo " ... SKIPPED" | tee -a $LOG
@@ -614,7 +639,6 @@ if [ "`cat /proc/pci | grep USB`" ]; then
   loadbootmod /boot/ehci-hcd.o
   loadbootmod /boot/usb-ohci.o
   loadbootmod /boot/usb-uhci.o
-  loadbootmod /boot/uhci.o
   
   loadbootmod /boot/sd_mod.o
   loadbootmod /boot/usb-storage.o
@@ -679,6 +703,34 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
     sync
 
 done
+
+
+############ ALL MEDIA MOUNTED, now MOUNT dynebol.sys
+
+# if the system has been allready mounted you can go on
+if [ ! -x /usr/bin/dynesplash ]; then
+    
+    notice "Using dynebolic system on ${DYNE_SYS_DEV}"
+    
+    mount -o loop -t squashfs "${DYNE_SYS_MNT}/dyne/dynebol.sys" /usr
+    
+    if [ $? != 0 ]; then
+	echo
+	error "a problem occurred while mounting the dynebol.sys"
+	error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
+	if [ $DYNE_SYS_MEDIA=="cd" ]; then
+	    error "it looks like your CD is corrupted!"
+	    error "burn it more carefully: less speed and don't do ANYTHING else"
+	    error "with your computer while burning. refer to the USER UPDATED FAQ"
+	    error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
+	    error "may the source be with you :^)"
+	fi
+	echo; echo;
+	sleep 10
+	continue
+    fi
+
+fi
 
 
 ##### FLOPPY DISK
