@@ -56,6 +56,10 @@ act() {
 error() {
     echo "[!] ${1}" | tee -a $LOG
 }
+warning() {
+    echo "[W] ${1}" | tee -a $LOG
+}
+
 
 # module loading wrapper
 loadmod() {

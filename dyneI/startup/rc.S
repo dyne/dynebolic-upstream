@@ -40,16 +40,10 @@
 #
 # if you are concerned about programming style, this file it's a dirty hack.
 # but HEY! bash scripting is not meant for elegance anyway.
-# I also write C code, if you are concerned about that.
 #
 # if you are peeking in here because some people say that dyne:bolic
 # is the fastest live-cd around, well that's not the best place where to
 # discover why.
-#
-# that's a bash script, as you see it's fairly commented
-# now blame me, or read the matrix // jaromil, 25feb04 
-#
-#
 #
 #
 # "$Id$"
@@ -187,7 +181,27 @@ EOF
 		if [ $? != 0 ]; then
 		    error "mount failed with exitcode $?"
 		    sleep 2
-		else echo " ... OK"; fi
+		else
+		  # we mounted the nest! now link the directories!
+		  # i forgot this in 1.2, thanks to David Santinoli
+		  # for being the first one spotting this bug.
+		  # e queste comunque so' tutte le canne
+		  # che mi faccio ad amsterdam.
+		  echo " ... OK";
+		  if [ ! -e /mnt/nest/home ]; then
+			  warning "nest is missing home, skipping"
+		  else
+			  if [ ! -e /home ]; mkdir /home; fi
+			  mount -o bind /mnt/nest/home /home
+		  fi
+		  if [ ! -e /mnt/nest/home ]; then
+			  warning "nest is missing etc, skipping"
+		  else
+			  if [ ! -e /etc ]; mkdir /etc; fi
+			  mount -o bind /mnt/nest/etc /home
+		  fi
+
+		fi
 	    fi
 	    
 	    if [ "`mount|grep dynebol.nst`" ]; then
@@ -534,15 +548,6 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
 done
 
 
-##### FLOPPY DISK
-### TODO : configuration file
-if [ "`dmesg |grep fd0`" ]; then
-    notice "scan floppy disk"
-    echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
-    add_volume floppy "/rem/floppy"
-    sync
-fi
-
 ##### USB STORAGE
 ### TODO: configuration file and nest
 if [ "`lspci |grep USB`" ]; then
@@ -551,16 +556,47 @@ if [ "`lspci |grep USB`" ]; then
     loadmod usb-storage
     loadmod vfat
     sync
-    if [ -r /dev/sda1 ]; then # TODO: check more carefully
-	notice "USB device found - mounting /dev/sda1 on /rem/usb"
+    sleep 2
+    sync
+    if [ -r /dev/sda1 ]; then # TODO: check more carefully, in proc?
+	notice "USB device found on /dev/sda1"
+	if [ ! -x /vol/usb ]; then mkdir /vol/usb; fi
 	mount -o sync,rw /dev/sda1 /vol/usb
-	act "this is a DEBUG TEST, hope it all went well"
-	ls -l /vol/usb
-	sleep 10
-	umount /vol/usb
+        if [ $? != 0 ]; then
+	  error "can't mount device"
+	  rm -r /vol/usb
+        else
+	  got_home /vol/usb
+	fi
     fi
-    echo "usb -fstype=auto,sync :/dev/sda1" >> /boot/auto.removable
-    add_volume usb "/rem/usb"
+
+    if [ $DYNE_NEST_PATH != "/vol/usb" ]; then
+      echo "usb -fstype=auto,sync :/dev/sda1" >> /boot/auto.removable
+      add_volume usb "/rem/usb"
+      sync
+    fi
+fi
+
+
+##### FLOPPY DISK
+## you can put a 'dynebol.sh' file inside your floppy disk
+## it will be executed as a shell script
+if [ "`dmesg |grep fd0`" ]; then
+    notice "scan floppy disk"
+    if [ ! -e /vol/floppy ]; then mkdir /vol/floppy; fi
+    mount /dev/fd0 /vol/floppy
+    sync
+    if [ $? == 0 ]; then
+      if [ -e /vol/floppy/dynebolic.sh ]; then
+	zsh -e /vol/floppy/dynebolic.sh
+      fi
+    ### TODO : configuration file
+      umount /vol/floppy
+      sync
+    fi
+
+    echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
+    add_volume floppy "/rem/floppy"
     sync
 fi
 
@@ -572,10 +608,11 @@ fi
 # nfs
 # http,ftp
 # rsync
-# a me mi piace la gnutella
+# a me mi piace la gnutella con lufs :)
 # mail dynebolic@dyne.org with the patch
 # use diff(1) to create a patch with your modifications
-
+# or ask the mailinglist for cvs access
+# but let's get to know each other first ;)
 
 
 

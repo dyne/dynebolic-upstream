@@ -162,6 +162,19 @@ sync
 # configure openmosix clustering
 /usr/etc/rc.mosix
 
+sync
+
+# execute rc.local if present
+# you can create rc.local in the /etc directory
+# and put there the commands to be executed here
+# you can also put it in a floppy a:\rc.local
+if [ -e /etc/rc.local ]; then
+  source /etc/rc.local
+fi
+
+sync
+
+
 echo "[*] boot sequence completed on `date`" >> $LOG
 echo >> $LOG
 echo "=== kernel modules loaded:" >> $LOG
