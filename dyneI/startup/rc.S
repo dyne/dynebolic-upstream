@@ -120,6 +120,45 @@ add_volume() {
   WMNUM="`expr $WMNUM + 1`"
 }
 
+activate_nest() {
+  # we mounted the nest! now link the directories!
+  # i forgot this in 1.2, thanks to David Santinoli
+  # for being the first one spotting this bug.
+  # e queste comunque so' tutte le canne
+  # che mi faccio ad amsterdam.
+  echo " ... OK";
+  if [ -x /mnt/nest/etc/rc.nestclean ]; then
+  	/mnt/nest/etc/rc.nestclean
+  fi
+  if [ ! -e /mnt/nest/home ]; then
+	  warning "nest is missing home, skipping"
+  else
+	  if [ ! -e /home ]; then mkdir /home; fi
+	  mount -o bind /mnt/nest/home /home
+  fi
+  if [ ! -e /mnt/nest/etc ]; then
+	  warning "nest is missing etc, skipping"
+  else
+	  if [ ! -e /etc ]; then mkdir /etc; fi
+	  sync
+	  cp /etc/mtab /mnt/nest/etc/mtab
+	  mount -o bind /mnt/nest/etc /etc
+  fi
+  if [ ! -e /mnt/nest/var ]; then
+	  warning "nest is missing var, skipping"
+  else
+	  if [ ! -e /var ]; then mkdir /var; fi
+	  mount -o bind /mnt/nest/var /var
+  fi
+  if [ ! -e /mnt/nest/tmp ]; then
+	  warning "nest is missing tmp, skipping"
+  else
+	  if [ ! -e /var ]; then mkdir /tmp; fi
+	  mount -o bind /mnt/nest/tmp /tmp
+  fi
+
+}
+
 got_home() {
 # $1 = path where to take home.tgz and var.tgz
 # this check if a home has been found
@@ -130,9 +169,10 @@ got_home() {
 
     if [ -r ${1}/dynebol.nst ]; then
 	NEST="${1}/dynebol.nst"
+	unset ENCRYPT
     elif [ -r ${1}/dynebolE.nst ]; then
 	NEST="${1}/dynebolE.nst"
-	ENCRYPT="AES=128"
+	ENCRYPT="AES128"
     else unset NEST; fi
     
     if [ $NEST ]; then
@@ -167,6 +207,7 @@ EOF
 		    case $? in
 			0) notice "valid password entered, activating nest!"
 			    sleep 1
+			    activate_nest
 			    break
 			    ;;
 			32) error "Invalid password"
@@ -186,42 +227,7 @@ EOF
 		    error "mount failed with exitcode $?"
 		    sleep 2
 		else
-		  # we mounted the nest! now link the directories!
-		  # i forgot this in 1.2, thanks to David Santinoli
-		  # for being the first one spotting this bug.
-		  # e queste comunque so' tutte le canne
-		  # che mi faccio ad amsterdam.
-		  echo " ... OK";
-		  if [ -x /mnt/nest/etc/rc.nestclean ]; then
-		  	/mnt/nest/etc/rc.nestclean
-		  fi
-		  if [ ! -e /mnt/nest/home ]; then
-			  warning "nest is missing home, skipping"
-		  else
-			  if [ ! -e /home ]; then mkdir /home; fi
-			  mount -o bind /mnt/nest/home /home
-		  fi
-		  if [ ! -e /mnt/nest/etc ]; then
-			  warning "nest is missing etc, skipping"
-		  else
-			  if [ ! -e /etc ]; then mkdir /etc; fi
-			  sync
-			  cp /etc/mtab /mnt/nest/etc/mtab
-			  mount -o bind /mnt/nest/etc /etc
-		  fi
-		  if [ ! -e /mnt/nest/var ]; then
-			  warning "nest is missing var, skipping"
-		  else
-			  if [ ! -e /var ]; then mkdir /var; fi
-			  mount -o bind /mnt/nest/var /var
-		  fi
-		  if [ ! -e /mnt/nest/tmp ]; then
-			  warning "nest is missing tmp, skipping"
-		  else
-			  if [ ! -e /var ]; then mkdir /tmp; fi
-			  mount -o bind /mnt/nest/tmp /tmp
-		  fi
-
+		  activate_nest
 		fi
 	    fi
 	    
