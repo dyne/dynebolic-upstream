@@ -1,0 +1,19 @@
+
+dyne:bolic GNU/Linux :: system startup files
+
+here is all the file structure of the d:b startup sequence
+
+the scripts are executed with zsh in sh emulation
+anyway they should be generally compatible with bash
+
+the startup/ directory is meant to be in the same directory where
+sdk/ is, then the dynesdk script copies the files stored here inside
+the system every time a dynesdk mkinitrd is executed.
+
+
+this is all GNU GPL, see COPYING for further information
+copyleft is stated on each single file.
+
+
+$Id$
+

@@ -1,0 +1,91 @@
+#!/bin/sh
+# harddisk detection and mount
+# by jaromil - 4 july 2003 - GNU GPL
+
+# here they go the harddisks
+
+# Le partizioni riconosciute dal kernel, verranno montate lasciando che 
+# il tipo di file system venga riconosciuto automaticamente
+
+source /lib/libdyne.sh
+
+notice "harddisk detection"
+# this script also creates dock icons for each mounted harddisk
+# in a format that windowmaker understands
+# in GNUstep/Deafaults/WMState
+# it checks if the filesystems are allready mounted
+# then it is from the rc.S and we are running the dynebol.sys from there
+# so we link from /mnt/dynebolic
+
+
+if [ ! -z "`uname -a | grep xbox`" ]; then
+# WE ARE ON XBOX
+    if [ -e /dev/hda50 ]; then
+	act "enabling XBOX ide harddisk"
+
+	if [ -z "`mount | grep /dev/hda50`" ]; then
+	  mkdir /vol/hd1
+	  mount -t fatx /dev/hda50 /vol/hd1
+  	  dyne_add_volume hdisk /vol/hd1
+        else
+          dyne_add_volume hdisk /mnt/dynebolic
+        fi
+
+        if [ -z "`mount | grep /dev/hda51`" ]; then
+	  mkdir /vol/hd2
+          mount -t fatx /dev/hda51 /vol/hd2
+  	  dyne_add_volume hdisk /vol/hd2
+	else
+	  dyne_add_volume hdisk /mnt/dynebolic
+	fi
+
+	if [ -z "`mount | grep /dev/hda52`" ]; then
+	  mkdir /vol/hd3
+	  mount -t fatx /dev/hda52 /vol/hd3
+	  dyne_add_volume hdisk /vol/hd3
+	else
+	  dyne_add_volume hdisk /mnt/dynebolic
+	fi
+
+	if [ -z "`mount | grep /dev/hda53`" ]; then
+	  mkdir /vol/hd4
+	  mount -t fatx /dev/hda53 /vol/hd4
+	  dyne_add_volume hdisk /vol/hd4
+	else
+	  dyne_add_volume hdisk /mnt/dynebolic
+	fi
+
+        # uhm, there is no /dev/hda54
+
+	if [ -e /dev/hda55 ]; then
+	  if [ -z "`mount | grep /dev/hda55`" ]; then
+	    mkdir /vol/hd5
+	    mount -t fatx /dev/hda55 /vol/hd5
+	    dyne_add_volume hdisk /vol/hd5
+	  else
+	    dyne_add_volume hdisk /mnt/dynebolic
+	  fi
+	fi
+     fi 
+    
+else
+
+    HD_NUM=0
+# we are on a normal PC
+    for gh in `fdisk -l | grep -iE 'Linux|NTFS|FAT|BSD|BEOS' | grep -i -v swap | awk '{print $1}'`; do
+        if [ -z "`mount | grep $gh`" ]; then
+	  HD_NUM="`expr $HD_NUM + 1`"
+	  HDEV="hd${HD_NUM}"
+          mkdir "/vol/$HDEV" 
+          mount "$gh" "/vol/$HDEV"
+	  if [ "$?" = "0" ]; then
+	      dyne_add_volume "hdisk" "$HDEV"
+	  fi
+        else
+          dyne_add_volume hdisk "/mnt/dynebolic"
+        fi
+    done
+
+fi # xbox or not
+
+

@@ -1,0 +1,26 @@
+#!/bin/sh
+# rc.usbkey
+# by jaromil - 4 july 2003 - GNU GPL
+# script to handlepresence of usb dongles and smart cards
+# puts them in automount (just the first device) in /rem/usbkey
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+if [ -z `lspci|grep USB` ]; then exit 1; fi
+
+notice "activating support for removable usb storage"
+
+loadmod sd_mod
+loadmod usb-storage
+loadmod vfat
+
+sync
+
+echo "usb1 -fstype=auto :/dev/sda1" >> /etc/auto.removable
+dyne_add_volume usb "usb1"
+
+# echo "usb2 -fstype=auto :/dev/sdb1" >> /etc/auto.removable
+# dyne_add_volume usb "usb2"
+
+

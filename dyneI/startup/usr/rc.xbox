@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# loads modules for xbox
+#
+# by lo smilzo & jaromil
+# copyleft 2003
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+notice "launching dyne:bolic on XBOX!"
+
+#act "loading i2c-xbox modules"
+#loadmod i2c-xbox
+
+act "loading autofs4 module"
+loadmod autofs4
+
+act "loading network card module"
+loadmod nvnet
+
+act "loading soundcard modules"
+loadmod i810_audio 
+
+act "loading samba module"
+loadmod smbfs
+
+notice "configure XFree86 for XBOX"
+cp -f /etc/XF86Config.xbox /etc/XF86Config
+
+sync
+
+notice "setup the screen at 800x600 PAL"
+act "to switch to NTSC use the MENU->SYSTEM->Xbox NTSC selection"
+# Date: Mon, 28 Apr 2003 12:09:36 +0200
+# To: jaromil@dyne.org
+# From: Lo Smilzo <smilzo@sfrajone.org>
+# Subject: gestione video
+# questo va' lanciato prima di x con la seguente riga di comando
+# /usr/sbin/xbv -PAL -auto 640 480 9.0 9.0
+#/usr/sbin/xbv -PALBDGHI -auto 800 600 15.00 15.00
+
+sleep 2
+

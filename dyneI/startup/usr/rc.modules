@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# dyne:bolic rc.modules
+# by jaromil
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+#
+# launched by the init after hardware detection and before spawning ttys
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+notice "loading kernel modules"
+
+# first apply fixes:
+
+   # FIX es1988 driver (found on a hp omnibook xe3
+   # uses the kernel oss maestro3 driver
+   # jaromil 26 07 2002
+   /usr/fixes/es1988.sh
+
+   # FIX i810 INTEL onboard soundcard
+   # jaromil 19 07 2002
+   #   /usr/fixes/i810-fix.sh
+   # deactivated - 26 06 2003 - 1.0 alpha5-dev
+
+   # FIX VIA Rhine ethernet cards
+   /usr/fixes/viarhine-fix.sh
+
+   # FIX for nforce onboard audio and ethernet from nvidia
+   # those are very popular, expecially on compact EPIA mini-ITX m/b
+   # dirty fix by jrml 14 08 2003
+   /usr/fixes/nforce.sh
+
+### NOW WITH PCIMODULES
+
+# 27 maggio 2003 - jaromil e mose'
+# the first thing we want to load are alsa modules
+# btaudio and such devices should be secondary
+# so we push on top of the list snd-* 
+BTAUDIO="`pcimodules | sort -r | uniq | grep btaudio`"
+
+for i in `pcimodules | sort -r | uniq | grep -v btaudio`; do
+  loadmod $i 
+done
+
+if [ $BTAUDIO ]; then loadmod "$BTAUDIO"; fi
+
+# creates a symlink on devfs /dev/video -> /dev/video0
+if [ -e /dev/v4l/video0 ]; then
+  ln -s /dev/v4l/video0 /dev/video0
+  ln -s /dev/v4l/video0 /dev/video
+fi
+

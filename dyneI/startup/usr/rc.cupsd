@@ -1,0 +1,11 @@
+#!/bin/sh
+
+source /lib/libdyne.sh
+
+notice "Launching common unix printing system daemon"
+
+#loadmod parport
+#loadmod lp
+
+/usr/sbin/cupsd
+

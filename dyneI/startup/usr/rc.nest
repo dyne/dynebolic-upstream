@@ -1,0 +1,240 @@
+#!/bin/sh
+#
+# rc.net  finds dyne:bolic NEST on all attached storage devices
+#
+# Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
+# freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
+# 
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+# this script should always create a /boot/nest file
+# containing the full path to the nest being used
+# the current sctructure of a dyne:bolic nest is:
+# = harddisk and usb-key 
+# /home
+# /etc
+# /var
+# /tmp
+#
+# see the 'nidifica' script which creates nests
+
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+if [ -e /boot/nest ]; then rm -f /boot/nest; fi
+
+
+
+
+# nesting function, mounts a nest to be used
+dyne_mount_nest() {
+  # $1 = full path to dyne:bolic nest (dynebol.nst)
+  # returns 1 on failure, 0 on success
+  if [ ! -e $1 ]; then return 1; fi
+  NEST=$1
+  if [ -e /boot/nest ]; then
+      error "a nest is allready mounted from `cat /boot/nest`"
+      act "it overlaps an allready mounted nest, skipped!"
+      return 1
+  fi
+  echo -n "[?] mount the dyne:bolic nest in ${NEST}"
+  getkey 10
+  if [ $? = 1 -o $? = 2 ]; then # timeout or 'n' typed
+      echo " ... SKIPPED"
+      return 1
+  fi
+  echo " ... OK"
+
+  # parses the values in a config file, if present
+  # this is needed just to know if the nest is encrypted
+  source "`echo ${NEST}|cut -d. -f1`.cfg"
+
+  notice "activating dyne:bolic nest in ${NEST}"
+
+  # TODO : controllare che il file di conf abbia tutto apposto
+  if [ ! -z $ENCRYPT ]; then
+  act "encrypted with algo $ENCRYPT"
+    cat <<EOF
+
+
+
+
+*******************************************************************************
+An $ENCRYPT encrypted nest
+has been detected in $DYNEBOL_NST
+access is password restricted, please supply your passphrase now
+
+EOF
+    for i in 1 2 3; do
+        mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
+        case $? in
+          0) notice "valid password entered, activating nest!"
+      	     sleep 1
+	     echo ${NEST} > /boot/nest
+	     break
+	     ;;
+          32) error "Invalid password"
+              sleep 2
+              continue
+              ;;
+          *) error "mount failed with exitcode $?"
+             sleep 2
+	     continue
+         esac
+    done
+
+  else # nest is not encrypted
+      echo -n "[*] mounting nest over loopback device"
+      mount -o loop ${NEST} /mnt/nest
+      if [ $? != 0 ]; then
+	  error "mount failed with exitcode $?"
+	  sleep 2
+      else
+	  echo " ... OK"
+	  echo ${NEST} > /boot/nest
+    fi
+  fi
+  
+  if ! [ -r /boot/nest ]; then 
+      error "can't mount nest, skipping"
+      return 1
+  fi
+
+  act "nest succesfully mounted"
+
+  # ok, success! we mount the nest
+  sync
+  
+  if [ -e /mnt/nest/etc ]; then
+    cp /etc/fstab /boot
+    cp /etc/auto.removable /boot
+    # qui c'e' un problema concettuale dice lo smilzo :)
+    # in effetti si monta bindata una etc sopra l'altra
+    # ma il mount in questo modo non puo' aggiornare correttamente mtab
+    # quindi ecco la soluzione (jrml 21 jul 03)
+    cp /etc/mtab /boot
+    echo "/mnt/nest/etc /etc none rw,bind 0 0" >> /boot/mtab
+ 
+    mount -o bind /mnt/nest/etc /etc
+    mv /boot/fstab /etc
+    mv /boot/auto.removable /etc
+    mv /boot/mtab /etc 
+    act "nested /etc directory bind"
+  else
+    error "nest is missing /etc directory"
+    act "fix nest by populating etc"
+    cp -a /etc /mnt/nest
+    mount -o bind /mnt/nest/etc /etc
+  fi 
+
+  sync
+
+#  if [ ! -z "`mount | grep home`" ]; then
+#      umount /home; fi
+  if [ ! -e /mnt/nest/home ]; then
+    error "nest is missing /home directory"
+    act "fix nest by populating home"
+    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
+  fi
+  mount -o bind /mnt/nest/home /home
+  act "nested /home directory bind"
+
+  if [ ! -e /mnt/nest/var ]; then
+    error "nest is missing /var directory"
+    act "fix nest by populating var"
+    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
+  fi 
+  mount -o bind /mnt/nest/var /var
+  act "nested /var directory bind"
+
+  if [ ! -e /mnt/nest/tmp ]; then
+    error "nest is missing /tmp directory"
+    act "fix nest by creating tmp"
+    mkdir /mnt/nest/tmp
+  fi 
+  mount -o bind /mnt/nest/tmp /tmp
+  act "nested /tmp directory bind"
+
+
+  notice "activated nest from ${NEST}"
+  return 0
+}
+
+
+
+
+
+
+
+
+#######################
+#### this is the main()
+
+
+notice "scan for nests on automounted usb storage"
+cd /rem/usb1 1>/dev/null 2>/dev/null
+sync
+if [ -r /rem/usb1/dynebol.nst ]; then
+    echo " .  /rem/usb1 -> nest found!"
+    dyne_mount_nest "/rem/usb1/dynebol.nst"
+fi
+cd /rem/usb2 1>/dev/null 2>/dev/null
+sync
+if [ -r /rem/usb2/dynebol.nst ]; then
+    echo " .  /rem/usb1 -> nest found!"
+    dyne_mount_nest "/rem/usb2/dynebol.nst"
+fi
+    
+
+
+
+notice "scan for nests on mounted harddisks"
+if [ -e /vol/hd1 ]; then
+    for VOL in `ls --color=none /vol | grep hd`; do
+	MOUNT="/${VOL}"
+	echo -n " .  /vol/${VOL} -> "
+	if [ -r "/vol/${VOL}/dynebol.nst" ]; then
+	    echo "nest found!"
+
+	    dyne_mount_nest "/vol/${VOL}/dynebol.nst"
+
+	    return $?
+	else
+	    echo "no nest"
+	fi
+    done
+fi
+
+
+# old code only for harddisks (using df for scanning):
+#    for HD in `df|grep $1|awk '{print $1}'`; do
+#	HD_MOUNT=`df | grep ${HD} | awk '{print $6}'`
+#	echo -n " .  ${HD}"
+        # for every harddisk present, gathers infos
+#	HD_SIZE=`df -h | grep ${HD} | awk '{print $2}'`
+#	HD_USED=`df -h | grep ${HD} | awk '{print $3}'`
+#	HD_LEFT=`df -h | grep ${HD} | awk '{print $4}'`
+#	HD_PERCENT=`df | grep ${HD} | awk '{print $5}'`
+#	echo -n " (${HD_USED}/${HD_SIZE} ${HD_PERCENT}) ..."
+#	if [ -f "${HD_MOUNT}/${DYNEBOL_CFG}" ]; then
+#	    echo -n " `ls -lh ${HD_MOUNT}/${DYNEBOL_NST} | awk '{print $5}'` nest found"
+#	    dyne_mount_nest "${HD_MOUNT}/${DYNEBOL_CFG}"
+#	else
+#	    echo -n " no nest"
+#	fi
+#    done
+

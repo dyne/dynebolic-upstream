@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# This file is released under the GPL Licence version 2 or above
+# Please read the Licence Terms at www.gnu.org
+# jaromil@dyne.org
+#
+# /usr/etc/rc.net: Network initialization script.
+
+# /usr/sbin/dhcpcd -t 20 1>/dev/null 2>/dev/null
+# as of mant suggestions i received, drazen pantic among the others
+# is a better idea to use pump, brings better luck
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+if [ -e /etc/NETWORK ]; then
+  source /etc/NETWORK
+else
+  notice "start scanning for dhcp network"
+  /usr/sbin/pump -c /usr/etc/pump.conf &
+fi
+
+# setup hostname from /etc/HOSTNAME or randomize with the eth0 MAC address if needed
+if [ -e /etc/HOSTNAME ]; then
+    HOSTNAME="`cat /etc/HOSTNAME`"
+else
+    # random hostname generation using first macaddress
+    MACADDR="`/sbin/ifconfig eth0 2>/dev/null \
+              | grep HWaddr \
+              | cut -d ' '  -f11 \
+              | sed -e 's/[\:\$]//g'`"
+    if [ $MACADDR ]; then
+      HOSTNAME="dynebolic${MACADDR}"
+    else
+      HOSTNAME="dynebolic"
+    fi
+    echo "$HOSTNAME" > /etc/HOSTNAME
+fi
+
+hostname "$HOSTNAME"
+notice "your hostname is $HOSTNAME"
+
+# setup the samba name with the assigned hostname
+if [ ! -e /etc/samba/smb.conf ]; then
+  sed "s/dynesamba/$HOSTNAME/g" /etc/samba/smb.conf.dist > /etc/samba/smb.conf
+fi
+# setup the hostname in /etc/hosts to resolve it at least in loopback
+echo "127.0.0.1		$HOSTNAME" >> /etc/hosts
+
+notice "start exim for simple mail transport"
+if [ ! -e /etc/exim.conf ]; then
+  sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist > /etc/exim.conf
+fi
+/usr/exim/bin/exim -bd -C /etc/exim.conf &
+
+#notice "activating point to point protocol"
+#loadmod ppp_generic
+#loadmod ppp_async
+#loadmod ppp_deflate
+#notice "loading iptables nat and masquerading kernel modules"
+#loadmod iptable_filter
+#loadmod iptable_nat
+#loadmod iptable_mangle
+

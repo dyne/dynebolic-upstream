@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+echo "[*] starting samba services"
+modprobe -k smbfs 
+/usr/sbin/smbd -D -o
+/usr/sbin/nmbd -D -o
+

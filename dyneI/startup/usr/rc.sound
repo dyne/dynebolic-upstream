@@ -1,0 +1,24 @@
+#!/bin/sh
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+
+# check if alsa drivers are loaded
+ISALSA=`lsmod | grep -i snd-`
+
+if [ ! -z "$ISALSA" ]; then
+  notice "Advanced Linux Sound Architecture is active"
+
+  act "activating alsa-oss emulation"
+  loadmod snd-pcm-oss
+  loadmod snd-mixer-oss
+  act "activating midi sequencer"
+  loadmod snd-seq
+fi
+
+act "initializing sound levels"
+if [ -e /dev/mixer ]; then
+    aumix -v 80 -w 80 -i 80
+ fi
+

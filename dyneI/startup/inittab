@@ -1,0 +1,45 @@
+# Initialization table for dyne:bolic init
+# GNU GPL 2001 by jaromil @ dyne.org
+#
+# $Id$
+#
+# runlevels in dyne:bolic
+#   0 = halt
+#   1 = system mount
+#   2 = hardware setup
+#   3 = graphical startup
+#   6 = reboot
+
+# Script to run when going single user (runlevel 1).
+su:S:wait:/sbin/sulogin
+
+# Runlevel 0 halts the system.
+l0:0:wait:/etc/rc.0
+
+# Default runlevel. (Do not set to 0 or 6)
+id:3:initdefault:
+
+# System initialization (runs when system boots).
+si:S:sysinit:/etc/rc.S
+
+# Script to run when going multi user.
+rc:123:wait:/etc/rc.M
+
+# X11
+x1:3:wait:/etc/rc.X
+
+# Runlevel 6 reboots the system.
+l6:6:wait:/etc/rc.6
+
+# What to do at the "Three Finger Salute".
+ca::ctrlaltdel:/sbin/shutdown -t5 -rf now
+
+# TERMINALS
+c1:123:respawn:/sbin/agetty -n 38400 tty1 linux
+c2:123:respawn:/sbin/agetty -n 38400 tty2 linux
+c3:123:respawn:/sbin/agetty -n 38400 tty3 linux
+c4:123:respawn:/sbin/agetty -n 38400 tty4 linux
+c5:123:respawn:/sbin/agetty -n 38400 tty5 linux
+c6:123:respawn:/sbin/agetty -n 38400 tty6 linux
+
+

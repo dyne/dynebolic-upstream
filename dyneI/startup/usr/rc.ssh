@@ -1,0 +1,12 @@
+#!/bin/sh
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+if [ ! -e /home/.ssh/identity ]; then
+  notice "generating ssh identity key"
+  ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
+fi
+notice "launching ssh daemon"
+sshd
+

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+notice "starting http boa daemon"
+boa -c /var/boa/htdocs -f /var/boa/boa.conf
+

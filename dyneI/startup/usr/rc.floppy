@@ -1,0 +1,15 @@
+#!/bin/sh
+# by jaromil - 4 july 2003 - GNU GPL
+
+# setup automount for floppies
+
+source /lib/libdyne.sh
+
+notice "Activate floppy drives"
+
+if ! [ -z "`dmesg |grep fd0`" ]; then
+    echo "floppy -fstype=auto,sync :/dev/fd0" >> /etc/auto.removable
+    dyne_add_volume floppy floppy
+fi
+
+
