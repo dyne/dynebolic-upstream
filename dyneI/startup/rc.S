@@ -58,7 +58,7 @@
 source /lib/libdyne.sh
 
 
-WMNUM=1
+WMNUM=2
 WMCFG="/boot/WMState"
 add_volume() {
   # $1 = media type (hdisk|floppy|usbkey|cd)
@@ -227,24 +227,22 @@ mount_cdrom() {
     act "scanning CD ${DEV} (${CDFS})"
     DEV=$1
     CD_NUM="`expr $CD_NUM + 1`"
-    MNT="/rem/cd${CD_NUM}"
-    mkdir ${MNT}
-    
-  # even if we can't mount it,
-  # we add the device to the automount table
-    echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
-	>> /boot/auto.removable
-    
-  # the filesystem can be mounted: add it to the list of
-  # available storage devices allready from here
-    add_volume cd ${MNT}
-
+    MNT="/vol/cd${CD_NUM}"
+    if [ ! -x ${MNT} ]; then mkdir ${MNT}; fi
+   
     mount -t "$CDFS" -o ro "/dev/${DEV}" ${MNT} 1>/dev/null 2>/dev/null
 
     # can't mount the device, it's likely a void cd reader    
-    if [ $? != 0 ]; then return; fi
+    if [ $? != 0 ]; then
+        rm -r ${MNT}
+        # if we can't mount it, we add it to the automounted volumes
+        echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
+	     >> /boot/auto.removable
+        add_volume cd "/rem/cd${CD_NUM}" 
+        return
+    fi
 
-    # if there is a dyne subdirectory, then enter that
+    # if there is a dyne subdirectory, then use that
     if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
     
     # have you got brand new home in this cd?
@@ -253,13 +251,21 @@ mount_cdrom() {
     if ! [ -r "${MNT}/dynebol.sys" ]; then
 	act "the dynebolic system is not here"
 	umount ${MNT}
+	rm -r ${MNT}
+	# then we add it anyway to the automounted volumes
+        echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
+	     >> /boot/auto.removable
+        add_volume cd "/rem/cd${CD_NUM}" 
 	return
     elif [ ! -x /usr/bin/dynesplash ]; then
-	notice "FOUND dynebolic system on CD: ${MNT}/dynebol.sys"	
-	
-	# there was no system found on other storage media
-	# so we use the one on the original dynebolic CD
-	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
+	# there was no system found so far on other storage media
+	# so we use the one on this CD, remounting on /mnt/dynebolic
+	notice "FOUND dynebolic system on CD: ${MNT}/dynebol.sys"
+	umount ${MNT}
+	if [ ! -x /mnt/dynebolic ]; then mkdir /mnt/dynebolic; fi
+        mount -t "$CDFS" -o ro "/dev/${DEV}" /mnt/dynebolic 1>/dev/null 2>/dev/null
+
+	mount -o loop -t squashfs "/mnt/dynebolic/dynebol.sys" /usr
 	
 	if [ $? != 0 ]; then
 	    echo
@@ -275,19 +281,22 @@ mount_cdrom() {
 	else
 	    # the system has been correctly mounted
 	    DYNE_SYS_DEV="/dev/${DEV}"
-	    DYNE_SYS_MNT=${MNT}
+	    DYNE_SYS_MNT=/mnt/dynebolic
 	    DYNE_SYS_MEDIA="cd"
             # bring home the goodies in the CD
-	    if [ -e "/rem/cd${CD_NUM}/extras" ]; then
-		mount -o bind "/rem/cd${CD_NUM}/extras" /home/extras
+	    if [ -e "${MNT}/extras" ]; then
+		mount -o bind "${MNT}/extras" /home/extras
 	    fi	
 	fi
     else
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
-	# so we can eject this cdrom!
+	# so we can eject this cdrom and put the volume in automount
 	umount ${MNT}
 	eject "/dev/${DEV}"
+        echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
+	     >> /boot/auto.removable
+        add_volume cd "/rem/cd${CD_NUM}" 
     fi
 }
 
@@ -393,8 +402,13 @@ mount_harddisk() {
     # a mountable harddisk partition has been found!
     add_volume hdisk ${MNT}
 
-    # if there is a dyne subdirectory, then enter that
-    if [ -x "${MNT}/dyne" ]; then MNT="${MNT}/dyne"; fi
+    # if there is a dyne development subdirectory, then use that
+    if [ -x "${MNT}/dyne/sdk/cdrom/dyne" ]; then
+        MNT="${MNT}/dyne/sdk/cdrom/dyne"
+    # or maybe a simple dyne/ subdir, then take that
+    elif [ -x "${MNT}/dyne" ]; then
+        MNT="${MNT}/dyne"
+    fi
     
     # have you got a home there?
     got_home ${MNT}
@@ -468,16 +482,16 @@ fi
 
 # we try out xbox
 if ! [ -z "`uname -a | grep xbox`" ]; then
-    notice "search dynebolic system on XBOX HARDDISK"
+    notice "scan xbox harddisk"
     mount_xbox "hda50"
     mount_xbox "hda51"
     mount_xbox "hda52"
     mount_xbox "hda53"
     mount_xbox "hda55"
 else    
-    notice "search dynebolic system on IDE HARDDISK devices"
+    notice "scan ide harddisk"
 # cycle thru devices
-    for DEV in `ls --color=never /proc/ide/hd* -d | chomp -- 3`; do
+    for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
 	
 # skip if not an harddisk
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
@@ -496,15 +510,14 @@ fi
 ###### CDROM
 
 # CD filesystem is iso9660 unless we have a DVD (on xbox, for example)
-if [ ! -z "`uname -a | grep xbox`" ]; then
-    echo "[*] searching dynebolic system on XBOX DVD"
+if [ "`uname -a | grep xbox`" ]; then
+    notice "scan xbox dvd"
     CDFS="udf"
 else
-    echo "[*] search dynebolic system on IDE CDROM devices"
+    notice "scan ide cdrom"
     CDFS="iso9660"
 fi
-
-for DEV in `ls --color=never /proc/ide/hd* -d | chomp -- 3`; do
+for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
     
     if  [ `cat /proc/ide/$DEV/media` != cdrom ]; then continue; fi
     
@@ -518,6 +531,7 @@ done
 ##### FLOPPY DISK
 ### TODO : configuration file
 if [ "`dmesg |grep fd0`" ]; then
+    notice "scan floppy disk"
     echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
     add_volume floppy "/rem/floppy"
     sync
@@ -526,17 +540,18 @@ fi
 ##### USB STORAGE
 ### TODO: configuration file and nest
 if [ "`lspci |grep USB`" ]; then
+    notice "scan usb storage"
     loadmod sd_mod
     loadmod usb-storage
     loadmod vfat
     sync
-    mkdir /rem/usb
     if [ -r /dev/sda1 ]; then # TODO: check more carefully
 	notice "USB device found - mounting /dev/sda1 on /rem/usb"
-	mount -o sync,rw /dev/sda1 /rem/usb
+	mount -o sync,rw /dev/sda1 /vol/usb
 	act "this is a DEBUG TEST, hope it all went well"
-	ls -l /rem/usb
-	umount /rem/usb
+	ls -l /vol/usb
+	sleep 10
+	umount /vol/usb
     fi
     echo "usb -fstype=auto,sync :/dev/sda1" >> /boot/auto.removable
     add_volume usb "/rem/usb"
@@ -579,7 +594,7 @@ echo "# dynebolic environment" > /boot/dynenv
 echo "# this file is generated by the Startup script at every boot" >> /boot/dynenv
 echo "# made on `date`" >> /boot/dynenv
 echo "# Startup \$Id$" >> /boot/dynenv
-echo "# running on `uname`" >> /boot/dynenv
+echo "# running on `uname -a`" >> /boot/dynenv
 echo >> /boot/dynenv
 echo "DYNE_SYS_VER=`cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv
 echo "DYNE_SYS_DEV=${DYNE_SYS_DEV}" >> /boot/dynenv
@@ -592,4 +607,6 @@ fi
 if [ $DYNE_NEST_PATH ]; then
     echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
 fi
+
 exit 1
+

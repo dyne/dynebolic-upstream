@@ -6,9 +6,11 @@
 #
 # GNU GPL 2001-2004 by jaromil @ dyne.org
 #
-# $Id$
 
-echo "[*] closing dyne:bolic session"
+FILE_ID="\$Id$"
+source /lib/libdyne.sh
+
+notice "closing dyne:bolic session"
 
 # Kill all processes.
 # INIT is supposed to handle this entirely now, but this didn't always
@@ -28,21 +30,21 @@ wait
 echo -n " .  "
 /usr/sbin/autofs stop
 
-echo " .  release swap"
+act "release swap"
 /usr/sbin/swapoff -a
 
-echo " .  unload all kernel modules"
+act "unload all kernel modules"
 /sbin/rmmod -a
 
-echo " .  umount all volumes"
+act "umount all volumes"
 /bin/umount -a
 
 echo " .  sync harddrives" # this never hurts
 /sbin/sync
 
-if [ -r /boot/dynecd ]; then
+if [ $DYNE_SYS_MEDIA = "cd" ]; then
     echo "[*] ejecting dyne:bolic cd"
-    /bin/eject "/dev/`cat /boot/dynecd`"
+    eject $DYNE_SYS_DEV
 fi
 
 # sleep 1 fixes problems with some hard drives that
