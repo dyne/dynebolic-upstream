@@ -25,5 +25,5 @@
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
 DEFAULT (echo "===========================\n"; date ; echo %{sVv}; echo ${USER}; cat) >> $CVSROOT/CVSROOT/digest
-ALL /bin/activitymail -cgf %{sVv} -t coding@dyne.org -w "http://cvs.dyne.org/viewcvs.cgi/${CVSROOT}/" -p -V -m "commit by ${USER} :"
+ALL /bin/activitymail -cgf %{sVv} -t coding@dyne.org -w "http://cvs.dyne.org/viewcvs.cgi/" -p -V -m "commit by ${USER} :"
 
