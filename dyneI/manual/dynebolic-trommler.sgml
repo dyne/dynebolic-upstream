@@ -1,5 +1,5 @@
 <section>
-<title>EffecTV :: real time video effector</title>
+<title>Trommler :: drum machinecd burning interface</title>
 
 <!-- manual editors: use this table at the beginning of each
      application entry, compiled with the corresponding data
@@ -41,10 +41,10 @@ year
 
 <!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
 
-<!-- URL  --> <entry> <ulink url="http://effectv.sf.net"></ulink> </entry>
-<!-- MAN  --> <entry> effectv </entry>
-<!-- BY   --> <entry> Fukuchi Kentarou </entry>
-<!-- YEAR --> <entry> 2001 </entry>
+<!-- URL  --> <entry> <ulink url="http://www.muth.org/Robert/Trommler"></ulink> </entry>
+<!-- MAN  --> <entry> trommler </entry>
+<!-- BY   --> <entry> Robert Muth </entry>
+<!-- YEAR --> <entry> 1997 </entry>
 
 <!-- sensible data until here -->
 
@@ -54,9 +54,11 @@ year
 
 <!-- end of application reference table =========== cut here -->
 
+
 <para>
-       EffecTV is a real-time video effector.  You can enjoy movies,
-       TV programs and any other video stream through the many amazing
-       effects.
+Trommler is an X-windows based drum machine using 16bit 44Khz mono
+drum samples and realtime audio output to soundcard or file. It
+supports a variable number of beats per pattern, volume adjustments of
+drum samples and stereo panning of mono drum samples
 </para>
 </section>

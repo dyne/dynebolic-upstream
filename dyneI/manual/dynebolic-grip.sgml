@@ -1,5 +1,5 @@
 <section>
-<title>EffecTV :: real time video effector</title>
+<title>GRip :: graphical cd ripper</title>
 
 <!-- manual editors: use this table at the beginning of each
      application entry, compiled with the corresponding data
@@ -41,10 +41,10 @@ year
 
 <!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
 
-<!-- URL  --> <entry> <ulink url="http://effectv.sf.net"></ulink> </entry>
-<!-- MAN  --> <entry> effectv </entry>
-<!-- BY   --> <entry> Fukuchi Kentarou </entry>
-<!-- YEAR --> <entry> 2001 </entry>
+<!-- URL  --> <entry> <ulink url="http://www.nostatic.org/grip"></ulink> </entry>
+<!-- MAN  --> <entry> grip </entry>
+<!-- BY   --> <entry> Mike Oliphant </entry>
+<!-- YEAR --> <entry> 1998 </entry>
 
 <!-- sensible data until here -->
 
@@ -54,9 +54,13 @@ year
 
 <!-- end of application reference table =========== cut here -->
 
+
 <para>
-       EffecTV is a real-time video effector.  You can enjoy movies,
-       TV programs and any other video stream through the many amazing
-       effects.
+Grip is a cd player and cd ripper, it has the ripping capabilities of
+cd paranoia builtin, but can also use external rippers (such as
+cdda2wav). It also provides an automated frontend for MP3, OGG and
+other audio format encoders, letting you take a disc and transform it
+easily straight into MP3s or OGGs. Internet disc lookups are supported
+for retrieving track information from disc database servers.
 </para>
 </section>

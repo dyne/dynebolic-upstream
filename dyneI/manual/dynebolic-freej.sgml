@@ -1,7 +1,6 @@
 
 <section>
-<title>FreeJ</title>
-<subtitle>set the veejay free!</subtitle>
+<title>FreeJ :: set the veejay free!</title>
 
 <!-- manual editors: use this table at the beginning of each
      application entry, compiled with the corresponding data
@@ -43,7 +42,7 @@ year
 
 <!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
 
-<!-- URL  --> <entry> <ulink url="http://freej.org">freej.org</ulink> </entry>
+<!-- URL  --> <entry> <ulink url="http://freej.org"></ulink> </entry>
 <!-- MAN  --> <entry> freej </entry>
 <!-- BY   --> <entry> jaromil </entry>
 <!-- YEAR --> <entry> 2001 </entry>

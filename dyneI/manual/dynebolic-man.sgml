@@ -32,6 +32,7 @@
 <!ENTITY gdam SYSTEM "dynebolic-gdam.sgml">
 <!ENTITY pd SYSTEM "dynebolic-pd.sgml">
 <!ENTITY pdGEM SYSTEM "dynebolic-pdGEM.sgml">
+<!ENTITY trommler SYSTEM "dynebolic-trommler.sgml">
 <!-- play -->
 <!ENTITY xmms SYSTEM "dynebolic-xmms.sgml">
 <!ENTITY ogg123 SYSTEM "dynebolic-ogg123.sgml">
@@ -44,7 +45,6 @@
 <!-- edit -->
 <!ENTITY audacity SYSTEM "dynebolic-audacity.sgml">
 <!ENTITY rezound SYSTEM "dynebolic-rezound.sgml">
-<!ENTITY gnusound SYSTEM "dynebolic-gnusound.sgml">
 <!-- stream -->
 <!ENTITY muse SYSTEM "dynebolic-muse.sgml">
 <!ENTITY icecast SYSTEM "dynebolic-icecast.sgml">
@@ -103,6 +103,7 @@
 
 <!ENTITY filesystem SYSTEM "dynebolic-filesystem.sgml">
 <!-- files -->
+<!ENTITY gcombust SYSTEM "dynebolic-gcombust.sgml">
 <!ENTITY xwc SYSTEM "dynebolic-xwc.sgml">
 <!ENTITY mc SYSTEM "dynebolic-mc.sgml">
 

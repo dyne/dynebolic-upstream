@@ -1,6 +1,5 @@
 <section>
-<title>HasciiCam</title>
-<subtitle>(h)ascii for the masses!</subtitle>
+<title>HasciiCam :: (h)ascii for the masses!</title>
 
 <!-- manual editors: use this table at the beginning of each
      application entry, compiled with the corresponding data
@@ -42,7 +41,7 @@ year
 
 <!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
 
-<!-- URL  --> <entry> <ulink url="http://ascii.dyne.org">ascii.dyne.org</ulink> </entry>
+<!-- URL  --> <entry> <ulink url="http://ascii.dyne.org"></ulink> </entry>
 <!-- MAN  --> <entry> hasciicam </entry>
 <!-- BY   --> <entry> jaromil </entry>
 <!-- YEAR --> <entry> 2000 </entry>
