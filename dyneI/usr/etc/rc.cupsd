@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "[*] Launching common unix printing system daemon"
+modprobe -k parport 1>/dev/null 2>/dev/null
+modprobe -k lp
+/usr/sbin/cupsd
+

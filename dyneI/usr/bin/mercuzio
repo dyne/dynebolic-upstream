@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+#                                   _       
+# _ __ ___   ___ _ __ ___ _   _ ___(_) ___  
+#| '_ ` _ \ / _ \ '__/ __| | | |_  / |/ _ \ 
+#| | | | | |  __/ | | (__| |_| |/ /| | (_) |
+#|_| |_| |_|\___|_|  \___|\__,_/___|_|\___/ 
+# ciao sono mercuzio, lo script che collega a internet
+# trattami bene, sono tuo amico!
+
+
+ONLINE=0
+
+if [ -z "`ifconfig |grep eth0`" -a -z "`ifconfig | grep ppp0`" ]; then
+  # siamo offline!
+  Xdialog --stdout --wrap --icon "/usr/share/WindowMaker/Icons/HandPunch.xpm" --title "BANDWIDTH TO THE PEOPLE! " --yesno "You want to access an online resource, but you are offline! hey you should connect to the internet, is a cool place out there, you want me to run the network configuration now? or you can also access the modem configuration from the menu and dialup.\n\nSo, should i run netconfig now?" 360x170
+  if [ $? = 0 ]; then
+    netconfig
+  fi
+
+else
+  # siamo online!
+
+  # sta girando phoenix?
+  # mmmm il remote non funziona!
+#  if [ ! -z "`ps ax|grep -i mozilla|grep -v grep`" ]; then
+#    echo "sta girando phoenix, apro con phoenix --remote"
+#    # QUAAAA vedere il comando
+#    phoenix -remote $1
+#  fi
+
+  # allora lancia links
+  links -g $*
+fi
+
+ 

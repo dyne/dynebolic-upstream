@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# This file is released under the GPL Licence version 2 or above
+# Please read the Licence Terms at www.gnu.org
+# jaromil@dyne.org
+#
+# /usr/etc/rc.net: Network initialization script.
+
+# /usr/sbin/dhcpcd -t 20 1>/dev/null 2>/dev/null
+# as of mant suggestions i received, drazen pantic among the others
+# is a better idea to use pump, brings better luck
+
+echo "[*] check for dhcp network"
+/usr/sbin/pump -c /usr/etc/pump.conf 1>/dev/null 2>/dev/null
+
+report="`ifconfig | grep -v "127.0.0.1" | grep inet`"
+if [ ! -z "$report" ]; then
+  echo " .  DHCP network succesfully configured"
+fi
+
+echo "[*] loading point to point protocol kernel modules"
+modprobe -k ppp_generic ppp_async ppp_deflate 1>/dev/null 2>/dev/null
+echo "[*] loading iptables nat and masquerading kernel modules"
+modprobe -k iptables_filter iptables_nat
+# left out: iptables_mangle
+

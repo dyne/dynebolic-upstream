@@ -1,0 +1,249 @@
+#!/bin/sh
+#
+# nidifica - script to NEST dyne:bolic in various forms
+#
+#  * Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
+#  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
+#  * 
+#  * This source code is free software; you can redistribute it and/or
+#  * modify it under the terms of the GNU Public License as published 
+#  * by the Free Software Foundation; either version 2 of the License,
+#  * or (at your option) any later version.
+#  *
+#  * This source code is distributed in the hope that it will be useful,
+#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  * Please refer to the GNU Public License for more details.
+#  *
+#  * You should have received a copy of the GNU Public License along with
+#  * this source code; if not, write to:
+#  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# dynebol.cfg is allways in the root of the filesystem
+# it is an executable shell script creating the following environment variables:
+# DYNEBOL_VERSION="the version of this program"
+# DYNEBOL_NEST="full path to the dynebol.nst"
+# DYNEBOL_ACTIVE="1 or 0" depending if this nest is active or not
+# DYNEBOL_ENCRYPT="the encryption algorithm" (not present if no encryption)
+
+# include necessary library
+# dyne_mount_nest is used to mount the nest once is created
+source /lib/libdyne.sh
+
+VERSION=0.1 
+SUCCESS="/var/log/setup/nidifica.success"
+LOG="/var/log/setup/nidifica.log"
+
+
+rm -f $SUCCESS 2>/dev/null
+
+echo "[*] Nidifica $VERSION - create dyne:bolic nest" | tee $LOG
+echo " .  Copyleft 2003 by jaromil @ dyne.org" | tee -a $LOG
+echo "[*] invoked with args '$@'" >> $LOG
+echo " .  running on `date`" >> $LOG
+
+OPTS=`getopt -o hvm:s:l:e: --long help,version,mode:,size:,loc:,encrypt: \
+      -n 'nidifica' -- "$@"`
+
+eval set -- "$OPTS"
+
+while true; do
+  case "$1" in
+    -h)
+      echo " .  nidifica [-hv] -m hd|usb|fd -s mbytes -l location"
+      echo " .  -v, --version print out application info"
+      echo " .  -h, --help    print this small usage guide"
+      echo " .  -m, --mode    choose nest mode (hd=hdisk, usb=usbkey, fd=floppy)"
+      echo " .  -s, --size    size of nest in megabytes"
+      echo " .  -l, --loc     location where to nest, varies with modes:"
+      echo " .                hd = mounted directory, usb & fd = device"
+      echo " .  -e, --encrypt encrypt nest with algo (see man losetup)"
+      exit 2
+      ;;
+    -v)
+      exit 2
+      ;;
+    -m)
+      MODE=$2
+      shift 2
+      ;;
+    -s)
+      SIZE=$2
+      shift 2
+      ;;
+    -l)
+      LOCATION=$2
+      shift 2
+      ;;
+    -e)
+      ENCRYPT=$2
+      shift 2
+      ;;
+    --) shift; break ;;
+    *) echo "[!] error in given options"; exit 1 ;;
+  esac
+done
+
+# check presence of all needed parameters
+FATAL=0
+if [ -z $MODE ]; then
+  echo "[!] must specify mode" | tee -a $LOG
+  FATAL=1
+fi
+if [ -z $LOCATION ]; then
+  echo "[!] must specify location" | tee -a $LOG
+  FATAL=1
+else
+  if [ -e "$LOCATION/$DYNEBOL_CFG" ]; then
+    echo "[!] file $LOCATION/$DYNEBOL_CFG allready exists" | tee -a $LOG
+    FATAL=1
+  fi
+  if [ -e "$LOCATION/$DYNEBOL_NST" ]; then
+    echo "[!] file $LOCATION/$DYNEBOL_NST allready exists" | tee -a $LOG
+    FATAL=1
+  fi
+fi
+if [ $FATAL == 1 ]; then
+  echo " .  fatal error, abort operation" | tee -a $LOG
+  sleep 4
+  exit 1
+fi
+
+case "$MODE" in 
+  
+  hd)
+    echo "--- harddisk nesting" | tee -a $LOG
+    sleep 1
+
+    if [ -z $SIZE ]; then
+      echo "[!] must specify size" | tee -a $LOG
+      exit 1
+    fi
+
+    # everything ok, here we go
+
+    echo "[*] setup nest configuration in ${LOCATION}/${DYNEBOL_CFG}"
+    cat <<EOF > "$LOCATION/$DYNEBOL_CFG"
+export DYNEBOL_VERSION="$VERSION"
+export DYNEBOL_NEST="$LOCATION/$DYNEBOL_NST"
+export DYNEBOL_ACTIVE=1
+EOF
+    if ! [ -z $ENCRYPT ]; then
+	echo "export DYNEBOL_ENCRYPT=\"$ENCRYPT\"" >> "$LOCATION/$DYNEBOL_CFG"
+    fi
+
+    # configuration file is created!
+
+    SIZE_4k=` echo "($SIZE*1000)/4"|bc`
+    echo "[*] generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)" | tee -a $LOG
+    echo " .  dd if=/dev/zero of=${LOCATION}/${DYNEBOL_NST} bs=4k count=$SIZE_4k" | tee -a $LOG
+    dd if=/dev/zero of="$LOCATION/$DYNEBOL_NST" bs=4k count="$SIZE_4k"
+    sleep 1
+
+
+    if [ $? == 0 -a -e ${LOCATION}/${DYNEBOL_NST} ]; then
+      echo " .  OK: `ls -l ${LOCATION}/${DYNEBOL_NST}`" | tee -a $LOG
+    else
+      echo "[!] dd reported error, operation failed" | tee -a $LOG
+      rm "$LOCATION/$DYNEBOL_CFG"
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] mounting loopback device" | tee -a $LOG
+    sleep 1
+    if ! [ -z $ENCRYPT ]; then
+      echo " .  using AES 128bit encryption" | tee -a $LOG
+      echo " .  YOU MUST INSERT YOUR ENCRYPTION PASSPHRASE NOW" | tee -a $LOG
+      echo " .   =====  CAN'T BE LESS THAN 20 LETTERS! ====="   | tee -a $LOG
+      sleep 1
+      losetup -e "$ENCRYPT" -T /dev/loop6 "$LOCATION/$DYNEBOL_NST"
+      # here password gets asked twice by the losetup program
+      # input from user is taken from stdin
+    else
+      losetup /dev/loop6 "$LOCATION/$DYNEBOL_NST"
+    fi
+    
+    if [ $? == 0 ]; then
+      if ! [ -z $ENCRYPT ]; then
+        echo " .  OK, REMEMBER YOUR PASSPHRASE OR YOU WILL LOOSE" | tee -a $LOG
+        echo " .  ALL THE DATA CONTAINED IN THIS NEST !" | tee -a $LOG
+      fi
+    else
+      echo "[!] losetup reported error, operation failed" | tee -a $LOG
+      rm "$LOCATION/$DYNEBOL_NST"
+      rm "$LOCATION/$DYNEBOL_CFG"
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] creating the EXT2 internal filesystem" | tee -a $LOG
+    sleep 1
+    mkfs -t ext2 -L "dyne:bolic nest" /dev/loop6
+    if [ $? == 0 ]; then
+      echo " .  OK, loopback device succesfully formatted" | tee -a $LOG
+    else
+      echo "[!] mkfs reported error, operation aborted" | tee -a $LOG
+      losetup -d /dev/loop6
+      rm "$LOCATION/$DYNEBOL_NST"
+      rm "$LOCATION/$DYNEBOL_CFG"
+      sleep 4
+      exit 1
+    fi
+
+    echo "[*] mount the nest for the first time" | tee -a $LOG
+    if [ -z $ENCRYPT ]; then
+      mount -o loop /dev/loop6 /mnt/nest
+    else
+      echo " .  please enter once again your password"
+      mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
+      while [ $? != 0 ]; then
+        echo "[!] wrong password! retype it correct (ctrl-c to abort)"
+        mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
+      done
+    fi
+
+    echo -n "[*] populating nest: "
+    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
+    echo -n "home, "
+    cp -a /etc /mnt/nest
+    echo -n "etc"
+    umount /mnt/nest
+
+    echo "[*] done!" | tee -a $LOG
+    sleep 1
+    losetup -d /dev/loop6
+
+
+    dyne_mount_nest "$LOCATION/$DYNEBOL_CFG"
+
+    
+    echo " .  your new dyne:bolic nest is in $LOCATION/$DYNEBOL_NST" | tee -a $LOG
+    echo " .  `file $LOCATION/$DYNEBOL_NST`" | tee -a $LOG | tee $SUCCESS
+    echo " .  this nest is configured in file $LOCATION/$DYNEBOL_CFG" | tee -a $LOG
+    
+    echo >> $LOG
+    echo "# configuration file follows:" >> $LOG
+    echo >> $LOG
+    cat "$LOCATION/$DYNEBOL_CFG" >> $LOG
+    
+    
+    ;;
+
+
+  usb)
+    echo "[*] usb key nesting"
+    ;;
+  fd)
+    echo "[*] floppy nesting"
+    ;;
+  *)
+    echo "[!] error in mode, must be 'hd' | 'usb' | 'fd'"
+    echo " .  see help for more informations"
+    exit 1
+    ;;
+esac
+
+sleep 5
+exit 0
+

@@ -1,0 +1,185 @@
+{
+  Dock = {
+    Applications768 = (
+      {
+        Name = Logo.WMDock;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        PasteCommand = "gqview /home";
+        Name = .ome;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /home";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = cd4.CdRom;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /rem/cd4";
+        Position = "0,4";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = fd5.FloppyDisk;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /rem/fd0";
+        Position = "0,5";
+        Forced = No;
+        BuggyApplication = No;
+      }
+    );
+    Lowered = No;
+    Position = "-32,0";
+    Applications = (
+      {
+        Name = Logo.WMDock;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        PasteCommand = "gqview /home";
+        Name = .ome;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /home";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = cd4.CdRom;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /rem/cd4";
+        Position = "0,4";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = fd5.FloppyDisk;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /rem/fd0";
+        Position = "0,5";
+        Forced = No;
+        BuggyApplication = No;
+      }
+    );
+  };
+  Clip = {
+    Name = Logo.WMClip;
+    DropCommand = "wmsetbg -u -t %d";
+    Lock = No;
+    AutoLaunch = No;
+    Command = "-";
+    Position = "0,0";
+    Forced = No;
+    BuggyApplication = No;
+  };
+  Workspace = "DESK 1";
+  Workspaces = (
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 1";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 2";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 3";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 4";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 5";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 6";
+    }
+  );
+  Applications = (
+    {
+      Hidden = No;
+      ShortcutMask = 0;
+      Name = gkrellm2.Gkrellm2;
+      Geometry = "62x241+961+480";
+      Workspace = "DESK 1";
+      Shaded = No;
+      Miniaturized = No;
+      Command = "gkrellm2 -t /usr/lib/gkrellm2/themes/CaiusWM -g -0-0";
+    },
+    {
+      Hidden = No;
+      ShortcutMask = 0;
+      Name = gkrellm2.Gkrellm2;
+      Geometry = "54x247+969+480";
+      Workspace = "DESK 1";
+      Shaded = No;
+      Miniaturized = No;
+      Command = "gkrellm2 -t /usr/lib/gkrellm2/themes/CaiusWM -g -0-0";
+    }
+  );
+}

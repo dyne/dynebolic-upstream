@@ -1,0 +1,169 @@
+#!/bin/sh
+#
+# rc.pcmcia 1.23 1998/07/18 18:49:26 (David Hinds)
+#
+# This is designed to work in BSD as well as SysV init setups.  See
+# the HOWTO for customization instructions.
+#
+# the probing routine was modified by jaromil 2002/08/03
+# to probe all available modules and remove the ones not fitting
+
+usage()
+{
+    echo "Usage: $0 {start|stop|restart}"
+}
+
+cleanup()
+{
+    while read SN CLASS MOD INST DEV EXTRA ; do
+	if [ "$SN" != "Socket" ] ; then
+	    /etc/pcmcia/$CLASS stop $DEV 2> /dev/null
+	fi
+    done
+}
+
+
+# check if a pcmcia controller exists
+HAVE_PCMCIA=`lspci | grep CardBus`
+if [ -z "$HAVE_PCMCIA" ]; then
+ echo "[*] no PCMCIA controller detected"
+ exit 1
+fi
+
+# Allow environment variables to override all options
+# if [ "$PCMCIA" ] ; then readonly PCMCIA ; fi
+# if [ "$PCIC" ] ; then readonly PCIC ; fi
+# if [ "$PCIC_OPTS" ] ; then readonly PCIC_OPTS ; fi
+# if [ "$CORE_OPTS" ] ; then readonly CORE_OPTS ; fi
+# if [ "$CARDMGR_OPTS" ] ; then readonly CARDMGR_OPTS ; fi
+# if [ "$SCHEME" ] ; then readonly SCHEME ; fi
+
+# Source PCMCIA configuration, if available
+if [ -f /etc/pcmcia.conf ] ; then
+    . /etc/pcmcia.conf
+elif [ -f /etc/sysconfig/pcmcia ] ; then
+    . /etc/sysconfig/pcmcia
+    if [ "$PCMCIA" != "yes" ] ; then exit 0 ; fi
+else
+    # Should be either i82365 or tcic.  The "probe" option is a Slackware
+    # addition which tries loading both modules; usually one or the other
+    # will load if a PCMCIA subsystem is present.  Of course, the correct
+    # thing to do is to pick i82365 or tcic manually.
+#    PCIC=i82365
+#    PCIC=tcic
+    PCIC=probe
+    # Put socket driver timing parameters here.  
+    # "poll_interval=100" will save an IRQ.
+    PCIC_OPTS="poll_interval=100"
+    # Put pcmcia_core options here
+    CORE_OPTS=
+    # Put cardmgr options here
+    CARDMGR_OPTS=-q
+    # To set the PCMCIA scheme at startup...
+    SCHEME=
+fi
+
+EXITCODE=1
+for x in "1" ; do
+
+    if [ "$PCIC" = "" ] ; then
+	echo "PCIC not defined in rc.pcmcia!"
+	break
+    fi
+
+    if [ $# -lt 1 ] ; then usage ; break ; fi
+    action=$1
+
+    case "$action" in
+
+    'start')
+	echo "[*] detecting PCMCIA services"
+	SC=/var/run/pcmcia-scheme
+	if [ -L $SC -o ! -O $SC ] ; then rm -f $SC ; fi
+	if [ ! -f $SC ] ; then umask 022 ; echo > $SC ; fi
+        if [ "$SCHEME" ] ; then umask 022 ; echo $SCHEME > $SC ; fi
+	fgrep -q pcmcia /proc/devices
+	if [ $? -ne 0 ] ; then
+	    PC=/lib/modules/`uname -r`/pcmcia
+	    if [ -d $PC ] ; then
+		echo " .  probing modules"
+		modprobe -k pcmcia_core 1>/dev/null 2>/dev/null
+                if [ "$PCIC" = "probe" ]; then # attempt to load all 
+		    cd $PC
+		    for prcd in ./*; do
+		       /usr/sbin/insmod $prcd $PCIC_OPT 1>/dev/null 2>/dev/null
+                       if [ ! $? = 0 ]; then 
+		          /usr/sbin/rmmod $prcd 1>/dev/null 2>/dev/null
+                       fi
+		    done
+		    cd -
+                else # PCIC has been selected manually
+		    /usr/sbin/insmod $PC/$PCIC.o $PCIC_OPTS
+                fi
+		/usr/sbin/insmod $PC/ds.o
+	    else
+		echo "[W] module directory $PC not found."
+		break
+	    fi
+fi
+	if [ -s /var/run/cardmgr.pid ] && \
+	   kill -0 `cat /var/run/cardmgr.pid` 2>/dev/null ; then
+	    echo "[W] cardmgr is already running."
+	else
+	    if [ -r /var/run/stab ] ; then
+		cat /var/run/stab | cleanup
+	    fi
+	    echo " .  launching cardmgr"
+	    /usr/sbin/cardmgr $CARDMGR_OPTS
+	fi
+	if [ -d /var/lock/subsys ] ; then
+	    touch /var/lock/subsys/pcmcia
+	fi
+	;;
+
+    'stop')
+	echo "[*] Shutting down PCMCIA services"
+	PID=`cat /var/run/cardmgr.pid`
+	kill $PID
+	echo " .  killing cardmgr"
+        # Give cardmgr a few seconds to handle the signal
+        kill -0 $PID 2>/dev/null && sleep 2 && \
+        kill -0 $PID 2>/dev/null && sleep 2 && \
+        kill -0 $PID 2>/dev/null && sleep 2 && \
+        kill -0 $PID 2>/dev/null
+	if fgrep -q "ds  " /proc/modules ; then
+	    echo " .  removing modules"
+	    /usr/sbin/rmmod ds
+            if [ "$PCIC" = "probe" ]; then
+                /usr/sbin/rmmod i82365
+                /usr/sbin/rmmod tcic
+            else
+                /usr/sbin/rmmod $PCIC
+            fi
+	    /usr/sbin/rmmod pcmcia_core
+	fi
+	rm -f /var/lock/subsys/pcmcia
+	EXITCODE=0
+	;;
+
+    'restart')
+	$0 stop
+	$0 start
+	EXITCODE=0
+	;;
+
+    *)
+	usage
+	;;
+
+    esac
+
+done
+
+sleep 1
+
+
+# Only exit if we're in our own subshell
+if [ "${0##*/}" = "rc.pcmcia" ] ; then
+    exit $EXITCODE
+fi

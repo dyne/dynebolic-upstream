@@ -1,0 +1,94 @@
+#!/bin/sh
+#
+# wireless network 1.63 2000/02/09 03:12:42 (David Hinds/Jean Tourrilhes)
+#
+# Specific configuration of a PCMCIA wireless LAN adapter
+#
+# This script is invoked automatically by the network script; it should
+# not be executed by hand.
+#
+# Note : it would be real cool to have the name of the driver as part
+# of the extended device address
+#
+
+# Load site-specific settings
+if [ -x ./wireless.opts ] ; then
+    . ./wireless.opts
+else
+    . /etc/pcmcia/wireless.opts
+fi
+
+# Find the path where wireless tools are installed
+for IWPATH in /usr/{bin,sbin} /usr/local/{bin,sbin} /sbin ; do
+    if [ -x $IWPATH/iwconfig ] ; then break ; fi
+done
+
+case "$ACTION" in
+
+'start')
+    # Set all desired settings via iwconfig
+
+    # Mode need to be first : some settings apply only in a specific mode !
+    if [ "$MODE" ] ; then
+	$IWPATH/iwconfig $DEVICE mode $MODE
+    fi
+    # This is a bit hackish, but should do the job right...
+    if [ "$ESSID" ] || [ "$MODE" ] ; then
+        NICKNAME=`/bin/hostname`
+	$IWPATH/iwconfig $DEVICE nick $NICKNAME >/dev/null 2>&1
+    fi
+    # Regular stuff...
+    if [ "$NWID" ] ; then
+	$IWPATH/iwconfig $DEVICE nwid $NWID
+    fi
+    if [ "$FREQ" ] ; then
+	$IWPATH/iwconfig $DEVICE freq $FREQ
+    elif [ "$CHANNEL" ] ; then
+	$IWPATH/iwconfig $DEVICE channel $CHANNEL
+    fi
+    if [ "$SENS" ] ; then
+	$IWPATH/iwconfig $DEVICE sens $SENS
+    fi
+    if [ "$RATE" ] ; then
+	$IWPATH/iwconfig $DEVICE rate $RATE
+    fi
+    if [ "$KEY" ] ; then
+	$IWPATH/iwconfig $DEVICE key $KEY
+    fi
+    if [ "$RTS" ] ; then
+	$IWPATH/iwconfig $DEVICE rts $RTS
+    fi
+    if [ "$FRAG" ] ; then
+	$IWPATH/iwconfig $DEVICE frag $FRAG
+    fi
+    # More specific parameters
+    if [ "$IWCONFIG" ] ; then
+	$IWPATH/iwconfig $DEVICE $IWCONFIG
+    fi
+    if [ "$IWSPY" ] ; then
+	$IWPATH/iwspy $DEVICE $IWSPY
+    fi
+    if [ "$IWPRIV" ] ; then
+	$IWPATH/iwpriv $DEVICE $IWPRIV
+    fi
+    # ESSID need to be last : most device re-perform the scanning/discovery
+    # when this is set, and things like encryption keys are better be
+    # defined if we want to discover the right set of APs/nodes.
+    if [ "$ESSID" ] ; then
+	$IWPATH/iwconfig $DEVICE essid "$ESSID"
+    fi
+    ;;
+
+'cksum')
+    chk_simple "$NEW_SCHEME,$SOCKET,$INSTANCE,$HWADDR"
+    WIRELESS=$?
+    ;;
+
+'stop'|'check'|'restart'|'suspend'|'resume')
+    ;;
+
+*)
+    usage
+    ;;
+
+esac

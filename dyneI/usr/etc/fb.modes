@@ -1,0 +1,96 @@
+# These are 72Hz vertical standard VESA modes. Unfortunately, all of them cannot 
+# be centered simultaneously on my EIZO F764M... If somebody wants to tweak file
+# to be more compatible with silly monitors, feel free to do it
+
+mode "vesa100-72"
+    # H: 32.402 kHz, V: 71.845 Hz
+    geometry 640 400 640 400 8
+    timings 35720 96 32 37 8 96 6
+    vsync high
+endmode
+
+mode "vesa101-72"
+    # H: 38.157 kHz, V: 71.858 Hz
+    geometry 640 480 640 480 8
+    timings 30333 96 32 37 8 96 6
+endmode
+
+mode "vesa111-72"
+    # H: 38.157 kHz, V: 71.858 Hz
+    geometry 640 480 640 480 16
+    timings 30333 96 32 37 8 96 6
+endmode
+
+mode "vesa112-72"
+    # H: 38.157 kHz, V: 71.858 Hz
+    geometry 640 480 640 480 32
+    timings 30333 96 32 37 8 96 6
+endmode
+
+mode "vesa103-72"
+    # H: 45.277 kHz, V: 71.982 Hz
+    geometry 800 600 960 600 8
+    timings 20300 128 32 32 8 128 5
+endmode
+
+mode "vesa114-72"
+    # H: 45.277 kHz, V: 71.982 Hz
+    geometry 800 600 800 600 16
+    timings 20300 128 32 32 8 128 5
+endmode
+
+mode "vesa115-72"
+    # H: 45.277 kHz, V: 71.982 Hz
+    geometry 800 600 800 600 32
+    timings 20300 128 32 32 8 128 5
+endmode
+
+mode "vesa105-72"
+    # H: 58.083 kHz, V: 71.974 Hz
+    geometry 1024 768 1024 768 8
+    timings 12810 160 32 32 3 128 4
+endmode
+
+mode "vesa117-72"
+    # H: 58.083 kHz, V: 71.974 Hz
+    geometry 1024 768 1024 768 16
+    timings 12810 160 32 32 3 128 4
+endmode
+
+mode "vesa118-72"
+    # H: 58.083 kHz, V: 71.974 Hz
+    geometry 1024 768 1024 768 32
+    timings 12810 160 32 32 3 128 4
+endmode
+
+
+mode "vesa107-32"
+    # H: 75.156 kHz, V: 72.196 Hz
+    geometry 1280 1024 1280 1024 8
+    timings 7700 288 32 14 1 128 2
+endmode
+
+mode "vesa11A-72"
+    # H: 75.156 kHz, V: 72.196 Hz
+    geometry 1280 1024 1280 1024 16
+    timings 7700 288 32 14 1 128 2
+endmode
+
+mode "vesa11B-72"
+    # H: 75.156 kHz, V: 72.196 Hz
+    geometry 1280 1024 1280 1024 32
+    timings 7700 288 32 14 1 128 2
+endmode
+
+mode "vesa11C-72"
+    # H: 91.558 kHz, V: 72.264 Hz
+    geometry 1600 1200 1600 1200 8
+    timings 5333 256 32 49 10 160 8
+endmode
+
+mode "vesa11E-72"
+    # H: 91.558 kHz, V: 72.264 Hz
+    geometry 1600 1200 1600 1200 16
+    timings 5333 256 32 49 10 160 8
+endmode
+

@@ -1,0 +1,117 @@
+# Wireless LAN adapter configuration
+#
+# The address format is "scheme,socket,instance,hwaddr".
+#
+# Theory of operation : all the Wireless specific configuration is done
+# through the Wireless Extensions, so we will just call 'iwconfig' with
+# the right parameters defined below.
+# Of course, you need to have iwconfig installled on your system.
+# To download iwconfig, or for more info on Wireless Extensions :
+#	http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
+#
+# Note : you don't need to fill all parameters, leave them blank, in most
+# cases the driver will initialise itself with sane defaults values or
+# automatically figure out the value... And not all drivers do support
+# all settings...
+#
+# Finally, send comments and flames to me, Jean Tourrilhes <jt@hpl.hp.com>
+#
+
+case "$ADDRESS" in
+
+# NOTE : Remove the following four lines to activate the samples below ...
+# --------- START SECTION TO REMOVE -----------
+#*,*,*,*)
+#    ;;
+# ---------- END SECTION TO REMOVE ------------
+
+# Here are a few examples with a few Wireless LANs supported...
+
+# Lucent Wavelan IEEE
+# Note : wvlan_cs driver only, and version 1.0.4+ for encryption support
+*,*,*,00:60:1D:*)
+    INFO="Wavelan IEEE example (Lucent default settings)"
+    ESSID="Wavelan Network"
+    MODE="Managed"
+    RATE="auto"
+    KEY="s:secu1"
+    ;;
+
+# Raytheon Raylink/WebGear Aviator2.4 (end with 8F or F1 !)
+# Note : driver version 1.70+ only
+*,*,*,00:00:8F:*)
+    INFO="Raylink/Aviator2.4 example (Aviator default ad-hoc setting)"
+    ESSID="ADHOC_ESSID"
+    MODE="Ad-Hoc"
+    RATE="auto"
+    IWPRIV="set_framing 1"
+    ;;
+
+# Old Lucent Wavelan
+*,*,*,08:00:0E:*)
+    INFO="Wavelan example (Lucent default settings)"
+    NWID="0100"
+    MODE="Ad-Hoc"
+    FREQ="2.425G"
+    KEY="off"
+    ;;
+
+# Netwave (Xircom Netwave/Netwave Airsurfer)
+*,*,*,00:80:C7:*)
+    INFO="Netwave example (Netwave default settings)"
+    NWID="100"
+    KEY="00"
+    ;;
+
+# Proxim RangeLan2/Symphony (what is the MAC address ???)
+*,*,*,XX:XX:XX:*)
+    INFO="Proxim RangeLan2/Symphony example"
+    NWID="0"
+    MODE="Master"
+    CHANNEL="15"
+    IWPRIV="setsubchan 1"
+    ;;
+
+# No Wires Needed Swallow 550 and 1100 setting (what is the MAC address ???)
+*,*,*,XX:XX:XX:*)
+    INFO="NWN Swallow example"
+    ESSID="session"
+    KEY="0000-0000-00 open"
+    ;;
+
+# Symbol Spectrum24 setting (what is the MAC address ???)
+*,*,*,XX:XX:XX:*)
+    INFO="Symbol Spectrum24 example"
+    ESSID="Essid string"
+    ;;
+
+# Generic example (decribe all possible settings)
+*,*,*,*)
+    INFO="Fill with your own settings..."
+    # ESSID (extended network name) : My Network, any
+    ESSID=""
+    # NWID/Domain (cell identifier) : 89AB, 100, off
+    NWID=""
+    # Operation mode : Ad-Hoc, Managed, Master, Repeater, Secondary, auto
+    MODE=""
+    # Frequency or channel : 1, 2, 3 (channel) ; 2.422G, 2.46G (frequency)
+    FREQ=""
+    CHANNEL=""
+    # Sensitivity (cell size + roaming speed) : 1, 2, 3 ; -70 (dBm)
+    SENS=""
+    # Bit rate : auto, 1M, 11M
+    RATE=""
+    # Encryption key : 4567-89AB-CD, s:password
+    KEY=""
+    # RTS threshold : off, 500
+    RTS=""
+    # Fragmentation threshold : off, 1000
+    FRAG=""
+    # Other iwconfig parameters : power off, ap 01:23:45:67:89:AB
+    IWCONFIG=""
+    # iwspy parameters : + 01:23:45:67:89:AB
+    IWSPY=""
+    # iwpriv parameters : set_port 2, set_histo 50 60
+    IWPRIV=""
+    ;;
+esac

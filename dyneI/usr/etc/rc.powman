@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# /etc/rc.d/rc.powman: Power Manager initialization script.
+#
+# 19 Jul 2002 by RageMan <elsergente@discussioni.org>
+# 24 Jul 2002 - tweaks by jaromil
+
+apmpath=/usr/lib/modules/`uname -r`/kernel/arch/i386/kernel/apm.o
+acpipath=/usr/lib/modules/`uname -r`/kernel/drivers/acpi/ospm/busmgr/ospm_busmgr.o
+tmpfile=/tmp/tmp.powman
+probed=none
+
+function apmprobe(){
+
+if [ -f $apmpath ]; then
+
+	modprobe -k apm 2>$tmpfile 1>/dev/null
+	out=`cat $tmpfile | grep "No such device"`
+
+		if [ -z "$out" ]; then
+			echo "[*] Found Advanced Power Management device"
+			echo " .  Starting APM daemon"
+			/usr/sbin/apmd
+			rm $tmpfile
+			probed=yes
+		fi
+else
+	echo "[!] No APM support in kernel"
+fi
+
+}
+
+function acpiprobe(){
+
+if [ -f $acpipath ]; then
+
+	modprobe -k ospm_busmgr 2>$tmpfile 1>/dev/null
+	out=`cat $tmpfile | grep "No such device"`
+
+		if [ -z "$out" ]; then
+			echo "[*] Found ACPI device"
+			echo " .  Loading ACPI features"
+				for f in `ls --color=none /usr/lib/modules/2.4.19/kernel/drivers/acpi/ospm/`;
+					do
+						if [ "$f" != "busmgr" ]; then
+							modprobe -k "ospm_$f" 2>/dev/null 1>/dev/null
+						fi
+				done
+
+			if [ -x /etc/rc.acpid ]; then
+				/etc/rc.acpid start 2>/dev/null
+			fi
+
+			rm $tmpfile
+			probed=yes
+		fi
+else
+	echo "[!] No ACPI support in kernel"
+
+fi
+}
+
+
+if [ $probed = none ]; then
+	apmprobe
+fi
+
+# i try to deactivate acpi in the kernel because of some
+# problems on some laptops and computers, so i take
+# out this //jrml 27 aprile 2003 for the 1.0alpha5
+#if [ $probed = none ]; then
+#	acpiprobe
+#fi
+
+if [ $probed = none ]; then
+	echo "[*] System doesn't support power management"
+	rm $tmpfile
+fi

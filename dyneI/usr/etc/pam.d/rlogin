@@ -1,0 +1,11 @@
+#%PAM-1.0
+# For root login to succeed here with pam_securetty, "rlogin" must be
+# listed in /etc/securetty.
+auth       required	/lib/security/pam_nologin.so
+auth       required	/lib/security/pam_securetty.so
+auth       required     /lib/security/pam_env.so
+auth       sufficient	/lib/security/pam_rhosts_auth.so
+auth       required	/lib/security/pam_stack.so service=system-auth
+account    required	/lib/security/pam_stack.so service=system-auth
+password   required	/lib/security/pam_stack.so service=system-auth
+session    required	/lib/security/pam_stack.so service=system-auth

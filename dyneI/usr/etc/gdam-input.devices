@@ -1,0 +1,4 @@
+/dev/midi none GdamMidiDevice
+/dev/snd/controlC0 none GdamAlsaMidiDevice
+/dev/rangefinder none GdamRangeFinder
+/dev/psaux none GdamPs2Keyboard

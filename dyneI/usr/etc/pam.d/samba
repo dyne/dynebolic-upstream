@@ -1,0 +1,7 @@
+#%PAM-1.0
+# $Header$
+# pam_smbpass.so authenticates against the smbpasswd file
+auth       required     pam_smbpass.so nodelay
+account    required     pam_pwdb.so audit nodelay
+session    required     pam_pwdb.so nodelay
+password   required     pam_smbpass.so nodelay smbconf=/etc/samba/smb.conf

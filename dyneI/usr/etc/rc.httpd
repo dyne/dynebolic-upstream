@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "[*] starting http boa daemon"
+boa -c /var/boa/htdocs -f /var/boa/boa.conf
+

@@ -1,0 +1,24 @@
+# Pango Modules file
+# Automatically generated file, do not edit
+#
+# ModulesPath = /usr/lib/pango/1.0.0/modules
+#
+/usr/lib/pango/1.0.0/modules/pango-arabic-x.so ArabicScriptEngineX PangoEngineShape PangoRenderX 1547-1747:*
+/usr/lib/pango/1.0.0/modules/pango-arabic-xft.so ArabicScriptEngineXft PangoEngineShape PangoRenderXft 1548-1785:*
+/usr/lib/pango/1.0.0/modules/pango-arabic-ft2.so ArabicScriptEngineFt2 PangoEngineShape PangoRenderFT2 1548-1785:*
+/usr/lib/pango/1.0.0/modules/pango-basic-x.so BasicScriptEngineX PangoEngineShape PangoRenderX 0-687:* 688-767: 896-1423:* 1425-1524: 1548-1785: 3585-3675: 4256-4351:* 4608-5887:* 7680-8191:* 8192-13311:* 13312-40869:* 40960-42182:* 44032-55203:kr 57344-63470:* 63744-64011:kr 65280-65517:*
+/usr/lib/pango/1.0.0/modules/pango-basic-xft.so BasicScriptEngineXft PangoEngineShape PangoRenderXft 896-1423:* 1425-1524: 1548-1785: 3585-3675: 4256-4351:* 4608-5887:* 7680-8191:* 8192-40959:* 44032-55203:kr 63744-64011:kr 65280-65507:* 0-65535:
+/usr/lib/pango/1.0.0/modules/pango-basic-ft2.so BasicScriptEngineFT2 PangoEngineShape PangoRenderFT2 0-687:* 688-767: 896-1423:* 1425-1524: 1548-1785: 3585-3675: 7680-8191:* 8192-40959:* 44032-55203:kr 63744-64011:kr 65280-65507:*
+/usr/lib/pango/1.0.0/modules/pango-hangul-x.so HangulScriptEngineX PangoEngineShape PangoRenderX 4352-4607:* 44032-55203:*
+/usr/lib/pango/1.0.0/modules/pango-myanmar-x.so MyanmarScriptEngineX PangoEngineShape PangoRenderX 4096-4223:*
+/usr/lib/pango/1.0.0/modules/pango-gurmukhi-x.so GurmukhiScriptEngineX PangoEngineShape PangoRenderX 2560-2687:*
+/usr/lib/pango/1.0.0/modules/pango-bengali-x.so BengaliScriptEngineX PangoEngineShape PangoRenderX 2432-2559:*
+/usr/lib/pango/1.0.0/modules/pango-devanagari-x.so DevanagariScriptEngineX PangoEngineShape PangoRenderX 2304-2431:* 8205-8205:*
+/usr/lib/pango/1.0.0/modules/pango-gujarati-x.so GujaratiScriptEngineX PangoEngineShape PangoRenderX 2688-2815:* 8205-8205:*
+/usr/lib/pango/1.0.0/modules/pango-tamil-x.so TamilScriptEngineX PangoEngineShape PangoRenderX 2944-3071:*
+/usr/lib/pango/1.0.0/modules/pango-tamil-xft.so TamilScriptEngineXft PangoEngineShape PangoRenderXft 2944-3071:*
+/usr/lib/pango/1.0.0/modules/pango-thai-x.so ThaiScriptEngineX PangoEngineShape PangoRenderX 3585-3675:*
+/usr/lib/pango/1.0.0/modules/pango-thai-xft.so ThaiScriptEngineXft PangoEngineShape PangoRenderXft 3585-3675:*
+/usr/lib/pango/1.0.0/modules/pango-hebrew-x.so HebrewScriptEngineX PangoEngineShape PangoRenderX 1425-1524:*
+/usr/lib/pango/1.0.0/modules/pango-hebrew-ft2.so HebrewScriptEngineFT2 PangoEngineShape PangoRenderFT2 1425-1524:*
+/usr/lib/pango/1.0.0/modules/pango-hebrew-xft.so HebrewScriptEngineXft PangoEngineShape PangoRenderXft 1425-1524:*

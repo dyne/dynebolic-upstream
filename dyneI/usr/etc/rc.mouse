@@ -1,0 +1,48 @@
+#!/bin/sh
+# Boliconf
+#
+# Written by:
+# Denis Rojo aka jaromil <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+# if there are some mouse stuff, it runs gpm adequately
+
+if [ -r /dev/psaux ]; then
+  echo "[*] PS/2 mouse detected"
+  /usr/bin/gpm -R msc -m /dev/psaux -t ps2
+elif [ -r /dev/ttyS0 ]; then
+  echo "[*] Serial mouse on ttyS0 (COM:0)"
+  /usr/bin/gpm -R msc -m /dev/ttyS0 -t bare
+fi
+
+if [ "`lspci|grep USB`" ]; then
+  echo "[*] detecting usb mouse"
+  modprobe -k hid 1>/dev/null 2>/dev/null
+  modprobe -k mousedev 1>/dev/null 2>/dev/null
+  modprobe -k usbmouse 1>/dev/null 2>/dev/null
+  if [ -r /dev/input/mice ]; then
+    /usr/bin/gpm -R msc -m /dev/input/mice -t ps2
+  fi
+fi
+
+if ! [ -r /dev/gpmdata ]; then
+  echo "[!] Failed to detect mouse"
+  echo "[!] you need either a PS/2 mouse or a serial mouse,"
+  echo "[!] if you have a serial mouse you must connect it"
+  echo "[!] to the first serial controller (COM:0 or ttyS0)"
+  sleep 5
+fi
+

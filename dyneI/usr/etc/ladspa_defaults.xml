@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<Ladspa-Plugin-Settings>
+  <Ladspa-Plugin-Settings preset_name="default">
+    <Plugin plugin_id="1062" name="Feedback Delay Line (Maximum Delay 60s)">
+      <Control-Port index="0" name="Delay (Seconds)" value="0.000000"/>
+      <Control-Port index="1" name="Dry/Wet Balance" value="0.000000"/>
+      <Control-Port index="2" name="Feedback" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1182" name="Mono Overdrive">
+      <Control-Port index="0" name="Amps limit (in dB relative to nominal 0)" value="0.000000"/>
+      <Control-Port index="1" name="Drive level" value="0.000000"/>
+      <Control-Port index="2" name="Low density colouration" value="0.000000"/>
+      <Control-Port index="3" name="High density colouration" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1181" name="Simple amplifier">
+      <Control-Port index="0" name="Amps gain (in dB)" value="0.934530"/>
+    </Plugin>
+    <Plugin plugin_id="1183" name="Stereo Overdrive">
+      <Control-Port index="0" name="Amps limit (in dB relative to nominal 0)" value="0.000000"/>
+      <Control-Port index="1" name="Drive level" value="0.000000"/>
+      <Control-Port index="2" name="Low density colouration" value="0.000000"/>
+      <Control-Port index="3" name="High density colouration" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1185" name="Diode processor">
+      <Control-Port index="0" name="Mode (0 for none, 1 for half wave, 2 for full wave)" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1186" name="Audio divider (suboctave generator)">
+      <Control-Port index="0" name="Denominator" value="2.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1187" name="Wave shaper">
+      <Control-Port index="0" name="Waveshape" value="-0.306862"/>
+    </Plugin>
+    <Plugin plugin_id="1188" name="2 input ringmod">
+      <Control-Port index="0" name="Modulation depth (0=none, 1=AM, 2=RM)" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1190" name="Comb filter">
+      <Control-Port index="0" name="Band seperation (Hz)" value="43.221039"/>
+      <Control-Port index="1" name="Feedback" value="0.0"/>
+    </Plugin>
+    <Plugin plugin_id="1193" name="Pitch Scaler">
+      <Control-Port index="0" name="Pitch co-eficient" value="0.902500"/>
+    </Plugin>
+    <Plugin plugin_id="1194" name="High Quality Pitch Scaler">
+      <Control-Port index="0" name="Pitch co-eficient" value="1.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1196" name="Fast overdrive">
+      <Control-Port index="0" name="Drive level" value="1.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1197" name="Multiband EQ">
+      <Control-Port index="0" name="50Hz gain (low shelving)" value="-0.700966"/>
+      <Control-Port index="1" name="100Hz gain" value="-0.700966"/>
+      <Control-Port index="2" name="156Hz gain" value="-0.700966"/>
+      <Control-Port index="3" name="220Hz gain" value="-0.700966"/>
+      <Control-Port index="4" name="311Hz gain" value="-0.700966"/>
+      <Control-Port index="5" name="440Hz gain" value="-0.700966"/>
+      <Control-Port index="6" name="622Hz gain" value="-0.700966"/>
+      <Control-Port index="7" name="880Hz gain" value="-0.700966"/>
+      <Control-Port index="8" name="1250Hz gain" value="-0.700966"/>
+      <Control-Port index="9" name="1750Hz gain" value="-0.700966"/>
+      <Control-Port index="10" name="2500Hz gain" value="-0.700966"/>
+      <Control-Port index="11" name="3500Hz gain" value="-0.700966"/>
+      <Control-Port index="12" name="5000Hz gain" value="-0.700966"/>
+      <Control-Port index="13" name="10000Hz gain" value="-0.700966"/>
+      <Control-Port index="14" name="20000Hz gain" value="-0.700966"/>
+    </Plugin>
+    <Plugin plugin_id="1198" name="Sinus wavewrapper">
+      <Control-Port index="0" name="Wrap degree" value="0.313003"/>
+    </Plugin>
+    <Plugin plugin_id="1200" name="Hermes Filter">
+      <Control-Port index="0" name="LFO1 freq (Hz)" value="4.000000"/>
+      <Control-Port index="1" name="LFO1 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = s" value="0.000000"/>
+      <Control-Port index="2" name="LFO2 freq (Hz)" value="60.000000"/>
+      <Control-Port index="3" name="LFO2 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = s" value="0.000000"/>
+      <Control-Port index="4" name="Osc1 freq (Hz)" value="4.000000"/>
+      <Control-Port index="5" name="Osc1 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = noise)" value="0.000000"/>
+      <Control-Port index="6" name="Osc2 freq (Hz)" value="60.000000"/>
+      <Control-Port index="7" name="Osc2 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = noise)" value="0.000000"/>
+      <Control-Port index="8" name="Ringmod 1 depth (0=none, 1=AM, 2=RM)" value="0.000000"/>
+      <Control-Port index="9" name="Ringmod 1 depth (0=none, 1=AM, 2=RM)" value="0.000000"/>
+      <Control-Port index="10" name="Ringmod 1 depth (0=none, 1=AM, 2=RM)" value="0.000000"/>
+      <Control-Port index="11" name="Osc1 gain (dB)" value="-69.900002"/>
+      <Control-Port index="12" name="RM1 gain (dB)" value="-70.000000"/>
+      <Control-Port index="13" name="Osc2 gain (dB)" value="-70.000000"/>
+      <Control-Port index="14" name="RM2 gain (dB)" value="-70.000000"/>
+      <Control-Port index="15" name="Input gain (dB)" value="0.000000"/>
+      <Control-Port index="16" name="RM3 gain (dB)" value="-64.800003"/>
+      <Control-Port index="17" name="Xover lower freq" value="300.000000"/>
+      <Control-Port index="18" name="Xover upper freq" value="3000.000000"/>
+      <Control-Port index="19" name="Dist1 drive" value="2.210000"/>
+      <Control-Port index="20" name="Dist2 drive" value="1.710000"/>
+      <Control-Port index="21" name="Dist3 drive" value="1.580000"/>
+      <Control-Port index="22" name="Filt1 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP)" value="1.000000"/>
+      <Control-Port index="23" name="Filt1 freq" value="5000.000000"/>
+      <Control-Port index="24" name="Filt1 q" value="0.500000"/>
+      <Control-Port index="25" name="Filt1 resonance" value="0.000000"/>
+      <Control-Port index="26" name="Filt1 LFO1 level" value="-500.000000"/>
+      <Control-Port index="27" name="Filt1 LFO2 level" value="-500.000000"/>
+      <Control-Port index="28" name="Filt2 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP)" value="1.000000"/>
+      <Control-Port index="29" name="Filt2 freq" value="5000.000000"/>
+      <Control-Port index="30" name="Filt2 q" value="0.500000"/>
+      <Control-Port index="31" name="Filt2 resonance" value="0.000000"/>
+      <Control-Port index="32" name="Filt2 LFO1 level" value="-496.666656"/>
+      <Control-Port index="33" name="Filt2 LFO2 level" value="-500.000000"/>
+      <Control-Port index="34" name="Filt3 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP)" value="1.000000"/>
+      <Control-Port index="35" name="Filt3 freq" value="5000.000000"/>
+      <Control-Port index="36" name="Filt3 q" value="0.500000"/>
+      <Control-Port index="37" name="Filt3 resonance" value="0.000000"/>
+      <Control-Port index="38" name="Filt3 LFO1 level" value="-480.000000"/>
+      <Control-Port index="39" name="Filt3 LFO2 level" value="-500.000000"/>
+      <Control-Port index="40" name="Delay1 length (s)" value="1.000000"/>
+      <Control-Port index="41" name="Delay1 feedback" value="0.500000"/>
+      <Control-Port index="42" name="Delay1 wetness" value="0.000000"/>
+      <Control-Port index="43" name="Delay2 length (s)" value="1.000000"/>
+      <Control-Port index="44" name="Delay2 feedback" value="0.500000"/>
+      <Control-Port index="45" name="Delay2 wetness" value="0.000000"/>
+      <Control-Port index="46" name="Delay3 length (s)" value="1.000000"/>
+      <Control-Port index="47" name="Delay3 feedback" value="0.500000"/>
+      <Control-Port index="48" name="Delay3 wetness" value="0.000000"/>
+      <Control-Port index="49" name="Band 1 gain (dB)" value="2.700001"/>
+      <Control-Port index="50" name="Band 2 gain (dB)" value="2.699994"/>
+      <Control-Port index="51" name="Band 3 gain (dB)" value="2.699999"/>
+    </Plugin>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <Plugin plugin_id="1201" name="Multivoice Chorus">
+      <Control-Port index="0" name="Number of voices" value="1.000000"/>
+      <Control-Port index="1" name="Delay base (ms)" value="0.000000"/>
+      <Control-Port index="2" name="Voice seperation (ms)" value="0.000000"/>
+      <Control-Port index="3" name="Detune (%)" value="0.000000"/>
+      <Control-Port index="4" name="LFO frequncy (Hz)" value="0.000000"/>
+      <Control-Port index="5" name="Output attenuation (dB)" value="0.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1191" name="Flanger">
+      <Control-Port index="0" name="Delay base (ms)" value="17.954426"/>
+      <Control-Port index="1" name="Max slowdown (ms)" value="0.000000"/>
+      <Control-Port index="2" name="LFO frequncy (Hz)" value="0.755307"/>
+      <Control-Port index="3" name="Feedback" value="-0.005000"/>
+    </Plugin>
+    <Plugin plugin_id="1203" name="Single band parametric">
+      <Control-Port index="0" name="Gain (dB)" value="-1.181942"/>
+      <Control-Port index="1" name="Frequency (Hz)" value="7428.093566"/>
+      <Control-Port index="2" name="Bandwidth (octaves)" value="0.306187"/>
+    </Plugin>
+    <Plugin plugin_id="1204" name="Triple band parametric with shelves">
+      <Control-Port index="0" name="Low-shelving gain (dB)" value="-0.905785"/>
+      <Control-Port index="1" name="Low-shelving frequency (Hz)" value="10844.966309"/>
+      <Control-Port index="2" name="Low-shelving slope" value="0.504270"/>
+      <Control-Port index="3" name="Band 1 gain (dB)" value="-0.905785"/>
+      <Control-Port index="4" name="Band 1 frequency (Hz)" value="11168.697068"/>
+      <Control-Port index="5" name="Band 1 bandwidth (octaves)" value="2.062247"/>
+      <Control-Port index="6" name="Band 2 gain (dB)" value="0.404945"/>
+      <Control-Port index="7" name="Band 2 frequency (Hz)" value="11168.697068"/>
+      <Control-Port index="8" name="Band 2 bandwidth (octaves)" value="2.032360"/>
+      <Control-Port index="9" name="Band 3 gain (dB)" value="1.528428"/>
+      <Control-Port index="10" name="Band 3 frequency (Hz)" value="10885.432407"/>
+      <Control-Port index="11" name="Band 3 bandwidth (octaves)" value="2.002472"/>
+      <Control-Port index="12" name="High-shelving gain (dB)" value="1.902922"/>
+      <Control-Port index="13" name="High-shelving frequency (Hz)" value="11047.298115"/>
+      <Control-Port index="14" name="High-shelving slope" value="0.506124"/>
+    </Plugin>
+    <Plugin plugin_id="1206" name="Transient mangler">
+      <Control-Port index="0" name="Attack speed" value="-1.000000"/>
+      <Control-Port index="1" name="Sustain time" value="-1.000000"/>
+    </Plugin>
+    <Plugin plugin_id="1202" name="Decimator">
+      <Control-Port index="0" name="Bit depth" value="23.990000"/>
+      <Control-Port index="1" name="Sample rate (Hz)" value="43659.000421"/>
+    </Plugin>
+  </Ladspa-Plugin-Settings>
+</Ladspa-Plugin-Settings>

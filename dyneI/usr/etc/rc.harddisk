@@ -1,0 +1,80 @@
+#!/bin/sh
+# harddisk detection and mount
+# by jaromil - 4 july 2003 - GNU GPL
+
+# here they go the harddisks
+
+# Le partizioni riconosciute dal kernel, verranno montate lasciando che 
+# il tipo di file system venga riconosciuto automaticamente
+PART="Linux|NTFS|FAT|BSD"
+
+if [ "`fdisk -l | grep -i FAT`" ]; then
+  modprobe -k vfat
+fi
+if [ "`fdisk -l | grep -i NTFS`" ]; then
+  modprobe -k ntfs
+fi
+if [ "`fdisk -l | grep -i BSD`" ]; then
+  modprobe -k ufs
+fi
+
+CFG="/boot/WMState"
+WMPOS="`cat /boot/wmdock-pos`"
+HD_NUM=0
+
+echo "[*] Mounting harddisk partitions"
+# this script also creates dock icons for each mounted harddisk
+# in a format that windowmaker understands
+# in GNUstep/Deafaults/WMState
+if [ ! -z "`uname -a | grep xbox`" ]; then
+# WE ARE ON XBOX
+if [ -r /dev/hda50 ]; then
+  echo "[*] Enabling ide harddisk"
+  mkdir /vol/hd1
+  mount -t fatx /dev/hda50 /vol/hd1
+  echo "," >> $CFG;
+  echo "{" >> $CFG;
+  echo "Name = \"hd1.HardDisk\";" >>$CFG;
+  echo "Lock = yes;" >>$CFG;
+  echo "Autolaunch = no;" >>$CFG;
+  echo "Command = \"xwc /vol/hd1\";" >>$CFG;
+  WMPOS="`expr $WMPOS + 1`"
+  echo "Position = \"0,${WMPOS}\";" >>$CFG;
+  echo "Forced = no;" >>$CFG;
+  echo "BuggyApplication = no;" >>$CFG;
+  echo "}" >>$CFG;
+fi
+
+
+else
+
+
+# we are on a normal PC
+echo "[*] Activate hardisk partitions"
+for gh in `fdisk -l | grep -iE "$PART" | grep -i -v swap | awk '{print $1}'`; do
+	HD_NUM="`expr $HD_NUM + 1`"; HDEV="hd${HD_NUM}"
+        mkdir "/vol/$HDEV" 
+        mount "$gh" "/vol/$HDEV"
+	if [ "$?" = "0" ]; then
+	  echo " . harddisk on ${gh} -> /vol/$HDEV"
+#	  echo "$gh $MNTP $TYPE defaults,rw 0 0" >> $FSTAB
+	  echo "," >> $CFG;
+	  echo "{" >> $CFG;
+	  echo "Name = \"$HDEV.HardDisk\";" >>$CFG;
+	  echo "Lock = yes;" >>$CFG;
+	  echo "Autolaunch = no;" >>$CFG;
+	  echo "Command = \"xwc $MNTP\";" >>$CFG;
+	  WMPOS="`expr $WMPOS + 1`"
+	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
+	  echo "Forced = no;" >>$CFG;
+	  echo "BuggyApplication = no;" >>$CFG;
+	  echo "}" >>$CFG;
+	fi
+done
+
+fi # xbox or not
+
+rm -f /boot/wmdock-pos
+echo "$WMPOS" > /boot/wmdock-pos
+
+

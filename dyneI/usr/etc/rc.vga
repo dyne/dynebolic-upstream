@@ -1,0 +1,104 @@
+#!/bin/sh
+# This is an attempt to recognize most vga cards in a very simple way
+# jrml 28 aprile 2003 1.0-alpha5
+# of course this is GNU GPL
+#
+# TODO:
+# + read eventually saved configuration
+# + if nobody does it in the meanwhile, one day rewrite something
+#     decent in C which parses the X11/CARDS+ database
+# + include also DRI modules from glx.sf.net and add the
+#     Option     "DRI" "True"
+# + keep adding here more supported cards for ATI, S3 & others
+# + support multihead systems with multiple VGA cards
+
+CFG="/etc/XF86Config"
+DISTCFG="/etc/XF86Config.dist"
+
+if [ -e $CFG ]; then rm -f $CFG; fi
+
+echo "[*] detecting VGA video card:"
+VGACARD="`lspci | grep VGA`"
+echo " .  ${VGACARD}"
+
+if [ ! -z "`echo ${VGACARD} | grep -iE ' nvidia| riva| viper| tnt| geforce'`" ]; then
+  echo " .  using XFree86 'nv' driver for your nVidia card"
+  sed "s/fbdev/nv/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' matrox'`" ]; then
+  echo " .  using XFree86 'mga' driver for your Matrox card"
+  # write the X config
+  sed "s/fbdev/mga/g" $DISTCFG > $CFG
+  # load the kernel DRM module
+  modprobe mga
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' intel'`" ]; then
+  echo " .  using XFree86 'i810' driver for your Intel card"
+  sed "s/fbdev/i810/g" $DISTCFG > $CFG
+  modprobe i810
+  modprobe i830
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i ' neomagic'`" ]; then
+  echo " .  using XFree86 'neomagic' driver for your Neomagiccard"
+  sed "s/fbdev/neomagic/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+
+if [ ! -z "`echo ${VGACARD} | grep ' Ati'`" ]; then
+  echo " .  using XFree86 'ati' driver for your Ati card"
+  sed "s/fbdev/ati/g" $DISTCFG > $CFG
+  if [ ! -z "`echo ${VGACARD} | grep ' Radeon'`" ]; then
+    modprobe radeon
+  fi
+  if [ ! -z "`echo ${VGACARD} | grep -i ' r128'`" ]; then
+    modprobe r128
+  fi
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -E 'S3|Virge'`" ]; then
+  echo " .  using XFree86 's3virge' driver for your S3 card"
+  sed "s/fbdev/s3virge/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep 'SiS'`" ]; then
+  
+  # don't use sis driver for SiS6325 because it fallsback on 640x480
+  # it is a device present on some gericom laptop //jrml 12/5/03 zagreb
+  if [ ! -z "`echo ${VGACARD} | grep -i '6325'`" ]; then exit 0; fi
+  
+  echo " .  using XFree86 'sis' driver for your SiS card"
+  sed "s/fbdev/sis/g" $DISTCFG > $CFG
+  modprobe sis
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep -i 'voodoo'`" ]; then
+  echo " .  using XFree86 'rdfx' driver for your Voodoo card"
+  sed "s/fbdev/tdfx/g" $DISTCFG > $CFG
+  modprobe tdfx
+  exit 0;
+fi
+
+if [ ! -z "`lspci | grep -i 'vmware'`" ]; then
+  echo " .  using Xfree86 'vmware' driver for your virtual machine"
+  sed "s/fbdev/vmware/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+# fallback to framebuffer device
+# the link is not forced: if we put our own XF86Config
+# it will be used, overriding the fbdev fallback
+echo " .  no special driver needed, using VESA framebuffer device"
+echo " .  (you can't change resolutions other than 800x600x16bpp)"
+cp $DISTCFG $CFG
+
+

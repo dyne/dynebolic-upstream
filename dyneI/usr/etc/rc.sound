@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# check if alsa drivers are loaded
+ISALSA=`lsmod | grep -i snd-`
+
+if [ ! -z "$ISALSA" ]; then
+  echo "[*] Loading ALSA-OSS emulation modules"
+  modprobe -k snd-pcm-oss
+  modprobe -k snd-mixer-oss
+fi
+
+echo " . Initializing starting volumes"
+if [ -e /dev/mixer ]; then aumix -v 80 -w 80 -i 80 ; fi
+

@@ -1,0 +1,10 @@
+{
+  DefaultFontSize = 12;
+  DoubleClickTime = 250;
+  MouseWheelUp = Button4;
+  SystemFont = "-*-helvetica-medium-r-normal-*-%d-*-*-*-*-*-*-*";
+  BoldSystemFont = "-*-helvetica-bold-r-normal-*-%d-*-*-*-*-*-*-*";
+  MouseWheelDown = Button5;
+  MultiByteText = AUTO;
+  FloppyPath = "/floppy";
+}

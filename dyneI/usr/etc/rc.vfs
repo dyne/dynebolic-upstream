@@ -1,0 +1,33 @@
+#!/bin/sh
+# script to setup a virtual filesystem in memory
+# in case a nest is not present
+
+# calculating VFS size and mounting
+echo "[*] Initializing virtual filesystem"
+RAMSIZE=`free |grep Mem: | awk '{print $2}'`
+SHMSIZE=`expr $RAMSIZE / 1024 / 4`
+echo " .  RAM detected: `expr $RAMSIZE / 1024` Mb"
+echo " .  VFS size: $SHMSIZE Mb"
+echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /etc/fstab
+
+echo "[*] Mounting virtual filesystem"
+mount /dev/shm
+
+# creating /var /tmp and /home
+echo " .  populating /var"
+tar xfz /mnt/dynebolic/var.tgz -C /dev/shm
+if [ -e /var ]; then rm -r /var; fi
+ln -s /dev/shm/var /var
+
+echo " .  populating /home"
+tar xfz /mnt/dynebolic/home.tgz -C /dev/shm
+if [ -e /home ]; then rm -r /home; fi
+ln -s /dev/shm/home /home
+if [ -e /mnt/dynebolic/extras ]; then ln -s /mnt/dynebolic/extras /home; fi
+
+echo " .  building /tmp"
+mkdir /dev/shm/tmp
+if [ -e /tmp ]; then rm -r /tmp; fi
+ln -s /dev/shm/tmp /tmp
+
+

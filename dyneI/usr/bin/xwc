@@ -1,0 +1,12 @@
+#!/bin/bash
+### 01:44 @<sANDauei> #!/bin/bash
+FILE="/home/.foxrc/XWC"
+TMP="/tmp/xwcrc.tmp"
+
+if [ "$1" == "" ]; then CON="/home"; 
+else CON="$1"; fi
+
+cat "$FILE" | awk -v SEME=${CON} '{gsub(/lastdir = .*/, "lastdir = " SEME); print $0}' >> $TMP
+mv $TMP $FILE
+
+exec xwc-bin
