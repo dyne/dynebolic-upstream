@@ -1,0 +1,65 @@
+<section>
+<title>GCombust :: cd burning interface</title>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.abo.fi~/jmunsin/gcombust"></ulink> </entry>
+<!-- MAN  --> <entry> gcombust </entry>
+<!-- BY   --> <entry> Jonas Munsin </entry>
+<!-- YEAR --> <entry> 1999 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+GCombust is an interface to cd burning, it can burn data on the fly
+from hard drive, without making an image, cd-to-cd data copy on the
+fly. Supports easy creation of ISO images and audio cd creation (audio
+to WAV, WAV to audio, audio cd direct copy). It can burn in
+multisession mode and bootable cd as well.
+</para>
+</section>
