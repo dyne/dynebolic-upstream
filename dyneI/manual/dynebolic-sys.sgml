@@ -133,30 +133,35 @@ you don't risk to break your operating system with an upgrade
 </para>
 
 <para>
-The way nesting is implemented is very efficient: you
-just create one single file, the size you want, in a writable partition
+A nest is just one single file, the size you want, in a writable partition
 of your choice
 <footnote><para>
 Supported partition formats are: Dos, Fat32, Ext2, ReiserFS, Beos (BeFS) and
-BSD (UFS).</para>
+BSD (UFS), but not NTFS</para>
 </footnote>
 . Making a nest doesn't
 requires any change in the data structure of the partitions: just one
 file is created in the root
 <footnote><para>
 it means the very beginning of a storage unit, like C:\ the drive letter
-followed by a single backslash in the DOS filesystem, or / in Unix.
+followed by a single backslash in the DOS filesystem.
 </para></footnote>
 , it will be called <emphasis>dynebol.nst</emphasis> and will keep all
-your home and settings inside (/home, /etc, /var, /tmp).
+your home and settings inside (/home and /etc).
 </para>
 
 <para>
 To get rid of a nest you can simply delete it from a system outside
 dyne:bolic. And if you are concerned about the privacy of the data
-you store inside it, then you can also encrypt it (<emphasis>AES128</emphasis>)
-using a 20 chars passphrase required every time dyne:bolic tries to
-access it.
+you store inside it, then you can also make an encrypted nest
+<footnote><para>
+it is an <emphasis>AES128</emphasis> stream encryption algorithm, way
+more secure than usual "security" because <emphasis>all</emphasis> the
+data is encoded by your 20 chars long passphrase: is not only about
+weak software access policy, see the <ulink url="http://loop-aes.sf.net">
+loop-aes</ulink> project.
+</para></footnote>
+: to activate it you'll be asked by a passphrase at every boot.
 </para>
 
 <para>
@@ -169,7 +174,31 @@ in the menu <emphasis>System -> Nesting</emphasis>.
 <section>
 <title>Dock your system</title>
 <para>
+Docking lets you run the system from an harddisk, with the result of
+shorter load times and more speed. It's a sort of installation, the
+difference is that the system keeps on being a read-only monolithical
+file in the root of an existing partition: you don't need to change
+anything of your partition, just copy a directory in them.
+</para>
+<para>
+To dock dynebolic, simply copy the cd directory 'dyne' (version 1.2
+size is approximately 500Mbytes) inside the root of an harddisk (i.e.
+c:\): when booting it will find and use the dock, freeing your cd player.
+</para>
+<para>
+The dyne dock consists of dynebol.sys
+<footnote><para>
+<ulink url="http://squashfs.sf.net">squashfs</ulink> compressed
+filesystem containing all dynebolic executables and libraries, mounted
+in loopback by the ramdisk startup script
+</para></footnote>
+which is the big file containing all the software applications, home.tgz
+and var.tgz are the default nest environment.
+</para>
 
+<para>
+Rembember that docking is different from nesting:
+Docking is done to run the system and all application from harddisk instead of cd, nesting is to store your home and settings in a single file on harddisk or usb storage.
 </para>
 </section>
 
@@ -214,36 +243,33 @@ find extensive documentation and usage guides.
 </section>
 
 <section>
-<title>A closer look to details</title>
+<title>For the curious hacker</title>
 
 <para>
-Now if you are wondering how it runs all the above the best way to
-discover it is to boot a dyne:bolic CD and have a closer look inside
-it, after all it's all FREE ;) and people familiar with GNU/Linux
-systems will easily recognize the system architecture which, even if
-it is not structured in a completely standard way compared to other
-distributions, contains a lot more of documentation on every program
-and fully accessible settings and scripts.
+Now if you are wondering what's inside to make it work like it does,
+you are very welcome to discover it, dynebolic is free software! and
+hackers more familiar with GNU/Linux systems will easily recognize
+the architecture.
 </para>
 
 <para>
-Dyne:bolic is a GNU/Linux system made completely from scratch, i'm
-maniacal enough to compile everything contained in it using GCC 3.2
-and i take care to optimize all the bytecode to run on i586 MMX
-processors, also all the booting and configuration scripts are
-rewritten from scratch and this helped much to achieve a better
-performance for the particular setup needed for this software.
+But remember you are on your own in doing so, this documentation is
+not about hacking and the author's objective for dynebolic was
+to build an environment friendly for the end user, not necessarily
+for those who want to modify it. Anyway, if you look for a
+customizable bootable cd there are plenty to pick around.
+I think one should choose dynebolic for what it is able to do,
+not for how it is done inside.
 </para>
 
 <para>
-Of course to work on dyne:bolic i needed to use up much CPU cycles and
-to buy myself some expensive hardware, so if you think you can
-contribute at least with some finance then you are very welcome to
-give me a donation, looking for a sustainable model to keep up my
-development this is the only way i found so far - i can't really
-organize any merchandising or commercial infrastructure and keep some
-time for code. thanks ;)
+Dynebolic's startup sequence is all rewritten from scratch,
+all its executables and libraries are compiled with special
+care for optimizations, keeping the pentium1 MMX as the minimum
+compatible system. This is probably a reason why it goes faster
+than other operating systems, especially on older machines.
 </para>
+
 
 </section>
 </chapter>
