@@ -3,6 +3,10 @@
 # by bomboclat & c1cc10
 
 WORKINGDIR=`pwd`
+if [ "`whoami`" != "root" ]; then
+    error "you must be ROOT on your machine to use dyne:bolic SDK"
+    exit -1
+fi
 
 # Punto 1 
 if ! [ -f $WORKINGDIR/stage1-x86-2004.1.tar.bz2 ] ; then
