@@ -192,6 +192,9 @@ EOF
 		  # e queste comunque so' tutte le canne
 		  # che mi faccio ad amsterdam.
 		  echo " ... OK";
+		  if [ -x /mnt/nest/etc/rc.nestclean ]; then
+		  	/mnt/nest/etc/rc.nestclean
+		  fi
 		  if [ ! -e /mnt/nest/home ]; then
 			  warning "nest is missing home, skipping"
 		  else
@@ -202,6 +205,8 @@ EOF
 			  warning "nest is missing etc, skipping"
 		  else
 			  if [ ! -e /etc ]; then mkdir /etc; fi
+			  sync
+			  cp /etc/mtab /mnt/nest/etc/mtab
 			  mount -o bind /mnt/nest/etc /etc
 		  fi
 		  if [ ! -e /mnt/nest/var ]; then
@@ -318,8 +323,9 @@ mount_cdrom() {
 	    DYNE_SYS_MEDIA="cd"
             # bring home the goodies in the CD
 	    if [ -e "${DYNE_SYS_MNT}/extras" ]; then
-		if [ ! -e /home/extras ]; then mkdir /home/extras; fi
-		mount -o bind "${DYNE_SYS_MNT}/extras" /home/extras
+		if [ ! -e /home/extras ]; then 
+		  ln -s "${DYNE_SYS_MNT}/extras" /home/extras
+		fi
 	    fi	
 	fi
     else
