@@ -134,9 +134,32 @@ fi
 ### MICRO COMMAND FUNCTIONS
 ########################################################################
 
+exinitrd() {
+    act "generating initrd tree (please wait)"
+    mkdir $PFX/initrd
+    # TODO: controllare se l'initrd.gz esiste in cdrom
+    gunzip $PFX/cdrom/dyne/initrd.gz
+    mount -o loop -t ext2 $PFX/cdrom/dyne/initrd $PFX/tmp
+    cp -r $PFX/tmp/* $PFX/initrd
+    umount $PFX/tmp
+    gzip -9 $PFX/cdrom/dyne/initrd
+}
+
 mkinitrd() {
     notice "making the initrd compressed filesystem"
-    
+   
+    if [ ! -r $PFX/initrd/etc/DYNEBOLIC ]; then exinitrd; fi 
+
+    act "setup startup files"
+    if [ ! -x $PFX/../startup ]; then
+      error "no startup files present in $PFX/../startup"
+      sleep 2
+    else
+      cp -f $PFX/../startup/rc.* $PFX/initrd/etc
+      cp -f $PFX/../startup/inittab $PFX/initrd/etc
+      cp -f $PFX/../startup/libdyne.sh $PFX/initrd/lib
+    fi
+
     cd $PFX/initrd
     rm -rf tmp/*
     rm -f etc/XF86Config
@@ -144,45 +167,33 @@ mkinitrd() {
     rm -f etc/fstab
     rm -f etc/auto.removable
     rm -f boot/Xok
+
     cd -; cd $PFX
       
-
-    
     act "generate device file"
-    dd if=/dev/zero of=cdrom/isolinux/initrd bs=1k count=6000
+    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=6000
     act "formatting filesystem"
-    mke2fs -m 0 -i 1024 cdrom/isolinux/initrd
+    mke2fs -m 0 -i 1024 cdrom/dyne/initrd
     act "populating initrd loopback device"
-    mount -o loop,rw cdrom/isolinux/initrd tmp
+    mount -o loop,rw cdrom/dyne/initrd tmp
     cp -ra initrd/* tmp
     rm -r tmp/lost+found
-    act "setup startup files"
-
-    if [ ! -x ../startup ]; then
-      error "no startup files present in $PFX/../startup"
-      sleep 2
-    else
-      cp -f ../startup/rc.* tmp/etc
-      cp -f ../startup/inittab tmp/etc
-      cp -f ../startup/libdyne.sh tmp/lib
-    fi
-
     
 
     umount tmp
     act "tuning filesystem"
-    tune2fs -c 0 -i 0 cdrom/isolinux/initrd
-    rm -f cdrom/isolinux/initrd.gz
-    gzip -9 cdrom/isolinux/initrd
-    act "`stat cdrom/isolinux/initrd.gz`"
+    tune2fs -c 0 -i 0 cdrom/dyne/initrd
+    rm -f cdrom/dyne/initrd.gz
+    gzip -9 cdrom/dyne/initrd
+    act "`stat cdrom/dyne/initrd.gz`"
     cd -; sync
 }
 
 mkhome() {
     notice "packaging /home";
     cd $PFX
-    tar cfz cdrom/home.tgz home
-    act "`stat $PFX/cdrom/home.tgz`"
+    tar cfz cdrom/dyne/home.tgz home
+    act "`stat $PFX/cdrom/dyne/home.tgz`"
     cd -; sync
 }
 
@@ -190,8 +201,8 @@ mkvar() {
     notice "packaging /var";
     cd $PFX
     rm var/log/dynebolic.log
-    tar cfz cdrom/var.tgz var
-    act "`stat $PFX/cdrom/var.tgz`"
+    tar cfz cdrom/dyne/var.tgz var
+    act "`stat $PFX/dyne/var.tgz`"
     cd -; sync
 }
 
@@ -205,28 +216,28 @@ mksquash() {
       cp -f ../startup/usr/rc.* usr
     fi
     act "start compressing: `date`"
-    $MKSQUASHFS $PFX/usr $PFX/cdrom/dynebol.sys -noappend
-    chmod -x $PFX/cdrom/dynebol.sys
+    $MKSQUASHFS $PFX/usr $PFX/cdrom/dyne/dynebol.sys -noappend
+    chmod -x $PFX/dyne/dynebol.sys
     act "end: `date`"
-    act "`stat $PFX/cdrom/dynebol.sys`"
+    act "`stat $PFX/dyne/dynebol.sys`"
     sync
 }
 
 mkiso() {
     notice "making the dynebolic ISO"
     cp -f $0 $PFX/cdrom/devel/
-    echo "forged by $USER on `hostname`" | tee $PFX/cdrom/devel/VERSION
-    echo "`date`" | tee -a $PFX/cdrom/devel/VERSION
-    echo "using `$MKISOFS --version`" | tee -a $PFX/cdrom/devel/VERSION
-    echo >> $PFX/cdrom/devel/VERSION
+    echo "Forged by $USER on `hostname`.`dnsdomainname`" | tee $PFX/cdrom/VERSION
+    echo "`date`" | tee -a $PFX/cdrom/VERSION
+    echo "using `$MKISOFS --version`" | tee -a $PFX/cdrom/VERSION
+    echo >> $PFX/cdrom/VERSION
     DYNE_SYS_VER="`cat $PFX/usr/etc/DYNEBOLIC`"
-    echo "system version $DYNE_SYS_VER" | tee -a $PFX/cdrom/devel/VERSION
-    echo "MD5: `md5sum $PFX/cdrom/dynebol.sys`" | tee -a $PFX/cdrom/devel/VERSION
-    echo >> $PFX/cdrom/devel/VERSION
+    echo "system version $DYNE_SYS_VER" | tee -a $PFX/cdrom/VERSION
+#    echo "MD5: `md5sum $PFX/cdrom/dyne/dynebol.sys`" | tee -a $PFX/cdrom/VERSION
+#    echo >> $PFX/cdrom/VERSION
     DYNE_INITRD_VER="`cat $PFX/initrd/etc/DYNEBOLIC`"
-    echo "initrd version $DYNE_INITRD_VER" | tee -a $PFX/cdrom/devel/VERSION
-    echo "MD5: `md5sum $PFX/cdrom/isolinux/initrd.gz`" | tee -a $PFX/cdrom/devel/VERSION
-    echo >> $PFX/cdrom/devel/VERSION
+    echo "ramdisk version $DYNE_INITRD_VER" | tee -a $PFX/cdrom/VERSION
+#    echo "MD5: `md5sum $PFX/cdrom/isolinux/initrd.gz`" | tee -a $PFX/cdrom/VERSION
+#    echo >> $PFX/cdrom/VERSION
 
     $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -322,38 +333,28 @@ explode() {
     mkdir $PFX/usr 2>/dev/null 1>/dev/null
     mkdir $PFX/chroot 2>/dev/null 1>/dev/null
 
-    if [ ! -e $PFX/cdrom/isolinux/Linux ]; then    
+    if [ ! -e $PFX/cdrom/dyne/Linux ]; then    
       act "copying iso contents into $PFX/cdrom (please wait)"
       mkdir $PFX/cdrom 2>/dev/null 1>/dev/null
       mount -o loop,ro -t iso9660 $ISO $PFX/tmp
-      cp -a $PFX/tmp/* $PFX/cdrom/
+      cp -ar $PFX/tmp/* $PFX/cdrom/
       umount $PFX/tmp 
     else
       act "skipping cdrom/ creation (allready present)"
     fi
-
-    if [ ! -e $PFX/initrd/etc/rc.S ]; then
-      act "generating initrd tree (please wait)"
-      mkdir $PFX/initrd 2>/dev/null 1>/dev/null
-      # TODO: controllare se l'initrd.gz esiste in cdrom
-      gunzip $PFX/cdrom/isolinux/initrd.gz
-      mount -o loop -t ext2 $PFX/cdrom/isolinux/initrd $PFX/tmp
-      cp -a $PFX/tmp/* $PFX/initrd
-      umount $PFX/tmp
-    else
-      act "skipping initrd/ creation (allready present)"
-    fi
+    
+    exinitrd # create initrd/ from the compressed initrd.gz
 
     if [ ! -e $PFX/home/.xinitrc ]; then
       act "generating home tree"
-      tar xfz $PFX/cdrom/home.tgz -C $PFX
+      tar xfz $PFX/cdrom/dyne/home.tgz -C $PFX
     else
       act "skipping home/ creation (allready present)"
     fi
    
     if [ ! -e $PFX/var/log ]; then
       act "generating var tree"
-      tar xfz $PFX/cdrom/var.tgz -C $PFX
+      tar xfz $PFX/cdrom/dyne/var.tgz -C $PFX
     else
       act "skipping var/ creation (allready present)"
     fi
@@ -361,7 +362,8 @@ explode() {
     if [ ! -e $PFX/usr/etc/DYNEBOLIC ]; then
       act "generating usr tree (please wait, this takes long!)"
       # TODO: check if kernel supports squashfs (mount fails)
-      mount -o loop,ro -t squashfs $PFX/cdrom/dynebol.sys $PFX/tmp
+      mount -o loop,ro -t squashfs $PFX/cdrom/dyne/dynebol.sys $PFX/tmp
+      mkdir $PFX/usr 2>/dev/null 1>/dev/null
       cp -a $PFX/tmp/* $PFX/usr
       umount $PFX/tmp
     else
@@ -411,6 +413,9 @@ sdkcreate() {
 	notice "dyne:bolic simple development kit ready"
 }
 
+
+# create the temporary directory
+if [ ! -x $PFX/tmp ]; then mkdir $PFX/tmp; fi
 
 case "$CMD" in
     # macro commands
