@@ -242,6 +242,11 @@ function build_xfree_check() {
 }
 
 function build_xfree() {
+	# We must copy this file 'couse else the libpam won't compile
+	if ! [ -f \$INSTDIR/usr/lib/libglib.a ] ; then
+		act "Goin' to copy the \$WORKINDIR/usr/lib/libglib.a in \$INSTDIR/usr/lib/libglib.a"
+		cp -a \$WORKINGDIR/usr/lib/libglib.a \$INSTDIR/usr/lib/libglib.a  
+	fi
 	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers || error "Emerge 'X' error :/"
 
 	touch ./var/dynebolic/.build_xfree

@@ -1,4 +1,69 @@
+Dyne::Bolic SDK
 
+***** This file is released under the GPL terms ********
+***** 		www.gnu.org/licenses/	********
+***** by c1cc10 (Sun May 16 14:25:56 EDT 2004)
 
-il file da usare e' BUILDSDK.
+SYNOPSIS
+=========
+	COMMON TASKS:
+ 	-h show this help
+      	-a start the entire process from beginning (WARN! will delete previous attempts)
+      	-c already downloaded and untarred. chroot me!
+ 	-v show details
+	particular purpose commands:
+ 	-f set flags (you must have allready an sdk installed)
+	-i restart from initrd 
+ 	-x build Xfree86 (you must have allready an sdk installed)
+	-d get latest baselayout-db and build it (you must have allready an sdk installed) 
+
+DESCRIPTION
+============
+
+buildSDK is the main shell script file to launch. It downloads a gentoo stage1 and recompiles first the SDK 
+system which will run chrooted when buildSDK launches a subshell script called createbasesystem (it's
+included into the buildSDK script code). 
+createbasesystem accepts most of the option passed to buildSDK and it compiles the whole dyne::bolic
+in home/the_root/ into the chrooted SDK system. 
+So you have a first stage install which chroots and recompiles itself. Then compiles and install into a 
+subdir (using emerge and the ROOT env variable) the selected system.
+
+Most of the options defines a stage of the installation to start from. 
+	-a will start from the download of the first stage and will perform
+	   the whole installation steps
+	-c give to the user a chrooted shell into the SDK system. Usefull for adding 
+	   parts and general debugging
+	-f just modify the compilation flags and exit
+	-i start the compiling from the base dynebolic system (the initrd one)
+	-x start the compiling from the X11 and general /usr/ system (squashedfs)
+	-d install only the dynebolic configuration part (/etc/ files mostly)
+
+What you need before to start:
+* Must be root
+	$ su - 
+* Have the squashfs support in your running kernel
+	(refer to the kernel documentation: http://www.kernel.org)
+* Have the squashfs user space programs
+	refer to the proper site: http://squashfs.sourceforge.net
+* Have 4 GigaByte of free disk space
+	# df -h
+* You need a broadband connection. A *DSL connection or better
+* Must create a new working directory:
+	# mkdir sdk
+* download (or copy) buildSDK into the working directory:
+	cp <where_is_the_buildSDK_file> sdk/
+
+Usually to start a new installation you need to launch ./buildSDK -a into the working directory
+The script will go on until it's over with the dynebolic compilation, which will be in your
+	./dynebolic/home/the_root/
+
+After the buildSDK has done its job, you can use mkinitrgz to extract into the <workingdir>/cdrom
+the necessary initrd.gz and the squashedfs files.
+Actually you need to compile the kernel on your own. The config file is avalaible from the 
+dynebolic csv page: http://cvs.dyne.org .
+Copy your kernel into the ./cdrom directory.
+Launch dynesdk (follow the instruction you can read with the -h option)
+You should have you iso ready to test'n'burn!
+
+enjoy
 
