@@ -280,8 +280,20 @@ EOF
 check_system_version() {
 # this function is called by the cdrom detection when a system is found on CD
 # it goes thru the harddisks detected and check if they have a system
-# match versions and ask user what to do if they are different (use cd | hd | update hd)
-# setup DYNE_SYS_* variables in order to have the system mounted at the end of rc.S
+# match versions and ask user what to do if they are different
+# (use cd | hd | update hd)
+# setup DYNE_SYS_* variables in order to have the system mounted at the end
+# of this script
+#
+# flowchart attempt:
+#
+# - check all HD, find system and schedule usage in $DYNE_SYS*
+# - check all CD, check system version against all HD, query update
+#                 if $DYNE_SYS* is not present, set $DYNE_SYS* to CD
+#                 if $DYNE_SYS* is present, ask CD or HD
+                  
+
+
     DEV=$1 # use /dev/$DEV for full path
     MNT=$2 # mountpoint including the dyne directory
     DOCKS_FOUND=0
@@ -337,9 +349,10 @@ check_system_version() {
 		    return
 		fi
 		
-	    fi
-	done
-    fi
+	    fi # if the harddisk we are using contains a dock
+	done # for cycle browsing every hd mounted in /vol
+    fi # if there is any harddisk
+    
     # if we are here, no harddisk system is being used
     # so let's use the CD where we found the system!
     DYNE_SYS_MEDIA="cd"
@@ -382,23 +395,24 @@ mount_cdrom() {
 	     >> /boot/auto.removable
         add_volume cd "/rem/cd${CD_NUM}" 
 	return
-    elif [ ! -x /usr/bin/dynesplash ]; then
+
+    elif [ -z $DYNE_SYS_DEV ]; then
+
 	# there was no system found so far on other storage media
 	# so we use the one on this CD, remounting on /mnt/dynebolic
 	notice "FOUND dynebolic system on CD!"
-
-	check_system_version ${DEV} ${MNT} 
+	DYNE_SYS_MEDIA="cd"
+	DYNE_SYS_MNT="${MNT}"
+	DYNE_SYS_DEV="${DEV}"
 
     else
+
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
-	# so we can eject this cdrom and put the volume in automount
-        notice "system is found on a storage device, CD is free now"
-	umount "/mnt/dynebolic"
-	eject "/dev/${DEV}"
-        echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
-	     >> /boot/auto.removable
-        add_volume cd "/rem/cd${CD_NUM}" 
+	# so we test for versions and query upgrade
+	
+	check_system_version ${DEV} ${MNT} 
+
     fi
 }
 
@@ -712,7 +726,12 @@ if [ ! -x /usr/bin/dynesplash ]; then
     
     notice "Using dynebolic system on ${DYNE_SYS_DEV}"
     
-    mount -o loop -t squashfs "${DYNE_SYS_MNT}/dyne/dynebol.sys" /usr
+    if [ -x "${DYNE_SYS_MNT}/dyne" ]; then
+    	mount -o loop -t squashfs "${DYNE_SYS_MNT}/dyne/dynebol.sys" /usr
+    else
+    	mount -o loop -t squashfs "${DYNE_SYS_MNT}/dynebol.sys" /usr
+    fi
+
     
     if [ $? != 0 ]; then
 	echo
