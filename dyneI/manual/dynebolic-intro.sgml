@@ -199,7 +199,21 @@ Foundation, gentoo.org, kernel.org, xfree86.org, mozilla.org ...
 <section>
 <title>License and disclaimer</title>
 <para>
-dyne:bolic is Copyright (C) 2001-2003 Denis Rojo aka jaromil
+The dyne:bolic user's manual is copyright (c) 2003 Denis Rojo aka jaromill
+</para>
+<para>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with the Introductory and Colophon sections being invariant, with the
+Front-Cover and Back-Cover Texts clearly stating authorship and
+copyright notices.
+A copy of the license is included in the Appendix section entitled "GNU
+Free Documentation License".
+</para>
+
+<para>
+dyne:bolic GNU/Linux is copyright (C) 2001-2003 Denis Rojo aka jaromil
 </para>
 <para>
 Dyne:bolic is free software; you can redistribute it and/or modify
@@ -210,6 +224,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
