@@ -40,7 +40,7 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' matrox'`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep -i ' intel'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep -iE ' intel.*i8'`" ]; then
   act "using XFree86 'i810' driver for your Intel card"
   sed "s/fbdev/i810/g" $DISTCFG > $CFG
   loadmod i810
@@ -71,19 +71,25 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' r128 '`" ]; then
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' ati'`" ]; then
- act "using XFree86 'ati' driver for your Ati card"
+  act "using XFree86 'ati' driver for your Ati card"
   sed "s/fbdev/ati/g" $DISTCFG > $CFG
   exit 0;
 fi
 
 
-if [ ! -z "`echo ${VGACARD} | grep -E 'S3|Virge'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep -i ' savage'`" ]; then
+  act "using XFree86 'savage' driver for your Savage card"
+  sed "s/fbdev/savage/g" $DISTCFG > $CFG
+  exit 0;
+fi
+
+if [ ! -z "`echo ${VGACARD} | grep ' Virge'`" ]; then
   act "using XFree86 's3virge' driver for your S3 card"
   sed "s/fbdev/s3virge/g" $DISTCFG > $CFG
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep 'SiS'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep ' SiS'`" ]; then
   
   # don't use sis driver for SiS6325 because it fallsback on 640x480
   # it is a device present on some gericom laptop //jrml 12/5/03 zagreb
@@ -97,7 +103,7 @@ if [ ! -z "`echo ${VGACARD} | grep 'SiS'`" ]; then
 fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i 'voodoo'`" ]; then
-  act "using XFree86 'rdfx' driver for your Voodoo card"
+  act "using XFree86 'tdfx' driver for your Voodoo card"
   sed "s/fbdev/tdfx/g" $DISTCFG > $CFG
   act "loading 3dfx direct rendering module"
   loadmod tdfx

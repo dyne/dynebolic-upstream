@@ -85,7 +85,7 @@ dyne_close_boot() {
 # copy the WindowMaker dock configuration in place
     cp /boot/WMState /home/GNUstep/Defaults/WMState
 
-    notice "[*] boot sequence completed on `date`" >> $DYNEBOL_LOG
+    echo "[*] boot sequence completed on `date`" >> $DYNEBOL_LOG
     echo >> $DYNEBOL_LOG
     echo "=== kernel modules loaded:" >> $DYNEBOL_LOG
     lsmod >> $DYNEBOL_LOG

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh --no-zle
 echo "[*] closing dyne:bolic session"
 
 # Kill all processes.
@@ -16,22 +16,26 @@ fi
 echo " .  wait to sync processes"
 wait
 
-echo " .  shutdown auto mounter daemon"
+echo -n " .  "
 /usr/sbin/autofs stop
 
 echo " .  release swap"
 /usr/sbin/swapoff -a
 
-echo " .  umount all volumes"
-/bin/umount -a
-
 echo " .  unload all kernel modules"
 /sbin/rmmod -a
 
+echo " .  umount all volumes"
+/bin/umount -a
+
 echo " .  sync harddrives" # this never hurts
 /sbin/sync
-# sleep 1 fixes problems with some hard drives that don't
-# otherwise finish syncing before reboot or poweroff
+
+echo " .  ejecting dyne:bolic cd"
+/bin/eject "/dev/`cat /boot/dynemount`"
+
+# sleep 1 fixes problems with some hard drives that
+# don't finish syncing before reboot or poweroff
 /bin/sleep 1
 
 

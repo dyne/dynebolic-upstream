@@ -16,26 +16,33 @@ source /lib/libdyne.sh
 if [ -e /etc/NETWORK ]; then
   source /etc/NETWORK
 else
-
-notice "start scanning for dhcp network"
-/usr/sbin/pump -c /usr/etc/pump.conf
+  notice "start scanning for dhcp network"
+  /usr/sbin/pump -c /usr/etc/pump.conf &
+fi
 
 # setup hostname from /etc/HOSTNAME or randomize with the eth0 MAC address if needed
 if [ -e /etc/HOSTNAME ]; then
     HOSTNAME="`cat /etc/HOSTNAME`"
 else
     HOSTNAME="dynebolic`/sbin/ifconfig eth0 2>/dev/null| grep HWaddr | cut -d ' '  -f11 | sed -e 's/[\:\$]//g'`"
+    echo "$HOSTNAME" > /etc/HOSTNAME
 fi
 
 hostname "$HOSTNAME"
 notice "your hostname is $HOSTNAME"
 
-fi # if no configuration found
-
-
 # setup the samba name with the assigned hostname
-if [ -e /etc/samba/smb.conf ]; then rm -f /etc/samba/smb.conf; fi
-cat /etc/samba/smb.conf.dist | sed "s/dynesamba/$HOSTNAME/g" > /etc/samba/smb.conf
+if [ ! -e /etc/samba/smb.conf ]; then
+  sed "s/dynesamba/$HOSTNAME/g" /etc/samba/smb.conf.dist > /etc/samba/smb.conf
+fi
+# setup the hostname in /etc/hosts to resolve it at least in loopback
+echo "127.0.0.1		$HOSTNAME" >> /etc/hosts
+
+notice "start exim for simple mail transport"
+if [ ! -e /etc/exim.conf ]; then
+  sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist /etc/exim.conf
+fi
+/usr/exim/bin/exim -bd -C /etc/exim.conf
 
 #notice "loading point to point protocol kernel modules"
 #loadmod ppp_generic

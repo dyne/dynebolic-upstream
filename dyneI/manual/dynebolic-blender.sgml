@@ -1,6 +1,59 @@
 <section>
 <title>Blender :: 3d modeling and rendering tool</title>
-<subtitle>software by Ton Roosendal and NaN</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://blender.org"></ulink> </entry>
+<!-- MAN  --> <entry> blender </entry>
+<!-- BY   --> <entry> Ton Roosendaal </entry>
+<!-- YEAR --> <entry> 1998 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
 
 <tip>
 <para>
@@ -14,8 +67,8 @@ copy!
 </tip>
 
 <para>
-Blender is a software solution for 3D, from modeling, animation,
-rendering and post-production to interactive creation and
+Blender is a powerful software solution for 3D, from modeling,
+animation, rendering and post-production to interactive creation and
 playback. Professionals and novices can easily publish stand-alone,
 secure, multi-platform content to the web, CD-ROMs, and other media.
 </para>

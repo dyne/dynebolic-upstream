@@ -1,5 +1,4 @@
 #!/bin/sh
 
 /etc/rc.K
-echo "System halted."
 /sbin/halt

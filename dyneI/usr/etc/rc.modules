@@ -56,4 +56,4 @@ for i in `pcimodules|sort -r|uniq|grep -v snd-`; do
 done
 
 # creates a symlink on devfs /dev/video -> /dev/video0
-ln -s /dev/video0 /dev/video/0
+ln -s /dev/v4l/0 /dev/video0

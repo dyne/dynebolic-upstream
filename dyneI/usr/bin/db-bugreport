@@ -2,7 +2,7 @@
 
 cat /boot/dynebol.log | \
  bzip2 -9 | \
- uuencode dynebol.log | \
+ uuencode dynebol.log.bz2 | \
  mail dynebolic-bugs@dyne.org -s "BUGREPORT `date`"
 
 echo "[*] bugreport sent"
