@@ -1,37 +1,46 @@
 #!/bin/sh
 # createbasesystem.sh
-# by bomboclat & c1cc10
+# dyne:bolic software development kit - the commandline tool
+#
+# Copyright (C) 2004  Federico Prando bomboclat@malasystem.com
+#                     Francesco Rana  c1cc10@malasystem.com
+#                  
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
 
 INSTDIR=/home/the_root
 
 ########################################################################
-# FUNZIONI VIDEO
-########################################################################
-function colora_rosso() {
-	echo -e "\033[31m"
-	echo -e $1
-	echo -e "\033[37m"
-}
+# standard output message routines
+# it's always useful to wrap them, in case we change behaviour later
+#
+notice() { echo -e "\033[31m [*] $1\033[37m"; }
+act() { echo "\033[32m . $1\033[37m"; }
+error() { echo "\033[31m [!] $1\033[37m"; }
+func() { if [ $DEBUG ]; then echo "\033[32m [D] $1\033[31m"; fi }
 
-function colora_verde() {
-	echo -e "\033[32m"
-	echo -e $1
-	echo -e "\033[37m"
-}
-
-#######################################################################
 
 ########################################################################
-# FUNZIONI PRINCIPALI
+# MAIN FUNCTIONS
 ########################################################################
 
-# con questa funzione si verifica a che punto e' lo stage1, cioe' se e' presente
-# portage ed e' quindi possibile compilare l'ambiente di compilazione base.
- 
+# get portage and bootstrap your compiling env 
 function initrd_root() {
-	# Il portage e' stato gia' scaricato...
 	if [ -d /usr/portage ] ; then
-		colora_rosso "esiste gia' una dir /usr/portage. mi fido?(N/s)"
+		notice "there is allready a dir '/usr/portage'. Should I use it?(N/s)"
 		read YESNO
 		if ! [ $YESNO == "s" -o $YESNO == "" ] ; then
 			emerge sync
@@ -39,11 +48,11 @@ function initrd_root() {
 	else 
 		emerge sync
 	fi
-	# Il bootstrap e' stato gia' eseguito (almeno in parte)
+
 	if ! [ -d /var/tmp/portage/ ] ; then
 		/usr/portage/scripts/bootstrap.sh
 	else 
-		colora_rosso "esiste gia' /var/tmp/portage. hai gia' compilato il bootstrap?"
+		notice "esiste gia' /var/tmp/portage. hai gia' compilato il bootstrap?(S/n)"
 		read YESNO
 		if ! [ $YESNO == "S" -o $YESNO == "" ] ; then
 			/usr/portage/scripts/bootstrap.sh
@@ -51,19 +60,30 @@ function initrd_root() {
 	fi
 	emerge gentoolkit
 	[ -d $INSTDIR ] || mkdir $INSTDIR
+	# TODO avere baselayout-dynebolic.ebuild
+	# ROOT=$INSTDIR emerge baselayout-dynebolic
 	mkdir $INSTDIR/boot $INSTDIR/cdrom $INSTDIR/dev $INSTDIR/etc $INSTDIR/floppy $INSTDIR/home $INSTDIR/mnt \ 
 		$INSTDIR/proc $INSTDIR/root $INSTDIR/usr $INSTDIR/var
 	cp -a /var/db $INSTDIR/var
 }
 
-# il pacchetto che cazzo credi che sia da primo livello del FSH. pro initrd.gz
-# gia' da questi pacchetti va sfoltito, sono solo alcuni eseguibili del cazzo che
-# si puo' decidere che vanno dentro il tree in /usr.
-# come dipendenze di compilazione lamenta anche linux-headers, da
-# rimuovere in fase di creazione dell'initrd di d:b.
-# per spiegare. ha senso che ci teniamo comandi come nohup rbash ptx nell'initrd?
-# oppure che abbiamo libmemusage? secondo me certe lib van bene anche in /usr/lib, mentre gli
-# eseguibili si possono pure cancellare. discutiamone.
+function set_flags() {
+	notice "Quali CFLAG settiamo? default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
+	read CFLAG_SET
+	[ -z $CFLAG_SET ] && export CFLAG_SET="-O2 -mcpu=i586 -fomit-frame-pointer -pipe" 
+	act "$CFLAG_SET  ...ok! modifico /etc/make.conf"
+
+cat > /etc/make.conf << EOF
+# These settings were set by the catalyst build script that automatically built this stage
+# Please consult /etc/make.conf.example for a more detailed example
+CFLAGS="$CFLAG_SET"
+CHOST="i586-pc-linux-gnu" 
+CXXFLAGS="${CFLAGS}"
+EOF
+
+}
+
+# install the base sources to have an initrd
 function install_initrd_pkg () {
 	
 cat > /tmp/.initrd.lst << EOF
@@ -89,33 +109,12 @@ rm /tmp/.initrd.lst
 # bisognera' lavorarci per avere qualcosa di piu' nostro, se lo riteniamo.
 # da considerarsi valido per ora, per avere una versione che funziona da subito.
 function build_xfree() {
+	set_flags
 	ROOT=$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers
-
-# si puo' pensare di voler aggiungere dei flag relativi agli aspetti
-# specifici del processore per cui si vuole ottimizzare, piuttosto che 
-# i flag multimedia
-colora_verde "Quali CFLAG settiamo? default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
-read CFLAG_SET
-[ -z $CFLAG_SET ] && export CFLAG_SET="-O2 -mcpu=i586 -fomit-frame-pointer -pipe" 
-colora_verde "$CFLAG_SET  ...ok! modifico /etc/make.conf"
-
-cat > /etc/make.conf << EOF
-# These settings were set by the catalyst build script that automatically built this stage
-# Please consult /etc/make.conf.example for a more detailed example
-CFLAGS="$CFLAG_SET"
-CHOST="i586-pc-linux-gnu" 
-CXXFLAGS="${CFLAGS}"
-EOF
 
 }
 
-# non appena si avra' un SDK su quico omogeneo con gli script questo tgz sara'
-# creato dalle ultime versioni dei file di conf presenti in cvs.
-# questo singifica mettere i file di conf che si preparano sul cvs, se si vuole avere 
-# conformita' con l'ultima release. ad ogni modo e' da discutere bene questo passaggio qui.
-# ovvero, come avere uno /etc corretto per il live cd che si vuole fare.
-# ANZI. questo sara' un aspetto da baselayout-dynebolic.ebuild, quindi dal cvs dovremo rendere 
-# possibile la raccolta dei file che vanno in /etc.
+# TODO this function will be replaced with baselayout-dynebolic
 function install_configuration_files(){
 	if ! [ -f $WORKINGDIR/baselayout-db.tgz ] ; then
 		wget http://www.autistici.org/bolic1/baselayout-db.tgz
@@ -130,33 +129,19 @@ function install_configuration_files(){
 ##############################################################################
 # siamo dentro lo stage1. e' dove decidiamo i CFLAGS, per costruire prima l'ambiente di compilazione
 # gentoo da cui poi deriviamo in /home/the_root la dynebolic.
-# ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciasun passaggio
+# ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciascun passaggio
 
-# punto 3
 env-update
+
 source /etc/profile
 
-colora_verde "Quali CFLAG settiamo? default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
-read CFLAG_SET
-[ -z $CFLAG_SET ] && export CFLAG_SET="-O2 -mcpu=i586 -fomit-frame-pointer -pipe" 
-colora_verde "$CFLAG_SET  ...ok! modifico /etc/make.conf"
+set_flags
 
-cat > /etc/make.conf << EOF
-# These settings were set by the catalyst build script that automatically built this stage
-# Please consult /etc/make.conf.example for a more detailed example
-CFLAGS="$CFLAG_SET"
-CHOST="i586-pc-linux-gnu" 
-CXXFLAGS="${CFLAGS}"
-EOF
+initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "qualcosa e' andato storto. non e' stata colpa mia"
 
+install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
 
-initrd_root && colora_verde "Ho completato l'SDK. Ora popolo l'initrd." || colora_rosso "qualcosa e' andato storto. non e' stata colpa mia"
+build_xfree  && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
 
-# punto 4
-install_initrd_pkg && colora_verde "Ho completato l'initrd_root..." || colora_rosso "qualcosa e' andato storto. non e' stata colpa mia"
-
-# punto 5
-build_xfree  && colora_verde "Ho completato l'initrd_root..." || colora_rosso "qualcosa e' andato storto. non e' stata colpa mia"
-
-# punto 6
-install_configuration_files && colora_verde "Ho completato l'installazione delle configurazioni" || colora_rosso "qualcosa e' andato storto. non e' stata colpa mia" 
+# TODO this function will be replaced with baselayout-dynebolic
+install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "qualcosa e' andato storto. non e' stata colpa mia" 
