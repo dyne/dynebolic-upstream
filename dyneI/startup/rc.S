@@ -317,8 +317,9 @@ mount_cdrom() {
 	    DYNE_SYS_MNT=/mnt/dynebolic
 	    DYNE_SYS_MEDIA="cd"
             # bring home the goodies in the CD
-	    if [ -e "${MNT}/extras" ]; then
-		mount -o bind "${MNT}/extras" /home/extras
+	    if [ -e "${DYNE_SYS_MNT}/extras" ]; then
+		if [ ! -e /home/extras ]; then mkdir /home/extras; fi
+		mount -o bind "${DYNE_SYS_MNT}/extras" /home/extras
 	    fi	
 	fi
     else
@@ -666,22 +667,21 @@ done
 
 
 ##### FLOPPY DISK
+if [ "`dmesg |grep ' fd0 '`" ]; then
 ## you can put a 'dynebol.sh' file inside your floppy disk
-## it will be executed as a shell script
-if [ "`dmesg |grep fd0`" ]; then
-    notice "scan floppy disk"
-    if [ ! -e /vol/floppy ]; then mkdir /vol/floppy; fi
-    mount /dev/fd0 /vol/floppy
-    sync
-    if [ $? == 0 ]; then
-      if [ -e /vol/floppy/dynebolic.sh ]; then
-	zsh -e /vol/floppy/dynebolic.sh
-      fi
-    ### TODO : configuration file
-      umount /vol/floppy
-      sync
-    fi
-
+## then uncomment this part, and it will be executed at startup
+#    notice "scan floppy disk"
+#    if [ ! -e /vol/floppy ]; then mkdir /vol/floppy; fi
+#    mount /dev/fd0 /vol/floppy
+#    sync
+#    if [ $? == 0 ]; then
+#      if [ -e /vol/floppy/dynebol.sh ]; then
+#	zsh -e /vol/floppy/dynebol.sh
+#      fi
+#    ### TODO : configuration file
+#      umount /vol/floppy
+#      sync
+#    fi
     echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
     add_volume floppy "/rem/floppy"
     sync
