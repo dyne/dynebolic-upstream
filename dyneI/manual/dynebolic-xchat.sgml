@@ -1,4 +1,56 @@
 <section>
 <title>xchat</title>
-<para>to be written</para>
+<subtitle>Graphical IRC client</subtitle>
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+http://www.xchat.org/</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+xchat
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+Peter Zelezny  &lt;zed AT xchat.org&gt;
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+1998
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.xchat.org">www.xchat.org</ulink> </entry>
+<!-- MAN  --> <entry> xchat </entry>
+<!-- BY   --> <entry> Peter Zelezny  &lt;zed AT xchat.org&gt; </entry>
+<!-- YEAR --> <entry> 1998 </entry>
+
+</row></tbody>
+</tgroup>
+</table>
+
+<para>
+Xchat is a fully-featured graphical IRC client using the GTK toolkit.
+Nice features are the support for Perl plugins and other generic addons,
+transparent background, logging, and so on.
+</para>
+
 </section>
