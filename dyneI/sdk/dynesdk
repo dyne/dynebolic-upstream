@@ -23,7 +23,7 @@
 PACKAGE="dyne:bolic SDK"
 VERSION="0.2"
 ID="\$Id$"
-REPOSITORY="rsync.dyne.org:dynebolic-dev"
+REPOSITORY="rsync.dyne.org::dynebolic-dev --port 6969"
 
 # standard output message routines
 # always useful to wrap them, in case we change behaviour later
@@ -134,7 +134,8 @@ checkout() {
         echo -n "User:"
         read -r USER
     fi 
-    rsync -Parl --delete $USER@$REPOSITORY/cdrom $PFX/cdrom
+    notice "logging into rsync daemon with user '$USER'"
+    rsync -Parl $USER@$REPOSITORY $PFX
     echo "---"
 }
 
@@ -152,7 +153,8 @@ commit() {
         echo -n "User:"
         read -r USER
     fi
-    rsync -Parl --delete $PFX/cdrom $USER@REPOSITORY/cdrom
+    notice "logging into rsync daemon with user '$USER'"
+    rsync -Parl --delete $PFX/cdrom $USER@$REPOSITORY
     echo "---"
 }
 
