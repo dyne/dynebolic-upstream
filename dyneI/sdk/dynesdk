@@ -4,6 +4,7 @@
 #
 # Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
 #                    Alex Gnoli aka smilzo <smilzo@sfrajone.org>
+#                    Pierluigi Maori aka newmark <newmark@dyne.org>
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -51,15 +52,16 @@ while true; do
 	    act "-p     path to the sdk base directory (default ./)"
 	    act "-u     username for online operations"
 	    act "-r     server hosting the online sdk"
-	    act "-i     dynebolic iso for explode and mkiso command (default ./dynebolic-dev.iso) "
+	    act "-i     dynebolic iso (default ./dynebolic-dev.iso) "
 	    notice "macro COMMANDS:"
 	    act "checkout: download the sdk from an online server"
 	    act "commit: uploads the current sdk to the server (be careful!)"
 	    act "explode: opens an existing dyne:bolic iso into an SDK"
 	    act "implode: packs a dyne:bolic iso from the current SDK"
 	    act "chroot: dive inside the dyne:bolic SDK"
-	    act "sdk-create: a all-in-one script to checkout,mkiso,explode creating a dir SDK in path where is exploded"
-	    act "WARN!!! for sdk-create u need at least 2.4G of hard disk space"
+	    act "sdk-create: a all-in-one script to"
+			act "            checkout,mkiso,explode creating a dir SDK"
+	    act "            WARN! for sdk-create at least 2.4G of free space needed"
 	    notice "micro COMMANDS:"
 	    act "mkinitrd: makes an initrd.gz of INITRD_SIZE (6000)"
 	    act "mkhome: packs the home into the cdrom directory"
@@ -239,6 +241,8 @@ chroot() {
    act "# chroot $PFX/chroot /bin/zsh"
 }
 
+# to add some check asking
+
 sdk-create() {
 	notice "Creating the dynebolic sdk in $PFX/SDK"
 	act "-- going to checkout the dyne-sdk"
@@ -252,7 +256,7 @@ sdk-create() {
 	explode
 	act "-- going to delete the iso "
 	rm -f $OLDPFX/$ISO
-   act "# chroot $PFX/chroot /bin/zsh"
+  act "# to mount and enter in dyneSDK type dynesdk -p $PFX/SDK chroot"
 
 }
 
@@ -343,6 +347,7 @@ case "$CMD" in
     explode) explode ;;
     implode) implode ;;
     chroot) chroot ;;
+    sdk-create) sdk-create ;;
     # micro commands
     mkinitrd) mkinitrd ;;
     mkhome) mkhome ;;
