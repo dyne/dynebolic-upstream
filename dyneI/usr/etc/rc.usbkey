@@ -5,29 +5,19 @@
 # puts them in automount (just the first device) in /rem/usbkey
 # feel free to modify to have more than sda1
 
-WMPOS="`cat /boot/wmdock-pos`"
-CFG="/boot/WMState"
+source /lib/libdyne.sh
 
 modprobe -k scsi_mod sd_mod sg usb-storage
+
 USBKEY="`dmesg | grep sda`"
 if [ -z $USBKEY \
    -a -e /dev/sda1 ]; then
-  echo "[*] Enabling USB key storage device"
-  echo "usbkey -fstype=auto :/dev/sda1" >> /etc/auto/removable
-  echo " .  usbkey on sda1 -> /rem/usbkey"
-  echo "," >>$CFG;
-  echo "{" >> $CFG;
-  echo "Name = \"usbkey.UsbKey\";" >>$CFG
-  echo "Lock = yes;" >>$CFG
-  echo "Autolaunch = no;" >>$CFG
-  echo "Command = \"xwc /rem/usbkey\";" >>$CFG
-  WMPOS="`expr $WMPOS + 1`"
-  echo "Position = \"0,${WMPOS}\";" >>$CFG;
-  echo "Forced = no;" >>$CFG;
-  echo "BuggyApplication = no;" >>$CFG;
-  echo "}" >>$CFG;
+    echo "usb1 -fstype=auto :/dev/sda1" >> /etc/auto/removable
+    dyne_add_volume usb "usb1"
 fi
-
-rm -f /boot/wmdock-pos
-echo "$WMPOS" > /boot/wmdock-pos
-
+USBKEY="`dmesg | grep sdb`"
+if [ -z $USBKEY \
+   -a -e /dev/sdb1 ]; then
+    echo "usb2 -fstype=auto :/dev/sdb1" >> /etc/auto/removable
+    dyne_add_volume usb "usb2"
+fi

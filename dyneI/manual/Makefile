@@ -118,6 +118,6 @@ pdf : $(DEPS)
 clean :
 	rm -f html/*.html \
 	dynebolic-man.pdf \
-	dynebolic-man.ps \
+	dynebolic-man.ps  \
 	dynebolic-man.tex \
 	dynebolic-man.txt

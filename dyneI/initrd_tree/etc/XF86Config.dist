@@ -3,6 +3,7 @@ Section "ServerLayout"
         Screen          "Screen0"
         InputDevice     "Keyboard0"
         InputDevice     "Configured Mouse"
+	InputDevice	"USB Mouse"
         InputDevice     "Generic Mouse"
 EndSection
 
@@ -44,7 +45,7 @@ EndSection
 Section "ServerFlags"
 
 #    Option "NoTrapSignals"
-#    Option "DontZap"
+    Option "DontZap"
 #    Option "Dont Zoom"
 #    Option "DisableVidModeExtension"
 #    Option "AllowNonLocalXvidtune"
@@ -75,10 +76,19 @@ Section "InputDevice"
         Identifier      "Generic Mouse"
         Driver          "mouse"
         Option          "SendCoreEvents"        "true"
-       Option          "Device"                "/dev/input/mice"
         Option          "Device"                "/dev/ttyS0"
         Option          "Protocol"              "Microsoft"
-       Option          "Emulate3Buttons"       "true"
+        Option          "Emulate3Buttons"       "true"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+Section "InputDevice"
+        Identifier      "USB Mouse"
+        Driver          "mouse"
+        Option          "SendCoreEvents"        "true"
+        Option          "Device"                "/dev/input/mice"
+        Option          "Protocol"              "IMPS/2"
+        Option          "Emulate3Buttons"       "true"
         Option          "ZAxisMapping"          "4 5"
 EndSection
 

@@ -152,9 +152,27 @@ PRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU</label>
 	<class>GtkText</class>
 	<name>text1</name>
 	<editable>False</editable>
-	<text>fill me with an introduction
----------------------------------------------------
-above line max length</text>
+	<text>Dyne:bolic is a preconfigured GNU/Linux system which runs without
+installing anything on you harddisks, alltough you can see your
+partitions automatically mounted in the /vol directory.
+
+Your /home directory resides in your RAM memory and everything
+new contained in it will not be there at the next boot.
+
+A samba filesharing daemon is running: everything contained in your
+/home/shared directory is made accessible (read and write) on the
+network without any password.
+
+The graphical environment is XFree86 with WindowMaker, the
+interface follows the OpenStep paradigm to build the way interaction
+distincts d:b from other common graphical environments.
+For instance you have multiple desktops that you can also switch
+using the key combination ALT+2 and other numbers.
+
+On the bottom-right of the desktop you have leds and statistics
+about your system usage and status, if you are online you'll see eth0
+(DHCP is detected at boot) otherwise you can configure your
+network and other things from the buttons here --------------&gt;</text>
 	<child>
 	  <padding>0</padding>
 	  <expand>True</expand>
@@ -480,9 +498,9 @@ mastered by our lab can be shipped ! </label>
 
 	<widget>
 	  <class>GtkFrame</class>
-	  <name>author_frame</name>
-	  <border_width>2</border_width>
-	  <label>AUTHORS</label>
+	  <name>frame9</name>
+	  <border_width>3</border_width>
+	  <label>Hall of Fame </label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	  <child>
@@ -492,144 +510,31 @@ mastered by our lab can be shipped ! </label>
 	  </child>
 
 	  <widget>
-	    <class>GtkVBox</class>
-	    <name>vbox9</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
+	    <class>GtkLabel</class>
+	    <name>label_team</name>
+	    <label>Denis &quot;jaromil&quot; Rojo
+  HasciiCam MuSE
+  FreeJ dyne:bolic
 
-	    <widget>
-	      <class>GtkPixmap</class>
-	      <name>jaropix</name>
-	      <signal>
-		<name>button_release_event</name>
-		<handler>on_jaropix_button_release_event</handler>
-		<last_modification_time>Thu, 03 Apr 2003 14:11:34 GMT</last_modification_time>
-	      </signal>
-	      <filename>jaromil.xpm</filename>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <build_insensitive>False</build_insensitive>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
+Federico &quot;bomboclat&quot; Prando
+  bolic1, dyne:bolic
 
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>jaromil</name>
-	      <label>a.k.a Denis Rojo</label>
-	      <justify>GTK_JUSTIFY_LEFT</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
+Francesco &quot;c1cc10&quot; Rana
+  bolic1, dyne:bolic
 
-	    <widget>
-	      <class>GtkHSeparator</class>
-	      <name>hseparator1</name>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
+Alex &quot;smilzo&quot; Gnoli
+  console support
 
-	    <widget>
-	      <class>GtkPixmap</class>
-	      <name>bombopix</name>
-	      <signal>
-		<name>button_release_event</name>
-		<handler>on_bombopix_button_release_event</handler>
-		<last_modification_time>Thu, 03 Apr 2003 14:11:27 GMT</last_modification_time>
-	      </signal>
-	      <filename>bomboclat.xpm</filename>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <build_insensitive>False</build_insensitive>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>bomboclat</name>
-	      <label>a.k.a Federico Prando</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkHSeparator</class>
-	      <name>hseparator2</name>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkPixmap</class>
-	      <name>cicciopix</name>
-	      <signal>
-		<name>button_release_event</name>
-		<handler>on_cicciopix_button_release_event</handler>
-		<last_modification_time>Thu, 03 Apr 2003 14:11:19 GMT</last_modification_time>
-	      </signal>
-	      <filename>c1cc10.xpm</filename>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <build_insensitive>False</build_insensitive>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>c1cc10</name>
-	      <label>a.k.a Francesco Rana</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
+...and a brave GNU world!
+free software is made out
+of many people efforts and
+a lot of LOVE!</label>
+	    <justify>GTK_JUSTIFY_LEFT</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
 	  </widget>
 	</widget>
 
@@ -662,7 +567,6 @@ mastered by our lab can be shipped ! </label>
 	      <class>GtkText</class>
 	      <name>credits</name>
 	      <editable>False</editable>
-	      <wrap>True</wrap>
 	      <text>dyne:bolic 1.0 it is shaped on the needs of media activists
 to stimulate the production and not only the fruition of digital
 and analog informations.
@@ -670,7 +574,6 @@ It takes birth as a grassroot effort to spread free software
 and the spirit of sharing informations.
 
 The following people also contributed to development:
-  Lo Smilzo (hack to make it work on XBOX)
   Lobo (karma and knowledge)
   Sandolo and Rageman (scripts and tricks)
   Nightolo and Rubik (MuSE interface coders)

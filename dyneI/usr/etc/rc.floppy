@@ -3,29 +3,12 @@
 
 # setup automount for floppies
 
+source /lib/libdyne.sh
+
 echo "[*] Activate floppy drives"
 
-WMPOS="`cat /boot/wmdock-pos`"
-CFG="/boot/WMState"
-
 if ! [ -z "`dmesg |grep fd0`" ]; then
-    echo "[*] Enabling floppy device"
-    echo "fd0 -fstype=auto :/dev/fd0" >> /etc/auto.removable
-    echo " .  floppy on fd0 -> /rem/fd0"
-    echo "," >>$CFG;
-    echo "{" >> $CFG;
-    echo "Name = \"fd0.FloppyDisk\";" >>$CFG
-    echo "Lock = yes;" >>$CFG
-    echo "Autolaunch = no;" >>$CFG
-    echo "Command = \"xwc /rem/fd0\";" >>$CFG
-    WMPOS="`expr $WMPOS + 1`"
-    echo "Position = \"0,${WMPOS}\";" >>$CFG;
-    echo "Forced = no;" >>$CFG;
-    echo "BuggyApplication = no;" >>$CFG;
-    echo "}" >>$CFG;
+    dyne_add_volume floppy fd0
 fi
-
-rm -f /boot/wmdock-pos
-echo "$WMPOS" > /boot/wmdock-pos
 
 

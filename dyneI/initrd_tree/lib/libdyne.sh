@@ -28,10 +28,15 @@
 DYNEBOL_NST="dynebol.nst"
 DYNEBOL_CFG="dynebol.cfg"
 
+# wmaker dock stuff
+if [ -e /boot/wmdock-pos ]; WMPOS="`cat /boot/wmdock-pos`"
+else WMPOS=0; fi
+WMCFG="/boot/WMState"
+
 dyne_mount_nest() {
   # $1 = full path to dyne:bolic nest configuration (dynebol.cfg)
   # returns 1 on failure, 0 on success
-  if [ ! -e $1 ]; then return fi
+  if [ ! -e $1 ]; then return; fi
   if [ -e /boot/nest ]; then
     echo "[!] another nest found on $1"
     echo " .  it overlaps an allready mounted nest, skipped!"
@@ -52,13 +57,13 @@ has been detected in $DYNEBOL_NST
 access is password restricted, please supply your passphrase now
 
 EOF
-    mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NST /mnt/nest
+    mount -o loop,encryption=$DYNEBOL_ENCRYPT $DYNEBOL_NST /mnt/nest -t loop-aes
     if [ $? != 0 ]; then
       echo
       echo "Invalid password or corrupted file"
     fi
   else
-    mount -o loop $DYNEBOL_NST /mnt/nest
+    mount -o loop $DYNEBOL_NST /mnt/nest -t loop-aes
   fi
   
   if [ $? != 0 ]; then 
@@ -102,9 +107,61 @@ EOF
   return 0
 }
 
-dyne_gen_wmaker_dock() {
+dyne_add_volume() {
   # $1 = media type (hdisk|floppy|usbkey)
   # $2 = mount point
-  echo "[*] generating wmaker dock icon for $1 on $2"
+  echo "[*] adding new $1 volume $2"
+  case "$1" in
+      "hdisk")
+	  echo "," >> $WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"$HDEV.HardDisk\";" >>$WMCFG;
+	  echo "Lock = yes;" >>$WMCFG;
+	  echo "Autolaunch = no;" >>$WMCFG;
+	  echo "Command = \"xwc /vol/${2}\";" >>$WMCFG;
+	  WMPOS="`expr $WMPOS + 1`"
+	  echo "Position = \"0,${WMPOS}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
+      "floppy")
+	  echo "$2 -fstype=auto :/dev/${2}" >> /etc/auto.removable
+	  echo "," >>$CFG;
+	  echo "{" >> $CFG;
+	  echo "Name = \"${2}.FloppyDisk\";" >>$CFG
+	  echo "Lock = yes;" >>$CFG
+	  echo "Autolaunch = no;" >>$CFG
+	  echo "Command = \"xwc /rem/${2}\";" >>$CFG
+	  WMPOS="`expr $WMPOS + 1`"
+	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
+	  echo "Forced = no;" >>$CFG;
+	  echo "BuggyApplication = no;" >>$CFG;
+	  echo "}" >>$CFG;
+	  ;;
+      "usb")
+#	  echo "$2 -fstype=auto :/dev/sda1" >> /etc/auto/removable
+	  echo "," >>$CFG;
+	  echo "{" >> $CFG;
+	  echo "Name = \"${2}.UsbStorage\";" >>$CFG
+	  echo "Lock = yes;" >>$CFG
+	  echo "Autolaunch = no;" >>$CFG
+	  echo "Command = \"xwc /rem/${2}\";" >>$CFG
+	  WMPOS="`expr $WMPOS + 1`"
+	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
+	  echo "Forced = no;" >>$CFG;
+	  echo "BuggyApplication = no;" >>$CFG;
+	  echo "}" >>$CFG;
+
+	  ;;
+      *)
+	  echo "[!] invalid call to dyne_gen_wmaker_dock() in libdyne.sh"
+	  return 0
+	  ;;
+  esac
+
+  rm -f $WMPOS
+  echo "$WMPOS" > /boot/wmdock-pos
+
 }
 

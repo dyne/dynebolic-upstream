@@ -45,7 +45,7 @@ create_window1 (void)
   GtkWidget *button2;
   GtkWidget *getstart;
   GtkWidget *hbox2;
-  GtkWidget *how_to_order;
+  GtkWidget *why_support;
   GtkWidget *frame6;
   GtkWidget *vbox3;
   GtkWidget *vbox6;
@@ -55,16 +55,8 @@ create_window1 (void)
   GtkWidget *support;
   GtkWidget *vbox4;
   GtkWidget *hbox3;
-  GtkWidget *author_frame;
-  GtkWidget *vbox9;
-  GtkWidget *jaropix;
-  GtkWidget *jaromil;
-  GtkWidget *hseparator1;
-  GtkWidget *bombopix;
-  GtkWidget *bomboclat;
-  GtkWidget *hseparator2;
-  GtkWidget *cicciopix;
-  GtkWidget *c1cc10;
+  GtkWidget *frame9;
+  GtkWidget *label_team;
   GtkWidget *vbox5;
   GtkWidget *scrolledwindow1;
   GtkWidget *credits;
@@ -179,7 +171,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox1), text1, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (text1, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (text1), NULL, NULL, NULL,
-                   _("fill me with an introduction\n---------------------------------------------------\nabove line max length"), -1);
+                   _("Dyne:bolic is a preconfigured GNU/Linux system which runs without\ninstalling anything on you harddisks, alltough you can see your\npartitions automatically mounted in the /vol directory.\n\nYour /home directory resides in your RAM memory and everything\nnew contained in it will not be there at the next boot.\n\nA samba filesharing daemon is running: everything contained in your\n/home/shared directory is made accessible (read and write) on the\nnetwork without any password.\n\nThe graphical environment is XFree86 with WindowMaker, the\ninterface follows the OpenStep paradigm to build the way interaction\ndistincts d:b from other common graphical environments.\nFor instance you have multiple desktops that you can also switch\nusing the key combination ALT+2 and other numbers.\n\nOn the bottom-right of the desktop you have leds and statistics\nabout your system usage and status, if you are online you'll see eth0\n(DHCP is detected at boot) otherwise you can configure your\nnetwork and other things from the buttons here -------------->"), -1);
 
   vbox2 = gtk_vbox_new (FALSE, 0);
   gtk_widget_ref (vbox2);
@@ -281,15 +273,15 @@ create_window1 (void)
   gtk_widget_show (hbox2);
   gtk_container_add (GTK_CONTAINER (notebook1), hbox2);
 
-  how_to_order = gtk_text_new (NULL, NULL);
-  gtk_widget_ref (how_to_order);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "how_to_order", how_to_order,
+  why_support = gtk_text_new (NULL, NULL);
+  gtk_widget_ref (why_support);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "why_support", why_support,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (how_to_order);
-  gtk_box_pack_start (GTK_BOX (hbox2), how_to_order, TRUE, TRUE, 0);
-  GTK_WIDGET_UNSET_FLAGS (how_to_order, GTK_CAN_FOCUS);
-  gtk_text_insert (GTK_TEXT (how_to_order), NULL, NULL, NULL,
-                   _("fill me with support instructions"), -1);
+  gtk_widget_show (why_support);
+  gtk_box_pack_start (GTK_BOX (hbox2), why_support, TRUE, TRUE, 0);
+  GTK_WIDGET_UNSET_FLAGS (why_support, GTK_CAN_FOCUS);
+  gtk_text_insert (GTK_TEXT (why_support), NULL, NULL, NULL,
+                   _("The dyne:bolic developers rely on funding from\nnon-profit, grant-making and business\norganizations willing to sustain development of\nfree software.\n\nWe can achieve the perspective of sustainability\nby offering the services of customizations,\nworkshops and setups; but also with a little help\nfrom our friends.\n\nWe rely on support from individuals like you to\npreserve, protect and promote the freedom to\nshare this distribution and software.\n\nIf you find dyne:bolic useful, please consider\nmaking a donation today.\n\nIf you order it online, please do it from\nredistributors supporting us, you'll find\na contact list of them on our website.\n\nIf you have a job, please encourage your\ncompany to become a patron of the dyne:bolic\nproject.\n\nIf you redistribute it, please give us some shares\non sells: you'll be happy to see the new versions\ncoming out.\nYou can become an Official Redistributor and get\nlisted on our webpages: there you'll find more\ninformations about it.\n\nWe hope you understand how this is important to\nto keep ongoing our ecosystem of generosity.\n\nThanks! a thousand flowers will blossom!"), -1);
 
   frame6 = gtk_frame_new (NULL);
   gtk_widget_ref (frame6);
@@ -356,80 +348,21 @@ create_window1 (void)
   gtk_widget_show (hbox3);
   gtk_box_pack_start (GTK_BOX (vbox4), hbox3, TRUE, TRUE, 0);
 
-  author_frame = gtk_frame_new (_("AUTHORS"));
-  gtk_widget_ref (author_frame);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "author_frame", author_frame,
+  frame9 = gtk_frame_new (_("Hall of Fame "));
+  gtk_widget_ref (frame9);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "frame9", frame9,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (author_frame);
-  gtk_box_pack_start (GTK_BOX (hbox3), author_frame, FALSE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (author_frame), 2);
+  gtk_widget_show (frame9);
+  gtk_box_pack_start (GTK_BOX (hbox3), frame9, FALSE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame9), 3);
 
-  vbox9 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox9);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox9", vbox9,
+  label_team = gtk_label_new (_("Denis \"jaromil\" Rojo\n  HasciiCam MuSE\n  FreeJ dyne:bolic\n\nFederico \"bomboclat\" Prando\n  bolic1, dyne:bolic\n\nFrancesco \"c1cc10\" Rana\n  bolic1, dyne:bolic\n\nAlex \"smilzo\" Gnoli\n  console support\n\n...and a brave GNU world!\nfree software is made out\nof many people efforts and\na lot of LOVE!"));
+  gtk_widget_ref (label_team);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "label_team", label_team,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox9);
-  gtk_container_add (GTK_CONTAINER (author_frame), vbox9);
-
-  jaropix = create_pixmap (window1, "jaromil.xpm");
-  gtk_widget_ref (jaropix);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "jaropix", jaropix,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (jaropix);
-  gtk_box_pack_start (GTK_BOX (vbox9), jaropix, FALSE, FALSE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (jaropix), FALSE);
-
-  jaromil = gtk_label_new (_("a.k.a Denis Rojo"));
-  gtk_widget_ref (jaromil);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "jaromil", jaromil,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (jaromil);
-  gtk_box_pack_start (GTK_BOX (vbox9), jaromil, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (jaromil), GTK_JUSTIFY_LEFT);
-
-  hseparator1 = gtk_hseparator_new ();
-  gtk_widget_ref (hseparator1);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "hseparator1", hseparator1,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hseparator1);
-  gtk_box_pack_start (GTK_BOX (vbox9), hseparator1, FALSE, FALSE, 0);
-
-  bombopix = create_pixmap (window1, "bomboclat.xpm");
-  gtk_widget_ref (bombopix);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "bombopix", bombopix,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (bombopix);
-  gtk_box_pack_start (GTK_BOX (vbox9), bombopix, TRUE, TRUE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (bombopix), FALSE);
-
-  bomboclat = gtk_label_new (_("a.k.a Federico Prando"));
-  gtk_widget_ref (bomboclat);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "bomboclat", bomboclat,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (bomboclat);
-  gtk_box_pack_start (GTK_BOX (vbox9), bomboclat, FALSE, FALSE, 0);
-
-  hseparator2 = gtk_hseparator_new ();
-  gtk_widget_ref (hseparator2);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "hseparator2", hseparator2,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hseparator2);
-  gtk_box_pack_start (GTK_BOX (vbox9), hseparator2, FALSE, FALSE, 0);
-
-  cicciopix = create_pixmap (window1, "c1cc10.xpm");
-  gtk_widget_ref (cicciopix);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "cicciopix", cicciopix,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (cicciopix);
-  gtk_box_pack_start (GTK_BOX (vbox9), cicciopix, TRUE, TRUE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (cicciopix), FALSE);
-
-  c1cc10 = gtk_label_new (_("a.k.a Francesco Rana"));
-  gtk_widget_ref (c1cc10);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "c1cc10", c1cc10,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (c1cc10);
-  gtk_box_pack_start (GTK_BOX (vbox9), c1cc10, FALSE, FALSE, 0);
+  gtk_widget_show (label_team);
+  gtk_container_add (GTK_CONTAINER (frame9), label_team);
+  gtk_label_set_justify (GTK_LABEL (label_team), GTK_JUSTIFY_LEFT);
 
   vbox5 = gtk_vbox_new (FALSE, 0);
   gtk_widget_ref (vbox5);
@@ -455,7 +388,7 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), credits);
   GTK_WIDGET_UNSET_FLAGS (credits, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (credits), NULL, NULL, NULL,
-                   _("fill me with the credits\n------------------------------------------------\nabove line max length"), -1);
+                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people also contributed to development:\n  Lo Smilzo (hack to make it work on XBOX)\n  Lobo (karma and knowledge)\n  Sandolo and Rageman (scripts and tricks)\n  Nightolo and Rubik (MuSE interface coders)\n  Maox (logo and graphics)\n  Eni and Newmark (watching horizons)\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nSUPPORT in development was given by the following\norganizazions:\n  TENOVIS (Intl) http://tenovis.com\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  MALASystem (Milano) http://malasystem.com\n  SERVUS.at (Linz) http://servus.at\n  OSSA (Intl) http://streamingalliance.org\n  Montevideo (Amsterdam) http://montevideo.nl\n  Stream on the fly (EU project)\n  JuX project (Vienna) http://netbridge.at\n  European Social Forum http://www.fse-esf.org\n  The city of Firenze\nand individuals:\n  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,\n  Markus Panholzer, Zeljko Blace and Blicero\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
 
   sponsor = gtk_frame_new (_("DEVELOPMENT SUPPORTED BY"));
   gtk_widget_ref (sponsor);
@@ -558,15 +491,6 @@ create_window1 (void)
                       NULL);
   gtk_signal_connect (GTK_OBJECT (order_button), "released",
                       GTK_SIGNAL_FUNC (on_order_button),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (jaropix), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_jaropix_button_release_event),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (bombopix), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_bombopix_button_release_event),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (cicciopix), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_cicciopix_button_release_event),
                       NULL);
   gtk_signal_connect (GTK_OBJECT (logo_tenovis), "button_release_event",
                       GTK_SIGNAL_FUNC (on_logo_tenovis_button_release_event),

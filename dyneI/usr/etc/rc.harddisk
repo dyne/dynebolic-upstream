@@ -6,6 +6,9 @@
 
 # Le partizioni riconosciute dal kernel, verranno montate lasciando che 
 # il tipo di file system venga riconosciuto automaticamente
+
+source libdyne.sh
+
 PART="Linux|NTFS|FAT|BSD"
 
 if [ "`fdisk -l | grep -i FAT`" ]; then
@@ -18,8 +21,6 @@ if [ "`fdisk -l | grep -i BSD`" ]; then
   modprobe -k ufs
 fi
 
-CFG="/boot/WMState"
-WMPOS="`cat /boot/wmdock-pos`"
 HD_NUM=0
 
 echo "[*] Mounting harddisk partitions"
@@ -32,17 +33,7 @@ if [ -r /dev/hda50 ]; then
   echo "[*] Enabling ide harddisk"
   mkdir /vol/hd1
   mount -t fatx /dev/hda50 /vol/hd1
-  echo "," >> $CFG;
-  echo "{" >> $CFG;
-  echo "Name = \"hd1.HardDisk\";" >>$CFG;
-  echo "Lock = yes;" >>$CFG;
-  echo "Autolaunch = no;" >>$CFG;
-  echo "Command = \"xwc /vol/hd1\";" >>$CFG;
-  WMPOS="`expr $WMPOS + 1`"
-  echo "Position = \"0,${WMPOS}\";" >>$CFG;
-  echo "Forced = no;" >>$CFG;
-  echo "BuggyApplication = no;" >>$CFG;
-  echo "}" >>$CFG;
+  dyne_add_volume hdisk /vol/hd1
 fi
 
 
@@ -56,25 +47,9 @@ for gh in `fdisk -l | grep -iE "$PART" | grep -i -v swap | awk '{print $1}'`; do
         mkdir "/vol/$HDEV" 
         mount "$gh" "/vol/$HDEV"
 	if [ "$?" = "0" ]; then
-	  echo " . harddisk on ${gh} -> /vol/$HDEV"
-#	  echo "$gh $MNTP $TYPE defaults,rw 0 0" >> $FSTAB
-	  echo "," >> $CFG;
-	  echo "{" >> $CFG;
-	  echo "Name = \"$HDEV.HardDisk\";" >>$CFG;
-	  echo "Lock = yes;" >>$CFG;
-	  echo "Autolaunch = no;" >>$CFG;
-	  echo "Command = \"xwc $MNTP\";" >>$CFG;
-	  WMPOS="`expr $WMPOS + 1`"
-	  echo "Position = \"0,${WMPOS}\";" >>$CFG;
-	  echo "Forced = no;" >>$CFG;
-	  echo "BuggyApplication = no;" >>$CFG;
-	  echo "}" >>$CFG;
+	    dyne_add_volume hdisk "$HDEV"
 	fi
 done
 
 fi # xbox or not
-
-rm -f /boot/wmdock-pos
-echo "$WMPOS" > /boot/wmdock-pos
-
 

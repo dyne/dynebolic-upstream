@@ -47,6 +47,7 @@ if [ -e /boot/nest ]; then rm -f /boot/nest; fi
 
 # look into mounted harddisks
 
+# scans the in $1 the given prefix ($2) of mounted media looking for nests
 scan_media() {
     for HD in `ls --color=none ${1}* | grep $2`; do
 	MOUNT="$1/${HD}"
@@ -61,7 +62,7 @@ scan_media() {
     return 0
 }
 
-# scans the in $1 the given prefix ($2) of mounted media looking for nests
+
 
 # old code only for harddisks (using df for scanning):
 #    for HD in `df|grep $1|awk '{print $1}'`; do
@@ -82,7 +83,7 @@ scan_media() {
 #    done
 }
 
-if [ -e /vol/usbkey ]; then
+if [ -e /rem/usbkey ]; then
     echo "[*] Scan for nests on mounted usbkey"
     scan_media "/rem" "usb"
 fi
@@ -92,4 +93,7 @@ if [ -e /vol/hd1 ]; then
     scan_media "/vol" "hd"
 fi
 
-# TODO FLOPPY
+if [ -e /rem/fd0 ]; then
+    echo "[*] Scan for nests on mounted floppy"
+    scan_media "/rem" "fd"
+fi
