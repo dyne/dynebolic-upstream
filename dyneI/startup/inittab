@@ -25,6 +25,14 @@ si:S:sysinit:/etc/rc.S
 # Script to run when going multi user.
 rc:123:wait:/etc/rc.M
 
+# TERMINALS
+c1:123:respawn:/sbin/agetty -n 38400 tty1 linux
+c2:123:respawn:/sbin/agetty -n 38400 tty2 linux
+c3:123:respawn:/sbin/agetty -n 38400 tty3 linux
+c4:123:respawn:/sbin/agetty -n 38400 tty4 linux
+c5:123:respawn:/sbin/agetty -n 38400 tty5 linux
+c6:123:respawn:/sbin/agetty -n 38400 tty6 linux
+
 # X11
 x1:3:wait:/etc/rc.X
 
@@ -34,12 +42,5 @@ l6:6:wait:/etc/rc.6
 # What to do at the "Three Finger Salute".
 ca::ctrlaltdel:/sbin/shutdown -t5 -rf now
 
-# TERMINALS
-c1:123:respawn:/sbin/agetty -n 38400 tty1 linux
-c2:123:respawn:/sbin/agetty -n 38400 tty2 linux
-c3:123:respawn:/sbin/agetty -n 38400 tty3 linux
-c4:123:respawn:/sbin/agetty -n 38400 tty4 linux
-c5:123:respawn:/sbin/agetty -n 38400 tty5 linux
-c6:123:respawn:/sbin/agetty -n 38400 tty6 linux
 
 

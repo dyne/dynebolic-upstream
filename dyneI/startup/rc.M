@@ -60,10 +60,11 @@ act "filesystem table in /etc"
 cp /boot/fstab /etc
 cp /boot/auto.removable /etc
 
-act "startup log file in /var/log"
-mv ${LOG} /var/log
-LOG="/var/log/${LOG}"
-
+act "reset boot log file in /var/log"
+if [ -r /var/log/dynebolic.log ]; then
+  rm /var/log/dynebolic.log
+fi
+mv ${LOG} /var/log/dynebolic.log
 
 notice "setup network loopback device"
 ifconfig lo 127.0.0.1
@@ -116,6 +117,11 @@ sync
 
 sync
 
+# configure your sound card
+/usr/etc/rc.sound &
+
+sync
+
 # configure firewire
 /usr/etc/rc.firewire &
 
@@ -126,33 +132,40 @@ sync
 
 sync
 
+# launch daemons in sequence
+
 # configure ssh client
-/usr/etc/rc.ssh &
+/usr/etc/rc.ssh
 
 sync
 
 # configure cups daemon
-/usr/etc/rc.cupsd &
+/usr/etc/rc.cupsd
 
 sync
 
 # start samba services
-/usr/etc/rc.samba &
+/usr/etc/rc.samba
+
+sync
+
+# start pure ftp daemon
+/usr/etc/rc.ftp
 
 sync
 
 # start http boa daemon
-/usr/etc/rc.httpd &
+/usr/etc/rc.httpd
 
 sync
 
-# configure your sound card
-/usr/etc/rc.sound &
+# configure your mail transport
+/usr/etc/rc.mail
 
 sync
 
 # configure openmosix clustering
-/usr/etc/rc.mosix &
+/usr/etc/rc.mosix
 
 sync
 

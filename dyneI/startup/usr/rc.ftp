@@ -19,13 +19,6 @@
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
-# setup the samba name with the assigned hostname
-if [ ! -e /etc/samba/smb.conf ]; then
-  sed "s/dynesamba/`hostname`/g" /etc/samba/smb.conf.dist > /etc/samba/smb.conf
-fi
-
-notice "starting Samba filesharing services"
-loadmod smbfs 
-/usr/sbin/smbd -D -o
-/usr/sbin/nmbd -D -o
+notice "starting Ftp filesharing services"
+pure-config.pl /etc/pure-ftpd.conf
 

@@ -55,7 +55,6 @@
 
 source /lib/libdyne.sh
 
-
 WMNUM=2
 WMCFG="/boot/WMState"
 add_volume() {
@@ -121,11 +120,12 @@ add_volume() {
 }
 
 activate_nest() {
-  # we mounted the nest! now link the directories!
+  # nest is allready mounted in /mnt/nest
+  # this script shoud now link the directories
   echo " ... OK";
 
-  # rc.nestclean now is here:
-  #zap old logs
+  # nestclean here:
+  # zap old logs
   if [ -r /mnt/nest/var/log/dynebolic.log ]; then
     rm /mnt/nest/var/log/dynebolic.log
   fi
@@ -733,7 +733,8 @@ if [ -z `mount | grep -i "type squashfs"` ]; then
     echo "[!] try to ask for help on dynebolic@dyne.org"
     echo "[!] detailing your system configuration and settings."
     echo
-    echo "[!] SCSI storage devices don't work, we need your help to support"
+    echo "[!] SCSI and Serial ATA storage devices don't work"
+    echo "[!] your help is needed!"
     echo "[!] it is useful if you send informations for the command 'dmesg'"
     echo "[!] from this console you have here."
     echo "[!] this is a fatal error, you are left alone."

@@ -38,20 +38,10 @@ else
 fi
 
 hostname "$HOSTNAME"
-notice "your hostname is $HOSTNAME"
+notice "your hostname is 'hostname'"
 
-# setup the samba name with the assigned hostname
-if [ ! -e /etc/samba/smb.conf ]; then
-  sed "s/dynesamba/$HOSTNAME/g" /etc/samba/smb.conf.dist > /etc/samba/smb.conf
-fi
 # setup the hostname in /etc/hosts to resolve it at least in loopback
-echo "127.0.0.1		$HOSTNAME" >> /etc/hosts
-
-notice "start exim for simple mail transport"
-if [ ! -e /etc/exim.conf ]; then
-  sed "s/dynebolic/$HOSTNAME/g" /usr/exim/configure.dist > /etc/exim.conf
-fi
-/usr/exim/bin/exim -bd -C /etc/exim.conf &
+echo "127.0.0.1		'hostname'" >> /etc/hosts
 
 #notice "activating point to point protocol"
 #loadmod ppp_generic
