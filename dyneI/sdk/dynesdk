@@ -99,10 +99,10 @@ check_sw() {
     fi
 }
 
-if [ "`whoami`" != "root" ]; then
-    error "you must be ROOT on your machine to use dyne:bolic SDK"
-    exit -1
-fi
+#if [ "`whoami`" != "root" ]; then
+#    error "you must be ROOT on your machine to use dyne:bolic SDK"
+#    exit -1
+#fi
 
 if [ -z $PFX ]; then
     error "no SDK directory prefix configured yet, read the help"
@@ -200,24 +200,24 @@ mkhome() {
 mkvar() {
     notice "packaging /var";
     cd $PFX
-    rm var/log/dynebolic.log
+    rm var/log/dynebolic.log 1>/dev/null 2>/dev/null
     tar cfz cdrom/dyne/var.tgz var
-    act "`stat $PFX/dyne/var.tgz`"
+    act "`stat cdrom/dyne/var.tgz`"
     cd -; sync
 }
 
 mksquash() {
     notice "making the /usr squashed filesystem (please wait, takes long!)"
     act "setup startup files"
-    if [ ! -x ../startup ]; then
+    if [ ! -x $PFX/../startup ]; then
       error "no startup files present in $PFX/../startup"
       sleep 2
     else
-      cp -f ../startup/usr/rc.* usr
+      cp -f $PFX/../startup/usr/rc.* $PFX/usr/etc
     fi
     act "start compressing: `date`"
     $MKSQUASHFS $PFX/usr $PFX/cdrom/dyne/dynebol.sys -noappend
-    chmod -x $PFX/dyne/dynebol.sys
+    chmod -x $PFX/cdrom/dyne/dynebol.sys
     act "end: `date`"
     act "`stat $PFX/dyne/dynebol.sys`"
     sync
@@ -236,8 +236,13 @@ mkiso() {
 #    echo >> $PFX/cdrom/VERSION
     DYNE_INITRD_VER="`cat $PFX/initrd/etc/DYNEBOLIC`"
     echo "ramdisk version $DYNE_INITRD_VER" | tee -a $PFX/cdrom/VERSION
-#    echo "MD5: `md5sum $PFX/cdrom/isolinux/initrd.gz`" | tee -a $PFX/cdrom/VERSION
-#    echo >> $PFX/cdrom/VERSION
+# generate md5sum hashes and gpg signatures in separate files
+    rm $PFX/cdrom/dyne/*.md5 2>/dev/null 1>/dev/null
+    rm $PFX/cdrom/dyne/*.asc 2>/dev/null 1>/dev/null
+    md5sum $PFX/cdrom/dyne/dynebol.sys > $PFX/cdrom/dyne/dynebol.sys.md5
+    md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
+    gpg -b -a $PFX/cdrom/dyne/dynebol.sys.md5
+    gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
 
     $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
