@@ -68,6 +68,7 @@ function basic_steps() {
 		fi
  		act "found allready downloaded stage1. proceding to untar $GIVE_PATH into $WORKINGDIR"
 		tar xvjf $CURRENTDIR/stage1-x86-2004.1.tar.bz2 -C $WORKINGDIR &> /dev/null 
+		! [ -d $WORKINGDIR/home/the_root ] && mkdir $WORKINGDIR/home/the_root
 	fi
 		
 }
@@ -110,14 +111,15 @@ INSTDIR=/home/the_root
 # standard output message routines
 # it's always useful to wrap them, in case we change behaviour later
 #
-notice() { echo -e "\\033[31m [*] \$1\\033[37m"; }
-act() { echo "\\033[32m . \$1\\033[37m"; }
-error() { echo "\\033[31m [!] \$1\\033[37m"; }
-func() { if [ \$DEBUG ]; then echo "\\033[32m [D] \$1\\033[31m"; fi }
+notice() { echo -e "[*] \$1"; }
+act() { echo ". \$1"; }
+error() { echo "[!] \$1"; }
+func() { if [ \$DEBUG ]; then echo "[D] \$1"; fi }
 
 function debug() {
 	echo -e "\a\a\a\$?"
 	read OK
+	unset $OK
 }
 
 ########################################################################
@@ -236,7 +238,7 @@ install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "install_
 build_xfree  && notice "Ho completato l'installazione di X" || error "build_xfree: qualcosa e' andato storto. non e' stata colpa mia"
 
 E0F
-		chmod 755 $WORKINGDIR/sbin/createbasesystem.sh		
+		chmod 740 $WORKINGDIR/sbin/createbasesystem.sh		
 		chroot $WORKINGDIR ./sbin/createbasesystem.sh
 }
 
