@@ -135,23 +135,25 @@ got_home() {
     elif [ -r ${1}/dynebolE.nst ]; then
 	NEST="${1}/dynebolE.nst"
 	ENCRYPT="AES=128"
-    fi
-    echo -n "[?] mount the dyne:bolic nest in ${NEST}"
-    getkey 10
-    if [ $? = 1 ]; then
-	echo " ... SKIPPED"
-    else
-	echo " ... OK"
-	
+    else unset NEST; fi
+    
+    if [ $NEST ]; then
+	echo -n "[?] mount the dyne:bolic nest in ${NEST}"
+	getkey 10
+	if [ $? = 1 ]; then
+	    echo " ... SKIPPED"
+	else
+	    echo " ... OK"
+	    
         # parses the values in a config file, if present
         # this is needed just to know if the nest is encrypted
 	# source "`echo ${NEST}|cut -d. -f1`.cfg"
 	    
-	notice "activating dyne:bolic nest in ${NEST}"
-	
-	if [ $ENCRYPT ]; then
-	    act "encrypted with algo $ENCRYPT"
-	    cat <<EOF
+	    notice "activating dyne:bolic nest in ${NEST}"
+	    
+	    if [ $ENCRYPT ]; then
+		act "encrypted with algo $ENCRYPT"
+		cat <<EOF
 
 
 
@@ -162,65 +164,68 @@ has been detected in $DYNEBOL_NST
 access is password restricted, please supply your passphrase now
 
 EOF
-	    for i in 1 2 3; do
-		mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
-		case $? in
-		    0) notice "valid password entered, activating nest!"
-			sleep 1
-			break
-			;;
-		    32) error "Invalid password"
-			sleep 2
-			continue
-			;;
-		    *) error "mount failed with exitcode $?"
+		for i in 1 2 3; do
+		    mount -o loop,encryption=$ENCRYPT ${NEST} /mnt/nest
+		    case $? in
+			0) notice "valid password entered, activating nest!"
+			    sleep 1
+			    break
+			    ;;
+			32) error "Invalid password"
+			    sleep 2
+			    continue
+			    ;;
+			*) error "mount failed with exitcode $?"
+			    sleep 2
+			    continue
+		    esac
+		done
+		
+	    else # nest is not encrypted
+		echo -n "[*] mounting nest over loopback device"
+		mount -o loop ${NEST} /mnt/nest
+		if [ $? != 0 ]; then
+		    error "mount failed with exitcode $?"
 		    sleep 2
-		    continue
-		esac
-	    done
+		else echo " ... OK"; fi
+	    fi
 	    
-	else # nest is not encrypted
-	    echo -n "[*] mounting nest over loopback device"
-	    mount -o loop ${NEST} /mnt/nest
-	    if [ $? != 0 ]; then
-		error "mount failed with exitcode $?"
-		sleep 2
-	    else echo " ... OK"; fi
+	    if [ "`mount|grep dynebol.nst`" ]; then
+		act "nest succesfully mounted"
+		DYNE_NEST_PATH=${NEST}
+		DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
+		return
+	    fi
 	fi
 	
-	if [ "`mount|grep dynebol.nst`" ]; then
-	    act "nest succesfully mounted"
-	    DYNE_NEST_PATH=${NEST}
-	    DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
-	    return
-	fi
-    fi
-    
-    if [ ! -r ${1}/home.tgz ]; then return; fi
-    if [ ! -r ${1}/var.tgz ]; then return; fi
-    
+    else # there isn't a nest, look for standard home and var
+	
+	if [ ! -r ${1}/home.tgz ]; then return; fi
+	if [ ! -r ${1}/var.tgz ]; then return; fi
+	
     # (from the former rc.vfs)
-    notice "initializing virtual filesystem in memory"
-    RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
-    SHMSIZE=`expr $RAMSIZE / 1024 / 4`
-    act "RAM detected: `expr $RAMSIZE / 1024` Mb"
-    act "VFS size: $SHMSIZE Mb"
-    echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
-    cp -f /boot/fstab /etc
-    mount /dev/shm
-    
+	notice "initializing virtual filesystem in memory"
+	RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
+	SHMSIZE=`expr $RAMSIZE / 1024 / 4`
+	act "RAM detected: `expr $RAMSIZE / 1024` Mb"
+	act "VFS size: $SHMSIZE Mb"
+	echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
+	cp -f /boot/fstab /etc
+	mount /dev/shm
+	
     # creating /var /tmp and /home
-    act "populating /var from CD"
-    tar xfz "${1}/var.tgz" -C /dev/shm
-    mount -o bind /dev/shm/var /var
-    
-    act "populating /home from CD"
-    tar xfz "${1}/home.tgz" -C /dev/shm
-    mount -o bind /dev/shm/home /home
-    
-    act "building /tmp"
-    mkdir /dev/shm/tmp
-    mount -o bind /dev/shm/tmp /tmp
+	act "populating /var from CD"
+	tar xfz "${1}/var.tgz" -C /dev/shm
+	mount -o bind /dev/shm/var /var
+	
+	act "populating /home from CD"
+	tar xfz "${1}/home.tgz" -C /dev/shm
+	mount -o bind /dev/shm/home /home
+	
+	act "building /tmp"
+	mkdir /dev/shm/tmp
+	mount -o bind /dev/shm/tmp /tmp
+    fi
 }
 
 CD_NUM=0
@@ -236,7 +241,6 @@ mount_cdrom() {
 
     # can't mount the device, it's likely a void cd reader    
     if [ $? != 0 ]; then
-        rm -r ${MNT}
         # if we can't mount it, we add it to the automounted volumes
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
@@ -254,7 +258,6 @@ mount_cdrom() {
     if ! [ -r "${MNT}/dynebol.sys" ]; then
 	act "the dynebolic system is not here"
 	umount "/mnt/dynebolic"
-	rm -r "/mnt/dynebolic"
 	# then we add it anyway to the automounted volumes
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
@@ -292,8 +295,7 @@ mount_cdrom() {
 	# this is a dynebolic CD, but a system
 	# is allready mounted from another media
 	# so we can eject this cdrom and put the volume in automount
-umount "/mnt/dynebolic"
-	rm -r "/mnt/dynebolic"
+	umount "/mnt/dynebolic"
 	eject "/dev/${DEV}"
         echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
 	     >> /boot/auto.removable
