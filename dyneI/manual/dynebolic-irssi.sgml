@@ -1,4 +1,99 @@
 <section>
 <title>irssi</title>
-<para>to be written</para>
-</section>
+<subtitle>text-mode IRC client</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+http://www.irssi.org/</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+irssi
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+Timo Sirainen
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+1999
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.irssi.org">www.irssi.org</ulink> </entry>
+<!-- MAN  --> <entry> irssi </entry>
+<!-- BY   --> <entry> Timo Sirainen </entry>
+<!-- YEAR --> <entry> 1999 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+Irssi is a modular IRC text-mode client for UNIX with some nice features:
+</para>
+
+<para>
+<itemizedlist>
+	<listitem><para>
+		Multiserver friendly - Irssi has clearly the best 
+		support for handling multiple server connections.  
+	</para></listitem>   
+	<listitem><para>
+		Channel automation - You can specify what channels to join 
+		to immediately after connected to some server or IRC network. 
+	</para></listitem>   
+	<listitem><para>
+		Tab completing anything - You can complete lots of things with
+		tab: nicks, commands, command -options, file names, settings, 
+		text format names, channels and server names.  
+	</para></listitem>   
+	<listitem><para>
+		Excellent logging - You can log any way you want and as 
+		easily or hard as you want.  
+	</para></listitem>   
+	<listitem><para>
+		Themes: you can customize the clienat with 
+		a wide variety of themes. Take a look at 
+		<ulink url="http://www.irssi.org/?page=themes">
+			http://www.irssi.org/?page=themes
+		</ulink>.
+	</para></listitem>   
+	<listitem><para>
+		Perl Scripts Support: you can write your own perl script
+		or download them from 
+		<ulink url="http://www.irssi.org/?page=plugins">
+			http://www.irssi.org/?page=plugins
+		</ulink>.
+	</para></listitem>   
+</itemizedlist>
+</para>
+
+</section> <!-- irssi -->
