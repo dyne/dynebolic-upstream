@@ -24,6 +24,8 @@ PACKAGE="dyne:bolic SDK"
 VERSION="0.2"
 ID="\$Id$"
 REPOSITORY="rsync.dyne.org::dynebolic-dev --port 6969"
+ISO="dynebolic-dev.iso"
+PFX="./"
 
 # standard output message routines
 # always useful to wrap them, in case we change behaviour later
@@ -49,23 +51,34 @@ while true; do
 	    act "-p     path to the sdk base directory (default ./)"
 	    act "-u     username for online operations"
 	    act "-r     server hosting the online sdk"
+	    act "-i     dynebolic iso for explode and mkiso command (default ./dynebolic-dev.iso) "
 	    notice "macro COMMANDS:"
 	    act "checkout: download the sdk from an online server"
 	    act "commit: uploads the current sdk to the server (be careful!)"
 	    act "explode: opens an existing dyne:bolic iso into an SDK"
 	    act "implode: packs a dyne:bolic iso from the current SDK"
 	    act "chroot: dive inside the dyne:bolic SDK"
+	    act "sdk-create: a all-in-one script to checkout,mkiso,explode creating a dir SDK in path where is exploded"
+	    act "WARN!!! for sdk-create u need at least 2.4G of hard disk space"
 	    notice "micro COMMANDS:"
 	    act "mkinitrd: makes an initrd.gz of INITRD_SIZE (6000)"
 	    act "mkhome: packs the home into the cdrom directory"
 	    act "mkvar: packs the var into the cdrom directory"
 	    act "mksquash: packs the squashed filesystem in the cdrom"
 	    act "mkiso: packs the cdrom directory into a bootable iso"
+	    notice "right sequence:"
+	    act "To create a working SDK the right sequence is the following: "
+	    act "checkout    - to get the sdk from server"
+	    act "mkiso       - to create the dynebolic-iso from the checkouted sdk"
+	    act "explode     - to create the sdk exploded dir"
+	    act "chroot      - to enter in dynebolic for developing"
+	    act "commit      - when your are ABSOLUTELY SURE that it works"
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
 	-u) USER=$2; shift 2 ;;
 	-r) REPOSITORY="$2::dynebolic-dev --port 6969"; shift 2 ;;
+	-i) ISO="$2"; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
     esac
@@ -177,7 +190,7 @@ explode() {
     
     # TODO indicare la iso da cui esplodere su linea di comando
     act "copying iso contents into $PFX/cdrom (please wait)"
-    mount -o loop,ro -t iso9660 dynebolic-dev.iso $PFX/tmp
+    mount -o loop,ro -t iso9660 $ISO $PFX/tmp
     cp -a $PFX/tmp/* $PFX/cdrom/
     umount $PFX/tmp 
     
@@ -226,6 +239,23 @@ chroot() {
    act "# chroot $PFX/chroot /bin/zsh"
 }
 
+sdk-create() {
+	notice "Creating the dynebolic sdk in $PFX/SDK"
+	act "-- going to checkout the dyne-sdk"
+	checkout
+	act "-- going to create the dyne-sdk iso in $PFX/$ISO"
+	mkiso
+	act "-- going to explode the sdk in $PFX/SDK"
+	OLDPFX=$PFX
+	PFX=$PFX/SDK
+	mkdir $PFX/SDK 2>/dev/null 1>/dev/null
+	explode
+	act "-- going to delete the iso "
+	rm -f $OLDPFX/$ISO
+   act "# chroot $PFX/chroot /bin/zsh"
+
+}
+
 ########################################################################
 ### MICRO COMMAND FUNCTIONS
 ########################################################################
@@ -272,11 +302,11 @@ mksquash() {
 
 mkiso() {
     notice "making the dynebolic ISO"
-    $MKISOFS -o $PFX/dynebolic-dev.iso -J -R -udf \
+    $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
 	    $PFX/cdrom/
-    act "`ls -lh $PFX/dynebolic-dev.iso`"
+    act "`ls -lh $PFX/$ISO`"
 }
 
 mount_chroot() {
