@@ -63,10 +63,12 @@ warning() {
 
 # module loading wrapper
 loadmod() {
-    if [ ! -z "`echo $KMOD_OUT | grep -E $1`" ]; then
+    if [ -r /etc/modules.deny ]; then
+      if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
 	# skip modules included in /etc/modules.deny
-	act "skipping kernel module $1 (match in KMOD_OUT)"
+	act "skipping kernel module $1 (match in /etc/modules.deny)"
 	return
+      fi
     fi
     # in interactive mode we ask 
     if [ "`grep -i interactive /proc/cmdline`" ]; then 

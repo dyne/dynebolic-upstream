@@ -167,7 +167,8 @@ sync
 # execute rc.local if present
 # you can create rc.local in the /etc directory
 # and put there the commands to be executed here
-# you can also put it in a floppy a:\rc.local
+# you can also put it in a floppy a:\dynebol.sh
+# and then uncomment the proper lines in /etc/rc.S
 if [ -e /etc/rc.local ]; then
   source /etc/rc.local
 fi

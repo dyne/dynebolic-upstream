@@ -12,6 +12,21 @@
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
+
+# in interactive mode we ask 
+if [ "`grep -i interactive /proc/cmdline`" ]; then 
+  echo -n "[?] do you want support for PCMCIA?" | tee -a $LOG
+  getkey 10
+  if [ $? = 1 ]; then
+    echo " ... SKIPPED" | tee -a $LOG
+    exit 0
+  else
+    echo " ... ACTIVATING" | tee -a $LOG
+  fi
+fi 
+
+
+
 usage()
 {
     echo "Usage: $0 {start|stop|restart}"

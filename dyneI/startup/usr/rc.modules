@@ -29,7 +29,9 @@ notice "loading kernel modules"
    # FIX es1988 driver (found on a hp omnibook xe3
    # uses the kernel oss maestro3 driver
    # jaromil 26 07 2002
-   /usr/fixes/es1988.sh
+   if [ ! -z "`cat /proc/pci | grep 'ESS Technology ES1988 Allegro-1'`" ]; then
+     loadmod maestro3
+   fi
 
    # FIX i810 INTEL onboard soundcard
    # jaromil 19 07 2002
@@ -37,12 +39,29 @@ notice "loading kernel modules"
    # deactivated - 26 06 2003 - 1.0 alpha5-dev
 
    # FIX VIA Rhine ethernet cards
-   /usr/fixes/viarhine-fix.sh
+   # Ethernet controller: VIA Technologies, Inc.: Unknown device 3065
+   # 28 aug 2002 // jaromil
+   if [ ! -z "`lspci|grep 'Ethernet controller: VIA Technologies'`" ]; then
+     echo "[*] VIA Rhine ethernet card detected"
+     loadmod via-rhine
+   fi
+
 
    # FIX for nforce onboard audio and ethernet from nvidia
    # those are very popular, expecially on compact EPIA mini-ITX m/b
    # dirty fix by jrml 14 08 2003
-   /usr/fixes/nforce.sh
+   # let's not use the nvidia audio driver,
+   # there is an alsa one working better !
+   #if [ ! -z "`lspci | grep -i 'multimedia audio' | grep -i ' nvidia'`" ]; then
+   #  notice "NForce audio controller found"
+   #  loadmod nvaudio
+   #fi
+   if [ ! -z "`lspci | grep -i 'ethernet' | grep -i ' nvidia'`" ]; then
+     notice "NForce ethernet device found"
+     loadmod nvnet
+   fi
+
+
 
 ### NOW WITH PCIMODULES
 
