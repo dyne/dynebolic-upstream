@@ -111,7 +111,12 @@ if test -x /usr/sbin/pcimodules; then
     /usr/etc/rc.net
     
     sync
-    
+
+# configure firewire
+    /usr/etc/rc.firewire
+
+    sync
+
 # configure language
     /usr/etc/rc.language
     

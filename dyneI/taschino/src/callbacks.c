@@ -102,7 +102,8 @@ int detect_harddisk() { /* DETECT HARDDISKS */
   
   /* zeroes all the struct */
   memset(part,0,sizeof(part));
-  
+  part_num = 0;
+
   found = scandir("/vol",&filelist,hd_selector,alphasort);
   if(found<0) perror("can't scan /vol");
   
@@ -200,7 +201,7 @@ int detect_usbkey() { /* DETECT USB STORAGE */
   
   /* zeroes all the struct */
   memset(part,0,sizeof(part));
-    
+  usb_num = 0; 
   strcpy(usb[0].path,"/rem/usb1");
 
   /* check if the partition is WRITABLE

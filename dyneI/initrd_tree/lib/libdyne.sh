@@ -31,7 +31,9 @@ WMCFG="/boot/WMState"
 
 # logging functions
 if [ ! -z $FILE_ID ]; then
+    echo >> $DYNEBOL_LOG
     echo "RC: $FILE_ID" >> $DYNEBOL_LOG
+    echo >> $DYNEBOL_LOG
 fi
 
 notice() {

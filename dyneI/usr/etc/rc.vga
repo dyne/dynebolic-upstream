@@ -40,7 +40,7 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' matrox'`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep -iE ' intel.*i8'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep -iE ' intel.*8'`" ]; then
   act "using XFree86 'i810' driver for your Intel card"
   sed "s/fbdev/i810/g" $DISTCFG > $CFG
   loadmod i810

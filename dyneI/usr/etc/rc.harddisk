@@ -31,11 +31,30 @@ notice "harddisk detection"
 # in GNUstep/Deafaults/WMState
 if [ ! -z "`uname -a | grep xbox`" ]; then
 # WE ARE ON XBOX
-    if [ -r /dev/hda50 ]; then
+    if [ -e /dev/hda50 ]; then
 	act "enabling XBOX ide harddisk"
+
 	mkdir /vol/hd1
 	mount -t fatx /dev/hda50 /vol/hd1
 	dyne_add_volume hdisk /vol/hd1
+
+	mkdir /vol/hd2
+	mount -t fatx /dev/hda51 /vol/hd2
+	dyne_add_volume hdisk /vol/hd2
+
+	mkdir /vol/hd3
+	mount -t fatx /dev/hda52 /vol/hd3
+	dyne_add_volume hdisk /vol/hd3
+
+	mkdir /vol/hd4
+	mount -t fatx /dev/hda53 /vol/hd4
+	dyne_add_volume hdisk /vol/hd4
+
+	if [ -e /dev/hda55 ]; then
+	  mkdir /vol/hd5
+	  mount -t fatx /dev/hda53 /vol/hd5
+	  dyne_add_volume hdisk /vol/hd5
+	fi
     fi
     
     

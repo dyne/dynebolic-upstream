@@ -10,29 +10,32 @@ echo
 echo
 echo
 /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-echo
-echo
-echo "[!] your graphic card seems to lack XFree86 native support"
-echo "[!] if you are online, please report this bug with the command"
-echo "[!] 'db-bugreport' which will send your hardware configuration"
-echo "[!] to developers, thanks for your help!"
-echo
-echo "[*] in 5 seconds we will try to start framebuffer video mode"
-echo " .  resolution is limited to 800x600 16bit color depth"
+
 echo
 echo
 
-sleep 5
-mv /etc/XF86Config "/etc/XF86Config.bad-`date '+%e-%m-%y'`"
-cp /etc/XF86Config.dist /etc/XF86Config
+if [ -z "`grep fbdev /etc/XF86Config`" ]; then
+  echo "[!] your graphic card seems to lack XFree86 native support"
+  echo "[!] if you are online, please report this bug with the command"
+  echo "[!] 'db-bugreport' which will send your hardware configuration"
+  echo "[!] to developers, thanks for your help!"
+  echo
+  echo "[*] in 5 seconds we will try to start framebuffer video mode"
+  echo " .  resolution is limited to 800x600 16bit color depth"
+  echo
+  echo
+  sleep 5
+  mv /etc/XF86Config "/etc/XF86Config.bad-`date '+%e-%m-%y'`"
+  cp /etc/XF86Config.dist /etc/XF86Config
+  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
+fi
 
-/sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-
+rm /etc/XF86Config
 echo
 echo
 echo "[!] the X graphical interface cannot start automatically"
 echo "[!] you can try to configure it by yourself using the command"
-echo "[!] 'xf86cfg' which will launch a visual tool to choose your"
+echo "[!] 'xf86cfg' which hopefully can launch a visual tool to choose"
 echo "[!] video hardware devices from a list of supported cards."
 echo "[!] if you are online, please also do 'db-bugreport' so that"
 echo "[!] dynebolic developers will be able to examine your case!"

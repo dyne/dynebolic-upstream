@@ -164,11 +164,11 @@ EOF
       echo " .  YOU MUST INSERT YOUR ENCRYPTION PASSPHRASE NOW" | tee -a $LOG
       echo " .   =====  CAN'T BE LESS THAN 20 LETTERS! ====="   | tee -a $LOG
       sleep 1
-      losetup -e "$ENCRYPT" -T /dev/loop6 "$LOCATION/$DYNEBOL_NST"
+      losetup -e "$ENCRYPT" -T /dev/loop/6 "$LOCATION/$DYNEBOL_NST"
       # here password gets asked twice by the losetup program
       # input from user is taken from stdin
     else
-      losetup /dev/loop6 "$LOCATION/$DYNEBOL_NST"
+      losetup /dev/loop/6 "$LOCATION/$DYNEBOL_NST"
     fi
     
     if [ $? == 0 ]; then
@@ -186,12 +186,12 @@ EOF
 
     echo "[*] creating the EXT2 internal filesystem" | tee -a $LOG
     sleep 1
-    mkfs -t ext2 -L "dyne:bolic nest" /dev/loop6
+    mkfs.ext2  -L "dyne:bolic nest" /dev/loop/6
     if [ $? == 0 ]; then
       echo " .  OK, loopback device succesfully formatted" | tee -a $LOG
     else
       echo "[!] mkfs reported error, operation aborted" | tee -a $LOG
-      losetup -d /dev/loop6
+      losetup -d /dev/loop/6
       rm "$LOCATION/$DYNEBOL_NST"
       rm "$LOCATION/$DYNEBOL_CFG"
       sleep 4
@@ -199,7 +199,7 @@ EOF
     fi
 
     echo " .  mount the nest for the first time" | tee -a $LOG
-    mount -t ext2  /dev/loop6 /mnt/nest
+    mount -t ext2  /dev/loop/6 /mnt/nest
 
     echo -n "[*] populating nest: "
     tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
@@ -217,7 +217,7 @@ EOF
 
     echo "[*] done!" | tee -a $LOG
     sleep 1
-    losetup -d /dev/loop6
+    losetup -d /dev/loop/6
 
     sync
 
