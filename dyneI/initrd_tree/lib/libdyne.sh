@@ -181,8 +181,21 @@ dyne_add_volume() {
 	  echo "Forced = no;" >>$WMCFG;
 	  echo "BuggyApplication = no;" >>$WMCFG;
 	  echo "}" >>$WMCFG;
-
 	  ;;
+      "cd")
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"${2}.CdRom\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc /rem/${2}\";" >>$WMCFG
+	  WMPOS="`expr $WMPOS + 1`"
+	  echo "Position = \"0,${WMPOS}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
+
       *)
 	  echo "[!] invalid call to dyne_gen_wmaker_dock() in libdyne.sh"
 	  return 0

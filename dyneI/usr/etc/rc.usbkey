@@ -6,17 +6,21 @@
 
 source /lib/libdyne.sh
 
-modprobe -k scsi_mod sd_mod sg usb-storage
+echo "[*] adding removable usb volume"
 
-USBKEY="`dmesg | grep sda`"
-if [ -z $USBKEY \
-   -a -e /dev/sda1 ]; then
-    echo "usb1 -fstype=auto :/dev/sda1" >> /etc/auto.removable
-    dyne_add_volume usb "usb1"
-fi
-USBKEY="`dmesg | grep sdb`"
-if [ -z $USBKEY \
-   -a -e /dev/sdb1 ]; then
-    echo "usb2 -fstype=auto :/dev/sdb1" >> /etc/auto.removable
-    dyne_add_volume usb "usb2"
-fi
+echo " .  loading module sd_mod"
+modprobe sd_mod
+echo " .  loading module usb-storage"
+modprobe usb-storage
+echo " .  loading module vfat"
+modprobe vfat
+
+sync
+
+echo "usb1 -fstype=auto :/dev/sda1" >> /etc/auto.removable
+dyne_add_volume usb "usb1"
+
+# echo "usb2 -fstype=auto :/dev/sdb1" >> /etc/auto.removable
+# dyne_add_volume usb "usb2"
+
+

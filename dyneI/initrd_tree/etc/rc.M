@@ -84,6 +84,8 @@ if test -x /usr/sbin/pcimodules; then
 
     sync
     
+    /usr/bin/dmesg -n 1
+
 # detect xbox
 # in case we're on xbox then executes just the
 # script for it, avoiding modules detection and

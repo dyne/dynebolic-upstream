@@ -95,7 +95,7 @@
 	    <widget>
 	      <class>GtkLabel</class>
 	      <name>label_hd</name>
-	      <label>Nest your /home and all your settings, the nest can be password secured with encryption and doesn't needs repartitioning, to keep your data you just use 64Mb or more by creating one simple file: the .dynebolic.nest</label>
+	      <label>Nest your /home and all your settings, the nest can be password secured with encryption and doesn't needs repartitioning, to keep your data you just use 64Mb or more by creating one simple file: the dynebol.nst</label>
 	      <justify>GTK_JUSTIFY_LEFT</justify>
 	      <wrap>True</wrap>
 	      <xalign>0.5</xalign>
@@ -164,7 +164,7 @@
 	    <widget>
 	      <class>GtkLabel</class>
 	      <name>label_usb</name>
-	      <label>Nest your /home and all your settings, it will place your /home directory and other settings in your usb pen filesystem and you'll be able to access them also from outside dyne:bolic system</label>
+	      <label>Nest your /home and all your settings, the nest can be password secured with encryption, it will place your /home directory in your usb pen filesystem and find it back at every boot.</label>
 	      <justify>GTK_JUSTIFY_LEFT</justify>
 	      <wrap>True</wrap>
 	      <xalign>0.5</xalign>
@@ -880,7 +880,7 @@
       <widget>
 	<class>GtkLabel</class>
 	<name>success_text</name>
-	<label>Success! your dyne:bolic nest has been succesfully created, you'll find back your settings at every boot starting from now!</label>
+	<label>Success! your dyne:bolic nest has been succesfully created, you need to REBOOT dyne:bolic to activate your nest.</label>
 	<justify>GTK_JUSTIFY_LEFT</justify>
 	<wrap>True</wrap>
 	<xalign>0.5</xalign>

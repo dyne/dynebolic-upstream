@@ -3,9 +3,9 @@
 RES=`Xdialog --title "Shutdown" --stdout --wrap --fill --smooth --ok-label "DO IT!" --cancel-label "NEVER" -no-tags --menubox "You really want to quit DyneBolic? then you can sadly choose to reboot or shutdown your machine:" 0x0 3 REBOOT "Reboot" POWERDOWN "shutdown"`
 case "$RES" in
     REBOOT)
-    /usr/sbin/reboot
+    shutdown -t 1 -r now
     ;;
     POWERDOWN)
-    /usr/sbin/poweroff
+    shutdown -t 1 -h now
     ;;
 esac

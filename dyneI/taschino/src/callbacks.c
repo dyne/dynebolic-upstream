@@ -194,101 +194,88 @@ int detect_harddisk() { /* DETECT HARDDISKS */
 } /* end of HARDDISK DETECTION */
 
 int detect_usbkey() { /* DETECT USB STORAGE */
-  struct dirent **filelist;
-  int found, c;
   int tmpfd;
   char tmp[512];
   GtkWidget *win_has_nest;
   
   /* zeroes all the struct */
   memset(part,0,sizeof(part));
-  
-  found = scandir("/vol",&filelist,usb_selector,alphasort);
-  if(found<0) perror("can't scan /vol");
-  
-  for(c=0;c<found;c++) { /* now we cycle thru all the mounted harddisk in /vol */
-    snprintf(usb[c].path,255,"/vol/%s",filelist[c]->d_name);
+    
+  strcpy(usb[0].path,"/rem/usb1");
 
-    /* check if the partition is WRITABLE
-       check if the partition has some space
-       check if the partition has allready a nest */
-    snprintf(tmp,512,"%s/dynebol.cfg",usb[c].path);
-    tmpfd = open(tmp,O_CREAT|O_EXCL,S_IRWXU);
-    if(tmpfd<0) {
-      /* some error occurred:
-	 EACCESS | EROFS = non writable filesystem
-	 ENOSPC = filesystem has no more space
-	 EEXIST = a nest allready exists */
-      if (errno == 13 || errno == 30) { /* EACCESS || EROFS */
-	fprintf(stderr,"[!] non writable filesystem on %s\n",
-		filelist[c]->d_name);
-      }
-
-      if(errno == 28) { /* ENOSPC */
-	  fprintf(stderr,"[!] no space left on filesystem %s\n",
-		  filelist[c]->d_name);
-      }
-	  
-      if (errno == 17) { /* EEXIST */
-	win_has_nest = create_win_has_nest();
-	gtk_widget_show(win_has_nest);
-	    fprintf(stderr,"[!] a nest allready exists on filesystem %s\n",
-		    filelist[c]->d_name);
-      }
-      
-      //      fprintf(stderr,"[!] %s\n", strerror(errno));
-      // why errno is messy? */
-
-    /* if we got to exclude the partition from the previous check
-       then continue the for cycle analyzing the next partition */
-      continue;
-    } else {
-      /* everything allright, file opened correctly
+  /* check if the partition is WRITABLE
+     check if the partition has some space
+     check if the partition has allready a nest */
+  snprintf(tmp,512,"%s/dynebol.cfg",usb[0].path);
+  tmpfd = open(tmp,O_CREAT|O_EXCL,S_IRWXU);
+  if(tmpfd<0) {
+    /* some error occurred:
+       EACCESS | EROFS = non writable filesystem
+       ENOSPC = filesystem has no more space
+       EEXIST = a nest allready exists */
+    if (errno == 13 || errno == 30) { /* EACCESS || EROFS */
+      fprintf(stderr,"[!] non writable filesystem on usb1\n");
+    }
+    
+    if(errno == 28) { /* ENOSPC */
+      fprintf(stderr,"[!] no space left on filesystem usb1\n");
+    }
+    
+    if (errno == 17) { /* EEXIST */
+      win_has_nest = create_win_has_nest();
+      gtk_widget_show(win_has_nest);
+      fprintf(stderr,"[!] a nest allready exists on filesystem usb1\n");
+    }
+    
+    //      fprintf(stderr,"[!] %s\n", strerror(errno));
+    // why errno is messy? */
+    return usb_num;
+  } else {
+    /* everything allright, file opened correctly
        but it was just a test, so we close and unlink */
-      close(tmpfd);
-      unlink(tmp);
-    }
-    
-    
-
-
-    if( statfs(usb[c].path,&usb[c].fs) <0 ) {
-      fprintf(stderr,"can't gather information on %s : %s",
-	      filelist[c]->d_name, strerror(errno));
-      continue;
-    }
-
-    /* we got an installable partition! */
-    usb_num++;
-
-    /* form human readable strings about the harddisk space
-       first: TOTAL SPACE */
-    if( (usb[c].fs.f_blocks * (usb[c].fs.f_bsize / 1024))/1000 > 1000) {
-      /* >1000Mb it is about gigabytes */
-      sprintf(usb[c].total_space,"%.1fGb",
-	      (float)(usb[c].fs.f_blocks * (usb[c].fs.f_bsize / 1024))/(1000*1000));
-    } else {
-      /* it is less than one gigabyte */
-      sprintf(usb[c].total_space,"%.1fMb",
-	      (float)(usb[c].fs.f_blocks * (usb[c].fs.f_bsize / 1024))/1000);
-    }	
-    /* then FREE SPACE */
-    if( (usb[c].fs.f_bfree * (usb[c].fs.f_bsize / 1024))/1000 > 1000) {
-      /* >1000Mb it is about gigabytes */
-      sprintf(usb[c].avail_space,"%.1fGb",
-	      (float)(usb[c].fs.f_bavail * (usb[c].fs.f_bsize / 1024))/(1000*1000));
-    } else {
-      /* it is less than one gigabyte */
-      sprintf(usb[c].avail_space,"%.1fMb",
-	      (float)(usb[c].fs.f_bavail * (usb[c].fs.f_bsize / 1024))/1000);
-    }
-#ifdef DEBUG
-    fprintf(stderr,"%s has %s free space of %s total\n",
-	    filelist[c]->d_name,
-	    usb[c].avail_space,
-	    usb[c].total_space);
-#endif
+    close(tmpfd);
+    unlink(tmp);
   }
+    
+    
+  
+  
+  if( statfs(usb[0].path,&usb[0].fs) <0 ) {
+    fprintf(stderr,"can't gather information on usb1 : %s",
+	    strerror(errno));
+    return usb_num;
+  }
+  
+  /* we got an installable partition! */
+  usb_num++;
+  
+  /* form human readable strings about the harddisk space
+     first: TOTAL SPACE */
+  if( (usb[0].fs.f_blocks * (usb[0].fs.f_bsize / 1024))/1000 > 1000) {
+    /* >1000Mb it is about gigabytes */
+    sprintf(usb[0].total_space,"%.1fGb",
+	    (float)(usb[0].fs.f_blocks * (usb[0].fs.f_bsize / 1024))/(1000*1000));
+  } else {
+    /* it is less than one gigabyte */
+    sprintf(usb[0].total_space,"%.1fMb",
+	    (float)(usb[0].fs.f_blocks * (usb[0].fs.f_bsize / 1024))/1000);
+  }	
+  /* then FREE SPACE */
+  if( (usb[0].fs.f_bfree * (usb[0].fs.f_bsize / 1024))/1000 > 1000) {
+    /* >1000Mb it is about gigabytes */
+    sprintf(usb[0].avail_space,"%.1fGb",
+	    (float)(usb[0].fs.f_bavail * (usb[0].fs.f_bsize / 1024))/(1000*1000));
+  } else {
+    /* it is less than one gigabyte */
+    sprintf(usb[0].avail_space,"%.1fMb",
+	    (float)(usb[0].fs.f_bavail * (usb[0].fs.f_bsize / 1024))/1000);
+  }
+#ifdef DEBUG
+  fprintf(stderr,"usb1 has %s free space of %s total\n",
+	  usb[0].avail_space,
+	  usb[0].total_space);
+#endif
+  
   
   return usb_num;
 } /* end of USB STORAGE DETECTION */

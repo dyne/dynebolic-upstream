@@ -35,8 +35,12 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
      if [ -r /mnt/dynebolic/squashedfs ]; then
 
        echo " .  found! loading loopback device module"
-	echo -n " .  " 
-       insmod /boot/loop-aes.o max_loop=128
+       echo -n " .  " 
+       if [ -z "`uname -a | grep xbox`" ]; then
+         insmod /boot/loop-aes.o max_loop=128
+       else
+         insmod /boot/loop-aes-xbox.o max_loop=128
+       fi
 
        echo " .  mounting squashedfs loopback filesystem"
        mount -o loop -t squashfs /mnt/dynebolic/squashedfs /usr

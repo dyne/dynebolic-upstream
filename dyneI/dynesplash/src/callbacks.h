@@ -106,3 +106,7 @@ on_conf_nest_released                  (GtkButton       *button,
 void
 on_conf_screen_released                (GtkButton       *button,
                                         gpointer         user_data);
+
+void
+on_button_donate_released              (GtkButton       *button,
+                                        gpointer         user_data);

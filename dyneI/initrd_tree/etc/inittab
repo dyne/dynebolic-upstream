@@ -9,7 +9,7 @@
 #   6 = reboot
 
 # Script to run when going single user (runlevel 1).
-~~:S:wait:/sbin/sulogin
+su:S:wait:/sbin/sulogin
 
 # Default runlevel. (Do not set to 0 or 6)
 id:3:initdefault:
@@ -18,7 +18,7 @@ id:3:initdefault:
 si:S:sysinit:/etc/rc.S
 
 # Script to run when going multi user.
-rc:2:wait:/etc/rc.M
+rc:123:wait:/etc/rc.M
 
 # What to do at the "Three Finger Salute".
 #ca::ctrlaltdel:/sbin/shutdown -t5 -rf now

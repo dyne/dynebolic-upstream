@@ -34,20 +34,6 @@
 #include "support.h"
 
 void
-on_order_button                        (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("phoenix","phoenix","https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=jaromil@dyne.org&item_name=donation%20for%20dyne:bolic%20development&item_number=dyne:bolic&no_shipping=value1&no_note=1&currency_code=EUR&tax=0",NULL);
-    perror("can't open online donation page");
-    _exit(1);
-  }
-}
-
-
-void
 on_pressmouse_clicked                  (GtkButton       *button,
                                         gpointer         user_data)
 {
@@ -120,7 +106,7 @@ on_autoproduzioni_released             (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("links","links","http://dyne.org",NULL);
+    execlp("links","links","-g","http://dyne.org",NULL);
     perror("can't open dyne.org page");
     _exit(1);
   }
@@ -174,10 +160,24 @@ on_conf_screen_released                (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("xf86cfg","xf86cfg",NULL);
+    execlp("xf86cfg","xf86cfg","-xf86config","/etc/XF86Config",NULL);
     perror("can't launch xf86cfg");
     _exit(1);
   }
 
+}
+
+
+void
+on_button_donate_released              (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("donate","donate",NULL);
+    perror("can't open online donation page");
+    _exit(1);
+  }
 }
 

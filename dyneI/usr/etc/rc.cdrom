@@ -2,37 +2,28 @@
 # mount cd volumes
 # by jaromil - 4 july 2003 - GNU GPL
 
-WMPOS="`cat /boot/wmdock-pos`"
-CFG="/boot/WMState"
-CDRW_NUM=0
+source /lib/libdyne.sh
 
 # controlla se e' stato settato in emulazione ide-scsi da opzione al boot
-for GU in `cat /proc/cmdline | cut -d ' ' -f 1- | grep ide-scsi`; do 
-       # prende tutt le opzioni del kernel e le spezzetta singolarmente
-       # se c'e' una ide-scsi=hd* mette la device in CDRW
-  modprobe -k scsi_mod sd_mod sg ide-scsi # carica i moduli necessari
-  touch /boot/cdrw
-  CDRW=`echo $GU | cut -d '=' -f 1`
-  if [ ! -z $CDRW ]; then # se c'e' una device da emulare ide-scsi
-    echo "[*] Enabling ide-scsi device emulation for burner"
-    echo "cdrw-$CDRW -fstype=iso9660 :/dev/sr${CDRW_NUM}" >> /etc/auto.removable
-    echo " .  cdrw on sr$CDRW_NUM -> /rem/cdrw-$CDRW"
-    echo "$CDRW" >> /boot/cdrw
-    echo "," >>$CFG;
-    echo "{" >> $CFG;
-    echo "Name = \"cdrw.CdRW\";" >>$CFG
-    echo "Lock = yes;" >>$CFG
-    echo "Autolaunch = no;" >>$CFG
-    echo "Command = \"xwc /rem/cdrw-${CDRW}\";" >>$CFG
-    WMPOS="`expr $WMPOS + 1`"
-    echo "Position = \"0,${WMPOS}\";" >>$CFG;
-    echo "Forced = no;" >>$CFG;
-    echo "BuggyApplication = no;" >>$CFG;
-    echo "}" >>$CFG;
-    CDRW_NUM="`expr $CDRW_NUM + 1`"
-  fi
+for GU in `cat /proc/cmdline`; do
+# prende tutt le opzioni del kernel e le spezzetta singolarmente
+# se c'e' una ide-scsi=hd* mette la device in CDRW
+  CDRW="`echo $GU | grep ide-scsi | cut -d= -f2`"
 done
- 
+
+if [ ! -z $CDRW ]; then # se c'e' una device da emulare ide-scsi
+  echo "[*] Enabling ide-scsi device emulation for burner"
+  echo "cdrw-$CDRW -fstype=iso9660 :/dev/sr${CDRW_NUM}" >> /etc/auto.removable
+  echo " .  cdrw on sr$CDRW_NUM -> /rem/cdrw-$CDRW"
+  touch /boot/cdrw
+  echo "$CDRW" >> /boot/cdrw
+  dyne_add_volume cd "cdrw-$CDRW"
+  echo " .  loading module sd_mod"
+  modprobe sd_mod
+#  echo " .  loading module ide-scsi"
+#  modprobe ide-scsi
+fi
+
 # scan the IDE cdroms
 for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
   # controlla se e' quello gia' montato e se e' un cdrom
@@ -50,24 +41,11 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
     echo "[*] Enabling ide device for extra cdrom"
     echo "cd-${DEV} -fstype=iso9660,ro :/dev/${DEV}" >> /etc/auto.removable	
     echo " .  cdrom on ${DEV} -> /rem/cd-${DEV}"
-    echo "," >>$CFG;
-    echo "{" >> $CFG;
-    echo "Name = \"cdrw.CdRW\";" >>$CFG
-    echo "Lock = yes;" >>$CFG
-    echo "Autolaunch = no;" >>$CFG
-    echo "Command = \"xwc /rem/cdrw-${CDRW}\";" >>$CFG
-    WMPOS="`expr $WMPOS + 1`"
-    echo "Position = \"0,${WMPOS}\";" >>$CFG;
-    echo "Forced = no;" >>$CFG;
-    echo "BuggyApplication = no;" >>$CFG;
-    echo "}" >>$CFG;
-
+    dyne_add_volume cd "cd-${DEV}"
 
   fi
 done
 
-rm -f /boot/wmdock-pos
-echo "$WMPOS" > /boot/wmdock-pos
 
 
 

@@ -198,17 +198,8 @@ EOF
       exit 1
     fi
 
-    echo "[*] mount the nest for the first time" | tee -a $LOG
-    if [ -z $ENCRYPT ]; then
-      mount -o loop /dev/loop6 /mnt/nest
-    else
-      echo " .  please enter once again your password"
-      mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
-      while [ $? != 0 ]; do
-        echo "[!] wrong password! retype it correct (ctrl-c to abort)"
-        mount -o loop,encryption=$ENCRYPT -t ext2 /dev/loop6 /mnt/nest
-      done
-    fi
+    echo " .  mount the nest for the first time" | tee -a $LOG
+    mount -t ext2  /dev/loop6 /mnt/nest
 
     echo -n "[*] populating nest: "
     tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
@@ -230,12 +221,10 @@ EOF
 
     sync
 
-    dyne_mount_nest "$LOCATION/$DYNEBOL_CFG"
-
-    
     echo " .  your new dyne:bolic nest is in $LOCATION/$DYNEBOL_NST" | tee -a $LOG
     echo " .  `file $LOCATION/$DYNEBOL_NST`" | tee -a $LOG | tee $SUCCESS
     echo " .  this nest is configured in file $LOCATION/$DYNEBOL_CFG" | tee -a $LOG
+    echo "[*] REMEMBER TO REBOOT TO ACTIVATE YOUR SETTINGS!"
     
     echo >> $LOG
     echo "# configuration file follows:" >> $LOG

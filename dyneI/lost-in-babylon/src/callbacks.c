@@ -290,11 +290,11 @@ on_button_ok_released                  (GtkButton       *button,
     fputs(tmp,rc);
     fputs("# DO NOT EDIT BY HAND THIS FILE\n",rc);
     fputs("# write 'lost-in-babylon' in your XTERM instead!\n\n",rc);
-    snprintf(tmp,256,"LANG=\"%s\"\n",current_lang);
+    snprintf(tmp,256,"export LC_ALL=\"%s\"\n",langs[current_lang_num].lang);
     fputs(tmp,rc);
-    snprintf(tmp,256,"LC_ALL=\"%s\"\n",langs[current_lang_num].lang);
+    snprintf(tmp,256,"export LANG=\"%s\"\n",current_lang);
     fputs(tmp,rc);
-    snprintf(tmp,256,"KEYB=\"%s\"\n",keybs[current_keyb_num].kbd);
+    snprintf(tmp,256,"export KEYB=\"%s\"\n",keybs[current_keyb_num].kbd);
     fputs(tmp,rc);
     fputs("\n# gooo rastammannn! faiddababylon!\n",rc);
     fclose(rc);

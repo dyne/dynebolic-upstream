@@ -104,7 +104,7 @@ create_win_select (void)
   gtk_widget_show (hbox1);
   gtk_container_add (GTK_CONTAINER (frame_hd), hbox1);
 
-  label_hd = gtk_label_new (_("Nest your /home and all your settings, the nest can be password secured with encryption and doesn't needs repartitioning, to keep your data you just use 64Mb or more by creating one simple file: the .dynebolic.nest"));
+  label_hd = gtk_label_new (_("Nest your /home and all your settings, the nest can be password secured with encryption and doesn't needs repartitioning, to keep your data you just use 64Mb or more by creating one simple file: the dynebol.nst"));
   gtk_widget_ref (label_hd);
   gtk_object_set_data_full (GTK_OBJECT (win_select), "label_hd", label_hd,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -148,7 +148,7 @@ create_win_select (void)
   gtk_widget_show (hbox2);
   gtk_container_add (GTK_CONTAINER (frame_usb), hbox2);
 
-  label_usb = gtk_label_new (_("Nest your /home and all your settings, it will place your /home directory and other settings in your usb pen filesystem and you'll be able to access them also from outside dyne:bolic system"));
+  label_usb = gtk_label_new (_("Nest your /home and all your settings, the nest can be password secured with encryption, it will place your /home directory in your usb pen filesystem and find it back at every boot."));
   gtk_widget_ref (label_usb);
   gtk_object_set_data_full (GTK_OBJECT (win_select), "label_usb", label_usb,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -629,7 +629,7 @@ create_win_success (void)
   gtk_widget_show (hbox6);
   gtk_box_pack_start (GTK_BOX (vbox5), hbox6, TRUE, TRUE, 0);
 
-  success_text = gtk_label_new (_("Success! your dyne:bolic nest has been succesfully created, you'll find back your settings at every boot starting from now!"));
+  success_text = gtk_label_new (_("Success! your dyne:bolic nest has been succesfully created, you need to REBOOT dyne:bolic to activate your nest."));
   gtk_widget_ref (success_text);
   gtk_object_set_data_full (GTK_OBJECT (win_success), "success_text", success_text,
                             (GtkDestroyNotify) gtk_widget_unref);

@@ -43,11 +43,14 @@
 # the raw list of modules
 MODULES=`pcimodules|sort -r|uniq`
 for i in `pcimodules|sort -r|uniq|grep snd-`; do
-  modprobe -k $i 
+  modprobe $i 
 done
 
+modprobe -k snd-pcm-oss
+modprobe -k snd-mixer-oss
+
 for i in `pcimodules|sort -r|uniq|grep -v snd-`; do
-  modprobe -k $i
+  modprobe $i
 done
 
 # creates a symlink on devfs /dev/video -> /dev/video0

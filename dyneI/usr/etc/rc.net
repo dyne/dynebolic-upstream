@@ -10,8 +10,12 @@
 # as of mant suggestions i received, drazen pantic among the others
 # is a better idea to use pump, brings better luck
 
+if [ -e /etc/NETWORK ]; then
+  source /etc/NETWORK
+else
+
 echo "[*] check for dhcp network"
-/usr/sbin/pump -c /usr/etc/pump.conf 1>/dev/null 2>/dev/null
+/usr/sbin/pump -c /usr/etc/pump.conf
 
 report="`ifconfig | grep -v "127.0.0.1" | grep inet`"
 if [ ! -z "$report" ]; then
@@ -22,16 +26,25 @@ fi
 if [ -e /etc/HOSTNAME ]; then
     HOSTNAME="`cat /etc/HOSTNAME`"
 else
-    HOSTNAME="dynebolic`/sbin/ifconfig eth0 2>/dev/null| grep HWaddr | cut -d " "  -f11 | sed 's/[\:\$]//g'`"
+    HOSTNAME="dynebolic`/sbin/ifconfig eth0 2>/dev/null| grep HWaddr | cut -d ' '  -f11 | sed -e 's/[\:\$]//g'`"
 fi
-# setup the samba name with the assigned hostname
-if [ -e /etc/samba/smb.conf ]; then rm -f /etc/samba/smb.conf; fi
-sed "s/dynesamba/$HOSTNAME/g" /etc/samba/smb.conf.dist > /etc/samba/smb.conf
+
 hostname "$HOSTNAME"
 echo "[*] your hostname is $HOSTNAME"
 
+fi # if no configuration found
+
+
+# setup the samba name with the assigned hostname
+if [ -e /etc/samba/smb.conf ]; then rm -f /etc/samba/smb.conf; fi
+cat /etc/samba/smb.conf.dist | sed "s/dynesamba/$HOSTNAME/g" > /etc/samba/smb.conf
+
 echo "[*] loading point to point protocol kernel modules"
-modprobe -k ppp_generic ppp_async ppp_deflate 1>/dev/null 2>/dev/null
+modprobe ppp_generic
+modprobe ppp_async
+modprobe ppp_deflate
 echo "[*] loading iptables nat and masquerading kernel modules"
-modprobe -k iptable_filter iptable_nat iptable_mangle
+modprobe iptable_filter
+modprobe iptable_nat
+modprobe iptable_mangle
 

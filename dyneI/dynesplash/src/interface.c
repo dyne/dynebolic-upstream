@@ -502,6 +502,9 @@ create_window1 (void)
   gtk_signal_connect (GTK_OBJECT (conf_screen), "released",
                       GTK_SIGNAL_FUNC (on_conf_screen_released),
                       NULL);
+  gtk_signal_connect (GTK_OBJECT (button_donate), "released",
+                      GTK_SIGNAL_FUNC (on_button_donate_released),
+                      NULL);
   gtk_signal_connect (GTK_OBJECT (autoproduzioni), "released",
                       GTK_SIGNAL_FUNC (on_autoproduzioni_released),
                       NULL);

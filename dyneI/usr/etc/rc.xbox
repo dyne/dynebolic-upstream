@@ -34,7 +34,7 @@ echo "[*] loading samba module"
 modprobe smbfs
 
 echo "[*] Configure XFree86 for XBOX"
-ln -sf /var/etc/XF86Config.xbox /var/etc/XF86Config
+cp -f /etc/XF86Config.xbox /etc/XF86Config
 
 echo "[*] Now i'm going to setup the screen at 640x480 PAL"
 # Date: Mon, 28 Apr 2003 12:09:36 +0200
