@@ -1,0 +1,267 @@
+#!/bin/sh
+# -> mksdk.sh ver 0.3
+#
+# dyne:bolic software development kit - the commandline tool
+#
+# Copyright (C) 2004  Federico Prando bomboclat@malasystem.com
+#                     Francesco Rana  c1cc10@malasystem.com
+#                  
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+########################################################################
+# standard output message routines
+# it's always useful to wrap them, in case we change behaviour later
+#
+notice() { echo -e "'\033[32m\a [*] \033[37m $1 "; }
+act() { echo -e "\033[32m\a . \033[37m $1 "; }
+error() { echo -e "\033[31m\a\a [!] \033[37m $1"; }
+func() { if [ $DEBUG ]; then echo -e "\033[32m [D] \033[37m $1"; fi }
+### END
+
+
+# some checks
+if [ "`echo $UID`" != "0" ]; then
+    error "you must be ROOT on your machine to use dyne:bolic SDK"
+    exit -1
+fi
+
+CURRENTDIR=`pwd`
+WORKINGDIR=$CURRENTDIR/dynebolic
+
+#######################################################################
+# BASIC FUNCTIONS
+#######################################################################
+function basic_steps() {
+	if [ `cat /proc/mounts | grep dynebolic | wc -l` != "0" ] ; then
+		umount $WORKINGDIR/proc
+		umount $WORKINGDIR/dev
+		rm -fr $WORKINGDIR
+		act "umounting proc and dev from previous attempt"
+	fi
+	[ -d $WORKINGDIR ] || mkdir $WORKINGDIR
+	act "creating $WORKINGDIR"
+
+	if ! [ -f $WORKINGDIR/etc/gentoo-release ] ; then
+		if ! [ -f $CURRENTDIR/stage1-x86-2004.1.tar.bz2 ] ; then
+			notice "do you have a valid stage1 ?\nPlease provide '/ full / path / to / it.bz2'\nor leave blank to download a brand new"
+			read GIVE_PATH
+			if [ -z $GIVE_PATH ] ; then
+				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2
+			elif ! [ `file $GIVE_PATH | cut -d" " -f2` != "bzip2" ] ; then
+				error "wrong path!"
+				act "Proceding to download.."
+				wget ftp://ftp.belnet.be/mirror/rsync.gentoo.org/gentoo/releases/x86/2004.1/stages/x86/stage1-x86-2004.1.tar.bz2
+			fi
+		fi
+ 		act "found allready downloaded stage1. proceding to untar $GIVE_PATH into $WORKINGDIR"
+		tar xvjf $CURRENTDIR/stage1-x86-2004.1.tar.bz2 -C $WORKINGDIR &> /dev/null 
+	fi
+		
+}
+
+function get_ready_chroot() {
+		if [ `cat /proc/mounts | grep dynebolic | wc -l` == "0" ] ; then
+			 mount -o bind /proc $WORKINGDIR/proc
+			 mount -o bind /dev $WORKINGDIR/dev
+		fi
+		[ -f $WORKINGDIR/etc/resolv.conf ] || cp -a /etc/resolv.conf $WORKINGDIR/etc/
+
+cat > $WORKINGDIR/sbin/createbasesystem.sh << E0F
+
+#!/bin/sh
+# createbasesystem.sh
+# dyne:bolic software development kit - the commandline tool
+#
+# Copyright (C) 2004  Federico Prando bomboclat@malasystem.com
+#                     Francesco Rana  c1cc10@malasystem.com
+#                  
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+echo "SONO ENTRATO IN CREATEBASESYSTEM"
+exit 0
+
+INSTDIR=/home/the_root
+
+########################################################################
+# standard output message routines
+# it's always useful to wrap them, in case we change behaviour later
+#
+notice() { echo -e "\\033[31m [*] \$1\\033[37m"; }
+act() { echo "\\033[32m . \$1\\033[37m"; }
+error() { echo "\\033[31m [!] \$1\\033[37m"; }
+func() { if [ \$DEBUG ]; then echo "\\033[32m [D] \$1\\033[31m"; fi }
+
+function debug() {
+	echo -e "\a\a\a\$?"
+	read OK
+}
+
+########################################################################
+# MAIN FUNCTIONS
+########################################################################
+
+function set_flags() {
+	notice "Quali CFLAG settiamo? default: '-O2 -mcpu=i586 -fomit-frame-pointer -pipe'"
+	read CFLAG_SET
+	[ -z \$CFLAG_SET ] && export CFLAG_SET="-O2 -mcpu=i586 -fomit-frame-pointer -pipe" 
+	act "\$CFLAG_SET  ...ok! modifico /etc/make.conf"
+
+cat > /etc/make.conf << EOF
+# These settings were set by the catalyst build script that automatically built this stage
+# Please consult /etc/make.conf.example for a more detailed example
+CFLAGS="\$CFLAG_SET"
+CHOST="i586-pc-linux-gnu" 
+CXXFLAGS="\${CFLAGS}"
+EOF
+
+}
+
+# get portage and bootstrap your compiling env 
+function initrd_root() {
+	if [ -d /usr/portage ] ; then
+		notice "there is allready a dir '/usr/portage'. Should I use it?(N/s)"
+		read YESNO
+		if ! [ \$YESNO == "s" -o \$YESNO == "S" ] ; then
+			emerge sync
+		fi
+	else 
+		emerge sync
+	fi
+
+	debug act "questo e' function initrd_root dopo emerge sync"
+
+	if ! [ -d /var/tmp/portage/ ] ; then
+		/usr/portage/scripts/bootstrap.sh
+	else 
+		notice "esiste gia' /var/tmp/portage. hai gia' compilato il bootstrap?(S/n)"
+		read YES_NO
+		if  [ \$YES_NO == "n" ] ; then
+			/usr/portage/scripts/bootstrap.sh
+		fi
+	fi
+	debug act "questo e' function initrd_root dopo bootstrap.sh"
+	emerge gentoolkit
+	[ -d \$INSTDIR ] || mkdir \$INSTDIR
+	# TODO avere baselayout-dynebolic.ebuild
+	# ROOT=\$INSTDIR emerge baselayout-dynebolic
+	mkdir \$INSTDIR/boot \$INSTDIR/cdrom \$INSTDIR/dev \$INSTDIR/etc \$INSTDIR/floppy \$INSTDIR/home \$INSTDIR/mnt \ 
+		\$INSTDIR/proc \$INSTDIR/root \$INSTDIR/usr \$INSTDIR/var
+	cp -a /var/db \$INSTDIR/var
+}
+
+
+# install the base sources to have a 1 level FSH ready for becoming an initrd
+function install_initrd_pkg () {
+	
+cat > /tmp/.initrd.lst << EOF
+linux-headers
+devfsd
+glibc
+ncurses
+bash
+coreutils
+iputils
+net-tools
+EOF
+	
+for PKG in \`cat /tmp/.initrd.lst\` ; do
+	ROOT=\$INSTDIR emerge \$PKG ;
+done
+
+rm /tmp/.initrd.lst 
+
+}
+
+
+function build_xfree() {
+	set_flags
+	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers
+
+}
+
+# TODO this function will be replaced with baselayout-dynebolic
+function install_configuration_files(){
+	if ! [ -f \$WORKINGDIR/etc.tgz ] ; then
+		wget http://www.autistici.org/bolic1/etc.tgz 
+	fi
+	tar -zxvf etc.tgz -C home/the_root/ 
+}
+###############################################################################
+
+##############################################################################
+# Let's GO!
+##############################################################################
+# siamo dentro lo stage1. e' dove decidiamo i CFLAGS, per costruire prima l'ambiente di compilazione
+# gentoo da cui poi deriviamo in /home/the_root la dynebolic.
+# ogni aspetto l'abbiamo infilato in una funzione per auspicare uno sviluppo di ciasun passaggio
+
+env-update
+
+source /etc/profile
+
+set_flags
+
+initrd_root && notice "Ho completato l'SDK. Ora popolo l'initrd." || error "qualcosa e' andato storto. non e' stata colpa mia"
+
+install_initrd_pkg && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+
+build_xfree  && notice "Ho completato l'initrd_root..." || error "qualcosa e' andato storto. non e' stata colpa mia"
+
+# TODO this function will be replaced with baselayout-dynebolic
+install_configuration_files && notice "Ho completato l'installazione delle configurazioni" || error "qualcosa e' andato storto. non e' stata colpa mia" 
+E0F
+		chmod 755 $WORKINGDIR/sbin/createbasesystem.sh		
+		chroot $WORKINGDIR ./sbin/createbasesystem.sh
+}
+
+######################################################################
+# HERE WE GO!
+######################################################################
+
+case $1 in
+	-a) # Get the stage1 for your compiling environment
+		act "entering basic_steps"
+		basic_steps
+		act "entering get_ready_chroot"
+		get_ready_chroot
+		umount $WORKINGDIR/proc ;;
+	-c) # Done with basic stuff, let's get into the compiling env
+		act "entering get_ready_chroot"
+		get_ready_chroot
+		umount $WORKINGDIR/proc ;;
+	-h|--help)
+	 	act "-h show this help"
+	      	act "-a start the entire process from beginning (WARN! will delete previous attempts)"
+	      	act "-c allready downloaded and untarred, chroot me"
+	 	act "-v show details" ;;
+	-v)     head -22 $0 | tail -n 21 ;;
+	*)	error "read help with -h or --help!"
+esac
+
+
