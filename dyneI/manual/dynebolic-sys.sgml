@@ -104,6 +104,14 @@ any password protection - the share is called 'dyne:bolic casbah'.
 <section>
 <title>Nest your home and settings</title>
 
+<tip>
+<para>
+Please note that nesting function is broken in version 1.2 and will be
+restored in following versions (sorry, this is a bug, thanks to David
+Santinoli for tracking it down fast).
+</para>
+</tip>
+
 <para>
 The <emphasis>nesting</emphasis> function offered by dyne:bolic is a quite
 simple but revolutionary concept for the way operating systems usually
@@ -200,6 +208,87 @@ and var.tgz are the default nest environment.
 Rembember that docking is different from nesting:
 Docking is done to run the system and all application from harddisk instead of cd, nesting is to store your home and settings in a single file on harddisk or usb storage.
 </para>
+
+<section> <title>Boot from harddisk</title>
+<para>
+With the procedure described above, we saw that simply moving
+a directory in the root of a partition we can boot from CD and
+run from harddisk. Ok, what about getting rid of the CD?
+Well in fact i hope you actually give it to somebody else, please
+don't waste all that silicium! ;)
+</para>
+<para>
+Anyway, here we go with some instructions - but you gotta be hacking a bit eh!
+also browse the dyne:bolic mailinglist archives and eventually
+ask there or your closest UNIX Guru for help in understanding.
+</para>
+
+<para>
+What you have to do is to install a bootloader on one of your
+partitions, which has to be a NON-windoz partition.
+Basically you need to have a GNU/Linux system allready installed,
+or you can use the very useful floppy distribution
+<ulink url="http://omnibus.uni-freiburg.de/~giannone/rescue/current">
+BG-Rescue</ulink>
+to boot and manipulate partitions.
+</para>
+
+<para>
+In case you don't have a CD player, you should try to download the
+/dyne directory from the net and place it inside the Linux partition,
+which can be of filesystem type Ext2/3 or ReiserFS.
+</para>
+
+<para>
+Bootloaders for Linux are
+<emphasis>lilo</emphasis> and
+<emphasis>grub</emphasis>, if you are using Rescue-BG you have lilo.
+</para>
+
+<para>
+In case you have installed lilo, you
+write the following runes to your /etc/lilo.conf file:
+<screen>
+<userinput>
+
+image = /dyne/Linux
+  root = /dev/ram0
+  initrd = /dyne/initrd.gz
+  label = dyne:bolic
+  append = "max_loop=128 hdd=ide-scsi"
+  read-write
+  vga = 788
+
+</userinput>
+</screen>
+Being sure that the /dyne directory is inside the partition
+you boot, which in lilo is configured by the
+<lineannotation>boot = /dev/hd*</lineannotation>
+usually at the beginning of the lilo.conf file.
+</para>
+
+<para>
+It will help you to know that
+<lineannotation>fdisk -l</lineannotation>
+will give you a list of your partitions.
+</para>
+
+<para>
+In case you have grub you should use the following runes in your
+/boot/grub/grub.conf file (replacing partition numbers with your
+actual ones, see man grub)
+<screen>
+<userinput>
+
+kernel (hd0,1)/dyne/Linux root=/dev/ram0 rw load_ramdisk=1 \
+       prompt_ramdisk=0 ramdisk_start=0 vga=788 max_loop=128
+
+</userinput>
+</screen>
+</para>
+
+<para> Happy hacking! </para>
+
 </section>
 
 <section>
