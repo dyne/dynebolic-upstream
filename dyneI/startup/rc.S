@@ -29,7 +29,7 @@
 # (or setup the standard environment from cd or hd docks)
 # and while it seeks for these things, it also detects storage devices.
 #
-# it tries if any filesystem contains a /dynebolic.sys file in the root
+# it tries if any filesystem contains a /dyne directory in the root
 # in case there is, dynebolic.sys is mounted via loopback device on /usr
 # the devices are scanned in order: first IDE harddisks, then IDE cdroms,
 # (HINT: many other storages for the system may be supported, read further)
@@ -44,6 +44,10 @@
 # if you are peeking in here because some people say that dyne:bolic
 # is the fastest live-cd around, well that's not the best place where to
 # discover why.
+#
+# the original bolic1 startup was by C1cc10 and Bomboclat
+# the dyne:bolic rewrite was done by Jaromil
+# USB nesting was reenginered by Richard Griffith
 #
 #
 # "$Id$"
@@ -191,20 +195,32 @@ EOF
 		  if [ ! -e /mnt/nest/home ]; then
 			  warning "nest is missing home, skipping"
 		  else
-			  if [ ! -e /home ]; mkdir /home; fi
+			  if [ ! -e /home ]; then mkdir /home; fi
 			  mount -o bind /mnt/nest/home /home
 		  fi
-		  if [ ! -e /mnt/nest/home ]; then
+		  if [ ! -e /mnt/nest/etc ]; then
 			  warning "nest is missing etc, skipping"
 		  else
-			  if [ ! -e /etc ]; mkdir /etc; fi
-			  mount -o bind /mnt/nest/etc /home
+			  if [ ! -e /etc ]; then mkdir /etc; fi
+			  mount -o bind /mnt/nest/etc /etc
+		  fi
+		  if [ ! -e /mnt/nest/var ]; then
+			  warning "nest is missing var, skipping"
+		  else
+			  if [ ! -e /var ]; then mkdir /var; fi
+			  mount -o bind /mnt/nest/var /var
+		  fi
+		  if [ ! -e /mnt/nest/tmp ]; then
+			  warning "nest is missing tmp, skipping"
+		  else
+			  if [ ! -e /var ]; then mkdir /tmp; fi
+			  mount -o bind /mnt/nest/tmp /tmp
 		  fi
 
 		fi
 	    fi
 	    
-	    if [ "`mount|grep dynebol.nst`" ]; then
+	    if [ "`mount | grep /mnt/nest`" ]; then
 		act "nest succesfully mounted"
 		DYNE_NEST_PATH=${NEST}
 		DYNE_NEST_VER=`cat /etc/DYNEBOLIC`
@@ -426,12 +442,14 @@ mount_harddisk() {
     # if there is a dyne development subdirectory, then use that
     if [ -x "${MNT}/dyne/sdk/cdrom/dyne" ]; then
         MNT="${MNT}/dyne/sdk/cdrom/dyne"
+	# try also inside the /dyne directory found
+	got_home ${MNT}
     # or maybe a simple dyne/ subdir, then take that
     elif [ -x "${MNT}/dyne" ]; then
         MNT="${MNT}/dyne"
+	# try also inside the /dyne directory found
+	got_home ${MNT}
     fi
-    # try also inside the /dyne directory found
-    got_home ${MNT}
 
     # if the system has been allready mounted you can go on
     if [ -x /usr/bin/dynesplash ]; then continue; fi
@@ -467,9 +485,55 @@ mount_harddisk() {
 
 }
 
+USB_NUM=0
+add_usbvolume() {
+  # $1 = dev to add
+
+  USB_NUM="`expr $USB_NUM + 1`"
+
+  # make first a 'usb' so taschino can find a usb key
+  if [ $USB_NUM == 1 ]; then
+    USBNAME="usb"
+  else
+    USBNAME="usb${USB_NUM}"
+  fi
+
+  echo "${USBNAME} -fstype=auto,sync :${1}"  >> /boot/auto.removable
+  add_volume usb "/rem/${USBNAME}"
+  sync
+}
+
+# module loading wrapper for boot, supress messages, deal with buggy hardware
+loadbootmod() {
+    # in interactive mode we ask 
+    if [ "`grep -i interactive /proc/cmdline`" ]; then 
+ 	echo -n "[?] do you want to load kernel module $1 " | tee -a $LOG
+	getkey 10
+	if [ $? = 1 ]; then
+	    echo " ... SKIPPED" | tee -a $LOG
+	    return
+	else
+	    echo " ... LOADED" | tee -a $LOG
+	fi
+    fi 
+    # finally we do it
+    insmod $1 1>>$LOG 2>>$LOG
+    if [ $? = 0 ]; then
+        act "loaded kernel module $1"
+    else
+        # no error output to console
+	# "i panni sporchi si lavano in famiglia"
+        echo "[!] ERROR loading kernel module $1" >> $LOG
+    fi
+}
+
+
 ##########################
 ### HERE STARTS THE MAIN()
 ##########################
+
+# should we even be running?
+if [ -r /home/.xinitrc ]; then exit 1; fi
 
 if [ -z $PATH ]; then
     export PATH=/bin:/sbin
@@ -527,6 +591,59 @@ fi
 
 
 
+##### USB STORAGE
+if [ "`cat /proc/pci | grep USB`" ]; then
+  notice "scan usb storage"
+  # load usb hardware layer, only one of the next 4 should succeed
+  loadbootmod /boot/ehci-hcd.o
+  loadbootmod /boot/usb-ohci.o
+  loadbootmod /boot/usb-uhci.o
+  loadbootmod /boot/uhci.o
+  
+  loadbootmod /boot/sd_mod.o
+  loadbootmod /boot/usb-storage.o
+  loadbootmod /boot/fat.o
+  loadbootmod /boot/vfat.o
+  sync
+  sleep 4
+  sync
+  mount -t usbdevfs usbdevfs /proc/bus/usb
+
+  USBUSED="N"
+  foreach DEV in /dev/sd?1 ;
+
+    if [ -r $DEV ]; then # TODO: check more carefully, in proc?
+	notice "USB/SCSI device found on $DEV"
+	if [ $USBUSED == "N" ]; then
+ 	  if [ ! -x /vol/usb ]; then mkdir /vol/usb; fi
+	  mount -o sync,rw $DEV /vol/usb
+          if [ $? != 0 ]; then
+	    error "can't mount device"
+	    rm -r /vol/usb
+          else
+	    got_home /vol/usb
+	    if [ "${DYNE_NEST_PATH[0,7]}" == "/vol/usb" ]; then
+	      USBUSED="Y"
+	    else
+              umount /vol/usb
+              sync
+              add_usbvolume $DEV
+            fi
+	  fi
+	else
+	  add_usbvolume $DEV
+	fi
+    fi
+
+  end
+  # nothing found, add one in case usbkey is plugged in later
+  if [ $USBUSED == "N" ]; then
+    if [ $USB_NUM == 0 ]; then
+      add_usbvolume /dev/sda1
+    fi
+  fi
+fi
+
 ###### CDROM
 
 # CD filesystem is iso9660 unless we have a DVD (on xbox, for example)
@@ -546,36 +663,6 @@ for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
     sync
 
 done
-
-
-##### USB STORAGE
-### TODO: configuration file and nest
-if [ "`lspci |grep USB`" ]; then
-    notice "scan usb storage"
-    loadmod sd_mod
-    loadmod usb-storage
-    loadmod vfat
-    sync
-    sleep 2
-    sync
-    if [ -r /dev/sda1 ]; then # TODO: check more carefully, in proc?
-	notice "USB device found on /dev/sda1"
-	if [ ! -x /vol/usb ]; then mkdir /vol/usb; fi
-	mount -o sync,rw /dev/sda1 /vol/usb
-        if [ $? != 0 ]; then
-	  error "can't mount device"
-	  rm -r /vol/usb
-        else
-	  got_home /vol/usb
-	fi
-    fi
-
-    if [ $DYNE_NEST_PATH != "/vol/usb" ]; then
-      echo "usb -fstype=auto,sync :/dev/sda1" >> /boot/auto.removable
-      add_volume usb "/rem/usb"
-      sync
-    fi
-fi
 
 
 ##### FLOPPY DISK
