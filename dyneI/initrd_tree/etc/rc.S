@@ -7,9 +7,9 @@
 	
 CDFS="iso9660"
 
-cp /etc/fstab.dist /etc/fstab
+cp -f /etc/fstab.dist /etc/fstab
 
-echo "[*] mounting /proc filesystem"
+#echo "[*] mounting /proc filesystem"
 mount /proc
 
 echo "[*] starting devfs daemon"

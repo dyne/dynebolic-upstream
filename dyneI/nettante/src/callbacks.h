@@ -2,10 +2,6 @@
 
 
 void
-on_combo_eth_realize                   (GtkWidget       *widget,
-                                        gpointer         user_data);
-
-void
 on_button_dhcp_released                (GtkButton       *button,
                                         gpointer         user_data);
 
@@ -99,4 +95,8 @@ on_win_staticip_destroy                (GtkObject       *object,
 
 void
 on_button_main_quit_released           (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_combo_eth_realize                   (GtkWidget       *widget,
                                         gpointer         user_data);

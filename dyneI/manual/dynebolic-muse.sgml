@@ -1,11 +1,58 @@
 <section>
 <title>MuSE :: the Multiple Streaming Engine</title>
-<subtitle>software by jaromil (2001)</subtitle>
 
-<tip>
-<para>Get more informations with:
-<screen><prompt>[d:b] ~ #</prompt><userinput>man muse</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
-</tip>
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://muse.dyne.org"></ulink> </entry>
+<!-- MAN  --> <entry> muse </entry>
+<!-- BY   --> <entry> jaromil </entry>
+<!-- YEAR --> <entry> 2000 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
 
 <para>
  MuSE provides the free software community with a user friendly but
@@ -24,7 +71,8 @@ systems.
 </para>
 <para>
 To be operated MuSE offers graphical interfaces and a documented
-commandline interface in the good old unix style.
+commandline interface in the good old unix style (see <emphasis>man
+muse</emphasis>).
 </para>
 
 </section>

@@ -89,7 +89,7 @@ any password protection.
 </section>
 
 <section>
-<title>Nest your home</title>
+<title>Nest your home on harddisk or USB</title>
 
 <para>
 Given this system environment you have a full range of applications
@@ -150,6 +150,46 @@ erase your nest you can just delete the dynebol.nst file in the root
 directory of the partition where you installed it.
 </para>
 
+</section>
+
+<section>
+<title>Cluster CPU farms</title>
+
+<para>
+Dyne:bolic Linux kernel allows all the computers running the system on
+the same local network to share CPU power by migrating processes from
+machines that are working harder to machines that are idle. This
+feature is provided to enhance multiprocessing computation on slower
+computers: they are then aided by faster computers on the same
+network, with a more equitous sharing of common resources.
+</para>
+
+<para>
+The cluster activates itself at every boot and on every new
+configuration of the network card, trying to autodetect other cluster
+nodes on the network: the process of sharing CPU power is totally
+automated and the groups are formed thru the autodiscovery scan of
+each node.
+</para>
+
+<para>
+Your Dyne:bolic system encloses all the clustering tools in the
+filesystem directory <emphasis>/usr/mosix</emphasis>. You can manually
+startup the clustering at any time by launching the command
+<emphasis>/usr/mosix/openmosix start</emphasis> from an XTERM, while
+in that directory you'll also find useful tools to control and gather
+information on the way your network cluster works:
+<emphasis>mosctl</emphasis> and <emphasis>showmap</emphasis> among the
+others; for each you'll find also a man page.
+</para>
+
+<para>
+This feature is implemented by a kernel patch from the OpenMosix
+project, you can know more about this technology and discover about
+advanced uses for it on the <ulink
+url="http://openmosix.sf.net">OpenMosix webpage</ulink>, where you'll
+find extensive documentation and usage guides.
+</para>
 </section>
 
 <section>

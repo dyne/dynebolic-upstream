@@ -110,12 +110,12 @@ year
 <para>
 The homepage is of course a link which leads to useful information
 about the usage, features, bugs etc.  If you are frequently using a
-particular application, its always a good practice to subscribe to its
-user mailinglist: there you can discover more about its development
-and realize if any bugs that you encounter have been allready
-addressed by developers. You can also get back to the dyne:bolic
-mailinglist with suggestions on how to have a better inclusion of the
-software in our distribution.
+particular application, its always a good practice to visit its
+homepage and subscribe to its user mailinglist: there you can discover
+more about its development and realize if any bugs that you encounter
+have been allready addressed by developers. You can also get back to
+the dyne:bolic mailinglist with suggestions on how to have a better
+inclusion of the software in our distribution.
 </para>
 
 <para>
@@ -139,34 +139,34 @@ older softwares are more reliable and developed.
 </section>
 
 <section>
-<title>The author of dyne:bolic</title>
+<title>This is rasta software</title>
 <para>
-Just to boost a bit my ego i should now mention again who is the
-author of dyne:bolic, well it's me: Denis "jaromil" Rojo. I created
-and i'm currently mantainer of dyne:bolic GNU/Linux, coded its 
-scripts and tools and shaped its architecture from scratch.
-I'm also the author of three softwares contained in it: FreeJ,
-HasciiCam and MuSE.
+Rastafari says Jah bless your freedom :) share this software for the
+good of yourself and your people, respect others and let them express,
+be free and let others be free. Live long and prosper in peace, but
+remember that there is no peace without justice.
 </para>
 
 <para>
-Of course i've received significant contributions and help from
-friends and developers getting interested in my efforts and joining
-development, in the spirit of the GNU General Public License.
-From here on i'll just tell you a bit about all of us, in case
-you are really interested to know.
-</para>
-
-<para>
-I'm a south italian emigrant and <ulink
+You should read on this chapter if you are interested to know how this
+operating system had birth and who contributed to make it real. Here i
+introduce myself, i'm writing this manual and i'm the mantainer of
+dyne:bolic, while i'm also the author of three softwares contained in
+it: FreeJ, HasciiCam and MuSE.  My name is Denis "jaromil" Rojo, i'm a
+south italian emigrant and <ulink
 url="http://rastasoft.org">rastaman</ulink> lost in babylon, i code in
-C/C++ since quite a while and i have a decent experience of multimedia
-development under GNU/Linux. I try to make a living out of it,
-alltough is not my first aim. My motivation in doing free software so
-far comes mainly from the idea to give people free access to their
-creativity and to promote free speech, adding my little effort to
-break cultural and economical monopolies on information and technology.
-Some other efforts i invest in participating to projects like
+C/C++ since more than 10 years and have a decent experience of
+multimedia development under GNU/Linux. I try to make a living out of
+it, alltough is not my main reason to develop free software, and i
+don't need much for myself to live happily.
+</para>
+
+<para>
+My motivation in doing free software comes from the intention to give
+people free access to comunication channels and to promote free
+speech, against any form of censorship, adding my little effort to
+break cultural and economical monopolies on information and
+technology. Some other efforts i invest participating to projects like
 <ulink url="http://italy.indymedia.org">italy.indymedia.org</ulink>
 and with <ulink url="http://tazebao.dyne.org">collectives</ulink>
 orbiting around it.
@@ -174,14 +174,19 @@ orbiting around it.
 
 <para>
 If you want to support my activity you can offer me ospitality, invite
-me to give presentations, performances (i'm a quite photogenical
-audio/visual performer, see what one has to do to make a living
-today!), <ulink url="https://rastasoft.org/donate.php">
-make a donation thru paypal</ulink>,
-<ulink url="http://www.dynebolic.org/index.php?show=cust">pay me to customize my software</ulink> to fit it to your needs or to help you using it, invite me at dinner,
-<ulink url="http://www.dynebolic.org/index.php?show=cust">call me to teach in a class</ulink>,
-help me to submit a grant, let me into your theatre company to work on
-multimedia setups (i've made a <ulink url="http://dyne.org/perform.php">fairly good experience in theatre</ulink> so far), encourage your company or organization to be a patron of the dyne:bolic project.
+me to give presentations, performances (i'm a photogenical
+audio/visual performer, see what one must do to make a living today!),
+<ulink url="https://rastasoft.org/donate.php"> make a donation thru
+paypal</ulink>, <ulink
+url="http://www.dynebolic.org/index.php?show=cust">pay me to customize
+my software</ulink> to fit it to your needs or to help you using it,
+invite me at dinner, <ulink
+url="http://www.dynebolic.org/index.php?show=workshops">call me to
+teach in a class</ulink>, help me to submit a grant, invite me to your
+theatre company to work on multimedia setups (i've made a <ulink
+url="http://dyne.org/perform.php">fairly good experience in
+theatre</ulink> so far), encourage your company or organization to be
+a patron of the dyne:bolic project.
 </para>
 
 <para>
@@ -211,10 +216,10 @@ meet and hack together on common projects.
 I'm happy to mention here also the contribution of <ulink
 url="http://sfrajone.org">Alexander "Smilzo" Gnoli</ulink> who
 recently joined the project making dyne:bolic run on XBOX game
-consoles, with the help of the documentation produced by another great
+consoles, with the help of the documentation produced by a great
 project: <ulink url="http://xbox-linux.sf.net">xbox-linux</ulink>. We
 spend some time hacking together and sharing visions about dyne:bolic,
-while he is planning to keep is focus support for game consoles.
+while he is planning to keep his focus on support for game consoles.
 </para>
 
 <para>
@@ -245,8 +250,7 @@ Montevideo (Amsterdam) http://montevideo.nl
 Stream on the fly (EU project)
 JuX project (Vienna) http://netbridge.at
 European Social Forum http://www.fse-esf.org
-The city of Firenze
-and individuals:
+and individu2als:
 Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,
 Markus Panholzer, Zeljko Blace and Blicero
 </para>
@@ -282,8 +286,9 @@ or any later version published by the Free Software Foundation;
 with the Introductory and Colophon sections being invariant, with the
 Front-Cover and Back-Cover Texts clearly stating authorship and
 copyright notices.
-A copy of the license is included in the Appendix section entitled "GNU
-Free Documentation License".
+You should have received a copy of the GNU Free Documentation License
+along with this manual; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 </para>
 
 <para>

@@ -22,6 +22,8 @@
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
+notice "loading kernel modules"
+
 # first apply fixes:
 
    # FIX es1988 driver (found on a hp omnibook xe3
@@ -43,22 +45,22 @@ source /lib/libdyne.sh
    /usr/fixes/nforce.sh
 
 ### NOW WITH PCIMODULES
+
 # 27 maggio 2003 - jaromil e mose'
 # the first thing we want to load are alsa modules
 # btaudio and such devices should be secondary
 # so we push on top of the list snd-* 
+BTAUDIO="`pcimodules | sort -r | uniq | grep btaudio`"
 
-notice "loading sound support into kernel"
-
-# the raw list of modules
-MODULES=`pcimodules|sort -r|uniq`
-for i in `pcimodules|sort -r|uniq|grep snd-`; do
+for i in `pcimodules | sort -r | uniq | grep -v btaudio`; do
   loadmod $i 
 done
 
-for i in `pcimodules | sort -r | uniq | grep -v snd-`; do
-    loadmod $i
-done
+if [ $BTAUDIO ]; then loadmod "$BTAUDIO"; fi
 
 # creates a symlink on devfs /dev/video -> /dev/video0
-ln -s /dev/v4l/0 /dev/video0
+if [ -e /dev/v4l/video0 ]; then
+  ln -s /dev/v4l/video0 /dev/video0
+  ln -s /dev/v4l/video0 /dev/video
+fi
+

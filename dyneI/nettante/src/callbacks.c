@@ -85,31 +85,38 @@ int render_settings(char *file) {
   
   for(c=0;c<=eth_num;c++) {
     sprintf(tmp,"notice \"eth%u : %s\"\n", c, eth[c].desc);
-    fprintf(stderr,"%s",tmp);
     fputs(tmp,fd);
-    if(eth[c].conf == DHCP)
+    if(eth[c].conf == DHCP) { /* DHCP */
       sprintf(tmp,"export dynebolic_net_iface_eth%u=\"dhcp\"\n"
 	      "/usr/sbin/pump -i eth%u -c /etc/pump.conf\n",
 	      c,c);
-    else
-      sprintf(tmp,"export dynebolic_net_iface_eth%u=\"%s:%s:%s:%s\"\n"
-	      "/usr/sbin/ifconfig eth%u %s netmask %s\n"
-	      "/usr/sbin/route add default gw %s eth%u\n"
-	      "echo \"nameserver %s\" >> /etc/resolv.conf\n",
-	      c, eth[c].ip, eth[c].netmask, eth[c].gw, eth[c].dns,
-	      c, eth[c].ip, eth[c].netmask,
-	      eth[c].gw, c,
-	      eth[c].dns);
-    fprintf(stderr,"%s\n",tmp);
+    } else { /* STATIC IP */
+      /* env variable for eth configuration */
+      sprintf(tmp,"export dynebolic_net_iface_eth%u=\"%s:%s:%s:%s\"\n",
+	      c, eth[c].ip, eth[c].netmask, eth[c].gw, eth[c].dns);
+      fputs(tmp,fd);
+      /* eth interface configuration */
+      sprintf(tmp,"/usr/sbin/ifconfig eth%u %s netmask %s\n",
+	      c, eth[c].ip, eth[c].netmask);
+      fputs(tmp,fd);
+      /* default gateway configuration (if present) */
+      if(strcmp(eth[c].gw,"none")!=0) {
+	sprintf(tmp,"/usr/sbin/route add default gw %s eth%u\n",eth[c].gw,c);
+	fputs(tmp,fd);
+      }
+      /* nameserver configuration (if present) */
+      if(strcmp(eth[c].dns,"none")!=0) {
+	sprintf(tmp,"echo \"nameserver %s\" >> /etc/resolv.conf\n",eth[c].dns);
+	fputs(tmp,fd);
+      }
+    }
     fputs(tmp,fd);
     fputs("# --\n\n",fd);
   }
   
   sprintf(tmp,"/usr/bin/hostname %s\n", gtk_entry_get_text((GtkEntry*)hostname));
-  fprintf(stderr,"%s",tmp);
   fputs(tmp,fd);
   sprintf(tmp,"echo \"%s\" >> /etc/HOSTNAME\n\n", gtk_entry_get_text((GtkEntry*)hostname));
-  fprintf(stderr,"%s",tmp);
   fputs(tmp,fd);
 
   fputs("if [ \"`ifconfig | grep Ethernet`\" ]; then\n",fd);
@@ -119,7 +126,6 @@ int render_settings(char *file) {
 
   now = time(NULL);
   sprintf(tmp,"sleep 1\n# EOF - generated on %s",ctime(&now));
-  fprintf(stderr,"%s\n",tmp);
   fputs(tmp,fd);
   fclose(fd);
   return 1;
@@ -136,7 +142,7 @@ void fetch_staticip_settings(int card) {
     return;
   }
 
-  sprintf(tmp,"dynebolic_net_iface_eth%i",card);
+  sprintf(tmp,"dynebolic_net_iface_eth%u",card);
   env = getenv(tmp);
   if(!env) {
     /* card wasn't configured */
@@ -173,14 +179,12 @@ on_combo_eth_realize                   (GtkWidget       *widget,
 {
   GList *items = NULL;
   FILE *fd;
-  char tmp[256], label[256];
+  char tmp[256], label[64][256];
   char *p, *pp;
 
-  
   /* gathers description from /proc/pci and fills the gtk combo box */
   fd = fopen("/proc/pci","r");
-  while(!feof(fd)) {
-    if(!fgets(tmp,256,fd)) continue;
+  while(fgets(tmp,256,fd)) {
     if(strstr(tmp,"Ethernet")) {
       eth_num++;
       /* parse string "Ethernet controller: **** (rev n)" */
@@ -188,11 +192,11 @@ on_combo_eth_realize                   (GtkWidget       *widget,
       pp = p+1; while(*p != '(') p++;
       p--; *p = '\0'; 
       strncpy(eth[eth_num].desc,pp,256);
-      snprintf(label,255,"eth%u: %s",eth_num, eth[eth_num].desc);
-      fprintf(stderr,"%s\n",label);
-      items = g_list_append(items, label);
-      /* gathers current settings for the card */
-      fetch_staticip_settings(eth_num);
+      snprintf(label[eth_num],255,"eth%u: %s",eth_num, eth[eth_num].desc);
+      fprintf(stderr,"%s\n",label[eth_num]);
+      items = g_list_append(items, label[eth_num]);
+      /* gathers current settings for the card
+	 fetch_staticip_settings(eth_num); */
     }
   }
   fclose(fd);
@@ -352,17 +356,23 @@ on_button_staticip_ok_released         (GtkButton       *button,
   strncpy(eth[eth_sel].netmask,gtk_entry_get_text((GtkEntry*)netmask),128);
   res = sscanf(eth[eth_sel].netmask,"%u.%u.%u.%u",&i1,&i2,&i3,&i4);
   if( !res || !strlen(eth[eth_sel].netmask) ) {
-    fprintf(stderr,"ERROR: invalid netmask\n"); return; }
+    fprintf(stderr,"ERROR: invalid netmask, fallback to 255.255.255.0\n");
+    strcpy(eth[eth_sel].netmask,"255.255.255.0");
+  }
 
   strncpy(eth[eth_sel].gw,gtk_entry_get_text((GtkEntry*)gateway),128);
   res = sscanf(eth[eth_sel].gw,"%u.%u.%u.%u",&i1,&i2,&i3,&i4);
   if( !res || !strlen(eth[eth_sel].gw) ) {
-    fprintf(stderr,"ERROR: invalid gateway\n"); return; }
+    fprintf(stderr,"ERROR: invalid gateway\n");
+    strcpy(eth[eth_sel].gw,"none");
+  }
   
   strncpy(eth[eth_sel].dns,gtk_entry_get_text((GtkEntry*)dns),128);
   res = sscanf(eth[eth_sel].dns,"%u.%u.%u.%u",&i1,&i2,&i3,&i4);
   if( !res || !strlen(eth[eth_sel].dns) ) {
-    fprintf(stderr,"ERROR: invalid domain name server\n"); return; }
+    fprintf(stderr,"ERROR: invalid domain name server\n");
+    strcpy(eth[eth_sel].dns,"none");
+  }
   
   eth[eth_sel].conf = STATIC_IP;
   gtk_widget_destroy(win_staticip);
@@ -460,4 +470,3 @@ on_button_main_quit_released           (GtkButton       *button,
 {
   gtk_main_quit();
 }
-

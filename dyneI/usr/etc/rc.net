@@ -24,7 +24,12 @@ fi
 if [ -e /etc/HOSTNAME ]; then
     HOSTNAME="`cat /etc/HOSTNAME`"
 else
-    HOSTNAME="dynebolic`/sbin/ifconfig eth0 2>/dev/null| grep HWaddr | cut -d ' '  -f11 | sed -e 's/[\:\$]//g'`"
+    MACADDR="`/sbin/ifconfig eth0 2>/dev/null| grep HWaddr | cut -d ' '  -f11 | sed -e 's/[\:\$]//g'`"
+    if [ $MACADDR ]; then
+      HOSTNAME="dynebolic${MACADDR}"
+    else
+      HOSTNAME="dynebolic"
+    fi
     echo "$HOSTNAME" > /etc/HOSTNAME
 fi
 
@@ -44,10 +49,10 @@ if [ ! -e /etc/exim.conf ]; then
 fi
 /usr/exim/bin/exim -bd -C /etc/exim.conf &
 
-#notice "loading point to point protocol kernel modules"
-#loadmod ppp_generic
-#loadmod ppp_async
-#loadmod ppp_deflate
+notice "activating point to point protocol"
+loadmod ppp_generic
+loadmod ppp_async
+loadmod ppp_deflate
 #notice "loading iptables nat and masquerading kernel modules"
 #loadmod iptable_filter
 #loadmod iptable_nat

@@ -6,7 +6,7 @@
      application entry, compiled with the corresponding data
      ============================================== cut here -->
 
-<table><title></title>
+<table><title>FreeJ</title>
 <tgroup cols=3 colsep=1>
 <thead><row>
 
@@ -64,142 +64,14 @@ possible to dynamically apply on each a chain of filters, loadable as
 effect plugins and easily customizable. Layers are planned for rendering
 of analog video input, digital movie files, image bitmaps, sound scopes,
 texts and eventually more.
-</para><para>
+</para>
+
+<para>
 FreeJ is being developed in the hope to provide the GNU community with a
 free, modular and highly customizable application to perform video
 livesets, based on a GPL'ed framework that lets anybody implement his
 own filters concentrating simply on the dsp algorithm developed and
 furthermore to combine them over any supported layer.
-</para><para>
-FreeJ is Free Software and his sourcecode is released under the Gnu
-Public License, it comes with absolutely no warranty and you are welcome
-to redistribute it under certain conditions (refer to the license for
-details).
-</para><para>
-You are encouraged to exhibit the output of this software publicly as
-long as this software and its author are credited as the source of the
-images.
 </para>
-
-<highlights>
-<para>Features</para>
-<para><itemizedlist>
-<listitem><para>
-multilayered video engine
-</para></listitem>
-<listitem><para>
-filters loaded as runtime DSO plugins
-</para></listitem>
-<listitem><para>
-layer filtering thru chainable dsp algorithms
-</para></listitem>
-<listitem><para>
-MMX/SSE accelerated engine lubrification
-</para></listitem>
-<listitem><para>
-efficient triple-buffered video grabbing layer
-</para></listitem>
-<listitem><para>
-modular c++ code structure
-</para></listitem>
-<listitem><para>
-multithreaded architecture (POSIX.1b compliant)
-</para></listitem>
-<listitem><para>
-(ab)user friendly OnScreenDisplay interface
-</para></listitem>
-</itemizedlist></para>
-</highlights>
-
-<section>
-<title>FreeJ version 0.4 usage notes</title>
-<para><literallayout>
-The interface consists in a on screen display (OSD) reporting
-informations like FPS, the filters that are created in the order they
-are applied to the layer and some status messages.
-
-LIST OF COMMANDS:
-^ means CTRL key pressed
-% means SHIFT key pressed
-
- GENERIC COMMANDS:
- PRINTSCR = display nice and lovely credits
- SPACE    = switch fullscreen mode
- ESC      = quits (without confirm)
- TAB      = turn on/off OSD
- ^TAB     = turn on/off calibration guidelines
-
- LAYER COMMANDS:
-
- PGUP/
- PGDOWN   = select layers up and down thru the chain
-
- ^PGUP/
- ^PGDOWN  = move layers up and down thru the chain
-
- HOME     = hide/show layer
-
- 1        = select NORMAL BLIT
- 2        = select BLU BLIT
- 3        = select GREEN BLIT
- 4        = select RED BLIT
- 5        = select ADD BLIT
- 6        = select SUB BLIT
- 7        = select AND BLIT
- 8        = select OR BLIT
- 9        = switch alpha channel on/off
- 0        = switch blank screen on/off
-
- %ARROWS  = move layers around thru the screen
- mouse-l  = drag layers around, slowly and smoothly
-
- FILTER COMMANDS:
-
- F1 - F12 = select an available filter (enter to create it)
-            you can browse thru loaded plugins with this
-
- ^F1-^F12 = select the filter bank from which browse filters
-            filters are stored in 12 banks, containing 12 filters each
-
- UP/DOWN  = select created filters up and down thru the chain
- ^UP/DOWN = move created filters up and down thru the chain
-
- DELETE   = remove selected filter
- ^DELETE  = remove ALL filters
-
- INSERT   = activate/deactivate filter
- (filters may have their own keys to change specific parameters)
- 
- VIDEO 4 LINUX LAYER COMMANDS:
- k/m      = switch up/down input channel
- j/n      = (if TV tuner is present) switch up/down frequency tables
- h/b      = (if TV tuner is present) cycle up/down frequencies
-
- AVI LAYER COMMANDS:
- l/r
- arrows   = move one keyframe back and forward on the avi
- ^l/r
- arrows   = move many keyframes back and forward on the avi:
-            left ctrl = 50000 ; right ctrl = 10000 ;
-            left shift = 5000 ; right shift = 1000 ;
-
-SOME FILTER COMMANDS:
-(see the filter's sourcecode for details)
-
-DelayGrab filter
-q/w      = switch up/down delaymap
-a/s      = increase/decrease blocksize
-
-Vertigo filter
-q/w      = phase increment/decrement
-a/s      = zoomrate increment/decrement
-z/x      = browse thru 3 modes (normal, artifarti, weird)
-
-Simura filter
-caps-lock + all letters = change color filters
-keypad numbers = change mirror mode
-</literallayout></para>
-
-</section> <!-- FreeJ usage notes -->
 
 </section> <!-- FreeJ -->

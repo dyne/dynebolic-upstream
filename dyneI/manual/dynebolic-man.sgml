@@ -6,7 +6,6 @@
 <!ENTITY video SYSTEM "dynebolic-video.sgml">
 <!-- veejay -->
 <!ENTITY freej SYSTEM "dynebolic-freej.sgml">
-<!ENTITY hasciicam SYSTEM "dynebolic-hasciicam.sgml">
 <!ENTITY xaos SYSTEM "dynebolic-xaos.sgml">
 <!ENTITY effectv SYSTEM "dynebolic-effectv.sgml">
 <!ENTITY synaesthesia SYSTEM "dynebolic-synaesthesia.sgml">
@@ -23,9 +22,8 @@
 <!ENTITY lives SYSTEM "dynebolic-lives.sgml">
 <!-- stream -->
 <!ENTITY mp4live SYSTEM "dynebolic-mp4live.sgml">
-<!ENTITY mp4creator SYSTEM "dynebolic-mp4creator.sgml">
 <!ENTITY palantir SYSTEM "dynebolic-palantir.sgml">
-
+<!ENTITY hasciicam SYSTEM "dynebolic-hasciicam.sgml">
 
 <!ENTITY audio SYSTEM "dynebolic-audio.sgml">
 <!-- deejay -->

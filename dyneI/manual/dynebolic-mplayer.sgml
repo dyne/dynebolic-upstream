@@ -1,19 +1,75 @@
 <section>
-<title>mplayer :: mpeg video viewer</title>
-<subtitle>software by Arpad Gereoffy (2000-2002)</subtitle>
-<tip>
-<para>Get more informations with:
-<screen><prompt>[d:b] ~ #</prompt><userinput>man mplayer</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
-</tip>
+<title>MPlayer :: movie file viewer</title>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data -->
+
+<!-- URL  --> <entry> <ulink url="http://www.mplayerhq.org"></ulink> </entry>
+<!-- MAN  --> <entry> mplayer </entry>
+<!-- BY   --> <entry> Arpad Gereoffy </entry>
+<!-- YEAR --> <entry> 2000 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
 
 <para>
-       mplayer  is  a  movie player for LINUX (runs on many other
-       Unices and non-x86 CPUs, see the documentation).  It plays
-       most  MPEG/VOB, AVI, ASF/WMA/WMV, RM, QT/MOV/MP4, OGG/OGM,
-       VIVO, FLI, NuppelVideo, yuv4mpeg, FILM and RoQ files, sup-
-       ported  by  many native, XAnim, and Win32 DLL codecs.  You
-       can watch VideoCD, SVCD, DVD, 3ivx,  DivX 3/4/5  and  even
-       WMV movies, too (without using the avifile library).
+Mplayer is a movie player for GNU/Linux which can be run from the
+commandline of an XTERM, while it is also launched automatically by
+the file browser when clicking on video files.  For the advanced user,
+it comes with a vast number of options which can be set via
+commandline or in the configfile present in
+<emphasis>/etc/mplayer.conf</emphasis>, see the manual page for a
+complete description of possibilities offered.
+</para>
+
+<para>
+
+This software offers a wide range of supported file formats: it plays
+MPEG/VOB, AVI, ASF/WMA/WMV, RM, MP4, OGG/OGM, VIVO, FLI, NuppelVideo,
+yuv4mpeg, FILM and RoQ files, and XAnim.  With it you can watch
+VideoCD, SVCD, DVD, 3ivx, DivX 3/4/5 and even WMV movies.
 </para>
 
 </section>

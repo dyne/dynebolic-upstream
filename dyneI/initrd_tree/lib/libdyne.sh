@@ -26,9 +26,9 @@ PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 DYNEBOL_LOG="/boot/dynebol.log"
 DYNEBOL_NST="dynebol.nst"
 DYNEBOL_CFG="dynebol.cfg"
-DYNEBOL_VER="1.0"
+DYNEBOL_VER="`cat /etc/DYNEBOLIC`"
 WMCFG="/boot/WMState"
-STATICWM=true
+#STATICWM=true
 
 # logging functions
 if [ ! -z $FILE_ID ]; then
@@ -77,10 +77,6 @@ dyne_init_boot() {
     echo "===" >> $DYNEBOL_LOG
     echo >> $DYNEBOL_LOG
     dmesg -n 1
-
-    # setup the fstab configuration template
-    if [ -e /etc/fstab ]; then rm -f /etc/fstab; fi
-    cp /etc/fstab.dist /etc/fstab
 
 }
 
@@ -199,7 +195,7 @@ EOF
       error "mount failed with exitcode $?"
       sleep 2
     else
-      $NEST_MOUNTED=true
+      NEST_MOUNTED=true
     fi
   fi
   

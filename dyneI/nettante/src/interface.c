@@ -241,7 +241,7 @@ create_win_main (void)
                       NULL);
   gtk_signal_connect (GTK_OBJECT (combo_eth), "realize",
                       GTK_SIGNAL_FUNC (on_combo_eth_realize),
-                      NULL);
+                      combo_eth);
   gtk_signal_connect (GTK_OBJECT (eth_choice), "changed",
                       GTK_SIGNAL_FUNC (on_eth_choice_changed),
                       NULL);

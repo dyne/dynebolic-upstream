@@ -130,7 +130,8 @@ DHCP auto configuration or manually assigned STATIC IP.</label>
 	<signal>
 	  <name>realize</name>
 	  <handler>on_combo_eth_realize</handler>
-	  <last_modification_time>Thu, 17 Jul 2003 16:21:10 GMT</last_modification_time>
+	  <data>combo_eth</data>
+	  <last_modification_time>Sun, 28 Sep 2003 11:01:34 GMT</last_modification_time>
 	</signal>
 	<value_in_list>False</value_in_list>
 	<ok_if_empty>True</ok_if_empty>

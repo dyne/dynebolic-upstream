@@ -10,6 +10,8 @@
 
 FILE_ID="\$Id$"
 
+source /lib/libdyne.sh
+
 notice "activating OpenMosix clustering on local network"
 echo 0 > /proc/self/lock
 mount /mfs

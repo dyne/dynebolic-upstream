@@ -1,11 +1,13 @@
 #!/bin/sh
 
-# We need to source /etc/profile for stuff like $LANG to work
-source /etc/LANGUAGE
-export LANG
-export LC_ALL
 
-echo "[*] starting X graphical interface, please standby.."
+FILE_ID="\$IdL $"
+
+source /lib/libdyne.sh
+source /etc/LANGUAGE
+
+notice "starting X graphical interface"
+if [ -e /boot/Xok ]; then rm -f /boot/Xok; fi
 echo
 echo
 echo
@@ -14,14 +16,18 @@ echo
 echo
 echo
 
+while [ -e /boot/Xok ]; do
+  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
+done
+
 if [ -z "`grep fbdev /etc/XF86Config`" ]; then
-  echo "[!] your graphic card seems to lack XFree86 native support"
-  echo "[!] if you are online, please report this bug with the command"
-  echo "[!] 'db-bugreport' which will send your hardware configuration"
-  echo "[!] to developers, thanks for your help!"
+  error "your graphic card seems to lack XFree86 native support"
+  error "if you are online, please report this bug with the command"
+  error "'db-bugreport' which will send your hardware configuration"
+  error "to developers, thanks for your help!"
   echo
-  echo "[*] in 5 seconds we will try to start framebuffer video mode"
-  echo " .  resolution is limited to 800x600 16bit color depth"
+  notice "in 5 seconds we will try to start framebuffer video mode"
+  act "resolution is limited to 800x600 16bit color depth"
   echo
   echo
   sleep 5
@@ -30,17 +36,20 @@ if [ -z "`grep fbdev /etc/XF86Config`" ]; then
   /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
 fi
 
-rm /etc/XF86Config
+while [ -e /boot/Xok ]; do
+  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
+done
+
 echo
 echo
-echo "[!] the X graphical interface cannot start automatically"
-echo "[!] you can try to configure it by yourself using the command"
-echo "[!] 'xf86cfg -textmode' and choose your video hardware devices"
-echo "[!] from a list of supported cards."
-echo "[!] if you are online, please also do 'db-bugreport' so that"
-echo "[!] dynebolic developers will be able to examine your case!"
+error "the X graphical interface cannot start automatically"
+error "you can try to configure it by yourself using the command"
+error "'xf86cfg -textmode' and choose your video hardware devices"
+error "from a list of supported cards."
+error "if you are online, please also do 'db-bugreport' so that"
+error "dynebolic developers will be able to examine your case!"
 echo
-echo "[*] good luck!"
+notice "good luck!"
 echo
 echo
 

@@ -3,21 +3,38 @@
 <subtitle>Video software included in dyne:bolic</subtitle>
 
 <para>
-Got the last video card or a Tv card and want to produce or enjoy a nice movie?
-Wanna become a suppacool net-artist veejaying globetrotter freak?
-Here we got something right for you! 
+The GNU/Linux platform nowadays offers an interesting range of tools
+for video manipulation; most of them are in development, being video a
+frounteer for multimedia production, they are being set new standards
+and paradigms of interaction which users may not always find familiar.
+At present time the most reliable and flexible tools available absolve
+tasks like encoding, converting between video formats, streaming and
+realtime effected video.
 </para>
 
 <para>
-Inside Dyne:bolic there is a variety of programs to let you solve various tasks for video production: play, veejay, record, edit, stream. Let's go thru a list of them!
+You should consider the fact that most of the video tools running on
+GNU/Linux platform are still in a BETA stage of usability and
+therefore can reveal to be unstable in certain situations.
+</para>
+
+<para>
+Now lets proceed thru the video softwares included in dyne:bolic,
+following a subdivision in task categories:
 </para>
 
 <section>
 <title>VeeJay</title>
 
-&freej;
+<para>
+The following applications represent a pioneeristical way to approach
+video manipulation in realtime, made possible by the constant growth
+of computational power offered by personal computers. If you work in
+the field of media art and visual art, dance or scenografy, the
+following softwares can reveal to be useful to your research:
+</para>
 
-&hasciicam;
+&freej;
 
 &effectv;
 
@@ -32,6 +49,18 @@ Inside Dyne:bolic there is a variety of programs to let you solve various tasks 
 <section>
 <title>Play</title>
 
+<para>
+In this section you'll find tools to playback various video formats as
+AVI, MPEG and DIVX files, signals from TV cards or RTSP live streams
+from the net.
+</para>
+
+<tip><para>
+The main codec suggested for video files is <ulink
+url="http://www.xvid.org">XViD</ulink>, a free reimplementation of the
+DivX:) compression algorithm.
+</para></tip>
+
 &mplayer;
 
 &xawtv;
@@ -44,6 +73,13 @@ Inside Dyne:bolic there is a variety of programs to let you solve various tasks 
 
 <section>
 <title>Record</title>
+
+<para>
+Video recording is supported from the firewire device, TV/video card
+and from DVD: you can record from your DV cam, from TV or an analog
+video input as a VHS, or you can rip DVDs in a digital file that can
+then fit inside a simple CD.
+</para>
 
 &kino;
 
@@ -59,6 +95,20 @@ Inside Dyne:bolic there is a variety of programs to let you solve various tasks 
 <section>
 <title>Edit</title>
 
+<para>
+Editing video is a hot topic speaking about free software, in fact
+there is still not a wide choice of tools covering this field
+(compared to other fields), while development is rapidly evolving.
+</para>
+
+<para>
+Inside dyne:bolic you'll find the two best applications that are
+available for video editing, the first implements a canonical approach
+to non-linear editing, while the second is a new promising application
+using a linear "cut and paste" approach and supporting more video formats
+for input files.
+</para>
+
 &cinelerra;
 
 &lives;
@@ -71,11 +121,67 @@ Inside Dyne:bolic there is a variety of programs to let you solve various tasks 
 <section>
 <title>Stream</title>
 
+<para>
+Streaming video can be easily setted up in three different ways: each
+of them has advantages, requirements and drawbacks.
+</para>
+
+<para>
+Let's make a scheme to make things easier to catch: in the top row
+you'll find the name of the software employed in each of the three
+ways, and further down explained their peculiarities.
+</para>
+
+<table><title>The three ways to stream video with dyne:bolic</title>
+
+<tgroup cols=4 colsep=1><thead>
+<row>
+<entry> </entry>
+<entry> mp4live </entry>
+<entry> palantir </entry>
+<entry> hasciicam </entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry><emphasis>codec</emphasis></entry>
+<entry>Mpeg 4</entry>
+<entry>Multipart/Jpeg</entry>
+<entry>(h)ASCII</entry>
+</row>
+
+<row>
+<entry><emphasis>requirements</emphasis></entry>
+<entry>an online server running Darwin broadcast software; to watch the stream an external video player is necessary.</entry>
+<entry>the video camera must be directly attached to the server; needs a web browser supporting multipart content push (m$ IE doesn't works).</entry>
+<entry>need just a video-in and eventually an online webserver with ftp access.</entry>
+
+</row>
+
+<row>
+<entry><emphasis>features</emphasis></entry>
+<entry>good quality and smooth framerate; can record while streaming; efficiently uses bandwidth when running on multicast; can stream audio synced with the video.</entry>
+<entry>good quality; can be seamlessy embedded in webpages and works very smoothly in local networks; can stream audio synced with the video.</entry>
+<entry>uses very low bandwidth; can upload video via ftp to a server; can be viewed directly from any web browser (also text based); it looks pretty cool</entry>
+</row>
+
+<row>
+<entry><emphasis>drawbacks</emphasis></entry>
+<entry>can be hard to find or setup a broadcast server; slower machines can't stream neither play it.</entry>
+<entry>uses much bandwidth; it's impossible to have smooth movement when streaming on the web.</entry>
+<entry>the image is formed of characters: nifty, but doesn't gives a clear image and is just monochrome; can't achieve a smooth frame movement.</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+
 &mp4live;
 
-&mp4creator;
-
 &palantir;
+
+&hasciicam;
 
 </section>
 

@@ -76,6 +76,14 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' r128 '`" ]; then
   exit 0;
 fi
 
+if [ ! -z "`echo ${VGACARD} | grep -i ' mach64 '`" ]; then
+  act "using the XFree86 'ati' driver for your Mach64 card" 
+  sed "s/fbdev/ati/g" $DISTCFG > $CFG
+  act "loading Mach64 direct rendering module"
+  loadmod mach64 
+  exit 0;
+fi
+
 if [ ! -z "`echo ${VGACARD} | grep -i ' ati'`" ]; then
   act "using XFree86 'ati' driver for your Ati card"
   sed "s/fbdev/ati/g" $DISTCFG > $CFG
