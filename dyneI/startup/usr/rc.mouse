@@ -35,10 +35,11 @@ if [ "`grep -i interactive /proc/cmdline`" ]; then
   fi
 fi 
 
-if [ -z "`uname -a | grep xbox`" ]; then
-  notice "enabling USB human interface device support"
-  loadmod hid
-  loadmod mousedev
-  loadmod keybdev
+notice "enabling USB human interface device support"
+loadmod hid
+loadmod mousedev
+loadmod keybdev
+if [ "`uname -a | grep xbox`" ]; then
+  loadmod xpad
 fi
 

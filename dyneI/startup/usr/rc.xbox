@@ -34,7 +34,7 @@ act "loading network card module"
 loadmod nvnet
 
 act "loading soundcard modules"
-loadmod i810_audio 
+loadmod i810_audio
 
 act "loading samba module"
 loadmod smbfs

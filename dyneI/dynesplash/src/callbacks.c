@@ -77,7 +77,7 @@ on_conf_modem_released                 (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("db-xterm","modemconfig","MODEMCONFIG :: setup your ppp connection","pppconfig",NULL);
+    execlp("db-launch","modemconfig","modemconfig",NULL);
     perror("can't launch modem configurator");
     _exit(1);
   }

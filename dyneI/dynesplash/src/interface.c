@@ -38,20 +38,15 @@ create_window1 (void)
   GtkWidget *pixmap2;
   GtkWidget *config;
   GtkWidget *vbuttonbox1;
-  GtkWidget *conf_nest;
   GtkWidget *conf_lang;
   GtkWidget *conf_net;
   GtkWidget *conf_modem;
   GtkWidget *conf_print;
   GtkWidget *conf_screen;
+  GtkWidget *conf_nest;
   GtkWidget *getstart;
   GtkWidget *hbox2;
   GtkWidget *why_support;
-  GtkWidget *rsync_frame;
-  GtkWidget *vbox13;
-  GtkWidget *rsync_label;
-  GtkWidget *pixmap6;
-  GtkWidget *button_spawn;
   GtkWidget *frame6;
   GtkWidget *vbox12;
   GtkWidget *label_donate;
@@ -61,16 +56,11 @@ create_window1 (void)
   GtkWidget *vbox4;
   GtkWidget *hbox3;
   GtkWidget *frame9;
+  GtkWidget *vbox14;
+  GtkWidget *pixmap7;
   GtkWidget *label_team;
-  GtkWidget *vbox5;
   GtkWidget *scrolledwindow1;
   GtkWidget *credits;
-  GtkWidget *sponsor;
-  GtkWidget *hbox4;
-  GtkWidget *logo_tenovis;
-  GtkWidget *vbox7;
-  GtkWidget *logo_pvl;
-  GtkWidget *logo_mala;
   GtkWidget *autoproduzioni;
   GtkWidget *Credits;
   GtkWidget *gpl_license;
@@ -81,7 +71,7 @@ create_window1 (void)
 
   window1 = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_object_set_data (GTK_OBJECT (window1), "window1", window1);
-  gtk_widget_set_usize (window1, 550, -2);
+  gtk_widget_set_usize (window1, 504, -2);
   gtk_window_set_title (GTK_WINDOW (window1), _(" dyne:bolic GNU/Linux - 100% free software"));
   gtk_window_set_position (GTK_WINDOW (window1), GTK_WIN_POS_CENTER);
   gtk_window_set_policy (GTK_WINDOW (window1), FALSE, FALSE, FALSE);
@@ -93,6 +83,7 @@ create_window1 (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (notebook1);
   gtk_container_add (GTK_CONTAINER (window1), notebook1);
+  gtk_widget_set_usize (notebook1, 500, -2);
   gtk_container_set_border_width (GTK_CONTAINER (notebook1), 2);
   GTK_WIDGET_UNSET_FLAGS (notebook1, GTK_CAN_FOCUS);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (notebook1), FALSE);
@@ -145,7 +136,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (vbox1), frame2, TRUE, TRUE, 0);
   gtk_frame_set_shadow_type (GTK_FRAME (frame2), GTK_SHADOW_NONE);
 
-  pressmouse = gtk_button_new_with_label (_("WELCOME TO YOUR DYNE:BOLIC DESKTOP\nPRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU"));
+  pressmouse = gtk_button_new_with_label (_("WELCOME TO THE FREE MULTIMEDIA OPERATING SYSTEM \nPRESS THE RIGHT MOUSE BUTTON ON THE DESKTOP FOR THE MENU"));
   gtk_widget_ref (pressmouse);
   gtk_object_set_data_full (GTK_OBJECT (window1), "pressmouse", pressmouse,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -177,7 +168,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox1), text1, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (text1, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (text1), NULL, NULL, NULL,
-                   _("Dyne:bolic is a preconfigured GNU/Linux system which runs without\ninstalling anything on you harddisks, alltough you can see your\npartitions automatically mounted in the /vol directory.\n\nYour /home directory resides in your RAM memory and everything\nnew contained in it will not be there at the next boot, unless you\nmake a dyne:bolic NEST (no need for repartitioning, see the manual) \n\nA samba filesharing daemon is running: everything contained in your\n/home/shared directory is made accessible (read and write) on the\nnetwork without any password.\n\nThe graphical environment is XFree86 with WindowMaker, the\ninterface follows the OpenStep paradigm to build the way interaction\ndistincts d:b from other common graphical environments.\nFor instance you have multiple desktops that you can also switch\nusing the key combination ALT+2 and other numbers.\n\nOn the bottom-right of the desktop you have leds and statistics\nabout your system usage and status, if you are online you'll see eth0\n(DHCP is detected at boot) otherwise you can configure your\nnetwork and other things from the buttons here -------------->"), -1);
+                   _("\n\nDyne:bolic is a preconfigured GNU/Linux system which runs without\ninstalling anything on you harddisks, alltough you can see your\npartitions automatically mounted in the /vol directory.\n\nYour /home directory resides in your RAM memory and everything\nnew contained in it will not be there at the next boot, unless you\nmake a dyne:bolic NEST (no need for repartitioning, see the manual) \n\nSamba and Ftp filesharing is active: everything contained in your\n/home/shared directory is made accessible (read and write) on the\nnetwork without any password.\n\nThe graphical environment is quite original, what distincts this\ndesktop from many others: if you are not familiar with it feel free\nto experiment, it's easy to find your way by clicking around!\nYou'll find many usability enhancements over common user interfaces,\nfor instance you can swith multiple desktops with ALT+2, ALT+3 etc..\n\nOn the bottom-right of the desktop you have leds and statistics\nabout your system usage and status, if you are online you'll see eth0\n(DHCP is detected at boot) otherwise you can configure your\nnetwork and other things from the buttons here -------------->"), -1);
 
   vbox2 = gtk_vbox_new (FALSE, 0);
   gtk_widget_ref (vbox2);
@@ -218,15 +209,6 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (config), vbuttonbox1);
   gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
   gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 85, 26);
-
-  conf_nest = gtk_button_new_with_label (_("Nest dyne:bolic"));
-  gtk_widget_ref (conf_nest);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_nest", conf_nest,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (conf_nest);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_nest);
-  GTK_WIDGET_SET_FLAGS (conf_nest, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, conf_nest, _("Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot"), NULL);
 
   conf_lang = gtk_button_new_with_label (_("Language"));
   gtk_widget_ref (conf_lang);
@@ -273,6 +255,15 @@ create_window1 (void)
   GTK_WIDGET_SET_FLAGS (conf_screen, GTK_CAN_DEFAULT);
   gtk_tooltips_set_tip (tooltips, conf_screen, _("Configure your XFree86, resolution and drivers"), NULL);
 
+  conf_nest = gtk_button_new_with_label (_("Nest dyne:bolic"));
+  gtk_widget_ref (conf_nest);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_nest", conf_nest,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (conf_nest);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_nest);
+  GTK_WIDGET_SET_FLAGS (conf_nest, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_nest, _("Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot"), NULL);
+
   getstart = gtk_label_new (_("  Getting started  "));
   gtk_widget_ref (getstart);
   gtk_object_set_data_full (GTK_OBJECT (window1), "getstart", getstart,
@@ -296,51 +287,9 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox2), why_support, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (why_support, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (why_support), NULL, NULL, NULL,
-                   _("\nThe dyne:bolic developers rely on\nfunding from nonprofit and business\norganizations willing to sustain\ndevelopment of free software.\n\nSupport from individuals like you\nor organizations like yours is\ncrucial to preserve, protect and\npromote the freedom to share the\nsoftware we do.\n   \nIf you find dyne:bolic useful, please\nmake a donation today.\nIf all users do it works well!\n\nWe hope you understand how this\nis important to keep ongoing our\necosystem of generosity.\n\nThanks,\na thousand flowers will blossom!\n"), -1);
+                   _("\nDyne:bolic development rely on volunteer funding from various\norganizations willing to sustain development of this free software.\n\nSupport from individuals like you or your organization is crucial\nto preserve and protect the freedom to share the software we do.\n   \nKeep in mind that the developers of dyne:bolic are not receiving\nfunding from magazines and reviews that are redistributing it.\n\n  If you find dyne:bolic useful, please make a donation today!\n\nWhile we don't force anyone to pay for it, we hope you understand\nthis is important to keep ongoing our ecosystem of generosity.\n\n\n\nThe dyne:bolic team is also offering commercial support:\nwe can provide workshops, consulting services, customisations,\nsetup and warranty for fitness to a particular purpose.\n\nIf you need commercial support on dyne:bolic this is the way\nyou can be 100% sure it will work for you.\n\nContact us from the Customize link on the dyne:bolic website!\n"), -1);
 
-  rsync_frame = gtk_frame_new (_("Get the latest!"));
-  gtk_widget_ref (rsync_frame);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "rsync_frame", rsync_frame,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (rsync_frame);
-  gtk_box_pack_start (GTK_BOX (hbox2), rsync_frame, FALSE, FALSE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (rsync_frame), 3);
-  gtk_frame_set_label_align (GTK_FRAME (rsync_frame), 0.1, 0.5);
-  gtk_frame_set_shadow_type (GTK_FRAME (rsync_frame), GTK_SHADOW_IN);
-
-  vbox13 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox13);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox13", vbox13,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox13);
-  gtk_container_add (GTK_CONTAINER (rsync_frame), vbox13);
-
-  rsync_label = gtk_label_new (_("Use the 'spawn' tool embedded\nin dyne:bolic to generate ISO\nCD images from the running\nsystem.\n\nYou can also update to the last\nonline version downloading\ndifferences (save bandwidth!)\n"));
-  gtk_widget_ref (rsync_label);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "rsync_label", rsync_label,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (rsync_label);
-  gtk_box_pack_start (GTK_BOX (vbox13), rsync_label, TRUE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (rsync_label), GTK_JUSTIFY_LEFT);
-  gtk_label_set_line_wrap (GTK_LABEL (rsync_label), TRUE);
-
-  pixmap6 = create_pixmap (window1, "spawn.xpm");
-  gtk_widget_ref (pixmap6);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "pixmap6", pixmap6,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (pixmap6);
-  gtk_box_pack_start (GTK_BOX (vbox13), pixmap6, FALSE, FALSE, 0);
-
-  button_spawn = gtk_button_new_with_label (_("OK, i want the newest"));
-  gtk_widget_ref (button_spawn);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button_spawn", button_spawn,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button_spawn);
-  gtk_box_pack_start (GTK_BOX (vbox13), button_spawn, FALSE, FALSE, 0);
-  gtk_widget_set_usize (button_spawn, -2, 40);
-  gtk_tooltips_set_tip (tooltips, button_spawn, _("launch the 'spawn' application to generate and network-update the dyne:bolic CD ISO"), NULL);
-
-  frame6 = gtk_frame_new (_("How all this can be free?"));
+  frame6 = gtk_frame_new (_("Free as of speech!"));
   gtk_widget_ref (frame6);
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame6", frame6,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -357,7 +306,7 @@ create_window1 (void)
   gtk_widget_show (vbox12);
   gtk_container_add (GTK_CONTAINER (frame6), vbox12);
 
-  label_donate = gtk_label_new (_("\nit's easy thru paypal\nto donate a small amount\nand it can help  a lot!\njust a few coins.\n\nAlso hardware donations\nare very welcome, see\n dyne.org/donate.php"));
+  label_donate = gtk_label_new (_("\n\nIt's easy thru Paypal\nto donate money online\nand it can help a lot!\n\nPlease consider it like\na small tip you give on\nthe street to someone\noffering you an operating\nsystem like dyne:bolic ;)\n\n"));
   gtk_widget_ref (label_donate);
   gtk_object_set_data_full (GTK_OBJECT (window1), "label_donate", label_donate,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -384,7 +333,7 @@ create_window1 (void)
   gtk_widget_set_usize (button_donate, -2, 40);
   gtk_tooltips_set_tip (tooltips, button_donate, _("donate online with paypal, it's easy and secure!"), NULL);
 
-  support = gtk_label_new (_("  Have more!  "));
+  support = gtk_label_new (_("Support "));
   gtk_widget_ref (support);
   gtk_object_set_data_full (GTK_OBJECT (window1), "support", support,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -406,7 +355,7 @@ create_window1 (void)
   gtk_widget_show (hbox3);
   gtk_box_pack_start (GTK_BOX (vbox4), hbox3, TRUE, TRUE, 0);
 
-  frame9 = gtk_frame_new (_("this is RASTA SOFTWARE by:"));
+  frame9 = gtk_frame_new (_(" freedom of creation ! "));
   gtk_widget_ref (frame9);
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame9", frame9,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -414,27 +363,34 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox3), frame9, FALSE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame9), 3);
 
-  label_team = gtk_label_new (_("Jaromil - rastasoft.org\n  author of dyne:bolic\n  HasciiCam MuSE FreeJ\n\nSmilzo - sfrajone.org\n  game console support\n\nBomboclat - autistici.org\n  author of bolic1\n\nC1cc10 - autistici.org\n  author of bolic1\n\n...and all the people\naround this GNU world\nmaking free software!\n"));
+  vbox14 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox14);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox14", vbox14,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox14);
+  gtk_container_add (GTK_CONTAINER (frame9), vbox14);
+
+  pixmap7 = create_pixmap (window1, "rastasoft-sm.xpm");
+  gtk_widget_ref (pixmap7);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "pixmap7", pixmap7,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (pixmap7);
+  gtk_box_pack_start (GTK_BOX (vbox14), pixmap7, FALSE, FALSE, 0);
+
+  label_team = gtk_label_new (_("\nJaromil - rastasoft.org\n  author of dyne:bolic\n  HasciiCam MuSE FreeJ\n\nSmilzo - sfrajone.org\n  game console support\n\nBomboclat & C1cc10\n autistici.org / ecn.org\n authors of bolic1"));
   gtk_widget_ref (label_team);
   gtk_object_set_data_full (GTK_OBJECT (window1), "label_team", label_team,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (label_team);
-  gtk_container_add (GTK_CONTAINER (frame9), label_team);
+  gtk_box_pack_start (GTK_BOX (vbox14), label_team, FALSE, FALSE, 0);
   gtk_label_set_justify (GTK_LABEL (label_team), GTK_JUSTIFY_LEFT);
-
-  vbox5 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox5);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox5", vbox5,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox5);
-  gtk_box_pack_start (GTK_BOX (hbox3), vbox5, TRUE, TRUE, 0);
 
   scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_ref (scrolledwindow1);
   gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (scrolledwindow1);
-  gtk_box_pack_start (GTK_BOX (vbox5), scrolledwindow1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox3), scrolledwindow1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow1), 2);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
@@ -446,55 +402,9 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), credits);
   GTK_WIDGET_UNSET_FLAGS (credits, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (credits), NULL, NULL, NULL,
-                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people directly contributed to development: \n  Lobo (karma and knowledge)\n  Maox (logo and pix)\n  MiSt (xbox mentor)\n  Newmark (perl alla romana)\n  Nightolo (muse gtk)\n  Rubik (muse ncurses)\n  Tx0 (frozen camel)\n.. and more: Alpt, Grzesiek, Kysucix, Martin, Sandolo, Rageman\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nImportant support in development of 1.0 version was given\nby the following organizations and individuals:\n\n       == SPONSOR\n  TENOVIS (Intl) http://tenovis.com\n\n       == PARTNER SUPPORT\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  SERVUS.at (Linz) http://servus.at\n\n       == TACTICAL SUPPORT\n  Digimetrica (Pescara) http://www.digimetrica.com\n  European Social Forum http://www.fse-esf.org\n  JuX project (Vienna) http://netbridge.at\n  Ljudmila (Ljubljana) http://www.ljudmila.org\n  Makrolab (Anywhere) http://makrolab.ljudmila.org\n  MALASystem (Milano) http://malasystem.com\n  MAMA institute (Zagreb) http://mi2.hr\n  Montevideo (Amsterdam) http://montevideo.nl\n  Mur.at (Graz) http://mur.at\n  OSSA (Intl) http://streamingalliance.org\n  Stream on the fly (EU) http://streamonthefly.com\n  Xs4All (Amsterdam) http://xs4all.nl\n\n       == INDIVIDUAL SUPPORT\n  Adam Hyde, Blicero, Fedor Veltman, Marko Peljhan,\n  Markus Panholzer, Massimo di Bernardo, Robert de\n  Geus, Roland Alton-Scheidl, Stefano Chiccarelli,\n  Zeljko Blace\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
+                   _("dyne:bolic it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people directly contributed to development: \n  Kysucix (code mate and advices)\n  Lobo (karma and knowledge)\n  Maox (logo and pix)\n  Martin (wise debugging)\n  MiSt (xbox mentor)\n  Newmark (perl alla romana)\n  Nightolo (muse gtk)\n  Richard Griffith (confixes)\n  Rubik (muse ncurses)\n  Scai (xperienced debug)\n  Tx0 (frozen camel)\n.. and more: Alpt, Grzesiek Sedek, Sandolo, Rageman\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nImportant support in development of 1 release series was\ngiven by the following organizations and individuals:\n\n       == PARTNER SUPPORT\n  MONTEVIDEO (Amsterdam) http://montevideo.nl\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  SERVUS.at (Linz) http://servus.at\n\n       == TACTICAL SUPPORT\n  ASCII (Amsterdam) http://squat.net/ascii\n  European Social Forum http://www.fse-esf.org\n  FreakNet Medialab http://freaknet.org\n  JuX project (Vienna) http://netbridge.at\n  Ljudmila (Ljubljana) http://www.ljudmila.org\n  Makrolab (Anywhere) http://makrolab.ljudmila.org\n  MALASystem (Milano) http://malasystem.com\n  MAMA institute (Zagreb) http://mi2.hr\n  Medien.kunstlabor (Graz) http://kunstlabor.at\n  Metro Olografix (Pescara) http://olografix.org\n  Mur.at kulturverein (Graz) http://mur.at\n  OSSA (Intl) http://streamingalliance.org\n  Stream on the fly (EU) http://streamonthefly.com\n  TacticalTech (Anywhere) http://tacticaltech.org\n  Xs4All (Amsterdam) http://xs4all.nl\n\n       == INDIVIDUAL SUPPORT\n  Adam Hyde, Andrea Mayr, Blicero, Fedor Veltman, Franz\n  Xaver, Marko Peljhan, Markus Panholzer, Robert de Geus,\n  Roland Alton-Scheidl, Stefano Chiccarelli, Zeljko Blace\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia,\nlittlejohn, Odo visir di mufhd0, Kobaiashi, Jo van Der Spek,\nm_0, Dolce, chmod, radio Ondarossa, Michel, radio Lora,\nteatro Astragali, Elektra, Henk, Reni, Jogi, Harry,\nVoid, Gambino, Dindon il carbonaro, Asbesto Molesto, Patrice\nRiemens, #mdp, #dyne and all the hackers at dyne.org,\n[EpidemiC], 01001...org, Florian Cramer, subMultimedia,\nall the hackers gathering at the Hackmeeting.org and\nsince this year at the TransHackMeeting ... and more!\n\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org and much, much more...\n\n\nIf you feel alone after reading this, you can join some very\nnice people on the dyne:bolic mailinglist (from the website)\nor reach us on the irc channel #dyne on irc.freenode.net\n\n\nhappy hacking ;^)"), -1);
 
-  sponsor = gtk_frame_new (_("DEVELOPMENT SUPPORTED BY"));
-  gtk_widget_ref (sponsor);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "sponsor", sponsor,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (sponsor);
-  gtk_box_pack_end (GTK_BOX (vbox5), sponsor, FALSE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (sponsor), 2);
-
-  hbox4 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox4);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "hbox4", hbox4,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox4);
-  gtk_container_add (GTK_CONTAINER (sponsor), hbox4);
-
-  logo_tenovis = create_pixmap (window1, "tenovis.xpm");
-  gtk_widget_ref (logo_tenovis);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "logo_tenovis", logo_tenovis,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (logo_tenovis);
-  gtk_box_pack_start (GTK_BOX (hbox4), logo_tenovis, FALSE, FALSE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (logo_tenovis), FALSE);
-
-  vbox7 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox7);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox7", vbox7,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox7);
-  gtk_box_pack_start (GTK_BOX (hbox4), vbox7, TRUE, TRUE, 0);
-
-  logo_pvl = create_pixmap (window1, "pvl.xpm");
-  gtk_widget_ref (logo_pvl);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "logo_pvl", logo_pvl,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (logo_pvl);
-  gtk_box_pack_start (GTK_BOX (vbox7), logo_pvl, FALSE, FALSE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (logo_pvl), FALSE);
-
-  logo_mala = create_pixmap (window1, "malasystem.xpm");
-  gtk_widget_ref (logo_mala);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "logo_mala", logo_mala,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (logo_mala);
-  gtk_box_pack_start (GTK_BOX (vbox7), logo_mala, FALSE, FALSE, 0);
-  gtk_pixmap_set_build_insensitive (GTK_PIXMAP (logo_mala), FALSE);
-
-  autoproduzioni = gtk_button_new_with_label (_("dynebolic is copyleft 2001-2003 by Denis Rojo aka jaromil @ dyne.org productions, http://dyne.org"));
+  autoproduzioni = gtk_button_new_with_label (_("dynebolic is copyleft 2001-2004 by Denis Rojo aka jaromil @ dyne.org productions, http://dyne.org"));
   gtk_widget_ref (autoproduzioni);
   gtk_object_set_data_full (GTK_OBJECT (window1), "autoproduzioni", autoproduzioni,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -515,9 +425,10 @@ create_window1 (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (gpl_license);
   gtk_container_add (GTK_CONTAINER (notebook1), gpl_license);
+  gtk_widget_set_usize (gpl_license, 400, -2);
   GTK_WIDGET_UNSET_FLAGS (gpl_license, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (gpl_license), NULL, NULL, NULL,
-                   _("   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991\n\n   dyne:bolic is free software; you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation; either version 2 of the License, or (at\n   your option) any later version.\n\n   dyne:bolic is distributed in the hope that it will be useful, but\n   WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n   See the GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with dyne:bolic; if not, write to:\n   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\n   dyne:bolic is copyleft (c) 2001-2003 by Denis Rojo <jaromil@dyne.org>\n\n   part of the included software is copyleft by the respective authors,\n   dyne.org is available to distribute the source of the included binaries\n   upon request, all the included software can be redistributed under the\n   terms of the GNU GPL license and, in some cases, the X/BSD license."), -1);
+                   _("\n   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991\n\n   dyne:bolic is free software; you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation; either version 2 of the License, or (at\n   your option) any later version.\n\n   dyne:bolic is distributed in the hope that it will be useful, but\n   WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n   See the GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with dyne:bolic; if not, write to:\n   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139,\n   USA.\n\n   dyne:bolic is copyleft (c) 2001-2004 by Denis Rojo <jaromil@dyne.org>\n\n   part of the included software is copyleft by the respective authors,\n   dyne.org is available to distribute the source of the included binaries\n   upon request, all the included software can be redistributed under the\n   terms of the GNU GPL license and, in some cases, the X/BSD license."), -1);
 
   label8 = gtk_label_new (_(" License "));
   gtk_widget_ref (label8);
@@ -531,9 +442,6 @@ create_window1 (void)
                       NULL);
   gtk_signal_connect (GTK_OBJECT (pressmouse), "clicked",
                       GTK_SIGNAL_FUNC (on_pressmouse_clicked),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (conf_nest), "released",
-                      GTK_SIGNAL_FUNC (on_conf_nest_released),
                       NULL);
   gtk_signal_connect (GTK_OBJECT (conf_lang), "released",
                       GTK_SIGNAL_FUNC (on_conf_lang_released),
@@ -550,8 +458,8 @@ create_window1 (void)
   gtk_signal_connect (GTK_OBJECT (conf_screen), "released",
                       GTK_SIGNAL_FUNC (on_conf_screen_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button_spawn), "released",
-                      GTK_SIGNAL_FUNC (on_button_spawn_released),
+  gtk_signal_connect (GTK_OBJECT (conf_nest), "released",
+                      GTK_SIGNAL_FUNC (on_conf_nest_released),
                       NULL);
   gtk_signal_connect (GTK_OBJECT (button_donate), "released",
                       GTK_SIGNAL_FUNC (on_button_donate_released),

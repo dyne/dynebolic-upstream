@@ -15,7 +15,7 @@
 <widget>
   <class>GtkWindow</class>
   <name>window1</name>
-  <width>550</width>
+  <width>504</width>
   <signal>
     <name>destroy</name>
     <handler>on_window1_destroy</handler>
@@ -35,6 +35,7 @@
     <class>GtkNotebook</class>
     <name>notebook1</name>
     <border_width>2</border_width>
+    <width>500</width>
     <show_tabs>True</show_tabs>
     <show_border>False</show_border>
     <tab_pos>GTK_POS_TOP</tab_pos>
@@ -123,8 +124,8 @@
 	    <handler>on_pressmouse_clicked</handler>
 	    <last_modification_time>Thu, 03 Apr 2003 02:27:42 GMT</last_modification_time>
 	  </signal>
-	  <label>WELCOME TO YOUR DYNE:BOLIC DESKTOP
-PRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU</label>
+	  <label>WELCOME TO THE FREE MULTIMEDIA OPERATING SYSTEM 
+PRESS THE RIGHT MOUSE BUTTON ON THE DESKTOP FOR THE MENU</label>
 	  <relief>GTK_RELIEF_NONE</relief>
 	</widget>
       </widget>
@@ -153,7 +154,9 @@ PRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU</label>
 	<class>GtkText</class>
 	<name>text1</name>
 	<editable>False</editable>
-	<text>Dyne:bolic is a preconfigured GNU/Linux system which runs without
+	<text>
+
+Dyne:bolic is a preconfigured GNU/Linux system which runs without
 installing anything on you harddisks, alltough you can see your
 partitions automatically mounted in the /vol directory.
 
@@ -161,15 +164,15 @@ Your /home directory resides in your RAM memory and everything
 new contained in it will not be there at the next boot, unless you
 make a dyne:bolic NEST (no need for repartitioning, see the manual) 
 
-A samba filesharing daemon is running: everything contained in your
+Samba and Ftp filesharing is active: everything contained in your
 /home/shared directory is made accessible (read and write) on the
 network without any password.
 
-The graphical environment is XFree86 with WindowMaker, the
-interface follows the OpenStep paradigm to build the way interaction
-distincts d:b from other common graphical environments.
-For instance you have multiple desktops that you can also switch
-using the key combination ALT+2 and other numbers.
+The graphical environment is quite original, what distincts this
+desktop from many others: if you are not familiar with it feel free
+to experiment, it's easy to find your way by clicking around!
+You'll find many usability enhancements over common user interfaces,
+for instance you can swith multiple desktops with ALT+2, ALT+3 etc..
 
 On the bottom-right of the desktop you have leds and statistics
 about your system usage and status, if you are online you'll see eth0
@@ -238,21 +241,6 @@ network and other things from the buttons here --------------&gt;</text>
 	    <child_min_height>26</child_min_height>
 	    <child_ipad_x>7</child_ipad_x>
 	    <child_ipad_y>0</child_ipad_y>
-
-	    <widget>
-	      <class>GtkButton</class>
-	      <name>conf_nest</name>
-	      <tooltip>Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot</tooltip>
-	      <can_default>True</can_default>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>released</name>
-		<handler>on_conf_nest_released</handler>
-		<last_modification_time>Mon, 21 Jul 2003 12:04:28 GMT</last_modification_time>
-	      </signal>
-	      <label>Nest dyne:bolic</label>
-	      <relief>GTK_RELIEF_NORMAL</relief>
-	    </widget>
 
 	    <widget>
 	      <class>GtkButton</class>
@@ -328,6 +316,21 @@ network and other things from the buttons here --------------&gt;</text>
 	      <label>Screen</label>
 	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>conf_nest</name>
+	      <tooltip>Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_nest_released</handler>
+		<last_modification_time>Mon, 21 Jul 2003 12:04:28 GMT</last_modification_time>
+	      </signal>
+	      <label>Nest dyne:bolic</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>
@@ -357,27 +360,30 @@ network and other things from the buttons here --------------&gt;</text>
 	<name>why_support</name>
 	<editable>False</editable>
 	<text>
-The dyne:bolic developers rely on
-funding from nonprofit and business
-organizations willing to sustain
-development of free software.
+Dyne:bolic development rely on volunteer funding from various
+organizations willing to sustain development of this free software.
 
-Support from individuals like you
-or organizations like yours is
-crucial to preserve, protect and
-promote the freedom to share the
-software we do.
+Support from individuals like you or your organization is crucial
+to preserve and protect the freedom to share the software we do.
    
-If you find dyne:bolic useful, please
-make a donation today.
-If all users do it works well!
+Keep in mind that the developers of dyne:bolic are not receiving
+funding from magazines and reviews that are redistributing it.
 
-We hope you understand how this
-is important to keep ongoing our
-ecosystem of generosity.
+  If you find dyne:bolic useful, please make a donation today!
 
-Thanks,
-a thousand flowers will blossom!
+While we don't force anyone to pay for it, we hope you understand
+this is important to keep ongoing our ecosystem of generosity.
+
+
+
+The dyne:bolic team is also offering commercial support:
+we can provide workshops, consulting services, customisations,
+setup and warranty for fitness to a particular purpose.
+
+If you need commercial support on dyne:bolic this is the way
+you can be 100% sure it will work for you.
+
+Contact us from the Customize link on the dyne:bolic website!
 </text>
 	<child>
 	  <padding>0</padding>
@@ -388,91 +394,9 @@ a thousand flowers will blossom!
 
       <widget>
 	<class>GtkFrame</class>
-	<name>rsync_frame</name>
-	<border_width>3</border_width>
-	<label>Get the latest!</label>
-	<label_xalign>0.1</label_xalign>
-	<shadow_type>GTK_SHADOW_IN</shadow_type>
-	<child>
-	  <padding>0</padding>
-	  <expand>False</expand>
-	  <fill>False</fill>
-	</child>
-
-	<widget>
-	  <class>GtkVBox</class>
-	  <name>vbox13</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>rsync_label</name>
-	    <label>Use the 'spawn' tool embedded
-in dyne:bolic to generate ISO
-CD images from the running
-system.
-
-You can also update to the last
-online version downloading
-differences (save bandwidth!)
-</label>
-	    <justify>GTK_JUSTIFY_LEFT</justify>
-	    <wrap>True</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>0</padding>
-	      <expand>True</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkPixmap</class>
-	    <name>pixmap6</name>
-	    <filename>spawn.xpm</filename>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <build_insensitive>True</build_insensitive>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>button_spawn</name>
-	    <height>40</height>
-	    <tooltip>launch the 'spawn' application to generate and network-update the dyne:bolic CD ISO</tooltip>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>released</name>
-	      <handler>on_button_spawn_released</handler>
-	      <last_modification_time>Mon, 25 Aug 2003 02:53:29 GMT</last_modification_time>
-	    </signal>
-	    <label>OK, i want the newest</label>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkFrame</class>
 	<name>frame6</name>
 	<border_width>3</border_width>
-	<label>How all this can be free?</label>
+	<label>Free as of speech!</label>
 	<label_xalign>0.1</label_xalign>
 	<shadow_type>GTK_SHADOW_IN</shadow_type>
 	<child>
@@ -492,14 +416,18 @@ differences (save bandwidth!)
 	    <name>label_donate</name>
 	    <width>139</width>
 	    <label>
-it's easy thru paypal
-to donate a small amount
-and it can help  a lot!
-just a few coins.
 
-Also hardware donations
-are very welcome, see
- dyne.org/donate.php</label>
+It's easy thru Paypal
+to donate money online
+and it can help a lot!
+
+Please consider it like
+a small tip you give on
+the street to someone
+offering you an operating
+system like dyne:bolic ;)
+
+</label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>True</wrap>
 	    <xalign>0.5</xalign>
@@ -556,7 +484,7 @@ are very welcome, see
       <class>GtkLabel</class>
       <child_name>Notebook:tab</child_name>
       <name>support</name>
-      <label>  Have more!  </label>
+      <label>Support </label>
       <justify>GTK_JUSTIFY_LEFT</justify>
       <wrap>False</wrap>
       <xalign>0.5</xalign>
@@ -586,7 +514,7 @@ are very welcome, see
 	  <class>GtkFrame</class>
 	  <name>frame9</name>
 	  <border_width>3</border_width>
-	  <label>this is RASTA SOFTWARE by:</label>
+	  <label> freedom of creation ! </label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	  <child>
@@ -596,39 +524,64 @@ are very welcome, see
 	  </child>
 
 	  <widget>
-	    <class>GtkLabel</class>
-	    <name>label_team</name>
-	    <label>Jaromil - rastasoft.org
+	    <class>GtkVBox</class>
+	    <name>vbox14</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+
+	    <widget>
+	      <class>GtkPixmap</class>
+	      <name>pixmap7</name>
+	      <filename>rastasoft-sm.xpm</filename>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <build_insensitive>True</build_insensitive>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>label_team</name>
+	      <label>
+Jaromil - rastasoft.org
   author of dyne:bolic
   HasciiCam MuSE FreeJ
 
 Smilzo - sfrajone.org
   game console support
 
-Bomboclat - autistici.org
-  author of bolic1
-
-C1cc10 - autistici.org
-  author of bolic1
-
-...and all the people
-around this GNU world
-making free software!
-</label>
-	    <justify>GTK_JUSTIFY_LEFT</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
+Bomboclat &amp; C1cc10
+ autistici.org / ecn.org
+ authors of bolic1</label>
+	      <justify>GTK_JUSTIFY_LEFT</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
 	  </widget>
 	</widget>
 
 	<widget>
-	  <class>GtkVBox</class>
-	  <name>vbox5</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow1</name>
+	  <border_width>2</border_width>
+	  <hscrollbar_policy>GTK_POLICY_NEVER</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
 	    <padding>0</padding>
 	    <expand>True</expand>
@@ -636,174 +589,89 @@ making free software!
 	  </child>
 
 	  <widget>
-	    <class>GtkScrolledWindow</class>
-	    <name>scrolledwindow1</name>
-	    <border_width>2</border_width>
-	    <hscrollbar_policy>GTK_POLICY_NEVER</hscrollbar_policy>
-	    <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
-	    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-	    <child>
-	      <padding>0</padding>
-	      <expand>True</expand>
-	      <fill>True</fill>
-	    </child>
-
-	    <widget>
-	      <class>GtkText</class>
-	      <name>credits</name>
-	      <editable>False</editable>
-	      <text>dyne:bolic 1.0 it is shaped on the needs of media activists
+	    <class>GtkText</class>
+	    <name>credits</name>
+	    <editable>False</editable>
+	    <text>dyne:bolic it is shaped on the needs of media activists
 to stimulate the production and not only the fruition of digital
 and analog informations.
 It takes birth as a grassroot effort to spread free software
 and the spirit of sharing informations.
 
 The following people directly contributed to development: 
+  Kysucix (code mate and advices)
   Lobo (karma and knowledge)
   Maox (logo and pix)
+  Martin (wise debugging)
   MiSt (xbox mentor)
   Newmark (perl alla romana)
   Nightolo (muse gtk)
+  Richard Griffith (confixes)
   Rubik (muse ncurses)
+  Scai (xperienced debug)
   Tx0 (frozen camel)
-.. and more: Alpt, Grzesiek, Kysucix, Martin, Sandolo, Rageman
+.. and more: Alpt, Grzesiek Sedek, Sandolo, Rageman
 
 Help with online documentation was given by: Isazi, Quique,
 Ali Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,
 Tommaso Gagliardi, Patrice.
 
-Important support in development of 1.0 version was given
-by the following organizations and individuals:
-
-       == SPONSOR
-  TENOVIS (Intl) http://tenovis.com
+Important support in development of 1 release series was
+given by the following organizations and individuals:
 
        == PARTNER SUPPORT
+  MONTEVIDEO (Amsterdam) http://montevideo.nl
   PUBLIC VOICE Lab (Vienna) http://pvl.at
   SERVUS.at (Linz) http://servus.at
 
        == TACTICAL SUPPORT
-  Digimetrica (Pescara) http://www.digimetrica.com
+  ASCII (Amsterdam) http://squat.net/ascii
   European Social Forum http://www.fse-esf.org
+  FreakNet Medialab http://freaknet.org
   JuX project (Vienna) http://netbridge.at
   Ljudmila (Ljubljana) http://www.ljudmila.org
   Makrolab (Anywhere) http://makrolab.ljudmila.org
   MALASystem (Milano) http://malasystem.com
   MAMA institute (Zagreb) http://mi2.hr
-  Montevideo (Amsterdam) http://montevideo.nl
-  Mur.at (Graz) http://mur.at
+  Medien.kunstlabor (Graz) http://kunstlabor.at
+  Metro Olografix (Pescara) http://olografix.org
+  Mur.at kulturverein (Graz) http://mur.at
   OSSA (Intl) http://streamingalliance.org
   Stream on the fly (EU) http://streamonthefly.com
+  TacticalTech (Anywhere) http://tacticaltech.org
   Xs4All (Amsterdam) http://xs4all.nl
 
        == INDIVIDUAL SUPPORT
-  Adam Hyde, Blicero, Fedor Veltman, Marko Peljhan,
-  Markus Panholzer, Massimo di Bernardo, Robert de
-  Geus, Roland Alton-Scheidl, Stefano Chiccarelli,
-  Zeljko Blace
+  Adam Hyde, Andrea Mayr, Blicero, Fedor Veltman, Franz
+  Xaver, Marko Peljhan, Markus Panholzer, Robert de Geus,
+  Roland Alton-Scheidl, Stefano Chiccarelli, Zeljko Blace
 
 Our waves and cheers also go to:
-NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)
-littlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org
-Tommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,
-Dindon il carbonaro, #mdp and all the hackers at dyne.org.
+NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia,
+littlejohn, Odo visir di mufhd0, Kobaiashi, Jo van Der Spek,
+m_0, Dolce, chmod, radio Ondarossa, Michel, radio Lora,
+teatro Astragali, Elektra, Henk, Reni, Jogi, Harry,
+Void, Gambino, Dindon il carbonaro, Asbesto Molesto, Patrice
+Riemens, #mdp, #dyne and all the hackers at dyne.org,
+[EpidemiC], 01001...org, Florian Cramer, subMultimedia,
+all the hackers gathering at the Hackmeeting.org and
+since this year at the TransHackMeeting ... and more!
+
 
 This CD includes the work of hundreds of people all around
 the world developing free software and GNU/Linux applications,
 without the efforts of this big communities dyne:bolic would
 have never existed, among the others are gnu.org and the
 Free Software Foundation, gentoo.org, kernel.org, xfree86.org,
-mozilla.org.
+mozilla.org and much, much more...
 
-You are welcome to join us!
-the dyne:bolic mailinglist you can reach from dynebolic.org
-the irc channel #dynebolic on irc.autistici.org
+
+If you feel alone after reading this, you can join some very
+nice people on the dyne:bolic mailinglist (from the website)
+or reach us on the irc channel #dyne on irc.freenode.net
+
 
 happy hacking ;^)</text>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>sponsor</name>
-	    <border_width>2</border_width>
-	    <label>DEVELOPMENT SUPPORTED BY</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	      <pack>GTK_PACK_END</pack>
-	    </child>
-
-	    <widget>
-	      <class>GtkHBox</class>
-	      <name>hbox4</name>
-	      <homogeneous>False</homogeneous>
-	      <spacing>0</spacing>
-
-	      <widget>
-		<class>GtkPixmap</class>
-		<name>logo_tenovis</name>
-		<filename>tenovis.xpm</filename>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<build_insensitive>False</build_insensitive>
-		<child>
-		  <padding>0</padding>
-		  <expand>False</expand>
-		  <fill>False</fill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkVBox</class>
-		<name>vbox7</name>
-		<homogeneous>False</homogeneous>
-		<spacing>0</spacing>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-
-		<widget>
-		  <class>GtkPixmap</class>
-		  <name>logo_pvl</name>
-		  <filename>pvl.xpm</filename>
-		  <xalign>0.5</xalign>
-		  <yalign>0.5</yalign>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <build_insensitive>False</build_insensitive>
-		  <child>
-		    <padding>0</padding>
-		    <expand>False</expand>
-		    <fill>False</fill>
-		  </child>
-		</widget>
-
-		<widget>
-		  <class>GtkPixmap</class>
-		  <name>logo_mala</name>
-		  <filename>malasystem.xpm</filename>
-		  <xalign>0.5</xalign>
-		  <yalign>0.5</yalign>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <build_insensitive>False</build_insensitive>
-		  <child>
-		    <padding>0</padding>
-		    <expand>False</expand>
-		    <fill>False</fill>
-		  </child>
-		</widget>
-	      </widget>
-	    </widget>
 	  </widget>
 	</widget>
       </widget>
@@ -817,7 +685,7 @@ happy hacking ;^)</text>
 	  <handler>on_autoproduzioni_released</handler>
 	  <last_modification_time>Thu, 03 Apr 2003 02:48:55 GMT</last_modification_time>
 	</signal>
-	<label>dynebolic is copyleft 2001-2003 by Denis Rojo aka jaromil @ dyne.org productions, http://dyne.org</label>
+	<label>dynebolic is copyleft 2001-2004 by Denis Rojo aka jaromil @ dyne.org productions, http://dyne.org</label>
 	<relief>GTK_RELIEF_NONE</relief>
 	<child>
 	  <padding>0</padding>
@@ -843,8 +711,10 @@ happy hacking ;^)</text>
     <widget>
       <class>GtkText</class>
       <name>gpl_license</name>
+      <width>400</width>
       <editable>False</editable>
-      <text>   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991
+      <text>
+   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991
 
    dyne:bolic is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -858,9 +728,10 @@ happy hacking ;^)</text>
 
    You should have received a copy of the GNU General Public License
    along with dyne:bolic; if not, write to:
-   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139,
+   USA.
 
-   dyne:bolic is copyleft (c) 2001-2003 by Denis Rojo &lt;jaromil@dyne.org&gt;
+   dyne:bolic is copyleft (c) 2001-2004 by Denis Rojo &lt;jaromil@dyne.org&gt;
 
    part of the included software is copyleft by the respective authors,
    dyne.org is available to distribute the source of the included binaries

@@ -9,7 +9,7 @@ if [ ! -z "`uname -a | grep xbox`" ]; then
 # this is very handy if you don't have a keyboard
   notice "launching ssh daemon"
   if [ ! -e /home/.ssh/identity ]; then
-    act "generating ssh identity key in background"
+    act "generating ssh identity key"
     ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
   fi
   sshd

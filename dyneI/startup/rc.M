@@ -75,6 +75,10 @@ echo -n "[*] "; /usr/sbin/autofs start
 
 sync
 
+# detect and mount swap partitions
+/usr/etc/rc.swap &
+
+sync
 
 # detect xbox
 # in case we're on xbox then executes just the
@@ -101,13 +105,9 @@ else
     
 fi
 
-# detect and mount swap partitions
-/usr/etc/rc.swap &
-
-sync
 
 # configure videocard
-/usr/etc/rc.vga &
+/usr/etc/rc.vga
 
 sync
 
@@ -118,12 +118,12 @@ sync
 sync
 
 # configure your sound card
-/usr/etc/rc.sound &
+/usr/etc/rc.sound
 
 sync
 
 # configure firewire
-/usr/etc/rc.firewire &
+/usr/etc/rc.firewire
 
 sync
 
@@ -135,32 +135,32 @@ sync
 # launch daemons in sequence
 
 # configure ssh client
-/usr/etc/rc.ssh
+/usr/etc/rc.ssh &
 
 sync
 
 # configure cups daemon
-/usr/etc/rc.cupsd
+/usr/etc/rc.cupsd &
 
 sync
 
 # start samba services
-/usr/etc/rc.samba
+/usr/etc/rc.samba &
 
 sync
 
 # start pure ftp daemon
-/usr/etc/rc.ftp
+/usr/etc/rc.ftp &
 
 sync
 
 # start http boa daemon
-/usr/etc/rc.httpd
+/usr/etc/rc.httpd &
 
 sync
 
 # configure your mail transport
-/usr/etc/rc.mail
+/usr/etc/rc.mail &
 
 sync
 

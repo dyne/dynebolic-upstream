@@ -131,34 +131,34 @@ activate_nest() {
   fi
   # wipe out /tmp
   if [ -x /mnt/nest/tmp ]; then
-    rm -rf /mnt/nest/tmp/*
+      rm -rf /mnt/nest/tmp/*
   fi
-
+  
   if [ ! -e /mnt/nest/home ]; then
-	  warning "nest is missing home, skipping"
+      warning "nest is missing home, skipping"
   else
-	  if [ ! -e /home ]; then mkdir /home; fi
-	  mount -o bind /mnt/nest/home /home
+      if [ ! -e /home ]; then mkdir /home; fi
+      mount -o bind /mnt/nest/home /home
   fi
   if [ ! -e /mnt/nest/etc ]; then
-	  warning "nest is missing etc, skipping"
+      warning "nest is missing etc, skipping"
   else
-	  if [ ! -e /etc ]; then mkdir /etc; fi
-	  sync
-	  cp /etc/mtab /mnt/nest/etc/mtab
-	  mount -o bind /mnt/nest/etc /etc
+      if [ ! -e /etc ]; then mkdir /etc; fi
+      sync
+      cp /etc/mtab /mnt/nest/etc/mtab
+      mount -o bind /mnt/nest/etc /etc
   fi
   if [ ! -e /mnt/nest/var ]; then
-	  warning "nest is missing var, skipping"
+      warning "nest is missing var, skipping"
   else
-	  if [ ! -e /var ]; then mkdir /var; fi
-	  mount -o bind /mnt/nest/var /var
+      if [ ! -e /var ]; then mkdir /var; fi
+      mount -o bind /mnt/nest/var /var
   fi
   if [ ! -e /mnt/nest/tmp ]; then
-	  warning "nest is missing tmp, skipping"
+      warning "nest is missing tmp, skipping"
   else
-	  if [ ! -e /var ]; then mkdir /tmp; fi
-	  mount -o bind /mnt/nest/tmp /tmp
+      if [ ! -e /var ]; then mkdir /tmp; fi
+      mount -o bind /mnt/nest/tmp /tmp
   fi
 
 }
@@ -295,17 +295,22 @@ check_system_version() {
 
 
     DEV=$1 # use /dev/$DEV for full path
-    MNT=$2 # mountpoint including the dyne directory
+    CD_MNT=$2 # mountpoint including the dyne directory
     DOCKS_FOUND=0
 
-    if [ ! -r ${MNT}/VERSION ]; then
-	error "CD version can't be verified! ${MNT}/VERSION file is missing"
+
+    if [ ! -r ${DOCK}/VERSION ]; then
+	error "CD version can't be verified! ${DOCK}/VERSION file is missing"
     else
-	source ${MNT}/VERSION
-	notice "CD-ROM ${DEV} has system version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
+	source ${DOCK}/VERSION
+
+	CD_SYS_VER="$DYNE_SYS_VER"
+	CD_INITRD_VER="$DYNE_INITRD_VER"
+
+	notice "CD-ROM ${DEV} has system version ${CD_SYS_VER}, ramdisk ${CD_INITRD_VER}"
 	if [ ${DYNE_INITRD_VER} != `cat /etc/DYNEBOLIC` ]; then
-	    act "you are running a different ramdisk version `cat /etc/DYNEBOLIC`"
-	    act "so you are not booting dyne:bolic from this CD"
+	    # different ramdisk version in /etc/DYNEBOLIC (running ramdisk) and CD
+	    act "you are not booting dyne:bolic from this CD"
 	fi
     fi
 
@@ -318,26 +323,29 @@ check_system_version() {
 		
 		if [ -r ${HD}/dyne/VERSION ]; then
 		    source ${HD}/dyne/VERSION
-		    notice "Harddisk ${HD} system version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
+		    notice "Harddisk ${HD} has dyne:bolic dock version ${DYNE_SYS_VER}, ramdisk ${DYNE_INITRD_VER}"
 		else
 		    notice "Harddisk ${HD} has an OLD version of the dyne:bolic system"
 		fi
 
-		echo
-		
-		echo -n "[?] UPDATE this system from the CD (y/N)"
-		getkey 5 # 0=yes, 1=no, 2=timeout
-		if [ $? = 0 ]; then
-		    echo " ... UPDATING!"
-		    notice "The docked system on harddisk ${HD} will be updated using CD-ROM ${DEV}"
-		    act "please wait, this operation will take a couple of minutes ...."
-		    cp -rfv ${MNT} ${HD}
-		    act "DONE! if you see no errors above your dock has been updated succesfully."
-		else # default
-		    echo " ... NO."
+		if [ "$CD_SYS_VER" == "$DYNE_SYS_VER" ]; then ask_update=yes; fi
+		if [ "$CD_INITRD_VER" == "$DYNE_INITRD_VER" ]; then ask_update=yes; fi
+
+		if [ x$ask_update == xyes ]; then
+		    echo -n "[?] UPDATE this system from the CD (y/N)"
+		    getkey 5 # 0=yes, 1=no, 2=timeout
+		    if [ $? = 0 ]; then
+			echo " ... UPDATING!"
+			notice "The docked system on harddisk ${HD} will be updated using CD ${DEV}"
+			act "please wait, this operation will take a couple of minutes ...."
+			cp -rfv ${DOCK} ${HD}
+			act "DONE! if you see no errors above your dock has been updated succesfully."
+		    else # default
+			echo " ... NO."
+		    fi
 		fi
 		
-		echo -n "[?] RUN the system from this harddisk (Y/n)"
+		echo -n "[?] RUN the system docked on this harddisk (Y/n)"
 		getkey 5
 		if [ $? = 1 ]; then
 		    echo " ... NO, skipping harddisk dock"
@@ -346,7 +354,7 @@ check_system_version() {
 		    DYNE_SYS_MEDIA="hd"
 		    DYNE_SYS_MNT="${HD}"
 		    DYNE_SYS_DEV="`mount | grep '${HD}' | cut -d' ' -f1`"
-		    return
+		    eject "$DEV"
 		fi
 		
 	    fi # if the harddisk we are using contains a dock
@@ -355,9 +363,11 @@ check_system_version() {
     
     # if we are here, no harddisk system is being used
     # so let's use the CD where we found the system!
-    DYNE_SYS_MEDIA="cd"
-    DYNE_SYS_MNT="/mnt/dynebolic"
-    DYNE_SYS_DEV=${DEV}
+    if [ "$DYNE_SYS_MEDIA" != "hd" ]; then
+	DYNE_SYS_MEDIA="cd"
+	DYNE_SYS_MNT="/mnt/dynebolic"
+	DYNE_SYS_DEV=${DEV}
+    fi
 }
 
 CD_NUM=0
@@ -511,7 +521,7 @@ mount_harddisk() {
     mount "$PART" ${MNT} 1>/dev/null 2>/dev/null
     
     if [ $? != 0 ]; then
-	error "can't mount device"
+	error "can't mount ${PART}: not a valid filesystem"
 	rm -r ${MNT}
 	HD_NUM="`expr $HD_NUM - 1`"
 	continue
@@ -522,16 +532,14 @@ mount_harddisk() {
 
     # have you got a home there?
     got_home ${MNT}
-    # if there is a dyne development subdirectory, then use that
-    if [ -x "${MNT}/dyne/sdk/cdrom/dyne" ]; then
-        MNT="${MNT}/dyne/sdk/cdrom/dyne"
+    # if there is a /dyne dock, then use that
+    if [ -x "${MNT}/dyne" ]; then
 	# try also inside the /dyne directory found
-	got_home ${MNT}
-    # or maybe a simple dyne/ subdir, then take that
-    elif [ -x "${MNT}/dyne" ]; then
-        MNT="${MNT}/dyne"
-	# try also inside the /dyne directory found
-	got_home ${MNT}
+	got_home "${MNT}/dyne"
+
+	DYNE_SYS_DEV="/dev/${DEV}"
+	DYNE_SYS_MEDIA="hd"
+	DYNE_SYS_MNT=${MNT}
     fi
     
     sync
@@ -602,6 +610,7 @@ act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
 act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
 
 notice "starting device filesystem daemon"
+echo -n " .  "
 /sbin/devfsd /dev
 
 sync
@@ -630,7 +639,7 @@ if ! [ -z "`uname -a | grep xbox`" ]; then
 else    
     notice "scan ide harddisk"
 # cycle thru devices
-    for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
+    for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
 	
 # skip if not an harddisk
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
@@ -708,7 +717,7 @@ else
     notice "scan ide cdrom"
     CDFS="iso9660"
 fi
-for DEV in `ls --color=never /proc/ide/hd* -d | cut -d/ -f4`; do
+for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
     
     if  [ `cat /proc/ide/$DEV/media` != cdrom ]; then continue; fi
     
@@ -723,34 +732,54 @@ done
 
 # if the system has been allready mounted you can go on
 if [ ! -x /usr/bin/dynesplash ]; then
-    
-    notice "Using dynebolic system on ${DYNE_SYS_DEV}"
-    
-    if [ -x "${DYNE_SYS_MNT}/dyne" ]; then
-    	mount -o loop -t squashfs "${DYNE_SYS_MNT}/dyne/dynebol.sys" /usr
+
+    if [ -z $DYNE_SYS_MNT ]; then
+
+	# no system found on any harddisk or cdrom
+	error "No dyne:bolic system has been found on any cdrom or harddisk"
+	error "check your harddisk dock or CD: no /dyne directory is present."
+
     else
-    	mount -o loop -t squashfs "${DYNE_SYS_MNT}/dynebol.sys" /usr
-    fi
-
     
-    if [ $? != 0 ]; then
-	echo
-	error "a problem occurred while mounting the dynebol.sys"
-	error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
-	if [ $DYNE_SYS_MEDIA=="cd" ]; then
-	    error "it looks like your CD is corrupted!"
-	    error "burn it more carefully: less speed and don't do ANYTHING else"
-	    error "with your computer while burning. refer to the USER UPDATED FAQ"
-	    error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
-	    error "may the source be with you :^)"
+	notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
+	
+	if [ -x "${DYNE_SYS_MNT}/dyne" ]; then
+	    mount -o loop -t squashfs "${DYNE_SYS_MNT}/dyne/dynebol.sys" /usr
+	else
+	    mount -o loop -t squashfs "${DYNE_SYS_MNT}/dynebol.sys" /usr
 	fi
-	echo; echo;
-	sleep 10
-	continue
+	
+	
+	if [ $? != 0 ]; then
+	    echo
+	    error "A problem occurred while mounting the dynebol.sys"
+	    error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
+	    if [ $DYNE_SYS_MEDIA=="cd" ]; then
+		error "it looks like your CD is corrupted!"
+		error "burn it more carefully: less speed and don't do ANYTHING else"
+		error "with your computer while burning. refer to the USER UPDATED FAQ"
+		error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
+		error "may the source be with you :^)"
+	    fi
+	    echo; echo;
+	    sleep 10
+	fi
     fi
-
 fi
 
+# quit on error
+if [ -z `mount | grep -i "type squashfs"` ]; then
+    echo
+    error "dyne:bolic couldn't find the dynebol.sys file on any device"
+    error "maybe you are running on a system that's not supported yet?"
+    error "anyway dyne:bolic does'nt works on yours,"
+    error "try to ask for help on our mailinglist detailing your system."
+    echo
+    error "Also consider that SCSI and Serial ATA devices are not supported."
+    error "This is a fatal error, you are left alone :("
+    echo
+    exit 0
+fi
 
 ##### FLOPPY DISK
 if [ "`dmesg |grep ' fd0 '`" ]; then
@@ -788,23 +817,6 @@ fi
 # but let's get to know each other first ;)
 
 
-
-if [ -z `mount | grep -i "type squashfs"` ]; then
-    echo
-    echo "[!] dyne:bolic couldn't find the dynebol.sys file on any device"
-    echo "[!] maybe you are running on a system that's not supported yet?"
-    echo "[!] arg, this is a fatal error :("
-    echo "[!] means: it does'nt works on yours(tm)"
-    echo "[!] try to ask for help on dynebolic@dyne.org"
-    echo "[!] detailing your system configuration and settings."
-    echo
-    echo "[!] SCSI and Serial ATA storage devices don't work"
-    echo "[!] your help is needed!"
-    echo "[!] it is useful if you send informations for the command 'dmesg'"
-    echo "[!] from this console you have here."
-    echo "[!] this is a fatal error, you are left alone."
-    echo
-fi
 
 # dump what we've found into the dyne environmental conf
 echo "# dynebolic environment" > /boot/dynenv

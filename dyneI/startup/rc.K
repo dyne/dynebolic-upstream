@@ -42,9 +42,9 @@ act "umount all volumes"
 echo " .  sync harddrives" # this never hurts
 /sbin/sync
 
-if [ $DYNE_SYS_MEDIA = "cd" ]; then
+if [ "$DYNE_SYS_MEDIA" == "cd" ]; then
     echo "[*] ejecting dyne:bolic cd"
-    eject $DYNE_SYS_DEV
+    eject "$DYNE_SYS_DEV"
 fi
 
 # sleep 1 fixes problems with some hard drives that
