@@ -62,7 +62,7 @@ alltough NTFS partitions are non writable (use FAT32 instead!).
 <para>
 Usb storage devices (like usb pens, smartcards and digital photo
 cameras) are generally supported
-<foootnote><para>
+<footnote><para>
 see <ulink url="http://www.linux-usb.org">www.linux-usb.org</ulink>
 if your model is compatible with the Linux kernel.
 </para></footnote>
@@ -260,6 +260,15 @@ for those who want to modify it. Anyway, if you look for a
 customizable bootable cd there are plenty to pick around.
 I think one should choose dynebolic for what it is able to do,
 not for how it is done inside.
+</para>
+
+<para>
+Please refer to this wiki page for further informations about the
+dynebolic SDK and how to tweak it: <ulink url="http://lab.dyne.org/DynebolicHackers">
+lab.dyne.org/DynebolicHackers</ulink>.
+You can also visit the <ulink url="http://cvs.dyne.org">cvs.dyne.org</ulink>
+which is where all dynebolic specific sourcecode is stored and thru all its
+development revisions.
 </para>
 
 <para>
