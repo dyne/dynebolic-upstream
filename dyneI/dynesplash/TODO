@@ -1,0 +1,20 @@
+Please use AM_GNU_GETTEXT([external]) in order to cause autoconfiguration
+to look for an external libintl.
+
+Please create po/Makevars from the template in po/Makevars.template.
+You can then remove po/Makevars.template.
+
+Please run 'automake m4/Makefile' to create m4/Makefile.in
+
+Please run 'aclocal -I m4' to regenerate the aclocal.m4 file.
+You need aclocal from GNU automake 1.5 (or newer) to do this.
+Then run 'autoconf' to regenerate the configure file.
+
+You will also need config.guess and config.sub, which you can get from
+ftp://ftp.gnu.org/pub/gnu/config/.
+
+You might also want to copy the convenience header file gettext.h
+from the /usr/share/gettext directory into your package.
+It is a wrapper around <libintl.h> that implements the configure --disable-nls
+option.
+

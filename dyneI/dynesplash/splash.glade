@@ -1,0 +1,1099 @@
+<?xml version="1.0"?>
+<GTK-Interface>
+
+<project>
+  <name>Splash</name>
+  <program_name>splash</program_name>
+  <directory></directory>
+  <source_directory>src</source_directory>
+  <pixmaps_directory>pixmaps</pixmaps_directory>
+  <language>C</language>
+  <gnome_support>False</gnome_support>
+  <gettext_support>True</gettext_support>
+</project>
+
+<widget>
+  <class>GtkWindow</class>
+  <name>window1</name>
+  <signal>
+    <name>destroy</name>
+    <handler>on_window1_destroy</handler>
+    <last_modification_time>Thu, 03 Apr 2003 14:55:34 GMT</last_modification_time>
+  </signal>
+  <title> dyne:bolic GNU/Linux - 100% free software</title>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_CENTER</position>
+  <modal>False</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>False</auto_shrink>
+  <wmclass_name>dynesplash</wmclass_name>
+  <wmclass_class>dyneboli</wmclass_class>
+
+  <widget>
+    <class>GtkNotebook</class>
+    <name>notebook1</name>
+    <border_width>2</border_width>
+    <show_tabs>True</show_tabs>
+    <show_border>False</show_border>
+    <tab_pos>GTK_POS_TOP</tab_pos>
+    <scrollable>False</scrollable>
+    <tab_hborder>5</tab_hborder>
+    <tab_vborder>2</tab_vborder>
+    <popup_enable>False</popup_enable>
+
+    <widget>
+      <class>GtkVBox</class>
+      <name>vbox1</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame1</name>
+	<border_width>1</border_width>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox8</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>dyne.org_presents</name>
+	    <label>DYNE.ORG PRODUCTIONS PRESENT</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>10</ypad>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkPixmap</class>
+	    <name>splash</name>
+	    <filename>splash2.xpm</filename>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>10</ypad>
+	    <build_insensitive>True</build_insensitive>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame2</name>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <name>pressmouse</name>
+	  <border_width>1</border_width>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_pressmouse_clicked</handler>
+	    <last_modification_time>Thu, 03 Apr 2003 02:27:42 GMT</last_modification_time>
+	  </signal>
+	  <label>WELCOME TO YOUR DYNE:BOLIC DESKTOP
+PRESS THE RIGHT MOUSE BUTTON ON IT FOR THE MENU</label>
+	  <relief>GTK_RELIEF_NONE</relief>
+	</widget>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>welcome</name>
+      <label> Welcome to the hacktive media! </label>
+      <justify>GTK_JUSTIFY_LEFT</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox1</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+
+      <widget>
+	<class>GtkText</class>
+	<name>text1</name>
+	<editable>False</editable>
+	<text>fill me with an introduction
+---------------------------------------------------
+above line max length</text>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkVBox</class>
+	<name>vbox2</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>frame5</name>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkPixmap</class>
+	    <name>pixmap2</name>
+	    <filename>logo.xpm</filename>
+	    <xalign>0.5</xalign>
+	    <yalign>1.63913e-07</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <build_insensitive>True</build_insensitive>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>config</name>
+	  <border_width>5</border_width>
+	  <label>CONFIGURE</label>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkVButtonBox</class>
+	    <name>vbuttonbox1</name>
+	    <layout_style>GTK_BUTTONBOX_DEFAULT_STYLE</layout_style>
+	    <spacing>0</spacing>
+	    <child_min_width>85</child_min_width>
+	    <child_min_height>26</child_min_height>
+	    <child_ipad_x>7</child_ipad_x>
+	    <child_ipad_y>0</child_ipad_y>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>button6</name>
+	      <tooltip>Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_save_released</handler>
+		<last_modification_time>Sun, 06 Apr 2003 19:20:00 GMT</last_modification_time>
+	      </signal>
+	      <label>Nest dyne:bolic</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>button5</name>
+	      <tooltip>Change the language and keyboard layout, all the applications supporting your language will switch to it</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_lang_released</handler>
+		<last_modification_time>Thu, 03 Apr 2003 02:28:37 GMT</last_modification_time>
+	      </signal>
+	      <label>Language</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>button4</name>
+	      <tooltip>Configure your network interface (via DHCP or static IP address)</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_net_released</handler>
+		<last_modification_time>Thu, 03 Apr 2003 02:28:43 GMT</last_modification_time>
+	      </signal>
+	      <label>Network</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>button3</name>
+	      <tooltip>Configure your modem to dialup your account</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_modem_released</handler>
+		<last_modification_time>Thu, 03 Apr 2003 02:28:51 GMT</last_modification_time>
+	      </signal>
+	      <label>Modem</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <name>button2</name>
+	      <tooltip>Configure your printer and share it on the net</tooltip>
+	      <can_default>True</can_default>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>released</name>
+		<handler>on_conf_print_released</handler>
+		<last_modification_time>Thu, 03 Apr 2003 02:28:59 GMT</last_modification_time>
+	      </signal>
+	      <label>Printer</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
+	    </widget>
+	  </widget>
+	</widget>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>getstart</name>
+      <label> Getting started </label>
+      <justify>GTK_JUSTIFY_LEFT</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox2</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+
+      <widget>
+	<class>GtkText</class>
+	<name>why_support</name>
+	<editable>False</editable>
+	<text>The dyne:bolic developers rely on funding from
+non-profit, grant-making and business
+organizations willing to sustain development of
+free software.
+
+We can achieve the perspective of sustainability
+by offering the services of customizations,
+workshops and setups; but also with a little help
+from our friends.
+
+We rely on support from individuals like you to
+preserve, protect and promote the freedom to
+share this distribution and software.
+
+If you find dyne:bolic useful, please consider
+making a donation today.
+
+If you order it online, please do it from
+redistributors supporting us, you'll find
+a contact list of them on our website.
+
+If you have a job, please encourage your
+company to become a patron of the dyne:bolic
+project.
+
+If you redistribute it, please give us some shares
+on sells: you'll be happy to see the new versions
+coming out.
+You can become an Official Redistributor and get
+listed on our webpages: there you'll find more
+informations about it.
+
+We hope you understand how this is important to
+to keep ongoing our ecosystem of generosity.
+
+Thanks! a thousand flowers will blossom!</text>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame6</name>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox3</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkVBox</class>
+	    <name>vbox6</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>cdrom_desc</name>
+	      <label>The production quality printed CDROM
+mastered by our lab can be shipped ! </label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkPixmap</class>
+	      <name>cdrom</name>
+	      <filename>cdrom.xpm</filename>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <build_insensitive>True</build_insensitive>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkButton</class>
+	    <name>order_button</name>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>released</name>
+	      <handler>on_order_button</handler>
+	      <last_modification_time>Wed, 02 Apr 2003 19:59:43 GMT</last_modification_time>
+	    </signal>
+	    <label>ORDER ORIGINAL PRINTED COPIES!</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>support</name>
+      <label> Support us </label>
+      <justify>GTK_JUSTIFY_LEFT</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkVBox</class>
+      <name>vbox4</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+
+      <widget>
+	<class>GtkHBox</class>
+	<name>hbox3</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>author_frame</name>
+	  <border_width>2</border_width>
+	  <label>AUTHORS</label>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkVBox</class>
+	    <name>vbox9</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+
+	    <widget>
+	      <class>GtkPixmap</class>
+	      <name>jaropix</name>
+	      <signal>
+		<name>button_release_event</name>
+		<handler>on_jaropix_button_release_event</handler>
+		<last_modification_time>Thu, 03 Apr 2003 14:11:34 GMT</last_modification_time>
+	      </signal>
+	      <filename>jaromil.xpm</filename>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <build_insensitive>False</build_insensitive>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>jaromil</name>
+	      <label>a.k.a Denis Rojo</label>
+	      <justify>GTK_JUSTIFY_LEFT</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkHSeparator</class>
+	      <name>hseparator1</name>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkPixmap</class>
+	      <name>bombopix</name>
+	      <signal>
+		<name>button_release_event</name>
+		<handler>on_bombopix_button_release_event</handler>
+		<last_modification_time>Thu, 03 Apr 2003 14:11:27 GMT</last_modification_time>
+	      </signal>
+	      <filename>bomboclat.xpm</filename>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <build_insensitive>False</build_insensitive>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>bomboclat</name>
+	      <label>a.k.a Federico Prando</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkHSeparator</class>
+	      <name>hseparator2</name>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkPixmap</class>
+	      <name>cicciopix</name>
+	      <signal>
+		<name>button_release_event</name>
+		<handler>on_cicciopix_button_release_event</handler>
+		<last_modification_time>Thu, 03 Apr 2003 14:11:19 GMT</last_modification_time>
+	      </signal>
+	      <filename>c1cc10.xpm</filename>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <build_insensitive>False</build_insensitive>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>c1cc10</name>
+	      <label>a.k.a Francesco Rana</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>vbox5</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkScrolledWindow</class>
+	    <name>scrolledwindow1</name>
+	    <border_width>2</border_width>
+	    <hscrollbar_policy>GTK_POLICY_NEVER</hscrollbar_policy>
+	    <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+	    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkText</class>
+	      <name>credits</name>
+	      <editable>False</editable>
+	      <wrap>True</wrap>
+	      <text>dyne:bolic 1.0 it is shaped on the needs of media activists
+to stimulate the production and not only the fruition of digital
+and analog informations.
+It takes birth as a grassroot effort to spread free software
+and the spirit of sharing informations.
+
+The following people also contributed to development:
+  Lo Smilzo (hack to make it work on XBOX)
+  Lobo (karma and knowledge)
+  Sandolo and Rageman (scripts and tricks)
+  Nightolo and Rubik (MuSE interface coders)
+  Maox (logo and graphics)
+  Eni and Newmark (watching horizons)
+
+Help with online documentation was given by: Isazi, Quique,
+Ali Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,
+Tommaso Gagliardi, Patrice.
+
+SUPPORT in development was given by the following
+organizazions:
+  TENOVIS (Intl) http://tenovis.com
+  PUBLIC VOICE Lab (Vienna) http://pvl.at
+  MALASystem (Milano) http://malasystem.com
+  SERVUS.at (Linz) http://servus.at
+  OSSA (Intl) http://streamingalliance.org
+  Montevideo (Amsterdam) http://montevideo.nl
+  Stream on the fly (EU project)
+  JuX project (Vienna) http://netbridge.at
+  European Social Forum http://www.fse-esf.org
+  The city of Firenze
+and individuals:
+  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,
+  Markus Panholzer, Zeljko Blace and Blicero
+
+Our waves and cheers also go to:
+NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)
+littlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org
+Tommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,
+Dindon il carbonaro, #mdp and all the hackers at dyne.org.
+
+This CD includes the work of hundreds of people all around
+the world developing free software and GNU/Linux applications,
+without the efforts of this big communities dyne:bolic would
+have never existed, among the others are gnu.org and the
+Free Software Foundation, gentoo.org, kernel.org, xfree86.org,
+mozilla.org.
+
+You are welcome to join us!
+the dyne:bolic mailinglist you can reach from dynebolic.org
+the irc channel #dynebolic on irc.autistici.org
+
+happy hacking ;^)</text>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>sponsor</name>
+	    <border_width>2</border_width>
+	    <label>DEVELOPMENT SUPPORTED BY</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	      <pack>GTK_PACK_END</pack>
+	    </child>
+
+	    <widget>
+	      <class>GtkHBox</class>
+	      <name>hbox4</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
+
+	      <widget>
+		<class>GtkPixmap</class>
+		<name>logo_tenovis</name>
+		<signal>
+		  <name>button_release_event</name>
+		  <handler>on_logo_tenovis_button_release_event</handler>
+		  <last_modification_time>Thu, 03 Apr 2003 13:14:17 GMT</last_modification_time>
+		</signal>
+		<filename>tenovis.xpm</filename>
+		<xalign>0.5</xalign>
+		<yalign>0.5</yalign>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<build_insensitive>False</build_insensitive>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>False</fill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkVBox</class>
+		<name>vbox7</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>True</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>GtkPixmap</class>
+		  <name>logo_pvl</name>
+		  <signal>
+		    <name>button_release_event</name>
+		    <handler>on_logo_pvl_button_release_event</handler>
+		    <last_modification_time>Thu, 03 Apr 2003 13:15:07 GMT</last_modification_time>
+		  </signal>
+		  <filename>pvl.xpm</filename>
+		  <xalign>0.5</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <build_insensitive>False</build_insensitive>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkPixmap</class>
+		  <name>logo_mala</name>
+		  <signal>
+		    <name>button_release_event</name>
+		    <handler>on_pixmap8_button_release_event</handler>
+		    <last_modification_time>Thu, 03 Apr 2003 13:15:23 GMT</last_modification_time>
+		  </signal>
+		  <filename>malasystem.xpm</filename>
+		  <xalign>0.5</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <build_insensitive>False</build_insensitive>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>autoproduzioni</name>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>released</name>
+	  <handler>on_autoproduzioni_released</handler>
+	  <last_modification_time>Thu, 03 Apr 2003 02:48:55 GMT</last_modification_time>
+	</signal>
+	<label>dyne.org productions | http://dyne.org | mail: hackers@dyne.org | tel: +43 1 92 56 318</label>
+	<relief>GTK_RELIEF_NONE</relief>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>Credits</name>
+      <label> Credits </label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+
+    <widget>
+      <class>GtkText</class>
+      <name>gpl_license</name>
+      <editable>False</editable>
+      <text>   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991
+
+   dyne:bolic is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or (at
+   your option) any later version.
+
+   dyne:bolic is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+   See the GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with dyne:bolic; if not, write to:
+   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   dyne:bolic is copyleft (c) 2001-2003 by Denis Rojo &lt;jaromil@dyne.org&gt;
+   part of the included software is copyleft by the respective authors,
+   dyne.org is available to distribute the source of the included binaries
+   upon request, all the included software can be redistributed under the
+   terms of the GNU GPL license and, in some cases, the X/BSD license.</text>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label8</name>
+      <label> License </label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+    </widget>
+  </widget>
+</widget>
+
+<widget>
+  <class>GtkWindow</class>
+  <name>i_said_right</name>
+  <border_width>2</border_width>
+  <signal>
+    <name>destroy</name>
+    <handler>gtk_widget_destroy</handler>
+    <last_modification_time>Sun, 06 Apr 2003 18:10:09 GMT</last_modification_time>
+  </signal>
+  <title>How the dyne:bolic menu works?</title>
+  <type>GTK_WINDOW_POPUP</type>
+  <position>GTK_WIN_POS_MOUSE</position>
+  <modal>False</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>True</auto_shrink>
+  <wmclass_name>warning</wmclass_name>
+  <wmclass_class>popup</wmclass_class>
+
+  <widget>
+    <class>GtkVBox</class>
+    <name>vbox10</name>
+    <homogeneous>False</homogeneous>
+    <spacing>0</spacing>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox5</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+      </child>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame7</name>
+	<border_width>10</border_width>
+	<label>it's simple!</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkPixmap</class>
+	  <name>pixmap3</name>
+	  <filename>teacher.xpm</filename>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <build_insensitive>True</build_insensitive>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>justclick</name>
+	<label>to have the application
+menu you have just to
+click the right mouse
+button on the desktop
+background!
+not here!
+on the desktop!
+</label>
+	<justify>GTK_JUSTIFY_LEFT</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>1</yalign>
+	<xpad>15</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkButton</class>
+      <name>iknow</name>
+      <can_focus>True</can_focus>
+      <signal>
+	<name>released</name>
+	<handler>on_iknow_released</handler>
+	<data>i_said_right</data>
+	<last_modification_time>Sun, 06 Apr 2003 18:54:02 GMT</last_modification_time>
+      </signal>
+      <label>OK! Thank you!</label>
+      <relief>GTK_RELIEF_NORMAL</relief>
+      <child>
+	<padding>2</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+    </widget>
+  </widget>
+</widget>
+
+<widget>
+  <class>GtkWindow</class>
+  <name>notimplemented</name>
+  <border_width>2</border_width>
+  <title>We are working for you!</title>
+  <type>GTK_WINDOW_POPUP</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>True</auto_shrink>
+
+  <widget>
+    <class>GtkVBox</class>
+    <name>vbox11</name>
+    <homogeneous>False</homogeneous>
+    <spacing>0</spacing>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox6</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+      </child>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame8</name>
+	<border_width>10</border_width>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkPixmap</class>
+	  <name>pixmap4</name>
+	  <filename>unimplemented.xpm</filename>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <build_insensitive>True</build_insensitive>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label10</name>
+	<label>This function is not
+yet implemented.
+Please be patient
+while we are working
+on it and keep an eye
+on the next releases
+of dyne:bolic !</label>
+	<justify>GTK_JUSTIFY_LEFT</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>15</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkButton</class>
+      <name>iwait</name>
+      <can_focus>True</can_focus>
+      <signal>
+	<name>released</name>
+	<handler>on_iwait_released</handler>
+	<data>notimplemented</data>
+	<last_modification_time>Sun, 06 Apr 2003 18:56:26 GMT</last_modification_time>
+      </signal>
+      <label>OK! keep up the good work!</label>
+      <relief>GTK_RELIEF_NORMAL</relief>
+      <child>
+	<padding>2</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+    </widget>
+  </widget>
+</widget>
+
+</GTK-Interface>

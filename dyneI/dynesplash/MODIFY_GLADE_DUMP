@@ -1,0 +1,26 @@
+
+need to add this to interface.c headers:
+
+#include "jutils.h"
+
+#include "introduction.h"
+#include "credits.h"
+
+#include <pixmaps/splash2.xpm>
+#include <pixmaps/logo.xpm>
+#include <pixmaps/cdrom.xpm>
+#include <pixmaps/jaromil.xpm>
+#include <pixmaps/c1cc10.xpm>
+#include <pixmaps/bomboclat.xpm>
+#include <pixmaps/tenovis.xpm>
+#include <pixmaps/pvl.xpm>
+#include <pixmaps/malasystem.xpm>
+
+and substitute pixmap loading:
+
+  //  splash = create_pixmap (window1, "splash2.xpm");
+  splash = openxpm(window1,splash2_xpm);
+
+
+plus use texts from the headers:
+  gtk_text_insert (GTK_TEXT (text1), NULL, NULL, NULL, introduction_txt, -1);
