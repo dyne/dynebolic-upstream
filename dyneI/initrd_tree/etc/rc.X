@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# We need to source /etc/profile for stuff like $LANG to work
+source /etc/profile
+
 echo "[*] starting X graphical interface, please standby.."
 echo
 echo

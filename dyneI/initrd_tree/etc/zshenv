@@ -20,6 +20,7 @@ function c_ssh_knownhosts {
 }
 
 # normal environment
+export EDITOR="/usr/bin/edit"
 export HOME="/home"
 export HOSTNAME="dynebolic"
 export HOSTTYPE="i586"
@@ -29,6 +30,7 @@ export LOGNAME="root"
 export MACHTYPE="i586-pc-linux-gnu"
 export MANPATH="/usr/share/man:/usr/X11R6/man"
 export OSTYPE="linux-gnu"
+export PAGER="/usr/bin/less"
 export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/home/bin"
 export PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'
 export RPROMPT='%T'

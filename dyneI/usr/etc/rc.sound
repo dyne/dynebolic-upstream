@@ -9,6 +9,6 @@ if [ ! -z "$ISALSA" ]; then
   modprobe -k snd-mixer-oss
 fi
 
-echo " . Initializing starting volumes"
+echo " . Initializing sound levels"
 if [ -e /dev/mixer ]; then aumix -v 80 -w 80 -i 80 ; fi
 

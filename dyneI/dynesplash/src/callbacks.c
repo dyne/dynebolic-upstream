@@ -40,8 +40,8 @@ on_order_button                        (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("mercuzio","mercuzio","http://dynebolic.org/order",NULL);
-    perror("can't open online order page");
+    execlp("phoenix","phoenix","https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=jaromil@dyne.org&item_name=donation%20for%20dyne:bolic%20development&item_number=dyne:bolic&no_shipping=value1&no_note=1&currency_code=EUR&tax=0",NULL);
+    perror("can't open online donation page");
     _exit(1);
   }
 }
@@ -77,7 +77,7 @@ on_conf_net_released                   (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("netconfig","netconfig",NULL);
+    execlp("nettante","nettante",NULL);
     perror("can't launch network configurator");
     _exit(1);
   }
@@ -114,144 +114,18 @@ on_conf_print_released                 (GtkButton       *button,
 }
 
 void
-on_conf_save_released                 (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  /*
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("printconfig","printconfig",NULL);
-    perror("can't launch printer configurator");
-    _exit(1);
-  }
-  */
-  GtkWidget *popup = create_notimplemented();
-  gtk_widget_show(popup);
-}
-
-void
-on_conf_manual_released                (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  /*
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("links","-g","/usr/share/dynebolic/manual/index.html",NULL);
-    perror("can't launch manual browser");
-    _exit(1);
-  }
-  */
-  GtkWidget *popup = create_notimplemented();
-  gtk_widget_show(popup);
-
-}
-
-
-void
-on_jaromil_released                    (GtkButton       *button,
-                                        gpointer         user_data)
-{
-
-}
-
-
-void
-on_bomboclat_released                  (GtkButton       *button,
-                                        gpointer         user_data)
-{
-
-}
-
-
-void
-on_c1cc10_released                     (GtkButton       *button,
-                                        gpointer         user_data)
-{
-
-}
-
-
-void
 on_autoproduzioni_released             (GtkButton       *button,
                                         gpointer         user_data)
 {
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("mercuzio","mercuzio","http://dyne.org",NULL);
+    execlp("links","links","http://dyne.org",NULL);
     perror("can't open dyne.org page");
     _exit(1);
   }
 }
 
-
-gboolean
-on_jaropix_button_release_event        (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("mercuzio","mercuzio","http://korova.dyne.org",NULL);
-    perror("can't load jaromil's page");
-    _exit(1);
-  }
-
-  return FALSE;
-}
-
-
-gboolean
-on_bombopix_button_release_event       (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
-
-gboolean
-on_cicciopix_button_release_event      (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
-
-gboolean
-on_logo_tenovis_button_release_event   (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
-
-gboolean
-on_logo_pvl_button_release_event       (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
-
-
-gboolean
-on_pixmap8_button_release_event        (GtkWidget       *widget,
-                                        GdkEventButton  *event,
-                                        gpointer         user_data)
-{
-
-  return FALSE;
-}
 
 
 void
@@ -275,5 +149,35 @@ on_iknow_released                      (GtkButton       *button,
                                         gpointer         user_data)
 {
   gtk_widget_destroy(user_data);
+}
+
+
+void
+on_conf_nest_released                  (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("taschino","taschino",NULL);
+    perror("can't launch taschino: nest configurator");
+    _exit(1);
+  }
+
+}
+
+
+void
+on_conf_screen_released                (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("xf86cfg","xf86cfg",NULL);
+    perror("can't launch xf86cfg");
+    _exit(1);
+  }
+
 }
 

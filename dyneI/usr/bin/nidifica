@@ -28,7 +28,14 @@
 
 # include necessary library
 # dyne_mount_nest is used to mount the nest once is created
-source /lib/libdyne.sh
+
+
+
+if [ -e /lib/libdyne.sh ]; then
+    source /lib/libdyne.sh
+else
+    source ../../initrd_tree/lib/libdyne.sh
+fi
 
 VERSION=0.1 
 SUCCESS="/var/log/setup/nidifica.success"
@@ -110,9 +117,9 @@ if [ $FATAL == 1 ]; then
 fi
 
 case "$MODE" in 
-  
-  hd)
-    echo "--- harddisk nesting" | tee -a $LOG
+    
+  hd|usb)
+    echo "--- $MODE nesting" | tee -a $LOG
     sleep 1
 
     if [ -z $SIZE ]; then
@@ -207,12 +214,21 @@ EOF
     tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
     echo -n "home, "
     cp -a /etc /mnt/nest
-    echo "etc"
+    echo -n "etc, "
+    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
+    echo -n "var, "
+    mkdir /mnt/nest/tmp
+    chmod a+rwt /mnt/nest/tmp
+    echo "tmp"
+
+    sync
     umount /mnt/nest
 
     echo "[*] done!" | tee -a $LOG
     sleep 1
     losetup -d /dev/loop6
+
+    sync
 
     dyne_mount_nest "$LOCATION/$DYNEBOL_CFG"
 
@@ -230,9 +246,6 @@ EOF
     ;;
 
 
-  usb)
-    echo "[*] usb key nesting"
-    ;;
   fd)
     echo "[*] floppy nesting"
     ;;

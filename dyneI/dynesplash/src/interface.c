@@ -38,20 +38,20 @@ create_window1 (void)
   GtkWidget *pixmap2;
   GtkWidget *config;
   GtkWidget *vbuttonbox1;
-  GtkWidget *button6;
-  GtkWidget *button5;
-  GtkWidget *button4;
-  GtkWidget *button3;
-  GtkWidget *button2;
+  GtkWidget *conf_nest;
+  GtkWidget *conf_lang;
+  GtkWidget *conf_net;
+  GtkWidget *conf_modem;
+  GtkWidget *conf_print;
+  GtkWidget *conf_screen;
   GtkWidget *getstart;
   GtkWidget *hbox2;
   GtkWidget *why_support;
   GtkWidget *frame6;
-  GtkWidget *vbox3;
-  GtkWidget *vbox6;
-  GtkWidget *cdrom_desc;
-  GtkWidget *cdrom;
-  GtkWidget *order_button;
+  GtkWidget *vbox12;
+  GtkWidget *label_donate;
+  GtkWidget *pixmap5;
+  GtkWidget *button_donate;
   GtkWidget *support;
   GtkWidget *vbox4;
   GtkWidget *hbox3;
@@ -76,6 +76,7 @@ create_window1 (void)
 
   window1 = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_object_set_data (GTK_OBJECT (window1), "window1", window1);
+  gtk_widget_set_usize (window1, 550, -2);
   gtk_window_set_title (GTK_WINDOW (window1), _(" dyne:bolic GNU/Linux - 100% free software"));
   gtk_window_set_position (GTK_WINDOW (window1), GTK_WIN_POS_CENTER);
   gtk_window_set_policy (GTK_WINDOW (window1), FALSE, FALSE, FALSE);
@@ -148,7 +149,7 @@ create_window1 (void)
   gtk_container_set_border_width (GTK_CONTAINER (pressmouse), 1);
   gtk_button_set_relief (GTK_BUTTON (pressmouse), GTK_RELIEF_NONE);
 
-  welcome = gtk_label_new (_(" Welcome to the hacktive media! "));
+  welcome = gtk_label_new (_("  Welcome to the hacktive media!  "));
   gtk_widget_ref (welcome);
   gtk_object_set_data_full (GTK_OBJECT (window1), "welcome", welcome,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -171,7 +172,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox1), text1, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (text1, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (text1), NULL, NULL, NULL,
-                   _("Dyne:bolic is a preconfigured GNU/Linux system which runs without\ninstalling anything on you harddisks, alltough you can see your\npartitions automatically mounted in the /vol directory.\n\nYour /home directory resides in your RAM memory and everything\nnew contained in it will not be there at the next boot.\n\nA samba filesharing daemon is running: everything contained in your\n/home/shared directory is made accessible (read and write) on the\nnetwork without any password.\n\nThe graphical environment is XFree86 with WindowMaker, the\ninterface follows the OpenStep paradigm to build the way interaction\ndistincts d:b from other common graphical environments.\nFor instance you have multiple desktops that you can also switch\nusing the key combination ALT+2 and other numbers.\n\nOn the bottom-right of the desktop you have leds and statistics\nabout your system usage and status, if you are online you'll see eth0\n(DHCP is detected at boot) otherwise you can configure your\nnetwork and other things from the buttons here -------------->"), -1);
+                   _("Dyne:bolic is a preconfigured GNU/Linux system which runs without\ninstalling anything on you harddisks, alltough you can see your\npartitions automatically mounted in the /vol directory.\n\nYour /home directory resides in your RAM memory and everything\nnew contained in it will not be there at the next boot, unless you\nmake a dyne:bolic NEST (no need for repartitioning, see the manual) \n\nA samba filesharing daemon is running: everything contained in your\n/home/shared directory is made accessible (read and write) on the\nnetwork without any password.\n\nThe graphical environment is XFree86 with WindowMaker, the\ninterface follows the OpenStep paradigm to build the way interaction\ndistincts d:b from other common graphical environments.\nFor instance you have multiple desktops that you can also switch\nusing the key combination ALT+2 and other numbers.\n\nOn the bottom-right of the desktop you have leds and statistics\nabout your system usage and status, if you are online you'll see eth0\n(DHCP is detected at boot) otherwise you can configure your\nnetwork and other things from the buttons here -------------->"), -1);
 
   vbox2 = gtk_vbox_new (FALSE, 0);
   gtk_widget_ref (vbox2);
@@ -213,52 +214,61 @@ create_window1 (void)
   gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
   gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 85, 26);
 
-  button6 = gtk_button_new_with_label (_("Nest dyne:bolic"));
-  gtk_widget_ref (button6);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button6", button6,
+  conf_nest = gtk_button_new_with_label (_("Nest dyne:bolic"));
+  gtk_widget_ref (conf_nest);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_nest", conf_nest,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button6);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), button6);
-  GTK_WIDGET_SET_FLAGS (button6, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, button6, _("Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot"), NULL);
+  gtk_widget_show (conf_nest);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_nest);
+  GTK_WIDGET_SET_FLAGS (conf_nest, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_nest, _("Create a nest on harddisk, usbkey or floppy where your home and all your settings will be saved and found at the next boot"), NULL);
 
-  button5 = gtk_button_new_with_label (_("Language"));
-  gtk_widget_ref (button5);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button5", button5,
+  conf_lang = gtk_button_new_with_label (_("Language"));
+  gtk_widget_ref (conf_lang);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_lang", conf_lang,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button5);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), button5);
-  GTK_WIDGET_SET_FLAGS (button5, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, button5, _("Change the language and keyboard layout, all the applications supporting your language will switch to it"), NULL);
+  gtk_widget_show (conf_lang);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_lang);
+  GTK_WIDGET_SET_FLAGS (conf_lang, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_lang, _("Change the language and keyboard layout, all the applications supporting your language will switch to it"), NULL);
 
-  button4 = gtk_button_new_with_label (_("Network"));
-  gtk_widget_ref (button4);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button4", button4,
+  conf_net = gtk_button_new_with_label (_("Network"));
+  gtk_widget_ref (conf_net);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_net", conf_net,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button4);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), button4);
-  GTK_WIDGET_SET_FLAGS (button4, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, button4, _("Configure your network interface (via DHCP or static IP address)"), NULL);
+  gtk_widget_show (conf_net);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_net);
+  GTK_WIDGET_SET_FLAGS (conf_net, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_net, _("Configure your network interface (via DHCP or static IP address)"), NULL);
 
-  button3 = gtk_button_new_with_label (_("Modem"));
-  gtk_widget_ref (button3);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button3", button3,
+  conf_modem = gtk_button_new_with_label (_("Modem"));
+  gtk_widget_ref (conf_modem);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_modem", conf_modem,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button3);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), button3);
-  GTK_WIDGET_SET_FLAGS (button3, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, button3, _("Configure your modem to dialup your account"), NULL);
+  gtk_widget_show (conf_modem);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_modem);
+  GTK_WIDGET_SET_FLAGS (conf_modem, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_modem, _("Configure your modem to dialup your account"), NULL);
 
-  button2 = gtk_button_new_with_label (_("Printer"));
-  gtk_widget_ref (button2);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "button2", button2,
+  conf_print = gtk_button_new_with_label (_("Printer"));
+  gtk_widget_ref (conf_print);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_print", conf_print,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button2);
-  gtk_container_add (GTK_CONTAINER (vbuttonbox1), button2);
-  GTK_WIDGET_SET_FLAGS (button2, GTK_CAN_DEFAULT);
-  gtk_tooltips_set_tip (tooltips, button2, _("Configure your printer and share it on the net"), NULL);
+  gtk_widget_show (conf_print);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_print);
+  GTK_WIDGET_SET_FLAGS (conf_print, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_print, _("Configure your printer and share it on the net"), NULL);
 
-  getstart = gtk_label_new (_(" Getting started "));
+  conf_screen = gtk_button_new_with_label (_("Screen"));
+  gtk_widget_ref (conf_screen);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "conf_screen", conf_screen,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (conf_screen);
+  gtk_container_add (GTK_CONTAINER (vbuttonbox1), conf_screen);
+  GTK_WIDGET_SET_FLAGS (conf_screen, GTK_CAN_DEFAULT);
+  gtk_tooltips_set_tip (tooltips, conf_screen, _("Configure your XFree86, resolution and drivers"), NULL);
+
+  getstart = gtk_label_new (_("  Getting started  "));
   gtk_widget_ref (getstart);
   gtk_object_set_data_full (GTK_OBJECT (window1), "getstart", getstart,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -281,52 +291,52 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox2), why_support, TRUE, TRUE, 0);
   GTK_WIDGET_UNSET_FLAGS (why_support, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (why_support), NULL, NULL, NULL,
-                   _("The dyne:bolic developers rely on funding from\nnon-profit, grant-making and business\norganizations willing to sustain development of\nfree software.\n\nWe can achieve the perspective of sustainability\nby offering the services of customizations,\nworkshops and setups; but also with a little help\nfrom our friends.\n\nWe rely on support from individuals like you to\npreserve, protect and promote the freedom to\nshare this distribution and software.\n\nIf you find dyne:bolic useful, please consider\nmaking a donation today.\n\nIf you order it online, please do it from\nredistributors supporting us, you'll find\na contact list of them on our website.\n\nIf you have a job, please encourage your\ncompany to become a patron of the dyne:bolic\nproject.\n\nIf you redistribute it, please give us some shares\non sells: you'll be happy to see the new versions\ncoming out.\nYou can become an Official Redistributor and get\nlisted on our webpages: there you'll find more\ninformations about it.\n\nWe hope you understand how this is important to\nto keep ongoing our ecosystem of generosity.\n\nThanks! a thousand flowers will blossom!"), -1);
+                   _("The dyne:bolic developers rely on funding from\nnon-profit, grant-making and business\norganizations willing to sustain development of\nfree and opensource software.\n\nWe rely on support from individuals like you to\npreserve, protect and promote the freedom to\nshare the software we do.\n   \nIf you find dyne:bolic useful, please make a\ndonation today.\n\nIf you have a job, please encourage your company\nto become a patron of the dyne:bolic project.\n\nIf you redistribute it, please give us some shares\non sells: you'll be happy to see the new versions\ncoming out.\n\nWe hope you understand the importance of all this\nto keep ongoing our ecosystem of generosity.\nThanks! a thousand flowers will blossom!"), -1);
 
-  frame6 = gtk_frame_new (NULL);
+  frame6 = gtk_frame_new (_("How all this can be free?"));
   gtk_widget_ref (frame6);
   gtk_object_set_data_full (GTK_OBJECT (window1), "frame6", frame6,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame6);
   gtk_box_pack_start (GTK_BOX (hbox2), frame6, FALSE, TRUE, 0);
+  gtk_frame_set_label_align (GTK_FRAME (frame6), 0.1, 0.5);
   gtk_frame_set_shadow_type (GTK_FRAME (frame6), GTK_SHADOW_IN);
 
-  vbox3 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox3);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox3", vbox3,
+  vbox12 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox12);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox12", vbox12,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox3);
-  gtk_container_add (GTK_CONTAINER (frame6), vbox3);
+  gtk_widget_show (vbox12);
+  gtk_container_add (GTK_CONTAINER (frame6), vbox12);
 
-  vbox6 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox6);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "vbox6", vbox6,
+  label_donate = gtk_label_new (_("it's easy thru paypal to donate a small amount and it can help  a lot!\njust a few coins: if all users do it works,\nTHANKS!"));
+  gtk_widget_ref (label_donate);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "label_donate", label_donate,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox6);
-  gtk_box_pack_start (GTK_BOX (vbox3), vbox6, TRUE, TRUE, 0);
+  gtk_widget_show (label_donate);
+  gtk_box_pack_start (GTK_BOX (vbox12), label_donate, TRUE, FALSE, 0);
+  gtk_widget_set_usize (label_donate, 139, -2);
+  gtk_label_set_line_wrap (GTK_LABEL (label_donate), TRUE);
+  gtk_misc_set_padding (GTK_MISC (label_donate), 5, 0);
 
-  cdrom_desc = gtk_label_new (_("The production quality printed CDROM\nmastered by our lab can be shipped ! "));
-  gtk_widget_ref (cdrom_desc);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "cdrom_desc", cdrom_desc,
+  pixmap5 = create_pixmap (window1, "donate.xpm");
+  gtk_widget_ref (pixmap5);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "pixmap5", pixmap5,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (cdrom_desc);
-  gtk_box_pack_start (GTK_BOX (vbox6), cdrom_desc, FALSE, FALSE, 0);
+  gtk_widget_show (pixmap5);
+  gtk_box_pack_start (GTK_BOX (vbox12), pixmap5, FALSE, TRUE, 0);
+  gtk_misc_set_alignment (GTK_MISC (pixmap5), 0.5, 7.45058e-09);
 
-  cdrom = create_pixmap (window1, "cdrom.xpm");
-  gtk_widget_ref (cdrom);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "cdrom", cdrom,
+  button_donate = gtk_button_new_with_label (_("OK! i give you a bit"));
+  gtk_widget_ref (button_donate);
+  gtk_object_set_data_full (GTK_OBJECT (window1), "button_donate", button_donate,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (cdrom);
-  gtk_box_pack_start (GTK_BOX (vbox6), cdrom, FALSE, FALSE, 0);
+  gtk_widget_show (button_donate);
+  gtk_box_pack_start (GTK_BOX (vbox12), button_donate, FALSE, FALSE, 0);
+  gtk_widget_set_usize (button_donate, -2, 40);
+  gtk_tooltips_set_tip (tooltips, button_donate, _("donate online with paypal, it's easy and secure!"), NULL);
 
-  order_button = gtk_button_new_with_label (_("ORDER ORIGINAL PRINTED COPIES!"));
-  gtk_widget_ref (order_button);
-  gtk_object_set_data_full (GTK_OBJECT (window1), "order_button", order_button,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (order_button);
-  gtk_box_pack_start (GTK_BOX (vbox3), order_button, TRUE, TRUE, 0);
-
-  support = gtk_label_new (_(" Support us "));
+  support = gtk_label_new (_("  Support us  "));
   gtk_widget_ref (support);
   gtk_object_set_data_full (GTK_OBJECT (window1), "support", support,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -356,7 +366,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (hbox3), frame9, FALSE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame9), 3);
 
-  label_team = gtk_label_new (_("Denis \"jaromil\" Rojo\n  HasciiCam MuSE\n  FreeJ dyne:bolic\n\nFederico \"bomboclat\" Prando\n  bolic1, dyne:bolic\n\nFrancesco \"c1cc10\" Rana\n  bolic1, dyne:bolic\n\nAlex \"smilzo\" Gnoli\n  console support\n\n...and a brave GNU world!\nfree software is made out\nof many people efforts and\na lot of LOVE!"));
+  label_team = gtk_label_new (_("Denis \"jaromil\" Rojo\n  author of dyne:bolic\n  HasciiCam MuSE FreeJ\n\nFederico \"bomboclat\" Prando\n  bolic1, dyne:bolic\n\nFrancesco \"c1cc10\" Rana\n  bolic1, dyne:bolic\n\nAlex \"smilzo\" Gnoli\n  dyne:bolic console support\n\n...and a brave GNU world!\nfree software is made out\nof many people efforts and\nLOTS of LOVE!"));
   gtk_widget_ref (label_team);
   gtk_object_set_data_full (GTK_OBJECT (window1), "label_team", label_team,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -388,7 +398,7 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), credits);
   GTK_WIDGET_UNSET_FLAGS (credits, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (credits), NULL, NULL, NULL,
-                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people also contributed to development:\n  Lo Smilzo (hack to make it work on XBOX)\n  Lobo (karma and knowledge)\n  Sandolo and Rageman (scripts and tricks)\n  Nightolo and Rubik (MuSE interface coders)\n  Maox (logo and graphics)\n  Eni and Newmark (watching horizons)\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nSUPPORT in development was given by the following\norganizazions:\n  TENOVIS (Intl) http://tenovis.com\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  MALASystem (Milano) http://malasystem.com\n  SERVUS.at (Linz) http://servus.at\n  OSSA (Intl) http://streamingalliance.org\n  Montevideo (Amsterdam) http://montevideo.nl\n  Stream on the fly (EU project)\n  JuX project (Vienna) http://netbridge.at\n  European Social Forum http://www.fse-esf.org\n  The city of Firenze\nand individuals:\n  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,\n  Markus Panholzer, Zeljko Blace and Blicero\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
+                   _("dyne:bolic 1.0 it is shaped on the needs of media activists\nto stimulate the production and not only the fruition of digital\nand analog informations.\nIt takes birth as a grassroot effort to spread free software\nand the spirit of sharing informations.\n\nThe following people also contributed to development:\n  Lobo (karma and knowledge)\n  Sandolo and Rageman (scripts and tricks)\n  Nightolo and Rubik (MuSE interface coders)\n  Maox (logo and graphics)\n  Eni and Newmark (watching horizons)\n\nHelp with online documentation was given by: Isazi, Quique,\nAli Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,\nTommaso Gagliardi, Patrice.\n\nSUPPORT in development was given by the following\norganizazions:\n  TENOVIS (Intl) http://tenovis.com\n  PUBLIC VOICE Lab (Vienna) http://pvl.at\n  MALASystem (Milano) http://malasystem.com\n  SERVUS.at (Linz) http://servus.at\n  OSSA (Intl) http://streamingalliance.org\n  Montevideo (Amsterdam) http://montevideo.nl\n  Stream on the fly (EU project)\n  JuX project (Vienna) http://netbridge.at\n  European Social Forum http://www.fse-esf.org\n  The city of Firenze\nand individuals:\n  Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,\n  Markus Panholzer, Zeljko Blace and Blicero\n\nOur waves and cheers also go to:\nNeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)\nlittlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org\nTommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,\nDindon il carbonaro, #mdp and all the hackers at dyne.org.\n\nThis CD includes the work of hundreds of people all around\nthe world developing free software and GNU/Linux applications,\nwithout the efforts of this big communities dyne:bolic would\nhave never existed, among the others are gnu.org and the\nFree Software Foundation, gentoo.org, kernel.org, xfree86.org,\nmozilla.org.\n\nYou are welcome to join us!\nthe dyne:bolic mailinglist you can reach from dynebolic.org\nthe irc channel #dynebolic on irc.autistici.org\n\nhappy hacking ;^)"), -1);
 
   sponsor = gtk_frame_new (_("DEVELOPMENT SUPPORTED BY"));
   gtk_widget_ref (sponsor);
@@ -436,7 +446,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (vbox7), logo_mala, FALSE, FALSE, 0);
   gtk_pixmap_set_build_insensitive (GTK_PIXMAP (logo_mala), FALSE);
 
-  autoproduzioni = gtk_button_new_with_label (_("dyne.org productions | http://dyne.org | mail: hackers@dyne.org | tel: +43 1 92 56 318"));
+  autoproduzioni = gtk_button_new_with_label (_("dynebolic is copyleft 2001-2003 by Denis Rojo aka jaromil @ dyne.org productions, http://dyne.org"));
   gtk_widget_ref (autoproduzioni);
   gtk_object_set_data_full (GTK_OBJECT (window1), "autoproduzioni", autoproduzioni,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -444,7 +454,7 @@ create_window1 (void)
   gtk_box_pack_start (GTK_BOX (vbox4), autoproduzioni, FALSE, FALSE, 0);
   gtk_button_set_relief (GTK_BUTTON (autoproduzioni), GTK_RELIEF_NONE);
 
-  Credits = gtk_label_new (_(" Credits "));
+  Credits = gtk_label_new (_("  Credits  "));
   gtk_widget_ref (Credits);
   gtk_object_set_data_full (GTK_OBJECT (window1), "Credits", Credits,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -459,7 +469,7 @@ create_window1 (void)
   gtk_container_add (GTK_CONTAINER (notebook1), gpl_license);
   GTK_WIDGET_UNSET_FLAGS (gpl_license, GTK_CAN_FOCUS);
   gtk_text_insert (GTK_TEXT (gpl_license), NULL, NULL, NULL,
-                   _("   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991\n\n   dyne:bolic is free software; you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation; either version 2 of the License, or (at\n   your option) any later version.\n\n   dyne:bolic is distributed in the hope that it will be useful, but\n   WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n   See the GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with dyne:bolic; if not, write to:\n   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\n   dyne:bolic is copyleft (c) 2001-2003 by Denis Rojo <jaromil@dyne.org>\n   part of the included software is copyleft by the respective authors,\n   dyne.org is available to distribute the source of the included binaries\n   upon request, all the included software can be redistributed under the\n   terms of the GNU GPL license and, in some cases, the X/BSD license."), -1);
+                   _("   GNU GENERAL PUBLIC LICENSE  Version 2, June 1991\n\n   dyne:bolic is free software; you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation; either version 2 of the License, or (at\n   your option) any later version.\n\n   dyne:bolic is distributed in the hope that it will be useful, but\n   WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n   See the GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with dyne:bolic; if not, write to:\n   Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\n   dyne:bolic is copyleft (c) 2001-2003 by Denis Rojo <jaromil@dyne.org>\n\n   part of the included software is copyleft by the respective authors,\n   dyne.org is available to distribute the source of the included binaries\n   upon request, all the included software can be redistributed under the\n   terms of the GNU GPL license and, in some cases, the X/BSD license."), -1);
 
   label8 = gtk_label_new (_(" License "));
   gtk_widget_ref (label8);
@@ -474,32 +484,23 @@ create_window1 (void)
   gtk_signal_connect (GTK_OBJECT (pressmouse), "clicked",
                       GTK_SIGNAL_FUNC (on_pressmouse_clicked),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button6), "released",
-                      GTK_SIGNAL_FUNC (on_conf_save_released),
+  gtk_signal_connect (GTK_OBJECT (conf_nest), "released",
+                      GTK_SIGNAL_FUNC (on_conf_nest_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button5), "released",
+  gtk_signal_connect (GTK_OBJECT (conf_lang), "released",
                       GTK_SIGNAL_FUNC (on_conf_lang_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button4), "released",
+  gtk_signal_connect (GTK_OBJECT (conf_net), "released",
                       GTK_SIGNAL_FUNC (on_conf_net_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button3), "released",
+  gtk_signal_connect (GTK_OBJECT (conf_modem), "released",
                       GTK_SIGNAL_FUNC (on_conf_modem_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (button2), "released",
+  gtk_signal_connect (GTK_OBJECT (conf_print), "released",
                       GTK_SIGNAL_FUNC (on_conf_print_released),
                       NULL);
-  gtk_signal_connect (GTK_OBJECT (order_button), "released",
-                      GTK_SIGNAL_FUNC (on_order_button),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (logo_tenovis), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_logo_tenovis_button_release_event),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (logo_pvl), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_logo_pvl_button_release_event),
-                      NULL);
-  gtk_signal_connect (GTK_OBJECT (logo_mala), "button_release_event",
-                      GTK_SIGNAL_FUNC (on_pixmap8_button_release_event),
+  gtk_signal_connect (GTK_OBJECT (conf_screen), "released",
+                      GTK_SIGNAL_FUNC (on_conf_screen_released),
                       NULL);
   gtk_signal_connect (GTK_OBJECT (autoproduzioni), "released",
                       GTK_SIGNAL_FUNC (on_autoproduzioni_released),

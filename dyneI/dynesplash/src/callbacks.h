@@ -98,3 +98,11 @@ on_iknow_released                      (GtkButton       *button,
 void
 on_iwait_released                      (GtkButton       *button,
                                         gpointer         user_data);
+
+void
+on_conf_nest_released                  (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_conf_screen_released                (GtkButton       *button,
+                                        gpointer         user_data);

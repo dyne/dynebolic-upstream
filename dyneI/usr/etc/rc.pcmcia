@@ -91,16 +91,16 @@ for x in "1" ; do
                 if [ "$PCIC" = "probe" ]; then # attempt to load all 
 		    cd $PC
 		    for prcd in ./*; do
-		       /usr/sbin/insmod $prcd $PCIC_OPT 1>/dev/null 2>/dev/null
+		       /sbin/insmod $prcd $PCIC_OPT 1>/dev/null 2>/dev/null
                        if [ ! $? = 0 ]; then 
-		          /usr/sbin/rmmod $prcd 1>/dev/null 2>/dev/null
+		          /sbin/rmmod $prcd 1>/dev/null 2>/dev/null
                        fi
 		    done
 		    cd -
                 else # PCIC has been selected manually
-		    /usr/sbin/insmod $PC/$PCIC.o $PCIC_OPTS
+		    /sbin/insmod $PC/$PCIC.o $PCIC_OPTS
                 fi
-		/usr/sbin/insmod $PC/ds.o
+		/sbin/insmod $PC/ds.o
 	    else
 		echo "[W] module directory $PC not found."
 		break

@@ -55,14 +55,6 @@ on_nest_selection_released             (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_toggle_pass_hd_enter                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_leave                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
 on_cancel_nest_hd_released             (GtkButton       *button,
                                         gpointer         user_data);
 
@@ -71,31 +63,11 @@ on_ok_nest_hd_released                 (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_toggle_pass_hd_enter                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_leave                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_enter                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_leave                (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_pressed              (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_toggle_pass_hd_released             (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
 on_toggle_pass_hd_toggled              (GtkToggleButton *togglebutton,
+                                        gpointer         user_data);
+
+void
+on_toggle_pass_usb_toggled              (GtkToggleButton *togglebutton,
                                         gpointer         user_data);
 
 void
@@ -103,12 +75,12 @@ on_combo_hd_partitions_activate        (GtkEditable     *editable,
                                         gpointer         user_data);
 
 void
-on_toggle_pass_hd_toggled              (GtkToggleButton *togglebutton,
+on_combo_hd_partitions_changed         (GtkEditable     *editable,
                                         gpointer         user_data);
 
 void
-on_combo_hd_partitions_changed         (GtkEditable     *editable,
-                                        gpointer         user_data);
+on_combo_usb_partitions_changed        (GtkEditable     *editable,
+					gpointer         user_data);
 
 gboolean
 on_combo_hd_partitions_button_press_event
@@ -126,8 +98,17 @@ on_combo1_realize                      (GtkWidget       *widget,
                                         gpointer         user_data);
 
 void
+on_combo_usb_realize                   (GtkWidget       *widget,
+					gpointer         user_data);
+
+void
 on_win_nest_hd_destroy                 (GtkObject       *object,
                                         gpointer         user_data);
+
+void
+on_win_nest_usb_destroy                 (GtkObject       *object,
+                                        gpointer         user_data);
+
 
 void
 on_combo_hd_partitions_changed         (GtkEditable     *editable,
@@ -135,6 +116,10 @@ on_combo_hd_partitions_changed         (GtkEditable     *editable,
 
 void
 on_ok_nest_hd_released                 (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_ok_nest_usb_released                 (GtkButton       *button,
                                         gpointer         user_data);
 
 void

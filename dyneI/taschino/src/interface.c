@@ -420,6 +420,183 @@ create_win_nest_hd (void)
 }
 
 GtkWidget*
+create_win_nest_usb (void)
+{
+  GtkWidget *win_nest_usb;
+  GtkWidget *frame_nest_usb;
+  GtkWidget *vbox_usb_3;
+  GtkWidget *hbox_usb_4;
+  GtkWidget *vbox_usb_4;
+  GtkWidget *label_usb_select;
+  GtkWidget *combo_usb_part;
+  GtkWidget *combo_usb_partitions;
+  GtkWidget *pixmap_usb_6;
+  GtkWidget *label_usb_size;
+  GtkWidget *hscale_usb_megabytes;
+  GtkWidget *hbox_usb_5;
+  GtkWidget *toggle_pass_usb;
+  GtkWidget *label_usb_4;
+  GtkWidget *hbuttonbox_usb_1;
+  GtkWidget *cancel_nest_usb;
+  GtkWidget *ok_nest_usb;
+
+  win_nest_usb = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_object_set_data (GTK_OBJECT (win_nest_usb), "win_nest_usb", win_nest_usb);
+  gtk_window_set_title (GTK_WINDOW (win_nest_usb), _("taschino :: nest on usb storage"));
+  gtk_window_set_position (GTK_WINDOW (win_nest_usb), GTK_WIN_POS_CENTER);
+  gtk_window_set_policy (GTK_WINDOW (win_nest_usb), FALSE, FALSE, FALSE);
+  gtk_window_set_wmclass (GTK_WINDOW (win_nest_usb), "taschino", "dynebolic");
+
+  frame_nest_usb = gtk_frame_new (_("Nest dyne:bolic on usb storage"));
+  gtk_widget_ref (frame_nest_usb);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "frame_nest_usb", frame_nest_usb,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame_nest_usb);
+  gtk_container_add (GTK_CONTAINER (win_nest_usb), frame_nest_usb);
+  gtk_container_set_border_width (GTK_CONTAINER (frame_nest_usb), 3);
+
+  vbox_usb_3 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_usb_3);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "vbox_usb_3", vbox_usb_3,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox_usb_3);
+  gtk_container_add (GTK_CONTAINER (frame_nest_usb), vbox_usb_3);
+
+  hbox_usb_4 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_usb_4);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "hbox_usb_4", hbox_usb_4,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_usb_4);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_3), hbox_usb_4, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_usb_4), 5);
+
+  vbox_usb_4 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_usb_4);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "vbox_usb_4", vbox_usb_4,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox_usb_4);
+  gtk_box_pack_start (GTK_BOX (hbox_usb_4), vbox_usb_4, TRUE, TRUE, 0);
+
+  label_usb_select = gtk_label_new (_("Select the usb partition where you want to create the dyne:bolic nest"));
+  gtk_widget_ref (label_usb_select);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "label_usb_select", label_usb_select,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label_usb_select);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_4), label_usb_select, FALSE, FALSE, 0);
+  gtk_label_set_justify (GTK_LABEL (label_usb_select), GTK_JUSTIFY_LEFT);
+  gtk_label_set_line_wrap (GTK_LABEL (label_usb_select), TRUE);
+  gtk_misc_set_padding (GTK_MISC (label_usb_select), 0, 15);
+
+  combo_usb_part = gtk_combo_new ();
+  gtk_widget_ref (combo_usb_part);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "combo_usb_part", combo_usb_part,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (combo_usb_part);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_4), combo_usb_part, FALSE, FALSE, 0);
+
+  combo_usb_partitions = GTK_COMBO (combo_usb_part)->entry;
+  gtk_widget_ref (combo_usb_partitions);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "combo_usb_partitions", combo_usb_partitions,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (combo_usb_partitions);
+  GTK_WIDGET_UNSET_FLAGS (combo_usb_partitions, GTK_CAN_FOCUS);
+  gtk_entry_set_editable (GTK_ENTRY (combo_usb_partitions), FALSE);
+  gtk_entry_set_text (GTK_ENTRY (combo_usb_partitions), _("no usb key found"));
+
+  pixmap_usb_6 = create_pixmap (win_nest_usb, "dongle.xpm");
+  gtk_widget_ref (pixmap_usb_6);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "pixmap_usb_6", pixmap_usb_6,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (pixmap_usb_6);
+  gtk_box_pack_start (GTK_BOX (hbox_usb_4), pixmap_usb_6, FALSE, FALSE, 0);
+
+  label_usb_size = gtk_label_new (_("How many MEGABYTES you want to occupy with your nest?"));
+  gtk_widget_ref (label_usb_size);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "label_usb_size", label_usb_size,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label_usb_size);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_3), label_usb_size, FALSE, FALSE, 0);
+  gtk_misc_set_padding (GTK_MISC (label_usb_size), 0, 4);
+
+  hscale_usb_megabytes = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (64, 64, 1500, 1, 0, 0)));
+  gtk_widget_ref (hscale_usb_megabytes);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "hscale_usb_megabytes", hscale_usb_megabytes,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hscale_usb_megabytes);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_3), hscale_usb_megabytes, FALSE, FALSE, 0);
+  gtk_scale_set_digits (GTK_SCALE (hscale_usb_megabytes), 0);
+
+  hbox_usb_5 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_usb_5);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "hbox_usb_5", hbox_usb_5,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_usb_5);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_3), hbox_usb_5, TRUE, TRUE, 0);
+
+  toggle_pass_usb = gtk_toggle_button_new_with_label (_(" secure with \n password and \n encryption "));
+  gtk_widget_ref (toggle_pass_usb);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "toggle_pass_usb", toggle_pass_usb,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (toggle_pass_usb);
+  gtk_box_pack_start (GTK_BOX (hbox_usb_5), toggle_pass_usb, FALSE, FALSE, 3);
+  gtk_container_set_border_width (GTK_CONTAINER (toggle_pass_usb), 5);
+
+  label_usb_4 = gtk_label_new (_("By securing with password you will generate an encrypted (AES128) nest and you'll be prompted for the passphrase at every boot."));
+  gtk_widget_ref (label_usb_4);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "label_usb_4", label_usb_4,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label_usb_4);
+  gtk_box_pack_start (GTK_BOX (hbox_usb_5), label_usb_4, FALSE, FALSE, 10);
+  gtk_label_set_justify (GTK_LABEL (label_usb_4), GTK_JUSTIFY_LEFT);
+  gtk_label_set_line_wrap (GTK_LABEL (label_usb_4), TRUE);
+
+  hbuttonbox_usb_1 = gtk_hbutton_box_new ();
+  gtk_widget_ref (hbuttonbox_usb_1);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "hbuttonbox_usb_1", hbuttonbox_usb_1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbuttonbox_usb_1);
+  gtk_box_pack_start (GTK_BOX (vbox_usb_3), hbuttonbox_usb_1, TRUE, TRUE, 0);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox_usb_1), GTK_BUTTONBOX_SPREAD);
+
+  cancel_nest_usb = gtk_button_new_with_label (_("Abort"));
+  gtk_widget_ref (cancel_nest_usb);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "cancel_nest_usb", cancel_nest_usb,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (cancel_nest_usb);
+  gtk_container_add (GTK_CONTAINER (hbuttonbox_usb_1), cancel_nest_usb);
+  GTK_WIDGET_SET_FLAGS (cancel_nest_usb, GTK_CAN_DEFAULT);
+
+  ok_nest_usb = gtk_button_new_with_label (_("Ok, NEST !"));
+  gtk_widget_ref (ok_nest_usb);
+  gtk_object_set_data_full (GTK_OBJECT (win_nest_usb), "ok_nest_usb", ok_nest_usb,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (ok_nest_usb);
+  gtk_container_add (GTK_CONTAINER (hbuttonbox_usb_1), ok_nest_usb);
+  GTK_WIDGET_SET_FLAGS (ok_nest_usb, GTK_CAN_DEFAULT);
+
+  gtk_signal_connect (GTK_OBJECT (win_nest_usb), "destroy",
+                      GTK_SIGNAL_FUNC (on_win_nest_usb_destroy),
+                      NULL);
+  gtk_signal_connect (GTK_OBJECT (combo_usb_part), "realize",
+                      GTK_SIGNAL_FUNC (on_combo_usb_realize),
+                      NULL);
+  gtk_signal_connect (GTK_OBJECT (combo_usb_partitions), "changed",
+                      GTK_SIGNAL_FUNC (on_combo_usb_partitions_changed),
+                      hscale_usb_megabytes);
+  gtk_signal_connect (GTK_OBJECT (toggle_pass_usb), "toggled",
+                      GTK_SIGNAL_FUNC (on_toggle_pass_usb_toggled),
+                      NULL);
+  gtk_signal_connect_object (GTK_OBJECT (cancel_nest_usb), "released",
+                             GTK_SIGNAL_FUNC (gtk_widget_destroy),
+                             GTK_OBJECT (win_nest_usb));
+  gtk_signal_connect (GTK_OBJECT (ok_nest_usb), "released",
+                      GTK_SIGNAL_FUNC (on_ok_nest_usb_released),
+                      hscale_usb_megabytes);
+
+  return win_nest_usb;
+}
+
+GtkWidget*
 create_win_success (void)
 {
   GtkWidget *win_success;
@@ -719,7 +896,7 @@ create_win_has_nest (void)
   gtk_widget_show (hbuttonbox5);
   gtk_box_pack_start (GTK_BOX (vbox8), hbuttonbox5, TRUE, TRUE, 0);
 
-  button_has_nest = gtk_button_new_with_label (_("Ok, in know!"));
+  button_has_nest = gtk_button_new_with_label (_("Ok, I know!"));
   gtk_widget_ref (button_has_nest);
   gtk_object_set_data_full (GTK_OBJECT (win_has_nest), "button_has_nest", button_has_nest,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -733,5 +910,76 @@ create_win_has_nest (void)
                              GTK_OBJECT (win_has_nest));
 
   return win_has_nest;
+}
+
+GtkWidget*
+create_notimplemented (void)
+{
+  GtkWidget *notimplemented;
+  GtkWidget *vbox_notimpl_11;
+  GtkWidget *hbox_notimpl_6;
+  GtkWidget *frame_notimpl_8;
+  GtkWidget *pixmap_notimpl_4;
+  GtkWidget *label_notimpl_10;
+  GtkWidget *iwait_notimpl;
+
+  notimplemented = gtk_window_new (GTK_WINDOW_POPUP);
+  gtk_object_set_data (GTK_OBJECT (notimplemented), "notimplemented", notimplemented);
+  gtk_container_set_border_width (GTK_CONTAINER (notimplemented), 2);
+  gtk_window_set_title (GTK_WINDOW (notimplemented), _("We are working for you!"));
+  gtk_window_set_position (GTK_WINDOW (notimplemented), GTK_WIN_POS_MOUSE);
+  gtk_window_set_policy (GTK_WINDOW (notimplemented), FALSE, FALSE, TRUE);
+
+  vbox_notimpl_11 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_notimpl_11);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "vbox_notimpl_11", vbox_notimpl_11,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox_notimpl_11);
+  gtk_container_add (GTK_CONTAINER (notimplemented), vbox_notimpl_11);
+
+  hbox_notimpl_6 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_notimpl_6);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "hbox_notimpl_6", hbox_notimpl_6,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_notimpl_6);
+  gtk_box_pack_start (GTK_BOX (vbox_notimpl_11), hbox_notimpl_6, TRUE, TRUE, 0);
+
+  frame_notimpl_8 = gtk_frame_new (NULL);
+  gtk_widget_ref (frame_notimpl_8);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "frame_notimpl_8", frame_notimpl_8,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame_notimpl_8);
+  gtk_box_pack_start (GTK_BOX (hbox_notimpl_6), frame_notimpl_8, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame_notimpl_8), 10);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame_notimpl_8), GTK_SHADOW_NONE);
+
+  pixmap_notimpl_4 = create_pixmap (notimplemented, "unimplemented.xpm");
+  gtk_widget_ref (pixmap_notimpl_4);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "pixmap_notimpl_4", pixmap_notimpl_4,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (pixmap_notimpl_4);
+  gtk_container_add (GTK_CONTAINER (frame_notimpl_8), pixmap_notimpl_4);
+
+  label_notimpl_10 = gtk_label_new (_("This function is not\nyet implemented.\nPlease be patient\nwhile we are working\non it and keep an eye\non the next releases\nof dyne:bolic !"));
+  gtk_widget_ref (label_notimpl_10);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "label_notimpl_10", label_notimpl_10,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label_notimpl_10);
+  gtk_box_pack_start (GTK_BOX (hbox_notimpl_6), label_notimpl_10, FALSE, FALSE, 0);
+  gtk_label_set_justify (GTK_LABEL (label_notimpl_10), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_padding (GTK_MISC (label_notimpl_10), 15, 0);
+
+  iwait_notimpl = gtk_button_new_with_label (_("OK! keep up the good work!"));
+  gtk_widget_ref (iwait_notimpl);
+  gtk_object_set_data_full (GTK_OBJECT (notimplemented), "iwait_notimpl", iwait_notimpl,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (iwait_notimpl);
+  gtk_box_pack_start (GTK_BOX (vbox_notimpl_11), iwait_notimpl, FALSE, FALSE, 2);
+
+  gtk_signal_connect_object (GTK_OBJECT (iwait_notimpl), "released",
+                             GTK_SIGNAL_FUNC (gtk_widget_destroy),
+                             GTK_OBJECT (notimplemented));
+
+  return notimplemented;
 }
 

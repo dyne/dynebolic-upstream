@@ -1,7 +1,5 @@
 #!/bin/sh
-# Boliconf
 #
-# Written by:
 # Denis Rojo aka jaromil <jaromil@dyne.org>
 #
 # This source code is free software; you can redistribute it and/or
@@ -20,29 +18,8 @@
 
 # if there are some mouse stuff, it runs gpm adequately
 
-if [ -r /dev/psaux ]; then
-  echo "[*] PS/2 mouse detected"
-  /usr/bin/gpm -R msc -m /dev/psaux -t ps2
-elif [ -r /dev/ttyS0 ]; then
-  echo "[*] Serial mouse on ttyS0 (COM:0)"
-  /usr/bin/gpm -R msc -m /dev/ttyS0 -t bare
-fi
+echo "[*] loading mouse support (PS2, USB and serial)"
+modprobe -k hid
+modprobe -k mousedev
 
-if [ "`lspci|grep USB`" ]; then
-  echo "[*] detecting usb mouse"
-  modprobe -k hid 1>/dev/null 2>/dev/null
-  modprobe -k mousedev 1>/dev/null 2>/dev/null
-  modprobe -k usbmouse 1>/dev/null 2>/dev/null
-  if [ -r /dev/input/mice ]; then
-    /usr/bin/gpm -R msc -m /dev/input/mice -t ps2
-  fi
-fi
-
-if ! [ -r /dev/gpmdata ]; then
-  echo "[!] Failed to detect mouse"
-  echo "[!] you need either a PS/2 mouse or a serial mouse,"
-  echo "[!] if you have a serial mouse you must connect it"
-  echo "[!] to the first serial controller (COM:0 or ttyS0)"
-  sleep 5
-fi
 

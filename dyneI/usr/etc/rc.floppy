@@ -8,7 +8,8 @@ source /lib/libdyne.sh
 echo "[*] Activate floppy drives"
 
 if ! [ -z "`dmesg |grep fd0`" ]; then
-    dyne_add_volume floppy fd0
+    echo "floppy -fstype=auto :/dev/fd0" >> /etc/auto.removable
+    dyne_add_volume floppy floppy
 fi
 
 

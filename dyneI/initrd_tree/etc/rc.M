@@ -116,11 +116,11 @@ if test -x /usr/sbin/pcimodules; then
     
 # detect and mount swap partitions
     /usr/etc/rc.swap
-    
+   
+    sync
+
 # configure mouse
-# we don't use anymore gpm
-# both serial and ps2 mices are supported from X
-#/usr/etc/rc.mouse
+    /usr/etc/rc.mouse
     
     sync
     

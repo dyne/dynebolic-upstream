@@ -84,31 +84,54 @@ EOF
   sync
   
   if [ -e /mnt/nest/etc ]; then
-    cp /etc/fstab /tmp
-    cp /etc/auto.removable /tmp
+    cp /etc/fstab /boot
+    cp /etc/auto.removable /boot
     # qui c'e' un problema concettuale dice lo smilzo :)
     # in effetti si monta bindata una etc sopra l'altra
     # ma il mount in questo modo non puo' aggiornare correttamente mtab
-    # siamo in cerca di soluzioni
-    # quantomeno allo shutdown si dovranno smontare a mano le dir del nest
+    # quindi ecco la soluzione (jrml 21 jul 03)
+    cp /etc/mtab /boot
+    echo "/mnt/nest/etc /etc none rw,bind 0 0" >> /boot/mtab
+ 
     mount -o bind /mnt/nest/etc /etc
-    mv /tmp/fstab /etc
-    mv /tmp/auto.removable /etc
+    mv /boot/fstab /etc
+    mv /boot/auto.removable /etc
+    mv /boot/mtab /etc 
     echo " .  nested /etc directory bind"
   else
     echo "[!] nest is missing /etc directory"
+    echo " .  fix nest by populating etc"
+    cp -a /etc /mnt/nest
+    mount -o bind /mnt/nest/etc /etc
   fi 
 
   sync
 
-  if [ ! -z "`mount | grep home`" ]; then
-      umount /home; fi
-  if [ -e /mnt/nest/home ]; then
-    mount -o bind /mnt/nest/home /home
-    echo " .  nested /home directory bind"
-  else
+#  if [ ! -z "`mount | grep home`" ]; then
+#      umount /home; fi
+  if [ ! -e /mnt/nest/home ]; then
     echo "[!] nest is missing /home directory"
+    echo " .  fix nest by populating home"
+    tar xfz /mnt/dynebolic/home.tgz -C /mnt/nest
   fi
+  mount -o bind /mnt/nest/home /home
+  echo " .  nested /home directory bind"
+
+  if [ ! -e /mnt/nest/var ]; then
+    echo "[!] nest is missing /var directory"
+    echo " .  fix nest by populating var"
+    tar xfz /mnt/dynebolic/var.tgz -C /mnt/nest
+  fi 
+  mount -o bind /mnt/nest/var /var
+  echo " .  nested /var directory bind"
+
+  if [ ! -e /mnt/nest/tmp ]; then
+    echo "[!] nest is missing /tmp directory"
+    echo " .  fix nest by creating tmp"
+    mkdir /mnt/nest/tmp
+  fi 
+  mount -o bind /mnt/nest/tmp /tmp
+  echo " .  nested /tmp directory bind"
 
   echo "$1" > /boot/nest
   echo " .  nest activated"
@@ -134,7 +157,6 @@ dyne_add_volume() {
 	  echo "}" >>$WMCFG;
 	  ;;
       "floppy")
-	  echo "$2 -fstype=auto :/dev/${2}" >> /etc/auto.removable
 	  echo "," >>$WMCFG;
 	  echo "{" >> $WMCFG;
 	  echo "Name = \"${2}.FloppyDisk\";" >>$WMCFG
@@ -148,7 +170,6 @@ dyne_add_volume() {
 	  echo "}" >>$WMCFG;
 	  ;;
       "usb")
-#	  echo "$2 -fstype=auto :/dev/sda1" >> /etc/auto/removable
 	  echo "," >>$WMCFG;
 	  echo "{" >> $WMCFG;
 	  echo "Name = \"${2}.UsbStorage\";" >>$WMCFG

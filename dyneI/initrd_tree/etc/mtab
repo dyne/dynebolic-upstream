@@ -1,4 +1,2 @@
 /dev/ramdisk / ext2 rw 0 0
 proc /proc proc rw 0 0
-automount(pid15469) /vol autofs rw,fd=5,pgrp=15469,minproto=2,maxproto=3 0 0
-automount(pid15770) /vol autofs rw,fd=5,pgrp=15770,minproto=2,maxproto=3 0 0

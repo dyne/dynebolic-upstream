@@ -27,6 +27,8 @@
 # = harddisk and usb-key 
 # /home
 # /etc
+# /var
+# /tmp
 #
 # = floppy disk
 # /home/.ssh
@@ -54,9 +56,9 @@ scan_media() {
 	echo -n " .  $MOUNT -> "
 	if [ -e "$MOUNT/$DYNEBOL_CFG" ]; then
 	    echo "nest found!"
+	    sleep 1
 	    dyne_mount_nest "$MOUNT/$DYNEBOL_CFG"
 	    return $?
-#	    if [ $? == 1 ]; then break; fi
 	else
 	    echo "no nest"
 	fi

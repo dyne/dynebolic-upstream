@@ -4,7 +4,9 @@
 
 GtkWidget* create_win_select (void);
 GtkWidget* create_win_nest_hd (void);
+GtkWidget* create_win_nest_usb (void);
 GtkWidget* create_win_success (void);
 GtkWidget* create_win_not_found (void);
 GtkWidget* create_win_failure (void);
 GtkWidget* create_win_has_nest (void);
+GtkWidget* create_notimplemented (void);

@@ -1,6 +1,8 @@
 #!/bin/sh
-echo "[*] generating ssh identity key"
-ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
+if [ ! -e /home/.ssh/identity ]; then
+  echo "[*] generating ssh identity key"
+  ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""
+fi
 echo "[*] launching ssh daemon"
 sshd
 
