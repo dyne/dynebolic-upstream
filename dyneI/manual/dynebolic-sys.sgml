@@ -280,8 +280,11 @@ actual ones, see man grub)
 <screen>
 <userinput>
 
-kernel (hd0,1)/dyne/Linux root=/dev/ram0 rw load_ramdisk=1 \
+title dyne:bolic 1.x GNU/Linux - RASTASOFT
+root (hd0,1) # this is hda2, hda1 is (hd0,0) // change it 4 u
+kernel /dyne/Linux root=/dev/ram0 rw load_ramdisk=1 \
        prompt_ramdisk=0 ramdisk_start=0 vga=788 max_loop=128
+initrd /dyne/initrd.gz
 
 </userinput>
 </screen>
