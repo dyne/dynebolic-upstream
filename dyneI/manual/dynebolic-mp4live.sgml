@@ -1,0 +1,22 @@
+<section>
+<title>mp4live :: mpeg4 video rtsp streamer</title>
+<subtitle>software by David Mackie and Bill May @cisco.com (2002)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man mp4live</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       This  program is a Linux audio/video capture utility that can capture and
+       encode audio and video in real-time. The results can be written to either
+       an  mp4 file,  transmitted onto the network via either unicast or multi-
+       cast, or both simultaneously! The audio is encoded with MP3 or  AAC,  and
+       the video with MPEG-4 Simple Profile which is OpenDivx compatible.
+
+       The  program  has  a Gtk based user interface which displays a preview of
+       the encoded video and controls to adjust the settings of the functions of
+       the program. Settings are stored in ~/.mp4live_rc.
+</para>
+
+</section>

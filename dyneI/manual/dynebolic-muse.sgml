@@ -1,0 +1,30 @@
+<section>
+<title>MuSE :: the Multiple Streaming Engine</title>
+<subtitle>software by jaromil (2001)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man muse</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+ MuSE provides the free software community with a user friendly but
+ powerful tool for network audio streaming, making life easier for
+ indypendent free speech online radios.
+</para>
+<para>
+MuSE is an application for the mixing, encoding, and network streaming
+of sound: it can mix up to 6 encoded audio bitstreams (from files or
+network, mp3 or ogg) plus a souncard input signal, the resulting
+stream can be played locally on the sound card and/or encoded at
+different bitrates, recorded to harddisk and/or streamed to the
+net. When sent to a server, the resulting audio can be listened thru
+the net by a vast number of players available on different operating
+systems.
+</para>
+<para>
+To be operated MuSE offers graphical interfaces and a documented
+commandline interface in the good old unix style.
+</para>
+
+</section>

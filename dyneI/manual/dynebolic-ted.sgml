@@ -1,0 +1,76 @@
+<section>
+<title>Ted</title>
+<subtitle>Graphical RTF (Rich Text Format) editor</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink
+url="http://www.nllgg.nl/Ted/">http://www.nllgg.nl/Ted/</ulink>
+</entry>
+<!-- MAN  --> <entry> ted </entry>
+<!-- BY   --> <entry> Mark de Does </entry>
+<!-- YEAR --> <entry> 2003 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+Ted is a text processor running under X Windows on Unix/Linux systems. Ted uses
+RTF (rich text format), a document format supported by Microsoft(tm) word
+processors, and various other applications, mostly (but not exclusively) on the
+MS-Windows(tm) platform.
+</para><para>
+Ted is designed to be as compatible as possible with MS-Windows(tm)
+applications. Every document produced by Ted should, without any loss of
+formatting or information, be accepted as a legal .rtf file by MS-Word(tm).
+Compatibility the other way is more difficult to achieve, but Ted will ignore
+unsupported formatting. Ted supports font properties such as bold, italic and
+underline, in-line bitmap pictures, postscript printing, tables, and symbols. It
+can save documents in HTML format, and comes with built-in spell checking.
+</para>
+
+</section> <!-- Ted -->

@@ -1,0 +1,9 @@
+<section>
+<title>ImageMagick :: commandline image conversion</title>
+<para>
+If you are a commandline hacker then this program is definitely worth
+a look, it lets you convert on the fly between all image file formats
+and operate on them a lot of operations. Very useful in bash scripts
+to help converting a big amount of images.
+</para>
+</section>

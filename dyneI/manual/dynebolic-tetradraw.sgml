@@ -1,0 +1,71 @@
+<section>
+<title>Tetradraw</title>
+<subtitle>ANSI drawing and viewing utility</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink
+url="http://tetradraw.sourceforge.net/">http://tetradraw.sourceforge.net/</ulink
+>
+</entry>
+<!-- MAN  --> <entry> tetradraw </entry>
+<!-- BY   --> <entry> John McCutchan </entry>
+<!-- YEAR --> <entry> 2000 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+Tetradraw is a fully featured ANSI art editor for *nix operating systems. ANSI
+art is only made of the ASCII characters with 16 colours, and it is mainly used
+in text mode interfaces. Tetradraw gives you an easy access to the high
+characters like smileys, card signs and the well known single and double frame
+line characters but much more. Also the changing of foreground and background
+colors is not hard to do.
+</para>
+
+</section> <!-- Tetradraw -->

@@ -1,0 +1,79 @@
+<chapter>
+<title>Video tools</title>
+<subtitle>Video software included in dyne:bolic</subtitle>
+
+<para>
+Got the last video card or a Tv card and want to produce or enjoy a nice movie?
+Wanna become a suppacool net-artist veejaying globetrotter freak?
+Here we got something right for you! 
+</para>
+
+<para>
+Inside Dyne:bolic there is a variety of programs to let you solve various tasks for video production: play, veejay, record, edit, stream. Let's go thru a list of them!
+</para>
+
+<section>
+<title>VeeJay</title>
+
+&freej;
+
+&hasciicam;
+
+&effectv;
+
+&synaesthesia;
+
+</section>
+
+
+
+
+
+<section>
+<title>Play</title>
+
+&mplayer;
+
+&xawtv;
+
+&gmp4player;
+
+</section>
+
+
+
+<section>
+<title>Record</title>
+
+&mencoder;
+
+&nuvrec;
+
+</section>
+
+
+
+
+<section>
+<title>Edit</title>
+
+&cinelerra;
+
+</section>
+
+
+
+
+<section>
+<title>Stream</title>
+
+&mp4live;
+
+&mp4creator;
+
+&palantir;
+
+</section>
+
+
+</chapter> <!-- VIDEO -->

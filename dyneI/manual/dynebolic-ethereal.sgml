@@ -1,0 +1,41 @@
+<section>
+<title>Ethereal :: network analyzer</title>
+<para>
+Ethereal is a GUI network protocol analyzer.  It lets you
+interactively browse packet data from a live network or from a
+previously saved capture file.  Ethereal's native capture file format
+is libpcap format, which is also the format used by tcpdump and
+various other tools.
+</para>
+
+<para>
+Like other protocol analyzers, Ethereal's main window shows 3 views of
+a packet.  It shows a summary line, briefly describing what the packet
+is.  A protocol tree is shown, allowing you to drill down to exact
+protocol or field that you interested in.  Finally, a hex dump shows
+you exactly what the packet looks like when it goes over the wire.
+</para>
+
+<para>
+In addition, Ethereal has some features that make it unique.  It can
+assemble all the packets in a TCP conver- sation and show you the
+ASCII (or EBCDIC, or hex) data in that conversation.  Display filters
+in Ethereal are very powerful; more fields are filterable in Ethereal
+than in other protocol analyzers, and the syntax you can use to create
+your filters is richer.  As Ethereal progresses, expect more and more
+protocol fields to be allowed in dis- play filters.
+</para>
+
+<para>
+Packet capturing is performed with the pcap library.  The capture
+filter syntax follows the rules of the pcap library.  This syntax is
+different from the display filter syntax.
+</para>
+
+<para>
+The pathname of a capture file to be read can be specified with the -r
+option or can be specified as a command-line argument.
+</para>
+
+</section>
+

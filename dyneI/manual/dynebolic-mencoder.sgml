@@ -1,0 +1,20 @@
+<section>
+<title>mencoder :: nuv -> mpeg encoder</title>
+<subtitle>software by Arpad Gereoffy (2000-2002)</subtitle>
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man mencoder</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       mencoder  (MPlayer's  Movie Encoder) is a simple movie en-
+       coder, designed to  encode  MPlayer-playable  movies  (see
+       above)  to other MPlayer-playable formats (see below).  It
+       encodes to DivX4, XviD, one of the libavcodec  codecs  and
+       PCM/MP3/VBRMP3  audio in 1, 2 or 3 passes.  Furthermore it
+       has stream copying abilities,  a  powerful  plugin  system
+       (crop,  expand,  flip,  postprocess, rotate, scale, noise,
+       rgb/yuv conversion) and more.
+</para>
+
+</section>

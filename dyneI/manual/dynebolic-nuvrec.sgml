@@ -1,0 +1,7 @@
+<section>
+<title>nuvrec :: nuv - live video-in recorder</title>
+<subtitle>software by Roman Hochleitner (2001)</subtitle>
+<para>
+A live video-in recorder in a convenient compression format which is a good tradeoff between CPU speed and harddisk usage. Afterwards files can be compressed with <command>mencoder</command>.
+</para>
+</section>

@@ -1,0 +1,34 @@
+<section>
+<title>Gimp :: 2d image manipulation</title>
+<subtitle>software by Spencer Kimball, Peter Mattis, Manish Singh and many others</subtitle>
+
+<tip>
+<para>
+Complete documentation and manualistical is available on <ulink
+url="http://gimp.org">gimp.org</ulink> and on <ulink
+url="http://manual.gimp.org">manual.gimp.org</ulink>
+</para>
+</tip>
+
+<para>
+The GIMP is the GNU Image Manipulation Program. It is a freely
+distributed piece of software suitable for such tasks as photo
+retouching, image composition and image authoring.
+</para>
+
+<para>
+It is an extremely capable piece of software with many
+capabilities. It can be used as a simple paint program, a expert
+quality photo retouching program, an online batch processing system, a
+mass production image renderer, a image format converter, etc.
+</para>
+
+<para>
+GIMP is extremely expandedable and extensible. It is designed to be
+augmented with plugins and extensions to do just about anything. The
+advanced scripting interface allows everything from the simplest task
+to the most complex image manipulation procedures to be easily
+scripted.
+</para>
+
+</section>

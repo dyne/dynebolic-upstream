@@ -1,0 +1,76 @@
+<section>
+<title>HasciiCam</title>
+<subtitle>(h)ascii for the masses!</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://ascii.dyne.org">ascii.dyne.org</ulink> </entry>
+<!-- MAN  --> <entry> hasciicam </entry>
+<!-- BY   --> <entry> jaromil </entry>
+<!-- YEAR --> <entry> 2000 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+       hasciicam makes it possible to have live asciivideo on the
+       web. It takes video from a capture device (like  tv  cards
+       or  quickcams)  and  renders it into ascii, formatting the
+       output into an html page with a refresh tag or in  a  live
+       ascii  window or in a simple text file as well, giving the
+       possiblity to publish on the web a  live  asciivideo  feed
+       browsable without any need for browser's plugins.
+</para><para>
+       hasciicam grabs frames using Video4Linux api, renders them
+       into ascii using AA-lib engine and is capable of  armoring
+       them  with auto-refreshing HTML code. It's being used also
+       jpeglib for optionally refresh a small jpeg image, so that
+       it can work also as a simple webcam (or showing both, jpeg
+       and asciivideo).
+</para>
+
+</section> <!-- HasciiCam -->

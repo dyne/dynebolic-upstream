@@ -1,0 +1,69 @@
+<section>
+<title>Bluefish</title>
+<subtitle>A graphical HTML editor</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink
+url="http://bluefish.openoffice.nl/">http://bluefish.openoffice.nl/</ulink>
+</entry>
+<!-- MAN  --> <entry> bluefish </entry>
+<!-- BY   --> <entry> Olivier Sessink, Chris Mazuc, Neil Millar and Hylke van
+der Schaaf with help from a few others </entry>
+<!-- YEAR --> <entry> 2003 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+        Bluefish is a powerful editor for experienced web designers and
+programmers (provides a What You See Is What You Need interface). Bluefish
+supports many programming and markup languages, but it focuses on editing
+dynamic and interactive websites.
+</para>
+
+</section> <!-- Bluefish -->

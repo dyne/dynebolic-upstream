@@ -1,0 +1,219 @@
+
+<chapter>
+<title>dyne:bolic the hacktive media</title>
+
+<para>
+dyne:bolic GNU/Linux is a live bootable distribution working directly
+from the CD without the need to install or change anything on
+harddisk. It can recognize most of your hardware devices and offers a
+vast range of softwares for sound and video production, streaming, 3d
+modeling, peer to peer and filesharing, deejaying and veejaying,
+games, a world navigator with detailed maps and factbooks and much
+more ;)
+</para>
+
+<para>
+Surf, stream and broadcast both sound and video; record, edit, encode
+and stream, all just in one CD you have simply to boot.
+</para>
+
+<para>
+dyne:bolic 1.0 it is shaped on the needs of media activists
+to stimulate the production and not only the fruition of digital
+and analog informations.
+It takes birth as a grassroot effort to spread free software
+and the spirit of sharing informations.
+</para>
+
+<para>
+This manual will go thru all the tasks and possibilities offered by
+dyne:bolic, listing the distributed applications and their functions.
+</para>
+
+<para>
+You can get in contact with the community of users and developers thru
+the discussion mailinglist <email>dynebolic@dyne.org</email> which you
+can subscribe easily from the homepage <ulink
+url="http://dynebolic.org">dynebolic.org</ulink> or peeking into the
+<emphasis>irc.autistici.org #dynebolic</emphasis> chat channel.
+</para>
+
+
+<section>
+<title>How to read this manual</title>
+
+<para>
+In this manual you will find several sections describing every single
+application included inside the dyne:bolic distribution; together with
+a description you'll find a small table giving you short informations
+about the origins of each software and where to go to know more about
+it. The table is structured in this way:
+</para>
+
+
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://ascii.dyne.org">ascii.dyne.org</ulink> </entry>
+<!-- MAN  --> <entry> hasciicam </entry>
+<!-- BY   --> <entry> jaromil </entry>
+<!-- YEAR --> <entry> 2000 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+
+
+<para>
+The homepage is of course a link which leads to useful information
+about the usage, features, bugs etc.  If you are frequently using a
+particular application, its always a good practice to subscribe to its
+user mailinglist: there you can discover more about its development
+and realize if any bugs that you encounter have been allready
+addressed by developers. You can also get back to the dyne:bolic
+mailinglist with suggestions on how to have a better inclusion of the
+software in our distribution.
+</para>
+
+<para>
+The manpage is the name of the manual page describing usage of the
+program, you can use it with the <emphasis>man</emphasis> command from
+an <emphasis>XTERM</emphasis> inside dyne:bolic :
+<screen>
+<prompt>[d:b] ~ # </prompt><userinput>man hasciicam</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation>
+</screen>
+it will show an higly informative text about the usage of the program;
+the manpage name usually matches the name of the program executable
+itself.
+</para>
+
+<para>
+The author and year fields are documenting about author's identity and
+the year in which software have started; it is often the case in which
+older softwares are more reliable and developed.
+</para>
+
+</section>
+
+<section>
+<title>The authors of dyne:bolic</title>
+<para>Denis "jaromil" Rojo - <ulink url="http://korova.dyne.org">korova.dyne.org</ulink></para>
+<para>Federico "bomboclat" Prando - <ulink url="http://www.autistici.org/loa/bomboclat">autistici.org/loa/bomboclat</ulink></para>
+<para>Francesco "c1cc10" Rana - <ulink url="http://www.autistici.org/loa/c1cc10">autistici.org/loa/c1cc10</ulink></para>
+
+<para>
+The following people also contributed to development: Lo Smilzo (hack
+to make it work on XBOX), Lobo (karma and knowledge), Sandolo and
+Rageman (scripts and tricks), Nightolo and Rubik (MuSE interface
+coders), Maox (logo and graphics), Eni and Newmark (watching
+horizons).
+</para>
+
+<para>
+Help with online documentation was given by: Isazi, Quique,
+Ali Uelke, Thomas Hassan, Ricardo Perry, Marco Herrn,
+Tommaso Gagliardi, Patrice.
+</para>
+
+<para>
+Support for development was given by the following
+organizazions:
+TENOVIS (Intl) http://tenovis.com
+PUBLIC VOICE Lab (Vienna) http://pvl.at
+MALASystem (Milano) http://malasystem.com 
+SERVUS.at (Linz) http://servus.at
+OSSA (Intl) http://streamingalliance.org
+Montevideo (Amsterdam) http://montevideo.nl
+Stream on the fly (EU project)
+JuX project (Vienna) http://netbridge.at
+European Social Forum http://www.fse-esf.org
+The city of Firenze
+and individuals:
+Stefano Chiccarelli, Roland Alton-Scheidl, Adam Hyde,
+Markus Panholzer, Zeljko Blace and Blicero
+</para>
+
+<para>
+Waves and cheers also go to:
+NeURo, Neural.it, cjm di enemy.org, Luca Lampo per la camicia :)
+littlejohn, Odo grand visir di mufhd0, kobaiashi di sikurezza.org
+Tommaso aka m_0, Dolce, chmod, radio Ondarossa, enuzzo, void,
+Dindon il carbonaro, #mdp and all the hackers at dyne.org.
+</para>
+
+<para>
+dyne:bolic GNU/Linux includes the work of hundreds of people all
+around the world developing free software and GNU/Linux applications
+without the efforts of this big communities dyne:bolic would have
+never existed, among the others are gnu.org and the Free Software
+Foundation, gentoo.org, kernel.org, xfree86.org, mozilla.org ...
+</para>
+
+
+</section>
+
+<section>
+<title>License and disclaimer</title>
+<para>
+dyne:bolic is Copyright (C) 2001-2003 Denis Rojo aka jaromil
+</para>
+<para>
+Dyne:bolic is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+</para>
+</section>
+
+</chapter>

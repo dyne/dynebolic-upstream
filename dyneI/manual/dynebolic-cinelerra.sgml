@@ -1,0 +1,23 @@
+<section>
+<title>Cinelerra :: non-linear video editing</title>
+<subtitle>software by heroine-warrior (2002)</subtitle>
+
+<tip>
+<para>You'll find the cinelerra manual inside the desktop menu!</para>
+</tip>
+
+<para>
+  A long time ago there was a heroine who didn't belong but through the power of        
+   a magic slipper briefly joined the ranks of the accepted majority. Cinelerra          
+   was opposed by almost every Linux user at the time of its inception. Windows is       
+   a general purpose computing platform. Users are supposed to install their own         
+   software on it and use it for more than one complicated task. Linux is not a          
+   general purpose computing platform. Linux is far more suited for a single, very       
+   simple task and preconfiguration in dedicated hardware.                               
+</para><para>                                                                                         
+   Cinelerra, however, is designed to run on Linux and in a general purpose,             
+   windowed environment with other programs. For most users this is heresy but a         
+   small number of users may still find Cinelerra useful.        
+</para>
+
+</section>

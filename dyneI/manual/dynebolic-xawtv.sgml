@@ -1,0 +1,31 @@
+<section>
+<title>xawtv :: television viewer</title>
+<subtitle>software by Gerd Knorr (1997)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man xawtv</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       xawtv  is a X11 application for watching TV with your unix
+       box. It uses the Athena widgets.
+</para>
+
+<para>
+       Just start xawtv.  Then verify the settings in the options
+       menu (right mouse button)  and  adjust  the  settings  (TV
+       norm, Video source, freqency table).  With the cursor keys
+       you can control the tuner and look for TV Stations.  Other
+       useful hotkeys are listed below.
+</para><para>
+       The  hotkey 'E' will show the channel editor where you can
+       create/edit entries your TV  stations.   Don't  forget  to
+       click on "save" to write a config file.  You can also cre-
+       ate/edit  a  config  file  with  any  text   editor,   see
+       xawtvrc(5)  for  a  description of the config file syntax.
+       There are a number of config options which can only be set
+       by editing the config file.
+</para>
+
+</section>

@@ -1,0 +1,70 @@
+<section>
+<title>AbiWord</title>
+<subtitle>WYSIWYG word processor</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.abisource.com/">http://www.abisource.com</ulink>
+</entry>
+<!-- MAN  --> <entry> abiword </entry>
+<!-- BY   --> <entry> SourceGear Corporation and other contributors. </entry>
+<!-- YEAR --> <entry> 2003 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+       AbiWord is a free word processing program similar to Microsoft® 
+       Word. It is suitable for typing papers, letters, reports, memos, 
+       and so forth. 
+</para><para>
+       This program includes support for reading Microsoft Word files,
+       RTF files, and many other foreign file formats. Natively, it uses a
+       custom XML-based file format.
+</para>
+
+</section> <!-- AbiWord -->

@@ -1,0 +1,9 @@
+<section>
+<title>RIP :: simple commandline audio cd ripper</title>
+<para>
+Rip is a shell script facilitating the task of ripping and encoding
+audio tracks from a CD, it also supports the freeCDDB database for
+file naming. For ripping it uses cdparanoia while for encoding it
+supports both mp3 and ogg formats.
+</para>
+</section>

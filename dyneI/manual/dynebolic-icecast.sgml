@@ -1,0 +1,9 @@
+<section>
+<title>Icecast :: streaming server</title>
+<subtitle>software by Jack Moffit and others (2001)</subtitle>
+<para>
+This is the broadcasting server to stream mp3 that can be then
+listened from the machine where you are running dyne:bolic thru the
+net by other listeners. It is the server MuSE is connecting to.
+</para>
+</section>

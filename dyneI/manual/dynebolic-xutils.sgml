@@ -1,0 +1,18 @@
+<chapter>
+<title>Utilities</title>
+<subtitle>utilities and resources included in dyne:bolic</subtitle>
+
+<para>
+Have a look at the world atlas and navigator xrmap also including the
+2002 CIA factbook and national hymns in midi!
+</para>
+
+&xrmap;
+&ical;
+&xman;
+&xcalc;
+&xfontsel;
+&xvidtune;
+&xclock;
+
+</chapter>

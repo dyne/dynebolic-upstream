@@ -1,0 +1,20 @@
+<section>
+<title>MADplay :: commandline mp3 player</title>
+<subtitle>software by Robert Leslie (2000)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man madplay</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       madplay  is a command-line MPEG audio decoder and player based on the MAD
+       library (libmad).
+</para><para>
+       MAD is a high-quality MPEG audio decoder. It  currently  supports  MPEG-1
+       and  the  MPEG-2  extension to Lower Sampling Frequencies, as well as the
+       so-called MPEG 2.5 format. All three audio layers (Layer I, Layer II, and
+       Layer III a.k.a. MP3) are fully implemented.
+</para>
+
+</section>

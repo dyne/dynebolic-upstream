@@ -1,0 +1,6 @@
+<section>
+<title>PD + GEM :: pd + opengl video engine</title>
+<para>
+This option will start PD running with the installed extension GEM for 3d opengl video.
+</para>
+</section>

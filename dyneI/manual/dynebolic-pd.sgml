@@ -1,0 +1,23 @@
+<section>
+<title>PD :: pure data signal processing</title>
+
+
+
+<para>
+An extremely advanced program for digital signal processing featuring
+the possibility to develop your own patches, has a lot of interfaces
+and you can find a whole community working with it on <ulink
+url="http://pure-data.org">pure-data.org</ulink>.
+</para>
+
+<para>
+       Pd  is  a  graphical programming environment for real-time
+       audio synthesis and related  applications.   It  sports  a
+       rich set of real-time control and I/O features.
+</para>
+<para>
+       To get a list of allowable arguments to pd, type <command>pd -help</command>
+</para>
+
+</section>
+

@@ -1,0 +1,18 @@
+<section>
+<title>XMMS :: hifi audio player</title>
+<subtitle>software by 4front Technologies (1997)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man xmms</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       XMMS  is  the  X  Multimedia  System.  It is used to play audio and other
+       kinds of media files.  By default XMMS can play MPEG audio,  Ogg  Vorbis,
+       RIFF  wav,  most  module  formats,  and a few other formats.  XMMS can be
+       extended through plugins to play a number of other audio and  video  for-
+       mats.
+</para>
+
+</section>

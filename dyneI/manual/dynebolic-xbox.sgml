@@ -1,0 +1,29 @@
+<appendix><title>Running on XBOX</title>
+<subtitle>how to burn and run a dyne:bolic for XBOX game consoles</subtitle>
+
+<para>
+In order to have a CD that is bootable on XBOX you must check the DVD reader
+you have on your xbox. Some older models can only boot REWRITABLE CDs.
+</para>
+
+<para>
+If you have a NTSC tv connected then you can have some problems on
+your visualization at boot - just open an XTERM and write :
+<screen>
+<prompt>[d:b] ~ # </prompt><userinput>xbv -NTSC -auto 640 480 12.00 9.00</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation>
+</screen>
+to have it fixed.
+</para>
+
+<para>
+I hope you enjoy using those beasts for something more useful than
+what they are made for: after all XBOX is about a CHEAP pentium
+celeron 733, 8Gigs of harddisk and nvidia chipset everywhere;
+dedicated to everybody who loves reusing hardware leftovers.
+</para>
+
+<para>
+XBOX support was hacked by Smilzo also thanks to the great work the <ulink url="http://xbox-linux.sf.net">Xbox-linux</ulink> project is doing.
+</para>
+
+</appendix>

@@ -1,0 +1,95 @@
+<chapter>
+<title>Comunication tools</title>
+<subtitle>comunication software included in dyne:bolic</subtitle>
+
+<para>
+Our dyne:bolic distribution gives you a full range of programs to
+cover most of the ways to comunicate wich are commonly used today,
+protects your privacy with encryption whenever it is possible, offers
+peer to peer and filesharing tools working both on local and remote
+networks, lets you share desktop between two computers and more...
+</para>
+
+<para>
+We'll now go thru the sections that categorize by tasks the
+applications we're talking about.
+</para>
+
+<section>
+<title>Surf the web</title>
+<subtitle>software to access the world wide web</subtitle>
+
+&phoenix;
+&links2;
+&lynx;
+
+</section>
+
+<section>
+<title>Email and encryption</title>
+<subtitle>send your letters in a safe way</subtitle>
+
+&sylpheed;
+&gpg;
+
+</section>
+
+
+<section>
+<title>Filesharing</title>
+<subtitle>share your data across the net</subtitle>
+
+&lopster;
+&xfsamba;
+
+</section>
+
+
+<section>
+<title>Chat</title>
+<subtitle>softwares for personal messaging and IRC</subtitle>
+
+&xchat;
+&irssi;
+&gaim;
+&everybuddy;
+&linphone;
+
+</section>
+
+
+<section>
+<title>FTP, file transfer</title>
+<subtitle>softwares implementing the file trasnfer protocol</subtitle>
+
+&gftp;
+&ncftp;
+&lftp;
+
+</section>
+
+
+<section>
+<title>VNC and remote desktop</title>
+<subtitle>share your desktop or remotely control it</subtitle>
+
+&vnc;
+&rdesktop;
+
+</section>
+
+<section>
+<title>Network tools</title>
+<subtitle>to survive in this changing world you need an up to date toolbox!</subtitle>
+
+&ethereal;
+&ettercap;
+&hping;
+&iptraf;
+&kismet;
+&minicom;
+&nmap;
+
+</section>
+
+</chapter>

@@ -1,0 +1,8 @@
+<section>
+<title>Rami :: simple commandline recorder</title>
+<para>
+Rami is a swift tool for commandline recording which directly encodes
+the input audio saving much in terms of diskspace, while it can encode
+in realtime ogg mp3 or spx files also on slower computers.
+</para>
+</section>

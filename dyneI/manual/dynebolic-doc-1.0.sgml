@@ -1,0 +1,237 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN"
+[
+<!ENTITY intro SYSTEM "dynebolic-intro.sgml">
+<!ENTITY system SYSTEM "dynebolic-sys.sgml">
+
+<!ENTITY video SYSTEM "dynebolic-video.sgml">
+<!-- veejay -->
+<!ENTITY freej SYSTEM "dynebolic-freej.sgml">
+<!ENTITY hasciicam SYSTEM "dynebolic-hasciicam.sgml">
+<!ENTITY xaos SYSTEM "dynebolic-xaos.sgml">
+<!ENTITY effectv SYSTEM "dynebolic-effectv.sgml">
+<!ENTITY synaesthesia SYSTEM "dynebolic-synaesthesia.sgml">
+<!-- play -->
+<!ENTITY xawtv SYSTEM "dynebolic-xawtv.sgml">
+<!ENTITY mplayer SYSTEM "dynebolic-mplayer.sgml">
+<!ENTITY gmp4player SYSTEM "dynebolic-gmp4player.sgml">
+<!-- record -->
+<!ENTITY mencoder SYSTEM "dynebolic-mencoder.sgml">
+<!ENTITY nuvrec SYSTEM "dynebolic-nuvrec.sgml">
+<!-- edit -->
+<!ENTITY cinelerra SYSTEM "dynebolic-cinelerra.sgml">
+<!-- stream -->
+<!ENTITY mp4live SYSTEM "dynebolic-mp4live.sgml">
+<!ENTITY mp4creator SYSTEM "dynebolic-mp4creator.sgml">
+<!ENTITY palantir SYSTEM "dynebolic-palantir.sgml">
+
+
+<!ENTITY audio SYSTEM "dynebolic-audio.sgml">
+<!-- deejay -->
+<!ENTITY terminatorx SYSTEM "dynebolic-terminatorx.sgml">
+<!ENTITY soundtracker SYSTEM "dynebolic-soundtracker.sgml">
+<!ENTITY gdam SYSTEM "dynebolic-gdam.sgml">
+<!ENTITY pd SYSTEM "dynebolic-pd.sgml">
+<!ENTITY pdGEM SYSTEM "dynebolic-pdGEM.sgml">
+<!-- play -->
+<!ENTITY xmms SYSTEM "dynebolic-xmms.sgml">
+<!ENTITY ogg123 SYSTEM "dynebolic-ogg123.sgml">
+<!ENTITY madplay SYSTEM "dynebolic-madplay.sgml">
+<!-- record -->
+<!ENTITY rami SYSTEM "dynebolic-rami.sgml">
+<!ENTITY rip SYSTEM "dynebolic-rip.sgml">
+<!ENTITY oggenc SYSTEM "dynebolic-oggenc.sgml">
+<!-- edit -->
+<!ENTITY audacity SYSTEM "dynebolic-audacity.sgml">
+<!ENTITY rezound SYSTEM "dynebolic-rezound.sgml">
+<!ENTITY gnusound SYSTEM "dynebolic-gnusound.sgml">
+<!-- stream -->
+<!ENTITY muse SYSTEM "dynebolic-muse.sgml">
+<!ENTITY icecast SYSTEM "dynebolic-icecast.sgml">
+<!ENTITY pvfm SYSTEM "dynebolic-pvfm.sgml">
+
+
+<!ENTITY image SYSTEM "dynebolic-image.sgml">
+<!-- image -->
+<!ENTITY gimp SYSTEM "dynebolic-gimp.sgml">
+<!ENTITY blender SYSTEM "dynebolic-blender.sgml">
+<!ENTITY convert SYSTEM "dynebolic-convert.sgml">
+<!ENTITY gqview SYSTEM "dynebolic-gqview.sgml">
+
+
+<!ENTITY text SYSTEM "dynebolic-text.sgml">
+<!-- text -->
+<!ENTITY abiword SYSTEM "dynebolic-abiword.sgml">
+<!ENTITY ted SYSTEM "dynebolic-ted.sgml">
+<!ENTITY bluefish SYSTEM "dynebolic-bluefish.sgml">
+<!ENTITY nedit SYSTEM "dynebolic-nedit.sgml">
+<!ENTITY tetradraw SYSTEM "dynebolic-tetradraw.sgml">
+
+
+<!ENTITY comunication SYSTEM "dynebolic-comunication.sgml">
+<!-- www -->
+<!ENTITY phoenix SYSTEM "dynebolic-phoenix.sgml">
+<!ENTITY links2 SYSTEM "dynebolic-links2.sgml">
+<!ENTITY lynx SYSTEM "dynebolic-lynx.sgml">
+<!-- email -->
+<!ENTITY sylpheed SYSTEM "dynebolic-sylpheed.sgml">
+<!ENTITY gpg SYSTEM "dynebolic-gpg.sgml">
+<!-- share -->
+<!ENTITY lopster SYSTEM "dynebolic-lopster.sgml">
+<!ENTITY xfsamba SYSTEM "dynebolic-xfsamba.sgml">
+<!-- chat -->
+<!ENTITY xchat SYSTEM "dynebolic-xchat.sgml">
+<!ENTITY irssi SYSTEM "dynebolic-irssi.sgml">
+<!ENTITY gaim SYSTEM "dynebolic-gaim.sgml">
+<!ENTITY everybuddy SYSTEM "dynebolic-everybuddy.sgml">
+<!ENTITY linphone SYSTEM "dynebolic-linphone.sgml">
+<!-- ftp -->
+<!ENTITY gftp SYSTEM "dynebolic-gftp.sgml">
+<!ENTITY ncftp SYSTEM "dynebolic-ncftp.sgml">
+<!ENTITY lftp SYSTEM "dynebolic-lftp.sgml">
+<!-- vnc -->
+<!ENTITY vnc SYSTEM "dynebolic-vnc.sgml">
+<!ENTITY rdesktop SYSTEM "dynebolic-rdesktop.sgml">
+<!-- tools -->
+<!ENTITY ethereal SYSTEM "dynebolic-ethereal.sgml">
+<!ENTITY ettercap SYSTEM "dynebolic-ettercap.sgml">
+<!ENTITY hping SYSTEM "dynebolic-hping.sgml">
+<!ENTITY iptraf SYSTEM "dynebolic-iptraf.sgml">
+<!ENTITY kismet SYSTEM "dynebolic-kismet.sgml">
+<!ENTITY minicom SYSTEM "dynebolic-minicom.sgml">
+<!ENTITY nmap SYSTEM "dynebolic-nmap.sgml">
+
+<!ENTITY filesystem SYSTEM "dynebolic-filesystem.sgml">
+<!-- files -->
+<!ENTITY xwc SYSTEM "dynebolic-xwc.sgml">
+<!ENTITY mc SYSTEM "dynebolic-mc.sgml">
+
+
+
+<!ENTITY games SYSTEM "dynebolic-games.sgml">
+<!-- games -->
+<!ENTITY anatolia SYSTEM "dynebolic-anatolia.sgml">
+<!ENTITY freeciv SYSTEM "dynebolic-freeciv.sgml">
+<!ENTITY freecraft SYSTEM "dynebolic-freecraft.sgml">
+<!ENTITY frozbubble SYSTEM "dynebolic-frozbubble.sgml">
+<!ENTITY lbreakout SYSTEM "dynebolic-lbreakout.sgml">
+<!ENTITY ltris SYSTEM "dynebolic-ltris.sgml">
+<!ENTITY matanza SYSTEM "dynebolic-matanza.sgml">
+<!ENTITY nethack SYSTEM "dynebolic-nethack.sgml">
+<!ENTITY netris SYSTEM "dynebolic-netris.sgml">
+<!ENTITY powermanga SYSTEM "dynebolic-powermanga.sgml">
+<!ENTITY gnuchess SYSTEM "dynebolic-gnuchess.sgml">
+<!ENTITY xmahjongg SYSTEM "dynebolic-xmahjongg.sgml">
+<!ENTITY xwelltris SYSTEM "dynebolic-xwelltris.sgml">
+
+
+<!ENTITY xutils SYSTEM "dynebolic-xutils.sgml">
+<!-- xutils -->
+<!ENTITY xrmap SYSTEM "dynebolic-xrmap.sgml">
+<!ENTITY ical SYSTEM "dynebolic-ical.sgml">
+<!ENTITY xman SYSTEM "dynebolic-xman.sgml">
+<!ENTITY xcalc SYSTEM "dynebolic-xcalc.sgml">
+<!ENTITY xfontsel SYSTEM "dynebolic-xfontsel.sgml">
+<!ENTITY xvidtune SYSTEM "dynebolic-xvidtune.sgml">
+<!ENTITY xclock SYSTEM "dynebolic-xclock.sgml">
+
+<!ENTITY xbox SYSTEM "dynebolic-xbox.sgml">
+<!ENTITY hacking SYSTEM "dynebolic-hack.sgml">
+<!ENTITY faq SYSTEM "dynebolic-faq.sgml">
+<!ENTITY index SYSTEM "dynebolic-index.sgml">
+
+]>
+
+<book label="dyne:bolic GNU/Linux user's guide">
+
+
+<bookinfo>
+<title>Dyne:bolic GNU/Linux User's Guide</title>
+<subtitle>http://dynebolic.org</subtitle>
+<!--<graphic fileref="dyne.jpg">-->
+
+<authorgroup>
+<author>
+<othername>Jaromil</othername>
+<authorblurb><para>http://korova.dyne.org</para></authorblurb>
+<affiliation><orgname>dyne.org</orgname></affiliation>
+</author>
+</authorgroup>
+
+<edition>
+Dynebolic GNU/Linux User's Guide
+<ulink url="http://dynebolic.org">http://dynebolic.org</ulink>
+<emphasis>
+"$Id $"
+</emphasis>
+</edition>
+
+<date>2003</date>
+
+<copyright>
+<year>2003</year>
+<holder>Denis "jaromil" Rojo - http://korova.dyne.org</holder>
+</copyright>
+
+</bookinfo>
+
+<dedication>
+<para>
+A Marta dei boschi.
+</para>
+</dedication>
+
+&intro;
+
+&system;
+
+&video;
+
+&audio;
+
+&image;
+
+&text;
+
+&comunication;
+
+&filesystem;
+
+&games;
+
+&xutils;
+
+<!--
+&hacking;
+-->
+
+&xbox;
+
+<!--
+&faq;
+
+&index;
+-->
+
+<colophon>
+<para>
+This is the essential user's guide to the dyne:bolic GNU/Linux
+bootable CD distribution. Designed to introduce newbies to approach
+the powerful tools and applications offered by the distribution,
+covers task by task the various possibilities offered to work with
+both audio and video in different ways: playing, recording, editing
+and streaming. Coverage expands upon and clarifies existing
+documentation for the included softwares, giving a simple introduction
+to them and an overview of the main features.
+</para>
+
+<para>
+Concise, to the point, and extensively indexed, readers will find this
+volume packed with informations gathered from not previously available
+in any other single reference source.
+</para>
+
+
+</colophon>
+
+
+</book>

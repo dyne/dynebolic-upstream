@@ -1,0 +1,19 @@
+<section>
+<title>mplayer :: mpeg video viewer</title>
+<subtitle>software by Arpad Gereoffy (2000-2002)</subtitle>
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man mplayer</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       mplayer  is  a  movie player for LINUX (runs on many other
+       Unices and non-x86 CPUs, see the documentation).  It plays
+       most  MPEG/VOB, AVI, ASF/WMA/WMV, RM, QT/MOV/MP4, OGG/OGM,
+       VIVO, FLI, NuppelVideo, yuv4mpeg, FILM and RoQ files, sup-
+       ported  by  many native, XAnim, and Win32 DLL codecs.  You
+       can watch VideoCD, SVCD, DVD, 3ivx,  DivX 3/4/5  and  even
+       WMV movies, too (without using the avifile library).
+</para>
+
+</section>

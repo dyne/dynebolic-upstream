@@ -1,0 +1,74 @@
+<section>
+<title>NEdit</title>
+<subtitle>Powerful and customizable text editor</subtitle>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink
+url="http://www.nedit.org/">http://www.nedit.org/</ulink>
+</entry>
+<!-- MAN  --> <entry> nedit </entry>
+<!-- BY   --> <entry>  Mark Edel, Joy Kyriakopulos, Christopher Conrad, Jim
+Clark, Arnulfo Zepeda-Navratil, Suresh Ravoor, Tony Balinski, Max Vohlken,
+Yunliang Yu, Donna Reid, Arne Forlie, Eddy De Greef, Steve LoBasso, Alexander
+Mai, Scott Tringali, and Thorsten Haude </entry>
+<!-- YEAR --> <entry> 2003 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+NEdit is a multi-purpose text editor for the X Window System, which combines a
+standard, easy to use, graphical user interface with the thorough functionality
+and stability required by users who edit text eight hours a day.
+</para><para>
+It provides intensive support for development in a wide variety of languages,
+text processors, and other tools, but at the same time can be used productively
+by just about anyone who needs to edit text. 
+</para>
+
+</section> <!-- Nedit -->

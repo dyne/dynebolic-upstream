@@ -1,0 +1,20 @@
+<section>
+<title>mp4creator :: mpeg4 video encoder</title>
+<subtitle>software by David Mackie and Bill May @cisco.com (2002)</subtitle>
+
+<tip>
+<para>Get more informations with:
+<screen><prompt>[d:b] ~ #</prompt><userinput>man mp4creator</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen></para>
+</tip>
+
+<para>
+       This  program  creates or modifies mp4 files. Supported operations are to
+       add media tracks, add hint tracks, extract a track, delete a  track,  and
+       optimize the layout of the mp4 file.
+</para><para>
+       Currently  the  program   understands  how  to import media from MP3 audio
+       files, AAC audio files (ADTS), and MPEG-4  video   files.   These   original
+       media files are known as elementary stream (ES) files in MPEG parlance.
+
+</para>
+</section>

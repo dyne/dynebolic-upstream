@@ -1,0 +1,41 @@
+<chapter>
+<title>System architecture</title>
+
+<para>
+Dyne:bolic is a preconfigured GNU/Linux system which runs without
+installing anything on you harddisks, alltough you can see your
+partitions automatically mounted in the <emphasis>/vol</emphasis>
+directory.
+</para>
+
+<para>
+Your <emphasis>/home</emphasis> directory resides in  your RAM memory
+and everything new contained in it will not be there at the next boot.
+</para>
+
+<para>
+A <emphasis>samba</emphasis> filesharing daemon is running:
+everything contained in your <emphasis>/home/shared</emphasis>
+directory is made accessible (read and write) on the network without
+any password.
+</para>
+
+<para>
+The Graphical environment is XFree86 with WindowMaker, the interface
+follows the OpenStep paradigm to build a different flavour of
+interaction which distincts d:b from other common graphical
+environments. For instance you have multiple desktops than you can
+also switch using the key combination <emphasis>ALT+2</emphasis> and
+other numbers.
+</para>
+
+<para>
+Application menu is organized by task in media-type categories. Audio
+and video have a fixed organization in subcategories deejay, play,
+record, edit, stream; communication tools are distributed in a couple
+of subcategories; while other group of tools can collect applications
+on the first level of choice.
+</para>
+
+
+</chapter>

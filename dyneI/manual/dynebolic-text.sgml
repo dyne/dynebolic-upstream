@@ -1,0 +1,98 @@
+<chapter>
+
+
+<chapterinfo>
+<itermset>
+
+<indexterm zone="html" scope="all">
+<primary>html</primary>
+<secondary>hypertext markup language file</secondary>
+<tertiary>webpage</tertiary>
+</indexterm>
+
+<indexterm zone="rtf" scope="all">
+<primary>rtf</primary>
+<secondary>rich text format</secondary>
+</indexterm>
+
+</itermset>
+</chapterinfo>
+
+<title>Text tools</title>
+<subtitle>Text editing with dyne:bolic</subtitle>
+
+<section>
+<title>Publish texts in most formats</title>
+
+<para>
+The tools described in this chapter are being included in dyne:bolic
+to let you easily write and compose any kind of text document. Texts
+can be published on the web and can be printed, depending for what
+thei are intended for they might need a special way to be
+formatted. Therefore we have formats, <emphasis
+id="html">html</emphasis> is an example and is being used for web
+pages, while <emphasis id="rtf">rtf</emphasis> for instance is
+supported by the majority of word processors around.
+</para>
+
+<para>
+Having clear the differences and the purposes of file formats, you can
+easily distinguish between the application you need. We proceed by
+distinguishing them by tasks:
+</para>
+
+<para>
+Abiword and Ted are wordprocessors, they can open .doc and .rtf files
+and allow you to set formatting on text like font size and face,
+alignement and such.
+</para>
+
+<para>
+Bluefish is a tool for web designers, allows to write the html scripts
+aided by a series of toolbars which can write element templates for
+you; it also gives a useful highlight to the different parts of the
+text.
+</para>
+
+<para>
+Nedit is a multipurpose text editor which has also syntax highlight,
+but less bells and whistles, and is perfect to write text documents as
+well sourcecode as well any other kind of plain text based file.
+</para>
+
+<para>
+Tetradraw is just a cool ansi-art application that lets you draw
+colorful things on the console screen, it can be used to draw text
+based drawings and it can even animate sequences of text.
+</para>
+
+<para>
+Antiword is a very handy commandline application that lets you convert
+with a simple command any .doc file into a plain text file, keeping
+the alignement of the lines intact. a quick start can be to try out
+a simple command on a .doc file:
+<screen>
+<prompt>[d:b] ~ #</prompt><userinput>antiword evil.doc > good.txt</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation>
+</screen>
+
+<tip>
+<para>you'll find more documentation about antiword in the system manual with the command</para>
+<screen><prompt>[d:b] ~ #</prompt><userinput>man antiword</userinput> <lineannotation><keycap>[Enter]</keycap></lineannotation></screen>
+</tip>
+
+</para>
+
+<para>
+Now we'll proceed looking more in depth inside the programs.
+</para>
+
+
+&abiword;
+&ted;
+&bluefish;
+&nedit;
+&tetradraw;
+
+</section>
+
+</chapter>

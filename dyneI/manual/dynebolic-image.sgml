@@ -1,0 +1,22 @@
+<chapter>
+<title>Graphic tools</title>
+<subtitle>2d and 3d graphic software included in dyne:bolic</subtitle>
+
+<para>
+The dyne:bolic distribution includes two eccellent programs to work
+with graphics both on a 2d and 3d way: gimp for the elaboration of
+bitmapped images and blender for the design and rendering of 3d scenes
+also using server farms to share the elaboration between more computers
+over the network. In fact dyne:bolic might come especially handy for who
+wants to build blender server farms in a blink of an eye ;)
+</para>
+
+&gimp;
+
+&blender;
+
+&convert;
+
+&gqview;
+
+</chapter>
