@@ -222,6 +222,9 @@ coreutils
 iputils
 net-tools
 glib
+expat
+grep
+gawk
 EOF
 	
 	for PKG in \`cat /tmp/.initrd.lst\` ; do
@@ -248,6 +251,7 @@ function build_xfree() {
 		cp -a \$WORKINGDIR/usr/lib/libglib.a \$INSTDIR/usr/lib/libglib.a  
 	fi
 	ROOT=\$INSTDIR USE='mmx sse 3dfx 3dnow' emerge ati-drivers || error "Emerge 'X' error :/"
+	# Inserire qui la parte di autoconfigurazione (XFree86 -configure chrootato in /home/the_root/)
 
 	touch ./var/dynebolic/.build_xfree
 }
