@@ -41,7 +41,7 @@ Rob Flynn and more (see the project for the full list)
 <!-- BY   --> <entry> Rob Flynn </entry>
 <!-- YEAR --> <entry> 1999 </entry>
 </row></tbody>
-</table>
+</tgroup></table>
 
 <para>
 Gaim is a multi-protocol instant messaging client for Linux, BSD, MacOS X, and Windows.
