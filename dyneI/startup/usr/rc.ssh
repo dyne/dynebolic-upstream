@@ -3,10 +3,26 @@
 FILE_ID="\$Id$"
 source /lib/libdyne.sh
 
-notice "launching ssh daemon"
-if [ ! -e /home/.ssh/identity ]; then
+if [ ! -z "`uname -a | grep xbox`" ]; then
+
+# on the xbox the sshd is launched automatically
+# this is very handy if you don't have a keyboard
+  notice "launching ssh daemon"
+  if [ ! -e /home/.ssh/identity ]; then
     act "generating ssh identity key in background"
     (ssh-keygen -t dsa -q -f /home/.ssh/identity -N ""; sshd) &
-else
+  else
     sshd &
+  fi
+
+else
+
+# no xbox, so we don't launch the sshd automatically
+# this improves security
+  if [ ! -e /home/.ssh/identity ]; then
+    act "generating ssh identity key in background"
+    ssh-keygen -t dsa -q -f /home/.ssh/identity -N "" &
+  fi
+
 fi
+
