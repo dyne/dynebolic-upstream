@@ -1,0 +1,111 @@
+<section>
+<title>LiVES :: linux video editing system</title>
+
+<!-- manual editors: use this table at the beginning of each
+     application entry, compiled with the corresponding data
+     ============================================== cut here -->
+
+<table><title></title>
+<tgroup cols=3 colsep=1>
+<thead><row>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/home.png">
+</imageobject></inlinemediaobject>
+homepage</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/man.png">
+</imageobject></inlinemediaobject>
+manpage
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/author.png">
+</imageobject></inlinemediaobject>
+author
+</entry>
+
+<entry>
+<inlinemediaobject><imageobject>
+<imagedata fileref="images/year.png">
+</imageobject></inlinemediaobject>
+year
+</entry>
+
+</row></thead>
+<tbody><row>
+
+<!-- here add the sensible data, please note that URL is entered 2 TIMES! -->
+
+<!-- URL  --> <entry> <ulink url="http://www.xs4all.nl/~salsaman/lives"></ulink> </entry>
+<!-- MAN  --> <entry> lives </entry>
+<!-- BY   --> <entry> salsaman [G.Finch] </entry>
+<!-- YEAR --> <entry> 2002 </entry>
+
+<!-- sensible data until here -->
+
+</row></tbody>
+</tgroup>
+</table>
+
+<!-- end of application reference table =========== cut here -->
+
+
+<para>
+LiVES is the new Linux Video Editing System. It is designed to be
+simple to use, yet powerful. It is small in size (under 2MB), yet has
+many advanced features.
+</para><para>
+
+<literallayout>
+ Video
+    * Loading and editing of most video formats (requires a working
+      copy of mplayer).
+    * Playback at variable frame rates, and in reverse.
+    * Cut and paste of frames within and between clips.
+    * Saving of selections, and individual frames.
+    * Lossless backup/ restore.
+    * Ability to 'play' with video - that is to move smoothly backwards
+      and forwards through it, and to record yourself doing so.
+    * Playback can use LiVES' own internal player, or you can instantly
+      switch to mplayer.
+    * Ability to open complete files, selections of files, and remotely
+      located files (with mplayer libraries).
+    * Real-time capture/recording of external windows.
+    * Output to divx, asf, vob, vcd, mjpeg or mpeg1 or to any format
+      using encoder plugins.
+    * Resampling of video (time stretching) to any frame rate (.5 to
+      200 fps); option to auto-resample between clips.
+    * Rotation and resizing of video clips.
+
+ Audio
+    * Can work with mp3, ogg and wav files.
+    * LiVES can also load tracks directly off CD to use with your
+      video (using cdda2wav).
+    * Ability to save audio selections, and append audio.
+    * Sound can be trimmed to fit video selections.
+    * Cutting and pasting of audio within and between clips.
+    * Resampling of audio (rate, channels, sample size, signedness
+      and endianness).; audio is auto-resampled between clips.
+
+Effects
+    * Many, including random zooming, colour cycling and colorisation.
+    * Merging of frames: frame-in-frame, fade in/out and transparency.
+    * Real time previews as the effect is processing.
+
+Extras
+    * Ability to play music through xmms (including random selection
+      of tracks).
+    * Midi synchronisation (stop/start).
+    * Can load single images or directories of images and assemble
+      them into videos or slideshows.
+    * Toys !
+
+</literallayout>
+</para>
+
+</section> <!-- HasciiCam -->

@@ -1,0 +1,58 @@
+
+Video { Veejay, Play, Record, Edit, Stream }
+FreeJ :: set the veejay free!
+HasciiCam :: (h)ascii for the masses!
+EffecTV :: real time video effector
+Synaesthesia :: light glow oscillator
+MPlayer :: mpeg video viewer
+XawTV :: television viewer
+Gmp4Player :: mpeg4 rtsp player
+MEncoder :: nuv -> mpeg encoder
+NuvRec :: nuv - live video-in recorder
+Cinelerra :: non-linear video editing
+Mp4live :: mpeg4 video rtsp streamer
+Mp4creator :: mpeg4 video encoder
+Palantir :: web video streaming
+
+Audio { DeeJay, Play, Record, Edit, Stream }
+TerminatorX :: digital turntables
+SoundTracker :: tracker / sequencer
+GDam :: digital DJ
+PD :: pure data signal processing
+PD + GEM :: pd + opengl video engine
+Trommler :: drum machine
+XMMS :: hifi audio player
+Ogg123 :: commandline ogg player
+MADplay :: commandline mp3 player
+GRip :: graphical cd ripper
+Rami :: simple commandline recorder
+RIP :: simple commandline audio cd ripper
+OggEnc :: ogg/vorbis encoder
+Audacity :: multitrack audio editor
+ReZound :: audio file editor
+GNUSound :: gnu sound editor
+MuSE :: the Multiple Streaming Engine
+Icecast :: streaming server
+PublicVoice.fm :: streaming server
+
+Graphic tools { 2d & 3d image manipulation }
+Gimp :: GNU Image Manipulation Program 
+Blender :: 3d modeling and rendering tool
+
+Text tools { read, edit and publish texts }
+RTF, PDF, DOC, HTML, ASCII with AbiWord,
+Ted, Bluefish, NEdit, Tetradraw
+
+Comunication tools { web, mail and privacy }
+surf the web, mail encryption, filesharing
+and chat with Phoenix, Links, Sylpheed,
+GnuPg, Lopster, XChat, GFtp, Vnc
+
+World atlas navigator and factbook
+
+Games! : have phun :) with Anatolia, FreeCiv
+Freecraft, FrozenBubble, LBreakout, LTris,
+Matanza, Nethack, PowerManga, GnuChess,
+XMahjongg, XWellTris
+
+all in dyne:bolic GNU/Linux http://dynebolic.org
