@@ -7,5 +7,5 @@ notice "Launching common unix printing system daemon"
 #loadmod parport
 #loadmod lp
 
-/usr/sbin/cupsd
+/usr/sbin/cupsd &
 
