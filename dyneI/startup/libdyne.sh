@@ -25,9 +25,17 @@
 
 LIBDYNE_ID="\$Id$"
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
+# initialize logfile
 LOG="/var/log/dynebolic.log"
-NEST_VER="`cat /etc/DYNEBOLIC`"
-SYS_VER="`cat /usr/etc/DYNEBOLIC`"
+if [ ! -r ${LOG} ]; then
+    LOG="/boot/dynebolic.log"
+    if [ ! -r ${LOG} ]; then touch ${LOG}; fi
+fi
+
+# load dynebolic environmental variable
+if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
+
 
 # logging functions
 if [ ! -z $FILE_ID ]; then
@@ -83,9 +91,10 @@ loadmod() {
 
 
 dyne_add_volume() {
-  # $1 = media type (hdisk|floppy|usbkey)
+  # $1 = media type (hdisk|floppy|usbkey|cd)
   # $2 = mount point
-  notice "adding new $1 volume $2"
+  VOLNUM=`expr $VOLNUM + 1`
+  notice "adding $VOLNUM $1 volume on $2"
   WMCFG="/var/run/WMState"
   if [ -e /var/run/WMNum ]; then
       WMNUM="`cat /var/run/WMNum`"

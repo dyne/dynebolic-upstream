@@ -54,177 +54,301 @@
 # "$Id$"
 
 
+source /lib/libdyne.sh
 
 
+WMNUM=1
+WMCFG="/boot/WMState"
+add_volume() {
+  # $1 = media type (hdisk|floppy|usbkey|cd)
+  # $2 = mount point
+  case "$1" in
+      "hdisk")
+	  echo "," >> $WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"Hd${WMNUM}.HardDisk\";" >>$WMCFG;
+	  echo "Lock = yes;" >>$WMCFG;
+	  echo "Autolaunch = no;" >>$WMCFG;
+	  echo "Command = \"xwc ${2}\";" >>$WMCFG;
+	  echo "Position = \"0,${WMNUM}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
+      "floppy")
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"Floppy${WMNUM}.FloppyDisk\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc ${2}\";" >>$WMCFG
+	  echo "Position = \"0,${WMNUM}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
+      "usb")
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"Usb${WMNUM}.UsbStorage\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc ${2}\";" >>$WMCFG
+	  echo "Position = \"0,${WMNUM}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
+      "cd")
+	  echo "," >>$WMCFG;
+	  echo "{" >> $WMCFG;
+	  echo "Name = \"Cd${WMNUM}.CdRom\";" >>$WMCFG
+	  echo "Lock = yes;" >>$WMCFG
+	  echo "Autolaunch = no;" >>$WMCFG
+	  echo "Command = \"xwc ${2}\";" >>$WMCFG
+	  echo "Position = \"0,${WMNUM}\";" >>$WMCFG;
+	  echo "Forced = no;" >>$WMCFG;
+	  echo "BuggyApplication = no;" >>$WMCFG;
+	  echo "}" >>$WMCFG;
+	  ;;
 
-
-eject_cdrom() {
-# recognize the dynebolic CD and eject it
-    for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
-	
-	if  [ `cat /proc/ide/${DEV}/media` != cdrom ]; then continue; fi
-	
-	mount -o ro "/dev/${DEV}" /tmp 1>/dev/null 2>/dev/null
-	if [ $? != 0 ]; then continue; fi
-
-	if [ -r /tmp/dynebol.sys -o -r dynebol.ico ]; then
-	    umount /tmp
-	    sync
-	    eject "/dev/${DEV}"
-	else
-	    umount /tmp
-	fi
-	    
-    done
+      *)
+	  error "invalid call to dyne_gen_wmaker_dock() in libdyne.sh"
+	  return 0
+	  ;;
+  esac
+  act "${1} volume mounted on ${2}"
+  WMNUM="`expr $WMNUM + 1`"
 }
 
-# all the following mount_* functions try to mount the system
-# if it works, they exit 1 out of this shell script
-# (if the script reaches the very end, there was no /dynebol.sys found anywhere)
-
-mount_cdrom_system() {
+CD_NUM=0
+mount_cdrom() {
 # $1 = device, without partition number (es: hdc)
-  DEV=$1
-  echo -n " .  scanning CDR ${DEV} with ${CDFS} ... "
-  mount -t "$CDFS" -o ro "/dev/${DEV}" /mnt/dynebolic 1>/dev/null 2>/dev/null
+    DEV=$1
+    CD_NUM="`expr $CD_NUM + 1`"
+    mkdir "/rem/cd${CD_NUM}"
+    
+  # even if we can't mount it,
+  # we add the device to the automount table
+    echo "cd${CD_NUM} -fstype=iso9660,ro :/dev/${DEV}" \
+	>> /boot/auto.removable
+    
+  # the filesystem can be mounted: add it to the list of
+  # available storage devices allready from here
+    add_volume cd "/rem/cd${CD_NUM}"
 
-  if [ $? != 0 ]; then
-    echo "can't mount device"
-    continue
-  fi
+    echo -n " .  scanning CD ${DEV} (${CDFS}) ... "
+    MNT="/rem/cd${CD_NUM}"
+    mount -t "$CDFS" -o ro "/dev/${DEV}" ${MNT} 1>/dev/null 2>/dev/null
+    
+    if [ $? != 0 ]; then
+	echo "can't mount device"
+    elif ! [ -r "${MNT}/dynebol.sys" ]; then
+	echo "system not found"
+	umount ${MNT}
+    else
+	echo "FOUND"
 
-  if ! [ -r /mnt/dynebolic/dynebol.sys ]; then
-      echo "system not found"
-      umount /mnt/dynebolic
-      continue
-  fi
+	if [ -z $DYNE_SYS_DEV ]; then
+	    # there was no system found on other storage media
+	    # so we use the one on the original dynebolic CD
+	    act "mounting dynebolic system from CDROM ${DEV}"
+	    mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
+	    
+	    if [ $? != 0 ]; then
+		echo
+		error "a problem occurred while mounting the dynebol.sys"
+		error "it looks like your CD is corrupted!"
+		echo
+		error "burn it more carefully: less speed and don't do ANYTHING else"
+		error "with your computer while burning. refer to the USER UPDATED FAQ"
+		error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
+		error "may the source be with you :^)"
+		echo; echo;
+		sleep 10
+	    else
+		DYNE_SYS_DEV="/dev/${DEV}"
+		DYNE_SYS_MNT=${MNT}
+		DYNE_SYS_MEDIA="cd"
+	    fi
+	fi
+	
+      # check if a nest is used
+      # if not, use the home.tgz and var.tgz from this CD
+	if [ -z $DYNE_NEST_PATH ]; then
+	    # (from the former rc.vfs)
+	    notice "initializing virtual RAM filesystem"
+	    RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
+	    SHMSIZE=`expr $RAMSIZE / 1024 / 4`
+	    act "RAM detected: `expr $RAMSIZE / 1024` Mb"
+	    act "VFS size: $SHMSIZE Mb"
+	    echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
+	    cp /boot/fstab /etc
 
-  echo "FOUND"
+	    mount /dev/shm
 
-  echo -n " .  mounting dynebolic system from CDROM ${DEV}"
-  mount -o loop -t squashfs /mnt/dynebolic/dynebol.sys /usr
-  
-  if [ $? != 0 ]; then
-    echo
-    echo "[!] a problem occurred while mounting the dynebol.sys"
-    echo "[!] it looks like your CD is corrupted!"
-    echo "[!]"
-    echo "[!] burn it more carefully: less speed and don't do ANYTHING else"
-    echo "[!] with your computer while burning. refer to the USER UPDATED FAQ"
-    echo "[!] on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
-    echo "[!] may the source be with you :^)"
-    echo; echo;
-    sleep 10
-    umount /mnt/dynebolic
-    return
-  fi
+      # creating /var /tmp and /home
+	    act "populating /var from CD"
+	    tar xfz "${MNT}/var.tgz" -C /dev/shm
+	    mount -o bind /dev/shm/var /var
+	    
+	    act "populating /home from CD"
+	    tar xfz "${MNT}/home.tgz" -C /dev/shm
+	    mount -o bind /dev/shm/home /home
+	    
+	    act "building /tmp"
+	    mkdir /dev/shm/tmp
+	    mount -o bind /dev/shm/tmp /tmp
 
-  sync
-
-  echo "${DEV}" > /boot/dynecd
-
-  exit 1 # SUCCESS
-
+	fi
+    fi	
+    
+    if [ $DYNE_SYS_DEV ]; then
+	# this is the dyne:bolic CD
+	# no system is used from it
+	# so we can eject this cdrom!
+	umount ${MNT}
+	eject "/dev/${DEV}"
+    else
+        # link the goodies in it
+	if [ -e "${MNT}/extras" ]; then
+	    mount -o bind "${MNT}/extras" /home/extras
+	fi
+    fi
+    
 }
 
-mount_xbox_system() {
+XBOX_NUM=0
+mount_xbox() {
 # $1 = partition, with partition number (es: hda50)
-  XBOX_DEV=$1
-
-  if ! [ -e "/dev/${XBOX_DEV}" ]; then return; fi
-  
-  echo -n " .  scanning XBOX harddisk partition ${XBOX_DEV} ... "
-  mount -t fatx "/dev/${XBOX_DEV}" /mnt/dynebolic 
-
-  if [ $? != 0 ]; then
-    echo "[!] can't mount partition (not a fatx?)"
-    sync
-    return
-  fi 
-
-  if ! [ -r /mnt/dynebolic/dynebol.sys ]; then
-    echo "system not found"
-    umount /mnt/dynebolic
-    sync
-    return
-  fi
+    XBOX_DEV=$1
     
-  echo "FOUND!"
-  
-  echo -n " .  using dynebolic system on XBOX partition ${XBOX_DEV}"
-  mount -o loop -t squashfs /mnt/dynebolic/dynebol.sys /usr
-
-  if [ $? != 0 ]; then
-    echo
-    echo "[!] a problem occurred while mounting the dynebol.sys"
-    echo "[!] dynebolic found a corrupted dynebol.sys on your partition"
-    echo "[!] copy it again from a working dynebolic CD into the root of"
-    echo "[!] one of your partitions"
-    echo; echo;
-    sleep 10
-    umount /mnt/dynebolic
-    sync
-    return
-  fi
-
-  sync
-
-  exit 1 # SUCCESS
-
+    if ! [ -e "/dev/${XBOX_DEV}" ]; then return; fi
+    
+    echo -n " .  scanning XBOX HD ${XBOX_DEV} ... "
+    XBOX_NUM="`expr $XBOX_NUM + 1`"
+    mkdir "/vol/hd${XBOX_NUM}"
+    mount -t fatx "/dev/${XBOX_DEV}" "/vol/hd${XBOX_NUM}" 1>/dev/null 2>/dev/null
+    
+    if [ $? != 0 ]; then
+	echo "[!] can't mount partition (not a fatx?)"
+	rm -r "/vol/hd${XBOX_NUM}"
+	XBOX_NUM="`expr $XBOX_NUM - 1`"
+	return
+    fi 
+    
+  # a mountable haddisk partition has been found!
+    add_volume hdisk "/vol/hd${XBOX_NUM}"
+    
+    
+  # if the system has been allready mounted you can go on
+    if [ $DYNE_SYS_DEV ]; then return; fi
+    
+    if ! [ -r "/vol/hd${XBOX_NUM}/dynebol.sys" ]; then
+	echo "system not found"
+    else
+	echo "FOUND!"
+	
+	act "using dynebolic system on ${XBOX_DEV} mounted on /vol/hd${XBOX_NUM}"
+	mount -o loop -t squashfs "/vol/hd${XBOX_NUM}/dynebol.sys" /usr
+	
+	if [ $? != 0 ]; then
+	    echo
+	    error "a problem occurred while mounting the dynebol.sys"
+	    error "dynebolic found a corrupted dynebol.sys on ${XBOX_DEV}"
+	    error "copy it again from a working dynebolic CD into the root of"
+	    error "one of your partitions"
+	    echo; echo;
+	    sleep 10
+	    continue
+	else
+	  # system successfully mounted
+	    DYNE_SYS_DEV="/dev/${DEV}"
+	    DYNE_SYS_MEDIA="hd"
+	fi
+    fi
+    
 } 
 
-mount_harddisk_system() {
+HD_NUM=0
+mount_harddisk() {
 # $1 = device, without partition number (es: hda)
   DEV=$1
 
-  PART_NUM=0
-       
+# load the filesystem kernel modules needed  
+  TESTFS=`fdisk -l /dev/${DEV}`
+  if [ "`echo $TESTFS|grep -i DOS`" ]; then
+      insmod /boot/msdos.o
+  fi
+  if [ "`echo $TESTFS|grep -i FAT`" ]; then
+      insmod /boot/fat.o
+      insmod /boot/vfat.o
+  fi
+  if [ "`echo $TESTFS|grep -i NTFS`" ]; then
+      insmod /boot/ntfs.o
+  fi
+  if [ "`echo $TESTFS|grep -i BSD`" ]; then
+      insmod /boot/ufs.o
+  fi
+  if [ "`echo $TESTFS|grep -i BEOS`" ]; then
+      insmod /boot/bfs.o
+  fi
+  
   # cycle thru partitions
   for PART in `fdisk -l /dev/${DEV} \
                | grep -iE 'Linux|NTFS|FAT|BSD|BEOS' \
                | grep -i -v swap \
                | cut -d' ' -f1`; do
 
-    PART_NUM="`expr $PART_NUM + 1`";
-    echo -n " .  scanning partition ${PART_NUM} of ${DEV} ... "
-    mount "$PART" /mnt/dynebolic 1>/dev/null 2>/dev/null
+    echo -n " .  scanning HD ${PART} ... "
+    HD_NUM="`expr $HD_NUM + 1`"
+    MNT="/vol/hd${HD_NUM}"
+    mkdir ${MNT}
+    mount "$PART" ${MNT} 1>/dev/null 2>/dev/null
     
     if [ $? != 0 ]; then
       echo "can't mount device"
+      rm -r ${MNT}
+      HD_NUM="`expr $HD_NUM - 1`"
       continue
     fi
-        
-    if ! [ -r /mnt/dynebolic/dynebol.sys ]; then
-      echo "system not found"
-      umount /mnt/dynebolic
-      continue
-    fi
-	
-    echo "FOUND"
-      
-    echo -n " .  using dynebolic system on HARDDISK ${PART}"
-    mount -o loop -t squashfs /mnt/dynebolic/dynebol.sys /usr
     
-    if [ $? != 0 ]; then
-      echo
-      echo "[!] a problem occurred while mounting the dynebol.sys"
-      echo "[!] dynebolic found a corrupted dynebol.sys on your partition"
-      echo "[!] copy it again from a working dynebolic CD"
-      echo; echo;
-      sleep 3
-      umount /mnt/dynebolic
-      continue
-    fi
+    # a mountable harddisk partition has been found!
+    add_volume hdisk ${MNT}
 
+    # if the system has been allready mounted you can go on
+    if [ $DYNE_SYS_DEV ]; then return; fi
+    
+    # ok now keep on checking if the system is there
+    if ! [ -r "${MNT}/dynebol.sys" ]; then
+	echo "system not found"
+    else
+	echo "FOUND"
+	
+	act "using dynebolic system on ${PART} mounted on ${MNT}"
+	mount -o loop -t squashfs "${MNT}/dynebol.sys" /usr
+	
+	if [ $? != 0 ]; then
+	    echo
+	    error "a problem occurred while mounting the dynebol.sys"
+	    error "dynebolic found a corrupted dynebol.sys on ${PART}"
+	    error "copy it again from a working dynebolic CD"
+	    echo; echo;
+	    sleep 10
+	    continue
+	else
+	    # system succesfully mounted
+	    DYNE_SYS_DEV=${PART}
+	    DYNE_SYS_MEDIA="hd"
+	    DYNE_SYS_MNT=${MNT}
+	fi
+    fi
+    
     sync
 
-    exit 1 # SUCCESS
-
-  done # will never loop from here
+  done
 
 }
-
-
 
 ##########################
 ### HERE STARTS THE MAIN()
@@ -234,22 +358,19 @@ if [ -z $PATH ]; then
     export PATH=/bin:/sbin
 fi
  
-cp -f /usr/share/dynebolic/templates/fstab.dist /etc/fstab
+notice "dyne:bolic hardware device detection"
+cp -f /boot/fstab /etc
+mount proc
 
-echo "[*] dyne:bolic hardware device detection"
-mount /proc
+act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
+act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
 
-echo -n " .  running on: "
-cat /proc/cpuinfo|grep 'model name'|cut -d: -f2
-echo -n " .  cpu flags: "
-cat /proc/cpuinfo|grep 'flags'|cut -d: -f2
-
-echo "[*] starting devfs daemon"
+notice "starting device filesystem daemon"
 /sbin/devfsd /dev
 
 sync
 
-echo "[*] load loopback device kernel module"
+notice "load loopback device kernel module"
 echo -n " .  " 
 if [ -z "`uname -a | grep xbox`" ]; then
   insmod /boot/loop-aes.o \
@@ -264,46 +385,27 @@ fi
 
 # we try out xbox
 if ! [ -z "`uname -a | grep xbox`" ]; then
-    echo "[*] search dynebolic system on XBOX HADDISK"
-    mount_xbox_system "hda50"
-    mount_xbox_system "hda51"
-    mount_xbox_system "hda52"
-    mount_xbox_system "hda53"
-    mount_xbox_system "hda55"
+    notice "search dynebolic system on XBOX HARDDISK"
+    mount_xbox "hda50"
+    mount_xbox "hda51"
+    mount_xbox "hda52"
+    mount_xbox "hda53"
+    mount_xbox "hda55"
 else    
-    echo "[*] search dynebolic system on IDE HARDDISK devices"
-
-# mount the filesystem kernel modules needed
-    if [ "`fdisk -l | grep -i DOS`" ]; then
-	insmod /boot/msdos.o
-    fi
-    if [ "`fdisk -l | grep -i FAT`" ]; then
-	insmod /boot/fat.o
-	insmod /boot/vfat.o
-    fi
-    if [ "`fdisk -l | grep -i NTFS`" ]; then
-	insmod /boot/ntfs.o
-    fi
-    if [ "`fdisk -l | grep -i BSD`" ]; then
-	insmod /boot/ufs.o
-    fi
-    if [ "`fdisk -l | grep -i BEOS`" ]; then
-	insmod /boot/bfs.o
-    fi
-
+    notice "search dynebolic system on IDE HARDDISK devices"
 # cycle thru devices
-    for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
+    for DEV in `ls --color=never /proc/ide/hd* -d | chomp -- 3`; do
 	
 # skip if not an harddisk
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
 	
-# try to mount it (exits the script on success)
-	mount_harddisk_system $DEV
+# try to mount it
+	mount_harddisk $DEV
 	
 	sync
 	
     done
-
+    
 fi
 
 
@@ -311,29 +413,52 @@ fi
 ###### CDROM
 
 # CD filesystem is iso9660 unless we have a DVD (on xbox, for example)
-CDFS="iso9660"
 if [ ! -z "`uname -a | grep xbox`" ]; then
     echo "[*] searching dynebolic system on XBOX DVD"
     CDFS="udf"
 else
     echo "[*] search dynebolic system on IDE CDROM devices"
+    CDFS="iso9660"
 fi
 
-# cleanup paranoia: i always forget something there :^>
-if [ -r /boot/dynecd ]; then rm -f /boot/dynecd; fi
-
-for DEV in `ls --color=never /proc/ide/hd* -d | cut -d / -f 4`; do
+for DEV in `ls --color=never /proc/ide/hd* -d | chomp -- 3`; do
     
     if  [ `cat /proc/ide/$DEV/media` != cdrom ]; then continue; fi
     
-    mount_cdrom_system "$DEV"
+    mount_cdrom $DEV
     
     sync
 
 done
 
 
+##### FLOPPY DISK
+### TODO : configuration file
+if [ "`dmesg |grep fd0`" ]; then
+    echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
+    add_volume floppy "/rem/floppy"
+    sync
+fi
 
+##### USB STORAGE
+### TODO: configuration file and nest
+if [ "`lspci |grep USB`" ]; then
+    loadmod sd_mod
+    loadmod usb-storage
+    loadmod vfat
+    sync
+    mkdir /rem/usb
+    if [ -r /dev/sda1 ]; then # TODO: check more carefully
+	notice "USB device found - mounting /dev/sda1 on /rem/usb"
+	mount -o sync,rw /dev/sda1 /rem/usb
+	act "this is a DEBUG TEST, hope it all went well"
+	ls -l /rem/usb
+	umount /rem/usb
+    fi
+    echo "usb -fstype=auto,sync :/dev/sda1" >> /boot/auto.removable
+    add_volume usb "/rem/usb"
+    sync
+fi
 
 # TODO:
 # fetch the system from many other places
@@ -350,7 +475,7 @@ done
 
 
 
-if [ -z `mount | grep "type squashfs"` ]; then
+if [ -z `mount | grep -i "type squashfs"` ]; then
     echo
     echo "[!] dyne:bolic couldn't find the dynebol.sys file on any device"
     echo "[!] maybe you are running on a system that's not supported yet?"
@@ -366,4 +491,21 @@ if [ -z `mount | grep "type squashfs"` ]; then
     echo
 fi
 
-exit 0 # FAILURE
+# dump what we've found into the dyne environmental conf
+echo "# dynebolic environment" > /boot/dynenv
+echo "# this file is generated by the Startup script at every boot" >> /boot/dynenv
+echo "# made on `date`" >> /boot/dynenv
+echo "# Startup \$Id$" >> /boot/dynenv
+echo "# running on `uname`" >> /boot/dynenv
+echo >> /boot/dynenv
+echo "DYNE_SYS_VER=`cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv
+echo "DYNE_SYS_DEV=${DYNE_SYS_DEV}" >> /boot/dynenv
+echo "DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}" >> /boot/dynenv
+echo "DYNE_SYS_MNT=${DYNE_SYS_MNT}" >> /boot/dynenv
+if [ -z $DYNE_NEST_PATH ]; then
+    echo "DYNE_INITRD_VER=`cat /etc/DYNEBOLIC`" >> /boot/dynenv
+else
+    echo "DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
+    echo "DYNE_NEST_VER=${DYNE_NEST_VER}" >> /boot/dynenv
+fi
+exit 1
