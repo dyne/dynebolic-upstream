@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# This script is called to clean up the Nest at boot time. It is called
+# after the nest is found, but before it is fully mounted, so the nest
+# contents are in /mnt/nest/
+#
+# You can modify this file to change the defaul behavior if you have any
+# special reuirements.
+
+# zap old logs
+rm /mnt/nest/var/log/dynebolic.log
+# clear out /tmp
+rm -r /mnt/nest/tmp/*
