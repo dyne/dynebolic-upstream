@@ -169,6 +169,16 @@ sync
 
 sync
 
+# link the extras in the home
+if [ ! -r /home/extras ]; then
+  source /boot/dynenv
+  if [ -r $DYNE_SYS_MNT/extras ]; then
+    act "linking extras in home"
+    ln -s $DYNE_SYS_MNT/extras /home/extras
+  fi
+fi
+
+
 # execute rc.local if present
 # you can create rc.local in the /etc directory
 # and put there the commands to be executed here

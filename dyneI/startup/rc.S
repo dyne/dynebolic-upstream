@@ -46,8 +46,8 @@
 # discover why.
 #
 # the original bolic1 startup was by C1cc10 and Bomboclat
-# the dyne:bolic rewrite was done by Jaromil
-# USB nesting was reenginered by Richard Griffith
+# the dyne:bolic rewrite, docking and nesting was done by Jaromil
+# USB storage handling was reenginered by Richard Griffith
 #
 #
 # "$Id$"
@@ -335,12 +335,6 @@ mount_cdrom() {
 	    DYNE_SYS_DEV="/dev/${DEV}"
 	    DYNE_SYS_MNT=/mnt/dynebolic
 	    DYNE_SYS_MEDIA="cd"
-            # bring home the goodies in the CD
-	    if [ -e "${DYNE_SYS_MNT}/extras" ]; then
-		if [ ! -e /home/extras ]; then 
-		  ln -s "${DYNE_SYS_MNT}/extras" /home/extras
-		fi
-	    fi	
 	fi
     else
 	# this is a dynebolic CD, but a system

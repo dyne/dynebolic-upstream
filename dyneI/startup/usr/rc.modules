@@ -33,11 +33,6 @@ notice "loading kernel modules"
      loadmod maestro3
    fi
 
-   # FIX i810 INTEL onboard soundcard
-   # jaromil 19 07 2002
-   #   /usr/fixes/i810-fix.sh
-   # deactivated - 26 06 2003 - 1.0 alpha5-dev
-
    # FIX VIA Rhine ethernet cards
    # Ethernet controller: VIA Technologies, Inc.: Unknown device 3065
    # 28 aug 2002 // jaromil
@@ -67,15 +62,27 @@ notice "loading kernel modules"
 
 # 27 maggio 2003 - jaromil e mose'
 # the first thing we want to load are alsa modules
-# btaudio and such devices should be secondary
+# btaudio and modem devices should be secondary
 # so we push on top of the list snd-* 
-BTAUDIO="`pcimodules | sort -r | uniq | grep btaudio`"
+BOGUS_SOUND="btaudio|i8x0m|modem"
 
-for i in `pcimodules | sort -r | uniq | grep -v btaudio`; do
-  loadmod $i 
+# load alsa modules first
+for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do
+  loadmod $i
+  sync
 done
 
-if [ $BTAUDIO ]; then loadmod "$BTAUDIO"; fi
+# then load all other modules (alsa overrides oss this way)
+for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE "$BOGUS_SOUND"`; do
+  loadmod $i 
+  sync
+done
+
+# and finally load bogus sound modules
+for i in `pcimodules | sort -r | uniq | grep -iE "$BOGUS_SOUND"`; do
+  loadmod $i
+  sync
+done
 
 # creates a symlink on devfs /dev/video -> /dev/video0
 if [ -e /dev/v4l/video0 ]; then
