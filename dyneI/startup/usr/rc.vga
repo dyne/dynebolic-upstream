@@ -109,7 +109,7 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' s3 '`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep ' SiS'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep 'SiS'`" ]; then
   
   # don't use sis driver for SiS6325 because it fallsback on 640x480
   # it is a device present on some gericom laptop //jrml 12/5/03 zagreb

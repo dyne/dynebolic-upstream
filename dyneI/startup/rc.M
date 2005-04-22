@@ -172,9 +172,9 @@ sync
 # link the extras in the home
 if [ ! -r /home/extras ]; then
   source /boot/dynenv
-  if [ -r $DYNE_SYS_MNT/extras ]; then
+  if [ -r /mnt/dynebolic/extras ]; then
     act "linking extras in home"
-    ln -s $DYNE_SYS_MNT/extras /home/extras
+    ln -s /mnt/dynebolic/extras /home/extras
   fi
 fi
 

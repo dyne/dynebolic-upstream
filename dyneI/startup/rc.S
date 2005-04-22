@@ -399,10 +399,8 @@ mount_cdrom() {
 	     >> /boot/auto.removable
         add_volume cd "/rem/cd${CD_NUM}"
 	# add symlink /dev/dvd to the first dvd found
-	if [ "`dmesg|grep $DEV|grep DVD`" ]; then
-	    if [ ! -r /dev/dvd ]; then
+	if [ "`dmesg|grep '$DEV'|grep 'DVD'`" ]; then
 		ln -s "/dev/$DEV" /dev/dvd;
-	    fi
 	fi
 	return
     fi
