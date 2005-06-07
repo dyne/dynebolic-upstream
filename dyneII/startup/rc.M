@@ -104,12 +104,6 @@ fi
 
 export PATH=$PATH:/usr/bin:/usr/sbin
 
-
-######### TODO:
-###### all the /usr/etc/rc.* scripts need to be rewritten
-###### they will all be moved in ramdisk (r/w)
-###### daemons and network services will be managed by a start-stop mechanism
-
 # configure language
 /usr/etc/rc.language
 

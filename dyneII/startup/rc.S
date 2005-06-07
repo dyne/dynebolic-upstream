@@ -84,6 +84,14 @@ echo -n " .  "
 
 sync
 
+# mount the pty/pts device filesystem
+mount -t devpts none /dev/pts
+
+# mount the sys filesystem
+if [ ! -x /sys ]; then mkdir /sys; fi
+mount -t sysfs none /sys
+
+
 notice "load loopback device kernel module"
 echo -n " .  " 
 if [ -z "`uname -a | grep xbox`" ]; then

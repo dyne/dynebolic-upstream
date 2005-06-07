@@ -46,15 +46,18 @@ add_volume() {
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi	      
 	  fi
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
-	  echo "${MNT} -fstype=auto,sync :/dev/${DEV}"  >> /boot/auto.removable
+	  echo "${MNT} -fstype=${FS},sync :/dev/${DEV}"  >> /boot/auto.removable
 	  ;;
       
-      "cdrom")
+      "cdrom"|"dvd")
 	  PFX=/rem
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi	      
+	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
+	  else
+	      umount ${PFX}/${MNT}
+	      rm -r ${PFX}/${MNT}
 	  fi
 
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
@@ -76,6 +79,8 @@ add_volume() {
 ###### CDROM
 
 CD_NUM=0
+DVD_NUM=0
+
 SYS_CD_FOUND=false
 scan_cdrom() {
 
@@ -98,50 +103,25 @@ scan_cdrom() {
 
 	if [ "`dmesg|grep '$DEV.*DVD'`" ]; then 
 	    MEDIA=dvd
+	    DVD_NUM=`expr $DVD_NUM + 1`
+	    MNT=dvd${DVD_NUM}
 	else
 	    MEDIA=cdrom
+	    CD_NUM=`expr $CD_NUM + 1`
+	    MNT=cd${CD_NUM}
 	fi
 	
-	CD_NUM=`expr $CD_NUM + 1`
-	act "scanning CD${CD_NUM} ${DEV} (${CDFS})"
+	act "scanning ${DEV} -> ${MNT} (${CDFS})"
 	
-	# we have no system yet, look inside the CD if there is one
-	if [ $SYS_CD_FOUND == false ]; then
+	if [ ! -x /rem/${MNT} ]; then mkdir /rem/${MNT}; fi
+	
+	mount -t ${CDFS} -o ro /dev/${DEV} /rem/${MNT} 1>/dev/null 2>/dev/null
+
+        # device was not mounted: media is not found inside, delete dir
+	if [ $? != 0 ]; then rm /rem/${MNT}; fi
+	
+	add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
 	    
-	    if [ ! -x /mnt/dynebolic ]; then mkdir /mnt/dynebolic; fi
-	
-	    mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynebolic 1>/dev/null 2>/dev/null
-	
-            # device is mounted: media is found inside
-	    if [ $? == 0 ]; then
-
-		if [ -x /mnt/dynebolic/dyne ]; then
-
-		    notice "FOUND dynebolic system on CD!"
-
-		    add_volume ${MEDIA} ${DEV} /mnt/dynebolic ${CDFS}
-		    SYS_CD_FOUND=true
-		    
-                    # have you got brand new home in this cd?
-		    # deprecated: got_home /mnt/dynebolic
-
-		    return
-		    
-		else # cd mounts well, but there is not system inside
-		    
-		    umount /mnt/dynebolic
-		    
-		fi
-
-	    fi
-	    
-	fi
-	
-	# cd could not be mountet,
-	# or it has mounted but there was no system inside
-	# or maybe we have already found a system on a cd
-	# so then we add it to the automounted volumes
-	add_volume ${MEDIA} ${DEV} cd${CD_NUM} auto
 	
     done
 }
@@ -231,19 +211,19 @@ scan_usbstorage() {
     # if no usb controller is present then just skip
     if [ -z "`cat /proc/pci | grep USB`" ]; then return; fi
 
-  # load usb hardware layer, only one of the next 4 should succeed
-    loadmod ehci-hcd
-    loadmod usb-ohci
-    loadmod usb-uhci
+# usb controllers are now built into the kernel
+# in order to support usb keyboards attached from the very beginning
+#    loadmod usb-ohci
+#    loadmod usb-uhci
 
-  # load scsi disk module
-    loadmod sd_mod
-    
+  # load usb 2.0 support
+    loadmod ehci-hcd
+
   # load usb storage driver
     loadmod usb-storage
 
   # mount the usb device filesystem
-    mount -t usbdevfs usbdevfs /proc/bus/usb
+    mount -t usbfs none /proc/bus/usb
     
     sync
 
@@ -343,8 +323,8 @@ choose_volumes() {
 	else # cd found
 	    
 	    DYNE_SYS_MEDIA=cdrom
-	    DYNE_SYS_DEV="`echo $CD|awk '{print $1}'`"
-	    DYNE_SYS_MNT="`echo $CD|awk '{print $2}'`"
+	    DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
+	    DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`"
 	    return
 
 	fi
@@ -353,7 +333,7 @@ choose_volumes() {
 	
 	if [ $CD ]; then # and there is a cdrom
 
-	    MNT="`echo $CD|awk '{print $2}'`"
+	    MNT="`echo $CD|awk '{print $3}'`"
 	    source ${MNT}/dyne/VERSION
 
 	    # check if version differs between cd and hdisk
@@ -409,7 +389,7 @@ choose_volumes() {
 	if [ $CD ]; then # and there is a cdrom
 
 	    
-	    MNT="`echo $CD|awk '{print $2}'`"
+	    MNT="`echo $CD|awk '{print $3}'`"
 	    source ${MNT}/dyne/VERSION
 
 	    notice "booting from CDROM system version $DYNE_SYS_VER"
