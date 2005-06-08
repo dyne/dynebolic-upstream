@@ -1,0 +1,152 @@
+
+# dyne:bolic XF86Config file 
+
+# of course this comes from the XFree86 examples
+# packed together by Jaromil
+# mice handling by C1cc10
+
+Section "ServerLayout"
+        Identifier      "Default Layout"
+        Screen          "Screen0"
+        InputDevice     "Keyboard0"
+        InputDevice     "Configured Mouse"
+	InputDevice	"USB Mouse"
+        InputDevice     "Generic Mouse"
+EndSection
+
+
+
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	ModulePath   "/usr/X11R6/lib/modules"
+	FontPath     "/usr/X11R6/lib/X11/fonts/100dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/TTF"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/cyrillic/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Speedo/"
+EndSection
+
+Section "Module"
+   Load  "extmod"
+   Load  "glx"
+   Load  "dri"
+   Load  "dbe"
+   Load  "speedo"
+   Load  "type1"
+   Load  "freetype"
+EndSection
+
+
+Section "DRI"
+# don't ask why <g>
+   Mode 0666
+EndSection
+
+Section "ServerFlags"
+
+#    Option "NoTrapSignals"
+#    Option "DontZap"
+#    Option "Dont Zoom"
+#    Option "DisableVidModeExtension"
+#    Option "AllowNonLocalXvidtune"
+#    Option "DisableModInDev"
+#    Option "AllowNonLocalModInDev"
+
+EndSection
+
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "keyboard"
+	Option      "XkbRules"      "xfree86"
+	Option	    "CoreKeyboard"
+EndSection
+
+Section "InputDevice"
+        Identifier      "Configured Mouse"
+        Driver          "mouse"
+        Option          "CorePointer"
+        Option          "Device"                "/dev/psaux"
+        Option          "Protocol"              "auto"
+        Option          "Emulate3Buttons"       "true"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+Section "InputDevice"   
+        Identifier      "Generic Mouse"
+        Driver          "mouse"
+        Option          "SendCoreEvents"        "true"
+        Option          "Device"                "/dev/ttyS0"
+        Option          "Protocol"              "Microsoft"
+        Option          "Emulate3Buttons"       "true"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+Section "InputDevice"
+        Identifier      "USB Mouse"
+        Driver          "mouse"
+        Option          "SendCoreEvents"        "true"
+        Option          "Device"                "/dev/input/mice"
+        Option          "Protocol"              "auto"
+        Option          "Emulate3Buttons"       "true"
+        Option          "ZAxisMapping"          "4 5"
+EndSection
+
+
+Section "Monitor"
+	Identifier   "Monitor0"
+	VendorName   "Monitor Vendor"
+	ModelName    "Monitor Model"
+
+	HorizSync       28-48
+	VertRefresh     43-72
+	Option          "DPMS"
+
+	Modeline "320x200"     12.75  320 324 372 388  200 204 206 210 doublescan
+	Modeline "224x224"     12.75  224 228 276 288  224 228 230 236 doublescan
+	Modeline "256x224"     12.75  256 260 308 320  224 228 230 236 doublescan
+	Modeline "288x224"     12.75  288 292 340 352  224 228 230 236 doublescan
+	Modeline "320x224"     12.75  320 324 372 388  224 228 230 236 doublescan
+	Modeline "256x240"     15.00  256 260 308 320  240 244 246 254 doublescan
+	Modeline "292x240"     16.75  292 296 344 356  240 244 246 254 doublescan
+	Modeline "320x240"     16.75  320 324 372 388  240 244 246 254 doublescan
+	Modeline "336x240"     18.00  336 344 392 417  240 244 246 254 doublescan
+	Modeline "384x224"     20.00  384 388 436 480  224 228 230 236 doublescan
+	Modeline "384x240"     20.00  384 388 436 480  240 244 246 254 doublescan
+	Modeline "360x288"     20.00  360 364 412 444  288 292 298 302 doublescan
+	Modeline "360x256"     18.00  360 364 412 444  256 260 266 270 doublescan
+	Modeline "400x300"     19.00  400 412 476 500  300 303 306 317
+	Modeline "400x256"     22.00  400 416 480 504  256 259 262 269 doublescan
+	Modeline "400x224"     20.00  400 416 480 500  224 228 230 234 doublescan
+	Modeline "512x384"     25.00  512 516 580 632  384 385 388 400
+	ModeLine "640x240"     31.50  640 644 708 788  240 244 246 254 doublescan
+	ModeLine "672x240"     31.50  672 676 740 820  240 244 246 254 doublescan
+EndSection
+
+Section "Device"
+	Identifier  "VGA"
+	Driver	    "fbdev"
+	Option	    "DRI" "True"
+EndSection
+
+Section "Screen"
+	Identifier "Screen0"
+	Device     "VGA"
+	Monitor    "Monitor0"
+	DefaultDepth 16
+	SubSection "Display"
+		Depth     8
+		Modes	  "1024x768" "800x600" "640x480" "1280x1024" "400x300"
+	EndSubSection
+	SubSection "Display"
+		Depth     16
+		Modes	  "1024x768" "800x600" "640x480" "1280x1024" "400x300"
+	EndSubSection
+	SubSection "Display"
+		Depth     24
+		Modes	  "1024x768" "800x600" "640x480" "1280x1024" "400x300"
+	EndSubSection
+EndSection
+

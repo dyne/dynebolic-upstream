@@ -1,0 +1,21 @@
+# dyne:bolic master environment
+# this file gets executed every time a zsh is opened
+
+# common environment
+source /etc/zsh/common
+
+# boot modes
+if [ -r /tmp/volatile ]; then
+  source /etc/zsh/volatile
+elif [ -r /tmp/ascii ]; then
+  source /etc/zsh/ascii
+else
+  source /etc/zsh/dyne
+fi
+
+# generated at boot
+source /boot/dynenv
+
+# after this, /home/.zshrc gets sourced
+# edit your own there, don't touch this.
+

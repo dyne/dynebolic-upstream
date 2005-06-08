@@ -1,0 +1,135 @@
+
+# dyne:bolic XF86Config file for the XBOX
+# copyleft 2003-2004 Alex "Smilzo" Gnoli - GNU GPL 
+
+Section "Files"
+	RgbPath      "/usr/X11R6/lib/X11/rgb"
+	ModulePath   "/usr/X11R6/lib/modules"
+	FontPath     "/usr/X11R6/lib/X11/fonts/100dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/75dpi/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/TTF"
+	FontPath     "/usr/X11R6/lib/X11/fonts/misc/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/cyrillic/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Type1/"
+	FontPath     "/usr/X11R6/lib/X11/fonts/Speedo/"
+EndSection
+
+Section "ServerFlags"
+   Option       "AllowMouseOpenFail"
+EndSection
+
+Section "Module"
+   Load         "dbe"
+   Load         "type1"
+   Load         "speedo"
+   Load         "extmod"
+   Load         "freetype"
+   Load         "cfb24"
+   Load         "cfb32"
+   Load         "cfb16"
+   Load 	"glx"
+   Load 	"dri"
+EndSection
+
+Section "InputDevice"
+   Driver       "keyboard"
+   Identifier   "Keyboard[0]"
+   Option       "Protocol" "Standard"
+   Option       "XkbKeyCodes" "xfree86"
+   Option       "XkbLayout" "us"
+   Option       "XkbModel" "pc104"
+   Option       "XkbRules" "xfree86"
+EndSection
+
+
+Section "InputDevice"
+   Driver       "mouse"
+   Identifier   "Mouse[1]"
+   Option       "ButtonNumber" "5"
+   Option       "Device" "/dev/input/mice"
+   Option       "Name" "AutoDetected"
+   Option       "Protocol" "imps/2"
+   Option       "Vendor" "AutoDetected"
+   Option       "ZAxisMapping" "4 5"
+EndSection
+
+
+Section "Monitor"
+   Option       "CalcAlgorithm" "IteratePrecisely"
+   HorizSync    31-65
+   Identifier   "Monitor[0]"
+   ModelName    "AutoDetected"
+   Option       "DPMS"
+   VendorName   "AutoDetected"
+   VertRefresh  57-70
+   UseModes     "Modes[0]"
+EndSection
+
+
+Section "Modes"
+   Identifier   "Modes[0]"
+   #Modeline     "1024x768" 61.19 1024 1040 1216 1328 768 768 775 802
+   #Modeline     "1024x768" 74.45 1024 1040 1216 1328 768 768 776 802
+   Modeline      "640x480" 31.5   640 656 720 840 480 481 484 500 # 6. Versuch
+   Modeline      "640x480" 31.5   640 680 720 864 480 488 491 521 # 5. Versuch
+   Modeline      "640x480" 28     640 664 760 800 480 491 493 525 # 4. Versuch
+   Modeline      "640x480" 28.32  640 664 760 800 480 491 493 525 # 3. Versuch
+   Modeline      "640x480" 25.18  640 664 760 800 480 491 493 525 # 2. Versuch
+   Modeline      "640x480" 25.175 640 664 760 800 480 491 493 525 # 1. Versuch
+EndSection
+
+
+Section "Screen"
+   SubSection "Display"
+     Depth      15
+     Modes      "640x480"
+   EndSubSection
+   SubSection "Display"
+     Depth      16
+     Modes      "640x480"
+   EndSubSection
+   SubSection "Display"
+     Depth      24
+     Modes      "640x480"
+   EndSubSection
+   SubSection "Display"
+     Depth      8
+     Modes      "640x480"
+   EndSubSection
+   Device       "Device[0]"
+   Identifier   "Screen[0]"
+   Monitor      "Monitor[0]"
+EndSection
+
+
+Section "Device"
+   #BoardName    "AutoDetected"
+   BusID        "1:0:0"
+   Driver       "fbdev"
+   Identifier   "Device[0]"
+   #Option       "dpms"
+   #VendorName   "AutoDetected"
+EndSection
+
+
+Section "ServerLayout"
+   Identifier   "Layout[all]"
+   InputDevice  "Keyboard[0]" "CoreKeyboard"
+   InputDevice  "Mouse[1]" "CorePointer"
+   Screen       "Screen[0]"
+EndSection
+
+Section "DRI"
+     Group      "video"
+     Mode       0660
+EndSection
+
+Section "ServerFlags"
+         Option "PciProbe1" "false"
+         Option "PciProbe2" "false"
+         Option "PciForceConfig1" "false"
+         Option "PciForceConfig2" "false"
+         Option "PciOsConfig" "true"
+EndSection
+
+

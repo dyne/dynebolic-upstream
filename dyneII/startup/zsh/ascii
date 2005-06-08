@@ -1,0 +1,7 @@
+
+RPROMPT="%T"
+TERM="linux"
+
+alias links="links -driver fb -g -mode 800x600"
+alias mplayer="mplayer -vo fb"
+

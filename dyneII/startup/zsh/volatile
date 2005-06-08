@@ -1,0 +1,8 @@
+
+# tiny easy edit 
+export EDITOR="/bin/ee"
+# reduced path
+export PATH=".:/bin:/sbin"
+# basic terminal
+export TERM=vt100
+

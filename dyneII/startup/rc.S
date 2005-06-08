@@ -72,8 +72,9 @@ if [ -z $PATH ]; then
 fi
  
 notice "dyne:bolic hardware device detection"
-cp -f /boot/fstab /etc
-mount proc
+mount /proc
+mount /sys
+mount /dev/pts
 
 act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
 act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
@@ -83,13 +84,6 @@ echo -n " .  "
 /sbin/devfsd /dev
 
 sync
-
-# mount the pty/pts device filesystem
-mount -t devpts none /dev/pts
-
-# mount the sys filesystem
-if [ ! -x /sys ]; then mkdir /sys; fi
-mount -t sysfs none /sys
 
 
 notice "load loopback device kernel module"
