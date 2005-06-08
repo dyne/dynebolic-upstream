@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-5" ?>
+<addressbook>
+  <book_list>
+    <book name="Common address" file="addrbook-000001.xml" />
+    <book name="Personal address" file="addrbook-000002.xml" />
+  </book_list>
+  <vcard_list>
+  </vcard_list>
+  <jpilot_list>
+  </jpilot_list>
+  <ldap_list>
+  </ldap_list>
+</addressbook>

@@ -1,0 +1,33 @@
+SpiralSound resource file
+
+Version           = 1
+Locale            = EN
+BufferSize        = 512
+FragmentSize      = 256
+FragmentCount     = 8
+Samplerate        = 44100
+WantMidi          = 0
+FilterGranularity = 50
+Output            = /dev/dsp
+Midi              = /dev/midi
+UsePluginList     = 0
+Polyphony         = 1
+GUIColour         = 179
+ScopeBGColour     = 339481600
+ScopeFGColour     = 1690854400
+ScopeSelColour    = 255
+ScopeIndColour    = 3422486528
+ScopeMrkColour    = 2610639360
+
+SpiralSynthModular Info:
+
+ToolBoxColour     = 48
+ButtonColour      = 42
+CanvasColour      = 50
+DeviceColour      = 52
+DeviceBoxType     = 30
+
+PluginPath        = /usr/lib/SpiralPlugins/
+
+PluginList        = 
+end

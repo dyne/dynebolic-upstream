@@ -1,0 +1,7 @@
+#turn off antialiasing for fonts in the 9-14 pt. range
+match
+	any size > 8
+	any size < 15
+edit
+	antialias = false;
+

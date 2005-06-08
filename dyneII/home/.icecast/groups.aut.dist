@@ -1,0 +1,9 @@
+# This is the group authentication file.
+# Copy this file to etc/groups.aut in the icecast directory
+# Here you list all groups and their members.
+# The syntax is simple, one group with all its members on one line.
+# Separate the group name from the users with a colon, and the users
+# with commas.
+# Example:
+# all:him,her,it,me,you,they,and,we
+# enterprise:spock,kirk,mccoy,uhura,scott,chekov

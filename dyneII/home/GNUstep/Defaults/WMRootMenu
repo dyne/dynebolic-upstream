@@ -1,0 +1,536 @@
+(
+  "[ d y n e : b o l i c ]",
+  ("VERSION 1.4.1", EXEC, dynesplash),
+  (XTERM, SHORTCUT, "Mod1+x", EXEC, "db-launch db-xterm"),
+  (
+    VIDEO,
+    (
+      VEEJAY,
+      (
+        "FreeJ :: free the veejay!",
+        EXEC,
+        "db-xterm 'freej :: freej the veejay' db-launch freej -s 640x480"
+      ),
+      ("Bomb :: visual plasma music", EXEC, "db-launch bomb"),
+      (
+        "Xaos :: fractal zoomer/morpher",
+        EXEC,
+        "db-launch xaos -driver x11"
+      ),
+      ("Gephex :: modular video jockey", EXEC, "db-launch gephex"),
+      (
+        "Synaesthesia :: light glow oscillator",
+        EXEC,
+        "db-launch synaesthesia line"
+      ),
+      (
+        "PD :: with gem and pdp externals",
+        EXEC,
+        "db-xterm 'PD console' pd"
+      ),
+      (
+        "veejay :: remote control OSC|PD",
+        EXEC,
+        "db-xterm 'veejay manual' man veejay"
+      )
+    ),
+    (
+      PLAY,
+      ("Xine :: video player", EXEC, "db-launch xine"),
+      ("xawTV :: television viewer", EXEC, "db-launch xawtv"),
+      (
+        "MPlayer :: versatile video player",
+        EXEC,
+        "db-launch clihelp mplayer"
+      ),
+      ("Mp4Player :: mpeg4 darwin player", EXEC, "db-launch gmp4player")
+    ),
+    (
+      RECORD,
+      ("Kino :: DV recorder and editor", EXEC, "db-launch kino"),
+      ("xVidCap :: desktop movie capture", EXEC, "db-launch xvidcap"),
+      (
+        "MEncoder :: versatile encoder",
+        EXEC,
+        "db-xterm 'MENCODER :: video encoder' db-launch man mencoder"
+      ),
+      ("Transcode :: video transcoder", EXEC, "db-launch gtranscode"),
+      (
+        "FFMpeg :: video converter",
+        EXEC,
+        "db-xterm 'FFMPEG :: video converter manual' man ffmpeg"
+      ),
+      (
+        "NuppleRec :: efficient video recorder",
+        EXEC,
+        "db-launch clihelp nuvrec"
+      )
+    ),
+    (
+      EDIT,
+      ("Avidemux :: simple video cutter", EXEC, "db-launch avidemux2"),
+      ("LiVES :: linux video editing system", EXEC, "db-launch lives"),
+      ("JahShaka :: video effect integrator", EXEC, "db-launch jahshaka"),
+      (
+        "Cinelerra :: multitrack non-linear editor",
+        EXEC,
+        "db-launch cinelerra"
+      )
+    ),
+    (
+      STREAM,
+      (
+        "Mp4Live :: mpeg4 darwin source",
+        EXEC,
+        "db-xterm 'MP4LIVE :: live mpeg4 video streamer on ip/rtsp' db-launch mp4live"
+      ),
+      (
+        "Palantir :: multipart jpeg",
+        EXEC,
+        "db-xterm 'PALANTIR :: live webcam (multipart jpeg)' db-launch man palantir"
+      ),
+      (
+        "HasciiCam :: (h)ascii 4 the masses!",
+        EXEC,
+        "db-xterm 'hasciicam :: (h)ascii for the masses!' man hasciicam"
+      )
+    )
+  ),
+  (
+    AUDIO,
+    (
+      DEEJAY,
+      ("Jack it :: start live audio engine", EXEC, "db-launch qjackctl"),
+      ("Hydrogen :: drum machine", EXEC, "db-launch hydrogen"),
+      ("Jamin :: audio mastering", EXEC, "db-launch jamin"),
+      ("FreqTweak :: spectral manipulation", EXEC, "db-launch freqtweak"),
+      ("Jack Rack :: ladspa effects rack", EXEC, "db-launch jack-rack"),
+      (
+        "SpiralSynthModular :: audio in wonderland",
+        EXEC,
+        "db-launch spiralsynthmodular"
+      ),
+      ("SoundTracker :: fast tracker", EXEC, "db-launch soundtracker"),
+      ("Seq24 :: midi sequencer", EXEC, "db-launch seq24"),
+      (
+        "ZynAddSubFx :: realtime synthesizer",
+        EXEC,
+        "db-launch zynaddsubfx"
+      ),
+      (
+        "TerminatorX :: filescratch turntables",
+        EXEC,
+        "db-launch terminatorX"
+      ),
+      ("GDam :: remote multiple DJ", EXEC, "db-launch gdam"),
+      (
+        "PD :: pure data signal processing",
+        EXEC,
+        "db-xterm 'PD console' pd"
+      )
+    ),
+    (
+      PLAY,
+      ("Xmms :: hifi audio player", EXEC, xmms),
+      ("Timidity :: midi player", EXEC, "timidity -ig"),
+      ("ogg123 :: ogg console player", EXEC, "db-launch clihelp ogg123"),
+      ("mpg123 :: mp3 console player", EXEC, "db-launch clihelp mpg123"),
+      ("madplay :: another mp3 player", EXEC, "db-launch clihelp madplay")
+    ),
+    (
+      RECORD,
+      ("Ardour :: multitrack studio", EXEC, "db-launch ardour"),
+      ("TimeMachine :: audio notes", EXEC, "db-launch timemachine"),
+      ("Grip :: cd ripper", EXEC, "db-launch grip"),
+      ("Rami :: commandline recorder", EXEC, "clihelp rami"),
+      ("cdparanoia :: audio cd digitizer", EXEC, "clihelp cdparanoia"),
+      ("oggenc :: ogg/vorbis encoder", EXEC, "clihelp oggenc"),
+      (
+        "lame :: mp3 encoder",
+        EXEC,
+        "db-xterm 'lame commandline mp3 encoder manual' man lame"
+      )
+    ),
+    (
+      EDIT,
+      ("Audacity :: audio editor", EXEC, "db-launch audacity"),
+      ("ReZound :: sound editor", EXEC, "db-launch rezound")
+    ),
+    (
+      STREAM,
+      ("MuSE :: radio streaming", EXEC, "db-launch muse"),
+      (
+        "Icecast2 :: start streaming server",
+        EXEC,
+        "exec db-xterm '[ d y n e : b o l i c ] ICECAST' icecast -c /etc/icecast.xml"
+      ),
+      (
+        "Icecast2 :: administration interface",
+        EXEC,
+        "db-launch links -g http://admin:hackme@localhost:8000/admin/"
+      ),
+      (
+        "Icecast2 :: edit configuration",
+        EXEC,
+        "db-launch nedit /etc/icecast.xml"
+      )
+    ),
+    ("set Audio mixer", EXEC, "db-launch aumix"),
+    ("set Midi patchbay", EXEC, "db-launch alsa-patch-bay")
+  ),
+  (
+    IMAGE,
+    ("Gimp :: image manipulator", EXEC, "db-launch gimp"),
+    ("InkScape :: vectorial graphics", EXEC, "db-launch inkscape"),
+    (
+      "Blender :: 3d editor and game engine",
+      EXEC,
+      "db-launch blender /usr/share/dynebolic/3d/db_3d.blend"
+    ),
+    ("GQview :: image file browser", EXEC, "db-launch gqview"),
+    ("xSG :: desktop screen grab", EXEC, xsg)
+  ),
+  (
+    TEXT,
+    ("AbiWord :: word processor", EXEC, "db-launch abiword"),
+    ("Scribus :: desktop publisher", EXEC, "db-launch scribus"),
+    ("Ted :: rich text editor", EXEC, "db-launch Ted"),
+    ("Bluefish :: html editor", EXEC, "db-launch bluefish -s"),
+    ("Nedit :: plain text editor", EXEC, "db-launch nedit"),
+    ("Vim :: versatile text editor", EXEC, "db-launch gvim"),
+    ("Emacs :: extensible text editor", EXEC, "db-launch emacs")
+  ),
+  (
+    NET,
+    (
+      "Mozilla :: Web Suite",
+      EXEC,
+      "db-launch mozilla -splash -height 500 -width 700 http://dyne.org"
+    ),
+    (
+      WWW,
+      (
+        "Links 2 :: slick web browser",
+        EXEC,
+        "db-launch links -g http://dyne.org"
+      ),
+      (
+        "lynx :: console web browser",
+        EXEC,
+        "db-xterm 'LYNX :: console web browser' db-launch lynx http://dyne.org"
+      )
+    ),
+    (
+      EMAIL,
+      ("Sylpheed :: simple mail client", EXEC, "db-launch sylpheed"),
+      ("Gpa :: encryption privacy assistant", EXEC, "db-launch gpa")
+    ),
+    (
+      SHARE,
+      ("Lopster :: p2p gnutella filesharing", EXEC, "db-launch lopster"),
+      ("MLdonkey :: p2p edonkey filesharing", EXEC, "db-launch mlnet+gui"),
+      (
+        "The Circle :: p2p serverless (need an ssh account)",
+        EXEC,
+        "db-xterm 'The Circle :: peer 2 peer without servers' db-launch circle"
+      )
+    ),
+    (
+      CHAT,
+      ("XChat :: graphical irc chat client", EXEC, "db-launch xchat"),
+      ("Gaim :: instant messaging client", EXEC, "db-launch gaim"),
+      ("OpenMash :: audio video conference", EXEC, "/usr/mash/mash-start"),
+      ("KPhone :: SIP web phone", EXEC, "db-launch kphone"),
+      ("Nsdr :: multicast session directory", EXEC, "db-launch nsdr"),
+      (
+        "irssi :: console irc chat client",
+        EXEC,
+        "db-xterm 'IRSSI :: console l33t irc client' db-launch irssi"
+      ),
+      (
+        "silc :: encrypted irc chat client",
+        EXEC,
+        "db-xterm 'SILC :: chat with strong encryption' db-launch /usr/silc/bin/silc"
+      ),
+      (
+        "everybuddy :: instant messaging client",
+        EXEC,
+        "db-launch everybuddy"
+      )
+    ),
+    (
+      FTP,
+      ("GFtp :: graphical ftp client", EXEC, "db-launch gftp"),
+      (
+        "ncftp :: console ftp client",
+        EXEC,
+        "db-xterm 'NCFTP :: console ftp client' db-launch ncftp"
+      ),
+      (
+        "lftp :: advanced ftp client",
+        EXEC,
+        "db-xterm 'LFTP :: console ftp client' db-launch lftp"
+      )
+    ),
+    (
+      VNC,
+      (
+        "vncserver :: start vnc server",
+        EXEC,
+        "db-xterm 'VNC :: start server' man vncserver"
+      ),
+      (
+        "vncviewer :: watch a vnc server",
+        EXEC,
+        "db-xterm 'VNC :: connect to a listening VNC viewer' man vncconnect"
+      ),
+      (
+        "vncpasswd :: vnc server password",
+        EXEC,
+        "db-xterm 'VNC :: set server password' man vncpasswd"
+      ),
+      ("rdesktop :: remote desktop client", EXEC, "clihelp rdesktop")
+    ),
+    (
+      TOOLS,
+      ("Firewallbuilder :: iptables gui", EXEC, "db-launch fwbuilder"),
+      ("Ethereal :: network analyzer", EXEC, ethereal),
+      (
+        "Ettercap :: multipurpose sniffer",
+        EXEC,
+        "xterm -tn xterm-color -bg black -fg white -T 'ETTERCAP :: multipurpose sniffer' -geometry 118x25 -e ettercap"
+      ),
+      ("Iptraf :: ip lan monitor", EXEC, xiptraf),
+      ("hping :: packet forger", EXEC, "clihelp hping"),
+      (
+        "minicom :: serial terminal",
+        EXEC,
+        "db-xterm 'MINICOM :: serial terminal' minicom"
+      )
+    ),
+    ("Modem setup", EXEC, "pppconfig"),
+    ("Network setup", EXEC, "db-launch nettante")
+  ),
+  (
+    FILES,
+    ("xFE :: a file explorer", EXEC, "db-launch xwc /home"),
+    ("xFSamba :: samba file explorer", EXEC, "db-launch xfsamba"),
+    (
+      "LinNeighborhood :: samba shared folders",
+      EXEC,
+      "db-launch LinNeighborhood"
+    ),
+    ("Gringotts :: encrypted data storage", EXEC, "db-launch gringotts -s"),
+    ("gCombust :: cd burner", EXEC, "db-launch gcombust")
+  ),
+  (
+    GAMES,
+    ("Anatolia :: online multi user dungeon", EXEC, "db-launch gmudix"),
+    ("Armagetron :: tron lightspeed cycles", EXEC, "db-launch armagetron"),
+    (
+      "FreeCiv :: free civilization",
+      EXEC,
+      "db-launch setuidgid bin civclient"
+    ),
+    (
+      "FreeCiv server :: multiplayer arena",
+      EXEC,
+      "db-xterm 'CIVSERVER :: free civilization server listening on port 5555' setuidgid bin civserver"
+    ),
+    ("CannonSmash :: 3d multiplayer tabletennis", EXEC, "db-launch csmash"),
+    (
+      "Eat the whistle :: sensible soccer",
+      EXEC,
+      "db-launch eat-the-whistle"
+    ),
+    ("eBoard :: GNU Chess & online board", EXEC, "db-launch eboard"),
+    ("Foobillard :: 3d carambola billard", EXEC, "db-launch foobillard"),
+    (
+      "Freecraft :: real-time multiplayer strategy",
+      EXEC,
+      "db-launch freecraft"
+    ),
+    ("FrozenBubble :: puzzle bubble like", EXEC, "db-launch frozen-bubble"),
+    ("RetroVolley :: gnu arcade volleyball", EXEC, "db-launch gav"),
+    (
+      "glhack :: graphical nethack dungeon",
+      EXEC,
+      "glhack --windowed --fontsize 14"
+    ),
+    ("lBreakout2 :: arkanoid & breakout", EXEC, "db-launch lbreakout2"),
+    ("lTris :: rich tetris clone", EXEC, "db-launch ltris"),
+    ("Liquidwar :: addictive multiplayer", EXEC, "db-launch liquidwar"),
+    (
+      "Nethack :: huge rogue ascii dungeon",
+      EXEC,
+      "xterm -tn xterm-color -bg black -fg white -T 'NETHACK :: exporing the mazes of menace' -geometry 130x30 -e 'nethack -d /var/lib/games/nethack'"
+    ),
+    ("Matanza :: ascii multiplayer asteroids", EXEC, matanza),
+    (
+      "Netris :: multiplayer ascii tetris",
+      EXEC,
+      "db-xterm 'NETRIS :: networked old-school tetris' db-launch netris"
+    ),
+    ("PowerManga :: galactic shot'em up", EXEC, "db-launch powermanga"),
+    ("Racer :: car racing from above", EXEC, "db-launch racer"),
+    ("Starfighter :: arcade space quest", EXEC, "db-launch starfighter"),
+    ("tkSol :: snappy solitaire", EXEC, "db-launch tksol"),
+    ("Wesnoth :: turn based strategy fantasy", EXEC, "db-launch wesnoth"),
+    ("xMahjongg :: chinese social game", EXEC, "db-launch xmahjongg"),
+    (
+      "xWellTris :: 2.5 dimensional warped tetris",
+      EXEC,
+      "db-launch xwelltris"
+    )
+  ),
+  (
+    XUTILS,
+    ("xvKbd :: virtual keyboard", EXEC, "db-launch xvkbd"),
+    ("xKill :: a killer", EXEC, xkill),
+    ("xrMap :: a world atlas", EXEC, "db-launch xrmap"),
+    ("ical :: calendar organizer", EXEC, "db-launch ical"),
+    ("fox Calc :: a calculator", EXEC, "db-launch calculator"),
+    ("xClock :: a clock", EXEC, "db-launch xclock"),
+    ("xFig :: a figure editor", EXEC, "db-launch xfig"),
+    ("xMan :: a manual browser", EXEC, "db-launch xman"),
+    ("xFontsel :: a font selector", EXEC, "db-launch xfontsel"),
+    ("xVidtune :: vidtun (danger)", EXEC, "db-launch xvidtune"),
+    ("xEyes :: someone's watching", EXEC, "db-launch xeyes")
+  ),
+  (
+    SYSTEM,
+    ("Save Settings", EXEC, "db-launch taschino"),
+    ("set Language", EXEC, "db-launch lost-in-babylon"),
+    ("set Network", EXEC, "db-launch nettante"),
+    ("set Modem", EXEC, "pppconfig"),
+    ("set Printer", EXEC, "db-launch phoenix http://localhost:631/"),
+    ("set WindowMaker", EXEC, "db-launch wmprefs"),
+    ("set Video", EXEC, gvidm),
+    (
+      "set more Video",
+      EXEC,
+      "db-xterm 'XFree86 configuration tool' xf86cfg -textmode"
+    ),
+    ("xBox NTSC 800", SHORTCUT, "Control+Mod1+n", EXEC, "xbox_ntsc.sh 800"),
+    ("xBox NTSC 640", EXEC, xbox_ntsc.sh),
+    ("xBox PAL 800", SHORTCUT, "Control+Mod1+p", EXEC, "xbox_pal.sh 800"),
+    ("xBox PAL 640", EXEC, xbox_pal.sh)
+  ),
+  (
+    APPEARANCE,
+    (
+      Themes,
+      OPEN_MENU,
+      "-noext /usr/share/WindowMaker/Themes $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle"
+    ),
+    (
+      Styles,
+      OPEN_MENU,
+      "-noext /usr/share/WindowMaker/Styles $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle"
+    ),
+    (Fluxbox, RESTART, fluxbox),
+    (
+      Background,
+      (
+        Solid,
+        (Black, EXEC, "wdwrite WindowMaker WorkspaceBack '(solid, black)'"),
+        (
+          Blue,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#505075\")'"
+        ),
+        (
+          Indigo,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#243e6c\")'"
+        ),
+        (
+          Bleumarine,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#224477\")'"
+        ),
+        (
+          Purple,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#554466\")'"
+        ),
+        (
+          Wheat,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, wheat4)'"
+        ),
+        (
+          "Dark Gray",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#333340\")'"
+        ),
+        (
+          Wine,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#400020\")'"
+        )
+      ),
+      (
+        Gradient,
+        (
+          Sunset,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(mvgradient, deepskyblue4, black, deepskyblue4, tomato4)'"
+        ),
+        (
+          Sky,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, blue4, white)'"
+        ),
+        (
+          "Blue Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#7080a5\", \"#101020\")'"
+        ),
+        (
+          "Indigo Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#746ebc\", \"#242e4c\")'"
+        ),
+        (
+          "Purple Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#654c66\", \"#151426\")'"
+        ),
+        (
+          "Wheat Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#a09060\", \"#302010\")'"
+        ),
+        (
+          "Grey Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#636380\", \"#131318\")'"
+        ),
+        (
+          "Wine Shades",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#600040\", \"#180010\")'"
+        )
+      ),
+      (
+        Images,
+        OPEN_MENU,
+        "-noext /usr/share/WindowMaker/Backgrounds $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -s -S"
+      )
+    ),
+    ("Save Session", SAVE_SESSION),
+    (
+      "Save Theme",
+      SHEXEC,
+      "getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/\"%a(Theme name)\""
+    )
+  ),
+  (WORKSPACE, WORKSPACE_MENU),
+  (
+    EXIT,
+    ("Quit dyne:bolic", EXEC, xquit),
+    ("Restart X", EXEC, "killall X"),
+    ("Restart WindowMaker", RESTART)
+  )
+)

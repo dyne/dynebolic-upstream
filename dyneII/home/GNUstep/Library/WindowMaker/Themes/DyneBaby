@@ -1,0 +1,31 @@
+{
+  LargeDisplayFont = "-*-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*";
+  HighlightColor = white;
+  FTitleColor = white;
+  MenuTextFont = "-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-*-*";
+  WorkspaceBack = (spixmap, "/usr/share/WindowMaker/Backgrounds/dynebolic04.jpg", gray20);
+  UTitleBack = (hgradient, lightskyblue1, lightskyblue4);
+  IconTitleFont = "-*-helvetica-medium-r-normal-*-8-*-*-*-*-*-*-*";
+  PTitleBack = (hgradient, "rgb:41/eb/ef", "rgb:28/92/79");
+  WindowTitleFont = "-*-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*";
+  UTitleColor = black;
+  ClipTitleFont = "-*-helvetica-medium-r-normal-*-10-*-*-*-*-*-*-*";
+  MenuDisabledColor = gray40;
+  MenuStyle = normal;
+  MenuTextBack = (hgradient, lightskyblue1, lightskyblue4);
+  PTitleColor = white;
+  IconBack = (dgradient, "rgb:a6/a6/b6", "rgb:51/55/61");
+  DisplayFont = "-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-*-*";
+  MenuTitleBack = (hgradient, "rgb:41/8a/ef", "rgb:20/49/8e");
+  FTitleBack = (hgradient, "rgb:41/8a/ef", "rgb:20/49/8e");
+  TitleJustify = center;
+  CClipTitleColor = gray30;
+  ResizebarBack = (hgradient, lightskyblue1, lightskyblue4);
+  MenuTextColor = black;
+  ClipTitleColor = black;
+  IconTitleBack = "#3069bf";
+  HighlightTextColor = black;
+  IconTitleColor = white;
+  MenuTitleFont = "-*-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*";
+  MenuTitleColor = white;
+}

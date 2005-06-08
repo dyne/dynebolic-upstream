@@ -1,0 +1,67 @@
+#SCFF 1.0
+# mixer device name
+[/dev/mixer]
+
+# Settings for the vol-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+vol = { 90 90 }
+# show slider for device "vol" = Bool[True, False]:Map
+vol_map = True
+# label of the device "vol" = String:Label
+vol_label = "Vol  "
+
+# Settings for the synth-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+synth = { 75 75 }
+# show slider for device "synth" = Bool[True, False]:Map
+synth_map = True
+# label of the device "synth" = String:Label
+synth_label = "Synth"
+
+# Settings for the pcm-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+pcm = { 75 75 }
+# show slider for device "pcm" = Bool[True, False]:Map
+pcm_map = True
+# label of the device "pcm" = String:Label
+pcm_label = "Pcm  "
+
+# Settings for the speaker-device = { Int[0-100]:value }
+speaker = { 75 }
+# show slider for device "speaker" = Bool[True, False]:Map
+speaker_map = True
+# label of the device "speaker" = String:Label
+speaker_label = "Spkr "
+
+# Settings for the line-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+line = { 75 75 }
+# show slider for device "line" = Bool[True, False]:Map
+line_map = True
+# label of the device "line" = String:Label
+line_label = "Line "
+
+# Settings for the mic-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+mic = { 16 16 }
+# show slider for device "mic" = Bool[True, False]:Map
+mic_map = True
+# label of the device "mic" = String:Label
+mic_label = "Mic  "
+
+# Settings for the cd-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+cd = { 75 75 }
+# show slider for device "cd" = Bool[True, False]:Map
+cd_map = True
+# label of the device "cd" = String:Label
+cd_label = "CD   "
+
+# Settings for the rec-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+rec = { 75 75 }
+# show slider for device "rec" = Bool[True, False]:Map
+rec_map = True
+# label of the device "rec" = String:Label
+rec_label = "Rec  "
+
+# Settings for the line2-device = { Int[0-100]:leftValue Int[0-100]:rightValue }
+line2 = { 64 64 }
+# show slider for device "line2" = Bool[True, False]:Map
+line2_map = True
+# label of the device "line2" = String:Label
+line2_label = "Line2"
+

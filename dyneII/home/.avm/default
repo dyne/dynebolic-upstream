@@ -1,0 +1,64 @@
+
+[ aviplay ]
+SDL_GAMMA_BLUE 10
+SDL_GAMMA_GREEN 10
+SDL_GAMMA_RED 10
+audio_playing_rate 44100
+audio_renderer OSS,SDL,noaudio
+audio_resampling 256
+audio_resampling_rate 44100
+audio_stream 0
+audio_volume 800
+av_async_ms 0
+buffered 1
+codecs_audio ff
+codecs_video ff
+direct 1
+display_frame_pos 256
+dropping 1
+http_proxy 
+quality_auto 1
+subtitle_async_ms 0
+subtitle_codepage default
+subtitle_font -adobe-helvetica-medium-r-normal--*-160-100-100-p-*
+subtitle_url 
+theme default
+url video/pane.avi
+use_http_proxy 256
+use_yuv 1
+video_stream 0
+
+[ ffdivx ]
+bug_ac_vlc 0
+bug_autodetect 1
+bug_direct_blocksize 0
+bug_no_padding 0
+bug_old_msmpeg4 0
+bug_qpel_chroma 0
+bug_qpel_chroma2 0
+bug_std_qpel 0
+bug_ump4 0
+bug_xvid_ilace 0
+dr1 1
+
+[ ffdx50 ]
+bug_ac_vlc 0
+bug_no_padding 0
+bug_old_msmpeg4 0
+bug_qpel_chroma 0
+bug_ump4 0
+bug_xvid_ilace 0
+dr1 1
+
+[ ffodivx ]
+bug_ac_vlc 0
+bug_autodetect 1
+bug_direct_blocksize 0
+bug_no_padding 0
+bug_old_msmpeg4 0
+bug_qpel_chroma 0
+bug_qpel_chroma2 0
+bug_std_qpel 0
+bug_ump4 0
+bug_xvid_ilace 0
+dr1 1

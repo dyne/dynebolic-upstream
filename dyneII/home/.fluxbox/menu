@@ -1,0 +1,252 @@
+[begin] ([ d y n e : b o l i c ])
+
+[exec] (VERSION 1.4) {dynesplash}
+
+[nop]
+
+[exec] (XTERM) {db-launch db-xterm}
+
+[nop]
+
+[submenu] (VIDEO .::.) { Video tools }
+
+ [submenu] (VEE JAY .::.) { go public! }
+  [exec] (freej :: free the veejay!) {db-xterm freej}
+  [exec] (hasciicam :: hascii 4 the masses!) {db-xterm hasciicam}
+  [exec] (xaos :: realtime fractal zoomer/morpher) {db-launch xaos -driver x11}
+  [exec] (effectv :: real-time video effector) {db-xterm effectv}
+  [exec] (synaesthesia :: light glow oscillator) {db-launch synaesthesia line}
+ [end]
+
+ [submenu] (PLAY .::.)
+  [exec] (xine :: video player) {db-launch xine},
+  [exec] (xawtv :: television viewer) {db-launch xawtv}
+  [exec] (mplayer :: mpeg video viewer) {db-launch clihelp mplayer}
+  [exec] (gmp4player :: mpeg4 rtsp player) {db-launch gmp4player}
+ [end]
+
+ [submenu] (RECORD .::.)
+  [exec] (kino :: DV recorder and editor) {db-launch kino}
+  [exec] (mencoder :: nuv -> mpeg encoder) {clihelp mencoder}
+  [exec] (xvidcap :: X desktop movie capture) {db-launch xvidcap}
+  [exec] (transcode :: video format converter) {db-launch gtranscode}
+  [exec] (nuvrec :: nuv - live video-in recorder) {clihelp nuvrec}
+  [exec] (nuvplay :: nuv player) {clihelp nuvplay}
+  [exec] (nuvedit :: simple nuv editor) {nuvedit}
+ [end]
+
+ [submenu] (EDIT .::.)
+  [exec] (avidemux :: simple video cutter) {db-launch avidemux2}
+  [exec] (cinelerra :: multitrack non-linear editor) {cinelerra}
+  [exec] (lives :: linux video editing system) {lives-exe}
+  [exec] (jahshaka :: video effect integrator) {db-launch jahshaka}
+ [end]
+
+ [submenu] (STREAM .::.)
+  [exec] (mp4live :: mpeg4 video rtsp streamer) {db-xterm "MP4LIVE :: live mpeg4 video streamer on ip/rtsp" mp4live}
+  [exec] (mp4creator :: mpeg4 video encoder) {db-xterm "MP4CREATOR :: mpeg4 video and audio encoder" clihelp mp4creator}
+  [exec] (palantir :: live webcam) {db-xterm "PALANTIR :: live webcam (multipart jpeg)" palantir}
+  [exec] (openmash :: multicast remote conference) {db-launch /usr/mash/mash-start}
+ [end]
+
+[end]
+
+[submenu] (AUDIO .::.) {Sound tools}
+ 
+   [submenu] (DEE JAY .::.) { digital deejay }
+     [exec] (jack daemon :: start live audio engine) {db-launch qjackctl}
+     [exec] (alsa patchbay :: midi connection manager) {db-launch alsa-patch-bay}
+     [exec] (pd :: pure data signal processing) {db-xterm 'PD console' pd}
+     [exec] (terminatorx :: filescratch turntables) {db-launch terminatorX}
+     [exec] (soundtracker :: tracker / sequencer) {db-launch soundtracker}
+     [exec] (hydrogen :: drum machine) {db-launch hydrogen}
+     [exec] (zynaddsubfx :: realtime synthesizer) {db-launch zynaddsubfx}
+     [exec] (freqtweak :: spectral manipulation) {db-launch freqtweak}
+     [exec] (jack rack :: ladspa effects rack) {db-launch jack-rack}
+     [exec] (jamin :: hi-fi audio mastering) {db-launch jamin}
+     [exec] (spiralsynth modular :: audio in wonderland) {db-launch spiralsynthmodular}
+     [exec] (ardour :: multitrack music studio) {db-launch ardour}
+     [exec] (gdam :: digital DJ) {db-launch gdam}
+    [end]
+    
+    [submenu] (PLAY .::.) { listen }
+     [exec] (xmms :: hifi audio player) {xmms}
+     [exec] (ogg123 :: command line ogg player) {clihelp ogg123}
+     [exec] (mpg123 :: command line mp3 player) {clihelp mpg123}
+     [exec] (madplay :: command line mp3 player) {clihelp madplay}
+    [end]
+
+    [submenu] (RECORD .::.) { record and encode sound }
+     [exec] (grip :: cd ripper interface) {db-launch grip}
+     [exec] (rami :: simple commandline recorder) {exec clihelp rami}
+     [exec] (timemachine :: jack recorder) {db-launch timemachine}
+     [exec] (rip :: simple commandline cd ripper) {exec clihelp rip}
+     [exec] (oggenc :: ogg/vorbis encoder) {exec clihelp oggenc}
+    [end]
+   
+    [submenu] (EDIT .::.) { cut mix paste }
+     [exec] (audacity :: multitrack audio editor) {db-launch audacity}
+     [exec] (rezound :: audio sample editor) {db-launch rezound}
+    [end]
+   
+    [submenu] (STREAM .::.) { network radio }
+     [exec] (muse :: multiple streaming engine) {db-launch muse}
+     [nop]
+     [exec] (icecast2 :: start streaming server) {db-xterm "[ d y n e : b o l i c ] ICECAST" icecast -c /etc/icecast.xml}
+     [exec] (icecast2 :: administration interface) {db-launch firefox http://admin:hackme@localhost:8000/admin/}
+     [exec] (icecast2 :: edit configuration) {db-launch nedit /etc/icecast.xml}
+    [end]
+   
+    [exec] (audio levels mixer) {db-launch aumix}
+
+[end]
+
+[submenu] (IMAGE .::.) { Graphic tools }
+ [exec] (gimp :: image manipulator) {db-launch gimp}
+ [exec] (inkscape :: vectorial graphics) {db-launch inkscape}
+ [exec] (blender :: 3d editor and game engine) {db-launch blender}
+ [exec] (convert :: console image manipulator) {clihelp convert}
+ [exec] (gqview :: image file browser) {db-launch gqview}
+[end]
+
+[submenu] (TEXT .::.) { Text tools }
+ [exec] (abiword :: word processor) {db-launch abiword}
+ [exec] (scribus :: desktop publisher) {db-launch scribus}
+ [exec] (ted :: word processor) {Ted}
+ [nop]
+ [exec] (bluefish :: html editor) {db-launch bluefish -s}
+ [nop]
+ [exec] (nedit :: plain text editor) {db-launch nedit}
+ [exec] (vim :: l33t text editor) {db-xterm "VIM" vim}
+[end]
+
+[submenu] (NET .::.) { Comunication tools }
+
+ [submenu] (WWW .::.) { World Wide Web browsers }
+  [exec] (firebird :: mozilla based web browser) {phoenix http://dyne.org}
+  [exec] (links2 graphic :: fast & light web browser) {links -g http://dyne.org}
+  [exec] (links console :: fast & light web broser) {db-xterm "LINKS :: console web browser" links http://dyne.org}
+  [exec] (lynx :: console based web browser) {db-xterm "LYNX :: console web browser" lynx http://dyne.org}
+ [end]
+
+ [submenu] (EMAIL .::.) { Electronic Mail & Encryption }
+  [exec] (sylpheed :: mail client with gnupg support) {sylpheed}
+  [exec] (gpa :: gnu privacy assistant) {gpa}
+  [exec] (gnupg :: gnu encryption tool) {clihelp gpg}
+ [end]
+
+ [submenu] (SHARE .::.) { filesharing }
+  [exec] (lopster :: peer 2 peer filesharing client) {lopster}
+  [exec] (linneighborhood :: samba mount client) {LinNeighborhood}
+  [exec] (xfsamba :: samba file client) {xfsamba}
+  [end]
+
+ [submenu] (CHAT .::.) { Internet Relay Chat clients }
+  [exec] (xchat :: graphical irc chat client) {xchat}
+  [exec] (silc :: encrypted irc chat client) {db-xterm "SILC :: chat with strong encryption" /usr/silc/bin/silc}
+  [exec] (irssi :: console irc chat client) {db-xterm "IRSSI :: console l33t irc client" irssi}
+  [exec] (gaim :: instant messaging client) {gaim}
+  [exec] (everybuddy :: instant messaging client) {everybuddy}
+  [exec] (kphone :: SIP web phone) {db-launch kphone}
+ [end]
+
+ [submenu] (FTP .::.) { File Transfer Protocol clients }
+  [exec] (gftp :: graphical ftp client) {db-launch gftp}
+  [exec] (ncftp :: console ftp client) {db-xterm "NCFTP :: console ftp client" ncftp}
+  [exec] (lftp :: advanced console ftp client) {db-xterm "LFTP :: console ftp client" lftp}
+ [end]
+
+ [submenu] (VNC .::.) { Virtual Network Computing }
+  [exec] (vncserver :: start vnc server) { db-xterm "VNC :: start server" man vncserver }
+  [exec] (vncviewer :: watch a vnc server) { db-xterm "VNC :: connect to a listening VNC viewer" man vncconnect }
+  [exec] (vncpasswd :: vnc server password) { db-xterm "VNC :: set server password" man vncpasswd }
+  [exec] (rdesktop :: remote desktop client) { clihelp rdesktop }
+ [end]
+
+ [submenu] (TOOLS .::.) { Network tools }
+  [exec] (firewallbuilder :: iptables gui) {db-launch fwbuilder}
+  [exec] (nsdr :: multicast session directory) {db-launch nsdr}
+  [exec] (ethereal :: network analyzer) {db-launch ethereal}
+  [exec] (ettercap :: multipurpose sniffer) { xterm -tn linux -bg black -fg white -T "ETTERCAP :: multipurpose sniffer" -geometry 118x25 -e ettercap }
+  [exec] (hping :: packet forger) { clihelp hping }
+  [exec] (iptraf :: ip lan monitor) { xiptraf }
+  [exec] (kismet :: wireless sniffer) { db-xterm "KISMET :: 802.11b wireless network sniffer" kismet }
+  [exec] (minicom :: serial terminal) { db-xterm "MINICOM :: serial terminal" minicom }
+ [end] 
+
+[end]
+
+[submenu] (FILES .::.) {handling data}
+ [exec] (xfe :: x file explorer) {db-launch xwc /home}
+ [exec] (gringotts :: secure data storage) {db-launch gringotts -s}
+ [exec] (gcombust :: cd burning interface) {db-launch gcombust}
+[end]
+
+[submenu] (GAMES .::.) {get slack!}
+  [exec] (anatolia :: online multi user dungeon) {db-launch gmudix}
+  [exec] (armagetron :: tron lightspeed cycles) {db-launch armagetron}
+  [exec] (civclient :: free civilization client) {setuidgid bin civclient}
+  [exec] (civserver :: free civilization server) {db-xterm "CIVSERVER :: free civilization server listening on port 5555" setuidgid bin civserver}
+  [exec] (cannon smash :: 3d multiplayer tabletennis) {db-launch csmash}
+  [exec] (eat the whistle :: soccer) {db-launch eat-the-whistle}
+  [exec] (foobillard :: 3d carambola billard) {db-launch foobillard}
+  [exec] (freecraft :: real-time multiplayer strategy) {db-launch freecraft}
+  [exec] (frozen bubble :: puzzle bubble like) {db-launch frozen-bubble}
+  [exec] (gav :: gnu arcade retro volleyball) {db-launch gav}
+  [exec] (lbreakout2 :: arkanoid like breakout) {db-launch lbreakout2}
+  [exec] (liquidwar :: addictively wet multiplayer) {db-launch liquidwar}
+  [exec] (ltris :: rich tetris clone) {db-launch ltris} 
+  [exec] (matanza :: ascii multiplayer asteroids) {matanza}
+  [exec] (nethack :: huge rogue ascii dungeon) {db-xterm "NETHACK :: exporing the mazes of menace" nethack -d /var/lib/games/nethack}
+  [exec] (netris :: multiplayer ascii tetris) {db-xterm "NETRIS :: networked old-school tetris" netris}
+  [exec] (powermanga :: galactic shot'em up) {db-launch powermanga}
+  [exec] (wesnoth :: turn based stratery fantasy) {db-launch wesnoth}
+  [exec] (eboard :: GNU Chess & online board) {db-launch eboard} 
+  [exec] (xmahjongg :: chinese social game) {db-launch xmahjongg}
+  [exec] (xwelltris :: 2.5 dimensional warped tetris) {db-launch xwelltris}
+[end]
+
+[submenu] (XUTILS .::.)
+  [exec] (xrmap :: world atlas) {xrmap}
+  [exec] (ical :: calendar program) {ical}
+  [exec] (xman :: x manual browser) {xman}
+  [exec] (xcalc :: x calculator) {xcalc}
+  [exec] (xfontsel :: x font selector) {xfontsel}
+  [exec] (xvidtune :: x video tune) {xvidtune}
+  [exec] (xclock :: x clock) {xclock}
+  [exec] (xkill :: x killer) {xkill}
+[end]
+
+[nop]
+
+[submenu] (SYSTEM .::.)
+ [exec] (nest dyne:bolic) {db-launch taschino}
+ [exec] (language setup) {db-launch lost-in-babylon}
+ [exec] (network setup) {db-launch nettante}
+ [exec] (modem setup) {db-launch modemconfig}
+ [exec] (printer setup) {db-launch phoenix http://localhost:631/}
+ [exec] (change resolution) {gvidm}
+ [exec] (xfree86 setup) {xf86cfg}
+[end]
+
+[submenu] (DESKTOP .::.) { look & feel }
+	[workspaces]   (Workspace List)
+[submenu] (Styles) {Choose a style...}
+	[stylesdir] (/usr/share/commonbox/styles)
+	[stylesdir] (/home/.fluxbox/styles)
+[end]
+
+	[include] (/home/.fluxbox/imagebgmenu)
+	[config] (Configure)
+	[reconfig] (Reload config)
+[end]
+
+[nop]
+
+[submenu] (EXIT .::.) { the way out }
+        [exec]	(shutdown or reboot) {xquit}
+        [restart]  (restart in windowmaker) {/usr/bin/wmaker}
+[end]
+
+[end]
+

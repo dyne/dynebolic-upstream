@@ -1,0 +1,8 @@
+debug-level = 0
+input-auto-connect = 0
+input-client = 64
+input-port = 0
+input-channel-enabled = 0
+input-volume-enabled = 0
+output-client = 128
+output-port = 0

@@ -1,0 +1,17 @@
+$fullscreen = undef;
+$graphics_level = 3;
+$KEYS = {
+          'p2' => {
+                    'left' => SDLK_LEFT,
+                    'right' => SDLK_RIGHT,
+                    'fire' => SDLK_UP
+                  },
+          'misc' => {
+                      'fs' => SDLK_f
+                    },
+          'p1' => {
+                    'left' => SDLK_x,
+                    'right' => SDLK_v,
+                    'fire' => SDLK_c
+                  }
+        };

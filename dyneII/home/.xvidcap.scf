@@ -1,0 +1,33 @@
+#SCFF
+# xvidcap configuration file
+
+# frames per second
+fps: 10.000000
+
+# file pattern
+file: test.mpeg
+
+# max frames 
+max_frames: 1000
+
+# max time 
+max_time: 0.000000
+
+# quality (JPEG)
+quality: 99
+
+# compression (PNG, GZIP)
+compression: 0
+
+# use shared memory
+shm: 0
+
+# video codec used by ffmpeg
+codec: MJPEG
+
+# what kind of mouse pointer should be recorded? 0 = none, 1 = white, 2 = black
+mouse_wanted: 1
+
+# toggle autocontinue (0/1)
+continue: 0
+

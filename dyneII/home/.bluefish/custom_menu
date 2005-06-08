@@ -1,0 +1,42 @@
+custom_menu: /replace/convert <any tag> in <any other tag> in selection:1:(<|</)(%0)([^>]*)(>):\\0%1\\2>:2:1:0:2:any tag name:any other tag name:
+custom_menu: /replace/convert <td> in <th> in selection:1:(<|</)(td)([^>]*)(>):\\0th\\2>:2:1:0:0:
+custom_menu: /replace/strip <any tag> in selection:1:(<%0[^>]*>|</%0>)::2:1:0:1:tag name, like td, font or a:
+custom_menu: /replace/strip <font>:1:(<font[^>]*>|</font>)::0:1:0:0:
+custom_menu: /apache/deny access to .inc:0:<FilesMatch "\\.inc$">\n\\tOrder allow,deny\n\\tDeny from all\n</FilesMatch>::0:
+custom_menu: /apache/basic password required:0:AuthName "%1"\nAuthType Basic\nrequire valid-user\nAuthUserFile %0\n::2:full path to password file:security description:
+custom_menu: /php/general/location header:0:header('Location\: '.%0);::1:location (URL) to redirect to (quoted) or variable (including $):
+custom_menu: /php/filesystem/open and echo file:0:$fd = fopen(%0, 'r');\nwhile (!feof($fd)) {\n\\t$buffer = fgets($fd, 4096);\n\\techo $buffer;\n}\nfclose($fd);::1:file (quoted) or variable (including $):
+custom_menu: /php/general/echo date:0:echo date("l dS of F Y h\:i\:s A");::
+custom_menu: /php/odbc/odbc fetch row:0:while($success = odbc_fetch_row($%0)) {\n\\t\n}::1:result variable name:
+custom_menu: /php/odbc/odbc exec query:0:$%0 = odbc_exec(%1, %2);\n::3:result variable name:odbc connection id name:query string (quoted) or variable (including $):
+custom_menu: /php/odbc/odbc connect:0:$odbc_id = odbc_connect('%0', '%1', '%2');\n::3:odbc data source name:username:password:
+custom_menu: /DHTML/mouseover image:0:<a href="" onMouseOver="bfmovepic('%0', '%2')" onMouseOut="bfmovepic('%0', '%1')"><img src="%1" name="%0"></a>::3:unique name:onMouseOut src:onMouseOver src:
+custom_menu: /active html/select options/from ibase result:0:<select name="%0">\n<?php\nwhile($row = ibase_fetch_row($%1)) {\n\\tif (isset($%0) && ($%0 == $row[%2])) {\n\\t\\techo '<option value="'.$row[%2].'" selected>'.$row[%3].'</option>';\n\\t} else {\n\\t\\techo '<option value="'.$row[%2].'">'.$row[%3].'</option>';\n\\t}\n}\n?></select>::4:variable name:ibase query result:index of the value:index of the label:
+custom_menu: /active html/select options/from mysql result:0:<select name="%0">\n<?php\nwhile($row = mysql_fetch_row($%1)) {\n\\tif (isset($%0) && ($%0 == $row[%2])) {\n\\t\\techo '<option value="'.$row[%2].'" selected>'.$row[%3].'</option>';\n\\t} else {\n\\t\\techo '<option value="'.$row[%2].'">'.$row[%3].'</option>';\n\\t}\n}\n?></select>::4:variable name:mysql query result:index of the value:index of the label:
+custom_menu: /active html/select options/from array:0:<select name="%0">\n<?php\nwhile(list($key, $val)=each($%1)) {\n\\tif (isset($%0) && ($%0 == $val)) {\n\\t\\techo '<option value="'.$key.'" selected>'.$val.'</option>';\n\\t} else {\n\\t\\techo '<option value="'.$key.'">'.$val.'</option>';\n\\t}\n}\n?></select>::2:variable name:array name containing options:
+custom_menu: /active html/textarea:0:<textarea name="%0" rows="20" cols="40"><?php if (isset($%0)) { echo $%0; } ?></textarea>::1:variable name:
+custom_menu: /active html/input checkbox:0:<input type="checkbox" name="%0" value="%1" <?php if (isset($%0)) { echo 'checked'; } ?>>::2:variable name:value when checked:
+custom_menu: /active html/input text:0:<input type="text" name="%0" value="<?php if (isset($%0)) { echo $%0; } ?>">::1:variable name:
+custom_menu: /active html/form and action:0:<?php if (isset($submitted)) {\n//form submit code here\n} else { ?>\n<form method="POST" action="<?php echo $SCRIPT_NAME ?>">\n\n<input type="submit" name="submitted" value="%0"></form>\n<?php } // end of form ?>::1:Submit button text:
+custom_menu: /active html/form:0:<form method="POST" action="<?php echo $SCRIPT_NAME ?>">\n\n:</form>:
+custom_menu: /html/meta refresh (client pull):0:<meta http-equiv="refresh" content="%0; URL=%1">::2:refresh time, in seconds:URL to redirect to:
+custom_menu: /html/meta keywords:0:<meta name="keywords" value="%0">::1:keywords, space separated:
+custom_menu: /html/made with bluefish:0:<a href="http\://bluefish.openoffice.nl/">Made with the Bluefish HTML editor</a>::
+custom_menu: /php/php block:0:\n<?php\n:\n?>\n:
+custom_menu: /html/span with class:0:<span class="%0">:</span>:1:CSS class name:
+custom_menu: /html/div with class:0:<div class="%0">:</div>:1:CSS class name:
+custom_menu: /html/font symbol:0:<font face="Symbol">:</font>:
+custom_menu: /php/mysql/query:0:$%0 = mysql_query(%2, %1);\n::3:result variable name:mysql connection id name:query string (quoted) or variable (including $):
+custom_menu: /php/general/if not isset:0:if (!isset($%0)) {\n\\t:\n}:1:variable name to test for:
+custom_menu: /php/general/if isset:0:if (isset($%0)) {\n\\t:\n}:1:variable name to test for:
+custom_menu: /php/general/require file:0:require('%0');\n::1:filename to require:
+custom_menu: /php/general/include file:0:include('%0');\n::1:filename to include:
+custom_menu: /php/ibase/query:0:$%0 = ibase_query(%1, %2);\nif (ibase_errmsg() != 0){\n\\techo 'Error\: '.%2.' returned '.ibase_errmsg()."<br>\\n";\n}\n::3:result variable name:ibase connection id name:query string (quoted) or variable (including $):
+custom_menu: /php/general/for loop:0:for ($%0 = %1; $%0 <= %2; $%0++) {\n :\n}\n:3:loop variable name:from value:to value:
+custom_menu: /php/general/mail:0:mail("%0", "%1", $%2);\n::3:email adress:subject:mail body variable name:
+custom_menu: /sql/select all from table:0:SELECT * FROM %0::1:table name:
+custom_menu: /php/general/while each in array list:0:while (list($key, $val) = each($%0)) {\n\\t:\n}\n:1:array name:
+custom_menu: /php/ibase/ibase connect:0:$ibase_id = ibase_connect('%0\:%1', '%2', '%3');\n::4:ibase host:ibase database path:ibase username:ibase password:
+custom_menu: /php/mysql/mysql connect:0:$mysql_id = mysql_connect('%0', '%1', '%2');\nmysql_select_db('%3', $mysql_id);\n::4:mysql host:mysql username:mysql password:database name:
+custom_menu: /php/mysql/mysql fetch row:0:while ($%1 = mysql_fetch_row($%0)) {\n\\techo $%1[0];\n:\n}\nmysql_free_result($%0);\n:2:mysql result variable name:row variable name:
+custom_menu: /php/ibase/ibase fetch row:0:while ($%1 = ibase_fetch_row($%0)) {\n\\techo $%1[0];\n:\n}\nibase_free_result($%0);\n:2:ibase result variable name:row variable name:

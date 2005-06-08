@@ -1,0 +1,5 @@
+image/jpeg; gqview %s;
+image/pjpeg; gqview %s;
+image/gif;  gqview %s;
+application/x-chess; |cmail;
+application/pdf; xpdf %s;

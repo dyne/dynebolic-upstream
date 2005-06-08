@@ -1,0 +1,193 @@
+######################################################################
+#                         GQview config file         version   1.4.3 #
+#                                                                    #
+#  Everything in this file can be changed in the option dialogs.     #
+#      (so there should be no need to edit this file by hand)        #
+#                                                                    #
+######################################################################
+
+##### General Options #####
+
+layout_style: 0
+
+layout_order: "123"
+
+layout_view_as_icons: false
+
+layout_view_as_tree: false
+
+show_icon_names: true
+
+
+tree_descend_folders: false
+
+lazy_image_sync: false
+
+update_on_time_change: true
+
+exif_auto_rotate: false
+
+
+enable_startup_path: false
+
+startup_path: 
+
+zoom_mode: original
+two_pass_scaling: true
+
+zoom_to_fit_allow_expand: true
+
+
+fit_window_to_image: false
+
+limit_window_size: false
+
+max_window_size: 100
+
+
+progressive_keyboard_scrolling: true
+
+
+enable_thumbnails: false
+
+thumbnail_width: 64
+
+thumbnail_height: 64
+
+cache_thumbnails: false
+
+cache_thumbnails_into_dirs: false
+
+use_xvpics_thumbnails: true
+
+
+sort_method: 1
+
+sort_ascending: true
+
+sort_case_sensitive: false
+
+
+confirm_delete: true
+
+enable_delete_key: true
+
+safe_delete: false
+
+safe_delete_path: "/home/.gqview/trash"
+safe_delete_size: 20
+
+
+tools_float: false
+
+tools_hidden: false
+
+restore_tool_state: false
+
+toolbar_hidden: false
+
+mouse_wheel_scrolls: true
+
+in_place_rename: true
+
+open_recent_max: 10
+
+image_cache_size_max: 10
+
+thumbnail_quality: 0
+
+zoom_quality: 0
+
+dither_quality: 1
+
+zoom_increment: 5
+
+enable_read_ahead: false
+
+display_dialogs_under_mouse: false
+
+black_window_background: true
+
+custom_similarity_threshold: 99
+
+
+##### Slideshow Options #####
+
+slideshow_delay: 15
+
+slideshow_random: false
+
+slideshow_repeat: false
+
+
+##### Filtering Options #####
+
+show_dotfiles: false
+
+disable_filtering: false
+
+filter_ext: "png" ".png" "The PNG image format"
+filter_ext: "jpeg" ".jpeg;.jpe;.jpg" "The JPEG image format"
+filter_ext: "gif" ".gif" "The GIF image format"
+filter_ext: "ico" ".ico;.cur" "The ICO image format"
+filter_ext: "ani" ".ani" "The ANI image format"
+filter_ext: "ras" ".ras" "The Sun raster image format"
+filter_ext: "xpm" ".xpm" "The XPM image format"
+filter_ext: "tiff" ".tiff;.tif" "The TIFF image format"
+filter_ext: "pnm" ".pnm;.pbm;.pgm;.ppm" "The PNM/PBM/PGM/PPM image format family"
+filter_ext: "bmp" ".bmp" "The BMP image format"
+filter_ext: "wbmp" ".wbmp" "The WBMP image format"
+filter_ext: "xbm" ".xbm" "The XBM image format"
+filter_ext: "tga" ".tga;.targa" "The Targa image format"
+filter_ext: "#svg" ".svg" "Scalable Vector Graphics"
+
+##### External Programs #####
+# Maximum of 8 programs (external_1 through external 8)
+# format: external_n: "menu name" "command line"
+
+external_1: "The Gimp" "gimp-remote -n"
+external_2: "" ""
+external_3: "" ""
+external_4: "" ""
+external_5: "" ""
+external_6: "" ""
+external_7: "" ""
+external_8: "" ""
+external_9: "" ""
+external_10: "" ""
+
+##### Collection Options #####
+
+rectangular_selections: false
+
+
+##### Window Positions #####
+
+restore_window_positions: false
+
+
+main_window_x: 488
+
+main_window_y: 1
+
+main_window_width: 500
+
+main_window_height: 400
+
+float_window_x: 0
+
+float_window_y: 0
+
+float_window_width: 150
+
+float_window_height: 350
+
+float_window_divider: 200
+
+divider_position_h: 260
+
+divider_position_v: 200
+
+######################################################################
+#                      end of GQview config file                     #
+######################################################################

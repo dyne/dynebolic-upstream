@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  TITLE="[ d y n e : b o l i c ]  XTERMINAL"
+else 
+  TITLE="$1"
+  shift
+fi
+
+if [ -z "$1" ]; then
+  PROG="`which zsh`"
+else
+  PROG=$@
+fi
+
+TERM="xterm-color" xterm -tn linux -bg black -fg white -T "$TITLE" -geometry 118x20 -e $PROG
+

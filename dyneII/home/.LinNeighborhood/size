@@ -1,0 +1,9 @@
+
+ main_x = 14
+ main_y = 19
+ main_w = 686
+ main_h = 373
+ tree_comment_pos = 180
+ tree_mountpoint_pos = 180
+ mlist_height = 80
+ mlist_mountpoint_pos = 180

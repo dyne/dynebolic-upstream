@@ -1,0 +1,38 @@
+{
+  Logo.WMDock = {Icon = GNUstepGlow.tiff;};
+  Logo.WMPanel = {Icon = GNUstep.tiff;};
+  Logo.WMClip = {Icon = clip.tiff;};
+  Dockit = {Icon = GNUstep.tiff;};
+  DockApp = {NoAppIcon = NO;};
+  WSoundServer = {Icon = sound.tiff;};
+  panel.Panel = {NoAppIcon = YES;};
+  gmc.Gmc = {NoAppIcon = YES;};
+  XTerm = {Icon = Terminal.tiff;};
+  NXTerm = {Icon = Terminal.tiff;};
+  bookmarks.Netscape = {NoAppIcon = YES;};
+  xcalc = {AlwaysUserIcon = Yes;Icon = "HP-16C-48.xpm";};
+  Netscape = {Icon = Netscape.xpm;};
+  Emacs = {Icon = ColorGNU.xpm;};
+  Ghostview = {Icon = Ghost.xpm;};
+  AcroRead = {AlwaysUserIcon = Yes;Icon = pdf.tiff;};
+  Gimp = {AlwaysUserIcon = Yes;Icon = wilber.tiff;};
+  xv = {AlwaysUserIcon = Yes;Icon = xv.tiff;};
+  lyX.XForm = {AlwaysUserIcon = Yes;Icon = write.tiff;};
+  XPaint = {AlwaysUserIcon = Yes;Icon = Paint.xpm;};
+  Fig = {AlwaysUserIcon = Yes;Icon = draw.tiff;};
+  XLess = {AlwaysUserIcon = YES;Icon = Reference.xpm;};
+  manualBrowser.Xman = {AlwaysUserIcon = Yes;Icon = Book.xpm;};
+  Xman = {AlwaysUserIcon = Yes;Icon = Bookshelf.xpm;};
+  Stepman = {Icon = Bookshelf.xpm;};
+  Xmag = {Icon = inspect.xpm;};
+  Xmessage = {Icon = Reference.xpm;};
+  XConsole = {Icon = inspect.xpm;Omnipresent = Yes;};
+  Fte = {Icon = Clipboard.tif;};
+  xjed = {Icon = Clipboard.xpm;};
+  xedit = {Icon = notepad.tiff;};
+  xmixer = {Icon = mixer.tiff;};
+  xmcd = {Icon = Radio.xpm;};
+  xplaycd = {Icon = Radio.xpm;};
+  xmms.Xmms = {NoAppIcon = Yes;};
+  "*" = {Icon = defaultAppIcon.tiff;SharedAppIcon = Yes;};
+}

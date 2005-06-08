@@ -1,0 +1,129 @@
+<graph>
+<id>IDSTART/example3ENDID</id>
+<name>example3</name>
+<data>
+<dataitem> <key>1026</key> <buf>141 7 ~3cstr~3e~3cl~3e5~3c/l~3e~3cd~3eFader~3c/d~3e~3c/str~3e</buf> </dataitem>
+<dataitem> <key>1027</key> <buf>13 6 ~3cstr~3e~3cl~3e4~3c/l~3e~3cd~3eZoom~3c/d~3e~3c/str~3e</buf> </dataitem>
+<dataitem> <key>1028</key> <buf>76 74 ~3cstr~3e~3cl~3e8~3c/l~3e~3cd~3eRotation~3c/d~3e~3c/str~3e</buf> </dataitem>
+<dataitem> <key>1029</key> <buf>309 15 ~3cstr~3e~3cl~3e8~3c/l~3e~3cd~3ePosition~3c/d~3e~3c/str~3e</buf> </dataitem>
+</data>
+<nodes>
+<node> <id>1</id> <type>mod_frbinmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>30 43</buf> </dataitem>
+</data>
+</node>
+<node> <id>2</id> <type>mod_rotozoommodule</type>
+<data>
+<dataitem> <key>0</key> <buf>121 39</buf> </dataitem>
+<dataitem> <key>1026</key> <buf>~3cstr~3e~3cl~3e13~3c/l~3e~3cd~3eRotozoom:Zoom~3c/d~3e~3c/str~3e 2 0 ~3cstr~3e~3cl~3e7~3c/l~3e~3cd~3evslider~3c/d~3e~3c/str~3e 28 29| { higher_bound=[4]; lower_bound=[0]; step_size=[0.04]; widget_type=[number_selector];  } </buf> </dataitem>
+<dataitem> <key>1027</key> <buf>~3cstr~3e~3cl~3e17~3c/l~3e~3cd~3eRotozoom:Rotation~3c/d~3e~3c/str~3e 2 1 ~3cstr~3e~3cl~3e4~3c/l~3e~3cd~3edial~3c/d~3e~3c/str~3e 82 96| { higher_bound=[360]; lower_bound=[0]; step_size=[1]; widget_type=[number_selector];  } </buf> </dataitem>
+<dataitem> <key>1028</key> <buf>~3cstr~3e~3cl~3e20~3c/l~3e~3cd~3eRotozoom:Translation~3c/d~3e~3c/str~3e 2 2 ~3cstr~3e~3cl~3e9~3c/l~3e~3cd~3epos_field~3c/d~3e~3c/str~3e 203 37| {  } </buf> </dataitem>
+</data>
+</node>
+<node> <id>3</id> <type>mod_staticcolormodule</type>
+<data>
+<dataitem> <key>0</key> <buf>33 116</buf> </dataitem>
+</data>
+</node>
+<node> <id>4</id> <type>mod_frboutmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>265 46</buf> </dataitem>
+</data>
+</node>
+<node> <id>5</id> <type>mod_xfademodule</type>
+<data>
+<dataitem> <key>0</key> <buf>122 110</buf> </dataitem>
+<dataitem> <key>1025</key> <buf>~3cstr~3e~3cl~3e16~3c/l~3e~3cd~3eCrossfader:Fader~3c/d~3e~3c/str~3e 5 0 ~3cstr~3e~3cl~3e7~3c/l~3e~3cd~3ehslider~3c/d~3e~3c/str~3e 79 28| { higher_bound=[1]; lower_bound=[0]; step_size=[0.01];  } </buf> </dataitem>
+</data>
+</node>
+</nodes>
+<connections>
+<connect>
+<from> <node_id>5</node_id> <plug_id>r</plug_id> </from>
+<to> <node_id>2</node_id> <plug_id>texture</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>3</node_id> <plug_id>r</plug_id> </from>
+<to> <node_id>2</node_id> <plug_id>background</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>2</node_id> <plug_id>r</plug_id> </from>
+<to> <node_id>4</node_id> <plug_id>in</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>1</node_id> <plug_id>result</plug_id> </from>
+<to> <node_id>5</node_id> <plug_id>1</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>2</node_id> <plug_id>r</plug_id> </from>
+<to> <node_id>5</node_id> <plug_id>2</plug_id> </to>
+</connect>
+</connections>
+<snapshots>
+<snapshot> <id>IDSTART/example3ENDID</id> <name>default</name>
+<values>
+<value><plug> <node_id>1</node_id> <plug_id>fileName</plug_id> </plug>
+<buf>img/huebsch.jpg~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>flush</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>frame</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>x_size</plug_id> </plug>
+<buf>640~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>y_size</plug_id> </plug>
+<buf>480~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>cache</plug_id> </plug>
+<buf>no~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>zoom</plug_id> </plug>
+<buf>1.00392~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>rot</plug_id> </plug>
+<buf>39.5294~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>disp</plug_id> </plug>
+<buf>0.5 0.5~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>texture</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>background</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>copy_background</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>routine</plug_id> </plug>
+<buf>regular~00</buf></value>
+<value><plug> <node_id>3</node_id> <plug_id>col</plug_id> </plug>
+<buf>0 0 0~00</buf></value>
+<value><plug> <node_id>3</node_id> <plug_id>xsize</plug_id> </plug>
+<buf>640~00</buf></value>
+<value><plug> <node_id>3</node_id> <plug_id>ysize</plug_id> </plug>
+<buf>480~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>in</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>options</plug_id> </plug>
+<buf>2~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>xsize</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>ysize</plug_id> </plug>
+<buf>480~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>brightness</plug_id> </plug>
+<buf>0.5~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>contrast</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>gamma</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>monitor</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>driver</plug_id> </plug>
+<buf>default~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>server</plug_id> </plug>
+<buf>default~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>x</plug_id> </plug>
+<buf>0.909804~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>1</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>2</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>routine</plug_id> </plug>
+<buf>mmx~00</buf></value>
+</values>
+</snapshot>
+</snapshots>
+</graph>

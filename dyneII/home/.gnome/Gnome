@@ -1,0 +1,6 @@
+
+[URL Handlers]
+default-show=gnome-moz-remote --newwin "%s"
+info-show=gnome-help-browser "%s"
+man-show=gnome-help-browser "%s"
+ghelp-show=gnome-help-browser "%s"

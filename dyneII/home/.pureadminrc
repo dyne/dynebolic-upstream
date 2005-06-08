@@ -1,0 +1,34 @@
+# ~/.pureadminrc - Configuration file for pureadmin
+# All variables are in the form VARNAME=VALUE where VALUE should be an UN-quoted string
+# Comment lines BEGINS with a '#'. Otherwise the # is considered a part of the value/variablename
+
+# Default UID and GID to assign to new virtual users. These should point to an un-priveliged system account.
+# Default home is the directory which will be assigned to new users by default.
+defaulthome=
+
+# Name and optional full path to the pure-pw command. Path is only needed if it is not installed in a standard location (i.e. Not in $PATH)
+cmd_purepw=/usr/bin/pure-pw
+
+# Name and location of the password files where pureftpd reads user-information. The pdb-file is a binary database file,
+pwfile=
+pdbfile=
+
+# Location of the logfile where pureftpd writes logging info
+logfile=/var/log/messages
+
+# Logging method, 0 means syslog and 1 means custom logfile
+logmethod=0
+# Number of days history to show in logfile
+logdays=0
+
+# If this is enabled, then DNS name lookups will be performed resulting in IP-addresses being
+# converted to human readable names
+#  Setting this to 0 will make PureAdmin seem faster and more responsive.
+resolve_hostnames=0
+
+# Indicates wether the first-time user-dialog messagebox have been seen by the user
+seen_usrdlg_welcome=0
+
+# Indicates wether the FAM Error dialog should be shown or not
+show_fam_errmsg=1
+

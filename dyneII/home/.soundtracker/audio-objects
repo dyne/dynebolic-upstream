@@ -1,0 +1,3 @@
+playback = JACK Output
+editing = JACK Output
+sampling = OSS Sampling

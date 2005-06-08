@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Warning: this file will be rewritten by terminatorX on exit!
+     Don't waste your time adding comments - they will be erased -->
+
+<terminatorXrc version="1.0">
+	<store_globals>1</store_globals>
+	<audio_driver>jack</audio_driver>
+	<oss_device>/dev/dsp</oss_device>
+	<oss_buff_no>2</oss_buff_no>
+	<oss_buff_size>9</oss_buff_size>
+	<oss_samplerate>44100</oss_samplerate>
+	<alsa_device_id>hw:0,0</alsa_device_id>
+	<alsa_buffer_time>80000</alsa_buffer_time>
+	<alsa_period_time>20000</alsa_period_time>
+	<alsa_samplerate>44100</alsa_samplerate>
+	<alsa_free_hwstats>0</alsa_free_hwstats>
+	<xinput_device></xinput_device>
+	<xinput_enable>0</xinput_enable>
+	<update_idle>14</update_idle>
+	<update_delay>1</update_delay>
+	<sense_cycles>80</sense_cycles>
+	<mouse_speed>0.800000</mouse_speed>
+	<width>800</width>
+	<height>440</height>
+	<filename_length>20</filename_length>
+	<tooltips>1</tooltips>
+	<use_stdout>0</use_stdout>
+	<show_nag>1</show_nag>
+	<prelis>1</prelis>
+	<last_fn></last_fn>
+	<pitch>1.000000</pitch>
+	<volume>1.000000</volume>
+	<flash_response>0.950000</flash_response>
+	<button_type>3</button_type>
+	<tables_filename></tables_filename>
+	<record_filename>tX_record.wav</record_filename>
+	<file_editor></file_editor>
+	<lrdf_path>/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf</lrdf_path>
+	<compress_set_files>0</compress_set_files>
+	<fullscreen_enabled>0</fullscreen_enabled>
+	<confirm_events>0</confirm_events>
+	<vtt_inertia>10.000000</vtt_inertia>
+	<last_path></last_path>
+	<restore_midi_connections>1</restore_midi_connections>
+	<wav_display_bg_focus>#00004C</wav_display_bg_focus>
+	<wav_display_bg_no_focus>#000000</wav_display_bg_no_focus>
+	<wav_display_fg_focus>#FFFF00</wav_display_fg_focus>
+	<wav_display_fg_no_focus>#00FF00</wav_display_fg_no_focus>
+	<wav_display_cursor>#FF6666</wav_display_cursor>
+	<wav_display_cursor_mute>#FFFFFF</wav_display_cursor_mute>
+	<vu_meter_bg>#000000</vu_meter_bg>
+	<vu_meter_normal>#00FF00</vu_meter_normal>
+	<vu_meter_loud>#FF0000</vu_meter_loud>
+	<vu_meter_border_intensity>0.700000</vu_meter_border_intensity>
+	<quit_confirm>1</quit_confirm>
+	<use_realtime>1</use_realtime>
+	<auto_assign_midi>0</auto_assign_midi>
+	<midi_connections>
+	</midi_connections>
+</terminatorXrc>

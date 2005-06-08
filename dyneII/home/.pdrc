@@ -1,0 +1,16 @@
+-rt
+-alsa
+-r 44100
+
+-path /usr/lib/pd/iemabs
+
+-path /usr/lib/pd/extra
+
+-path /usr/lib/pd/rradical/memento:/usr/lib/pd/rradical/control:/usr/lib/pd/rradical/effects:/usr/lib/pd/rradical/instruments:/usr/lib/pd/rradical/tpl
+-lib plugin~:pool:cyclone:xsample
+
+
+-lib zexy:iemlib1:iemlib2:iem_t3_lib:iem_mp3:maxlib:OSC:OSCroute:pdp:pdogg:shell:pmpd
+-lib probalizer:grid:pianoroll:exciter:playlist:pidip
+-lib Gem
+

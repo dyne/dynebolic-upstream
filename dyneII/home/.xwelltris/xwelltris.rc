@@ -1,0 +1,10 @@
+#--------------- Options file for xwelltris 1.0.0 ----------------#
+#This file generated automatically, so don't edit it by hands
+
+last_player:      root`
+use_rotation:     yes
+use_mixed:        yes
+use_next_piece:   yes
+start_level:      0
+tris_squares:     4
+#------------------ End of file ---------------------#

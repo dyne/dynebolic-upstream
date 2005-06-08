@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<inkscape
+   version="0.39"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">
+  <group
+     id="window">
+    <group
+       id="menu"
+       state="1" />
+    <group
+       id="commands"
+       state="1" />
+    <group
+       id="toppanel"
+       state="1" />
+    <group
+       id="toolbox"
+       state="1" />
+    <group
+       id="statusbar"
+       state="1" />
+    <group
+       id="rulers"
+       state="1" />
+    <group
+       id="scrollbars"
+       state="1" />
+  </group>
+  <group
+     id="fullscreen">
+    <group
+       id="menu"
+       state="1" />
+    <group
+       id="commands"
+       state="1" />
+    <group
+       id="toppanel"
+       state="1" />
+    <group
+       id="toolbox"
+       state="1" />
+    <group
+       id="statusbar"
+       state="1" />
+    <group
+       id="rulers"
+       state="1" />
+    <group
+       id="scrollbars"
+       state="1" />
+  </group>
+  <group
+     id="documents">
+    <group
+       id="recent">
+      <document
+         uri="/home/logo_1.1.svg"
+         name="logo_1.1.svg" />
+      <document
+         uri="/usr/share/inkscape/tutorials/tutorial-basic.svg"
+         name="tutorial-basic.svg" />
+      <document
+         uri="/usr/share/inkscape/screens/keys.svg"
+         name="keys.svg" />
+    </group>
+  </group>
+  <group
+     id="template">
+    <sodipodi:namedview
+       id="base"
+       pagecolor="#ffffff"
+       bordercolor="#666666"
+       borderopacity="1.0"
+       inkscape:pageopacity="0.0"
+       inkscape:pageshadow="2"
+       inkscape:zoom="0.43415836"
+       inkscape:cx="305.259528"
+       inkscape:cy="417.849475"
+       inkscape:window-width="640"
+       inkscape:window-height="480" />
+  </group>
+  <group
+     id="tools"
+     style="fill:none;fill-opacity:0.75;                  stroke:black;stroke-opacity:1;stroke-width:1pt;stroke-linejoin:miter;stroke-linecap:butt;">
+    <group
+       id="shapes"
+       style="fill-rule:evenodd;"
+       selcue="1">
+      <eventcontext
+         id="rect"
+         style="fill:blue;" />
+      <eventcontext
+         id="arc"
+         style="fill:red;"
+         end="0"
+         start="0" />
+      <eventcontext
+         id="star"
+         magnitude="5"
+         style="fill:yellow;" />
+      <eventcontext
+         id="spiral"
+         style="fill:none;stroke:black;" />
+    </group>
+    <group
+       id="freehand"
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-opacity:1;stroke-width:1pt;stroke-linejoin:miter;stroke-linecap:butt;">
+      <eventcontext
+         id="pencil"
+         tolerance="10.0"
+         selcue="1" />
+      <eventcontext
+         id="pen"
+         mode="drag"
+         selcue="1" />
+    </group>
+    <eventcontext
+       id="calligraphic"
+       style="fill:black;fill-opacity:1;fill-rule:nonzero;stroke:none;"
+       mass="0.3"
+       drag="0.5"
+       angle="30"
+       width="0.2"
+       selcue="1" />
+    <eventcontext
+       id="text"
+       style="fill:black;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;font-style:normal;font-weight:normal;font-size:12px;"
+       selcue="1" />
+    <eventcontext
+       id="nodes"
+       selcue="1" />
+    <eventcontext
+       id="zoom"
+       selcue="1" />
+    <eventcontext
+       id="dropper"
+       selcue="1" />
+    <eventcontext
+       id="select"
+       selcue="1" />
+  </group>
+  <group
+     id="palette">
+    <group
+       id="dashes">
+      <dash
+         id="solid"
+         style="stroke-dasharray:none;" />
+      <dash
+         id="dash-1-1"
+         style="stroke-dasharray:1 1;" />
+      <dash
+         id="dash-1-2"
+         style="stroke-dasharray:1 2;" />
+      <dash
+         id="dash-1-3"
+         style="stroke-dasharray:1 3;" />
+      <dash
+         id="dash-1-4"
+         style="stroke-dasharray:1 4;" />
+      <dash
+         id="dash-1-6"
+         style="stroke-dasharray:1 6;" />
+      <dash
+         id="dash-1-8"
+         style="stroke-dasharray:1 8;" />
+      <dash
+         id="dash-1-12"
+         style="stroke-dasharray:1 12;" />
+      <dash
+         id="dash-1-24"
+         style="stroke-dasharray:1 24;" />
+      <dash
+         id="dash-1-48"
+         style="stroke-dasharray:1 48;" />
+      <dash
+         id="dash-2-1"
+         style="stroke-dasharray:2 1;" />
+      <dash
+         id="dash-3-1"
+         style="stroke-dasharray:3 1;" />
+      <dash
+         id="dash-4-1"
+         style="stroke-dasharray:4 1;" />
+      <dash
+         id="dash-6-1"
+         style="stroke-dasharray:6 1;" />
+      <dash
+         id="dash-8-1"
+         style="stroke-dasharray:8 1;" />
+      <dash
+         id="dash-12-1"
+         style="stroke-dasharray:12 1;" />
+      <dash
+         id="dash-24-1"
+         style="stroke-dasharray:24 1;" />
+      <dash
+         id="dash-2-2"
+         style="stroke-dasharray:2 2;" />
+      <dash
+         id="dash-3-3"
+         style="stroke-dasharray:3 3;" />
+      <dash
+         id="dash-4-4"
+         style="stroke-dasharray:4 4;" />
+      <dash
+         id="dash-6-6"
+         style="stroke-dasharray:6 6;" />
+      <dash
+         id="dash-8-8"
+         style="stroke-dasharray:8 8;" />
+      <dash
+         id="dash-12-12"
+         style="stroke-dasharray:12 12;" />
+      <dash
+         id="dash-24-24"
+         style="stroke-dasharray:24 24;" />
+      <dash
+         id="dash-2-4"
+         style="stroke-dasharray:2 4;" />
+      <dash
+         id="dash-4-2"
+         style="stroke-dasharray:4 2;" />
+      <dash
+         id="dash-2-6"
+         style="stroke-dasharray:2 6;" />
+      <dash
+         id="dash-6-2"
+         style="stroke-dasharray:6 2;" />
+      <dash
+         id="dash-4-8"
+         style="stroke-dasharray:4 8;" />
+      <dash
+         id="dash-8-4"
+         style="stroke-dasharray:8 4;" />
+      <dash
+         id="dash-2-1-012-1"
+         style="stroke-dasharray:2 1 0.5 1;" />
+      <dash
+         id="dash-4-2-1-2"
+         style="stroke-dasharray:4 2 1 2;" />
+      <dash
+         id="dash-8-2-1-2"
+         style="stroke-dasharray:8 2 1 2;" />
+      <dash
+         id="dash-012-012"
+         style="stroke-dasharray:0.5 0.5;" />
+      <dash
+         id="dash-014-014"
+         style="stroke-dasharray:0.25 0.25;" />
+      <dash
+         id="dash-0110-0110"
+         style="stroke-dasharray:0.1 0.1;" />
+      <dash
+         id="dash-0150-0150"
+         style="stroke-dasharray:0.02 0.02;" />
+    </group>
+  </group>
+  <group
+     id="colorselector"
+     page="0" />
+  <group
+     id="dialogs">
+    <group
+       id="toolbox" />
+    <group
+       id="fillstroke"
+       x="388"
+       y="217"
+       w="248"
+       h="334" />
+    <group
+       id="textandfont"
+       x="281"
+       y="236"
+       w="555"
+       h="339" />
+    <group
+       id="transformation" />
+    <group
+       id="align" />
+    <group
+       id="xml" />
+    <group
+       id="find" />
+    <group
+       id="documentoptions" />
+    <group
+       id="preferences" />
+    <group
+       id="gradienteditor" />
+    <group
+       id="object" />
+    <group
+       id="export"
+       x="365"
+       y="237"
+       w="293"
+       h="293">
+      <group
+         id="exportarea"
+         value="selection" />
+      <group
+         id="defaultxdpi" />
+    </group>
+    <group
+       id="save_as"
+       default="org.inkscape.output.svg.inkscape"
+       append_extension="1"
+       path="" />
+    <group
+       id="open"
+       path="" />
+  </group>
+  <group
+     id="printing">
+    <settings
+       id="ps" />
+  </group>
+  <group
+     id="options">
+    <group
+       id="nudgedistance"
+       value="2" />
+    <group
+       id="rotationsnapsperpi"
+       value="12" />
+    <group
+       id="cursortolerance"
+       value="8.0" />
+    <group
+       id="dragtolerance"
+       value="4.0" />
+    <group
+       id="savewindowgeometry"
+       value="1" />
+    <group
+       id="defaultoffsetwidth"
+       value="2" />
+    <group
+       id="defaultscale"
+       value="2" />
+    <group
+       id="maxrecentdocuments"
+       value="20" />
+    <group
+       id="zoomincrement"
+       value="1.414213562" />
+    <group
+       id="keyscroll"
+       value="10" />
+    <group
+       id="wheelscroll"
+       value="40" />
+    <group
+       id="transientpolicy"
+       value="1" />
+    <group
+       id="scrollingacceleration"
+       value="0.35" />
+    <group
+       id="autoscrollspeed"
+       value="0.7" />
+    <group
+       id="autoscrolldistance"
+       value="-10" />
+    <group
+       id="simplifythreshold"
+       value="0.002" />
+    <group
+       id="dialogsskiptaskbar"
+       value="1" />
+    <group
+       id="arenatilescachesize"
+       value="8192" />
+    <group
+       id="preservetransform"
+       value="0" />
+    <group
+       id="clonecompensation"
+       value="0" />
+    <group
+       id="cloneorphans"
+       value="0" />
+    <group
+       id="stickyzoom"
+       value="0" />
+    <group
+       id="selcue"
+       value="1" />
+    <group
+       id="importbitmapsasimages"
+       value="1" />
+    <group
+       id="transform"
+       stroke="1"
+       rectcorners="0"
+       pattern="1"
+       gradient="1" />
+  </group>
+  <group
+     id="extensions" />
+  <group
+     id="desktop"
+     style="fill:none;fill-opacity:0.75;fill:blue;                  stroke:black;stroke-opacity:1;stroke-width:1pt;stroke-linejoin:miter;stroke-linecap:butt;" />
+</inkscape>

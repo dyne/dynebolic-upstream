@@ -1,0 +1,13 @@
+SESSION STARTED at:  Sat Dec 14 18:36:00 2002
+   Program Version:  NcFTP 3.1.4/023 Jul 02 2002, 05:24 AM
+   Library Version:  LibNcFTP 3.1.4 (July 2, 2002)
+        Process ID:  23091
+          Platform:  linux-x86
+          Hostname:    (rc=-2)
+          Terminal:  linux
+18:36:00  Fw: firewall.domain.com  Type: 0  User: root  Pass: ********  Port: 21
+18:36:00  FwExceptions: .probe.net,localhost,foo.bar.com,localdomain
+18:36:00  NOTE:  Your domain name could not be detected.
+18:36:06  > quit
+
+SESSION ENDED at:    Sat Dec 14 18:36:06 2002

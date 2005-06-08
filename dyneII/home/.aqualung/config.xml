@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<aqualung_config>
+  <default_param></default_param>
+  <title_format>%a: %t [%r]</title_format>
+  <skin>/usr/share/aqualung/skin/default</skin>
+  <src_type>4</src_type>
+  <ladspa_is_postfader>0</ladspa_is_postfader>
+  <auto_save_playlist>1</auto_save_playlist>
+  <volume>0.000000</volume>
+  <balance>0.000000</balance>
+  <main_pos_x>30</main_pos_x>
+  <main_pos_y>30</main_pos_y>
+  <main_size_x>530</main_size_x>
+  <main_size_y>113</main_size_y>
+  <browser_pos_x>30</browser_pos_x>
+  <browser_pos_y>180</browser_pos_y>
+  <browser_size_x>204</browser_size_x>
+  <browser_size_y>408</browser_size_y>
+  <browser_is_visible>1</browser_is_visible>
+  <playlist_pos_x>260</playlist_pos_x>
+  <playlist_pos_y>180</playlist_pos_y>
+  <playlist_size_x>300</playlist_size_x>
+  <playlist_size_y>408</playlist_size_y>
+  <playlist_is_visible>1</playlist_is_visible>
+  <repeat_on>0</repeat_on>
+  <repeat_all_on>0</repeat_all_on>
+  <shuffle_on>0</shuffle_on>
+  <time_idx_0>0</time_idx_0>
+  <time_idx_1>1</time_idx_1>
+  <time_idx_2>2</time_idx_2>
+</aqualung_config>

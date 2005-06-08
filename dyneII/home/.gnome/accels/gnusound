@@ -1,0 +1,21 @@
+; gnusound GtkItemFactory rc-file         -*- scheme -*-
+; this file is an automated menu-path dump
+;
+;(menu-path "<gnusound>/File" "")
+;(menu-path "<gnusound>/-Orphan/Cut" "<Control>x")
+;(menu-path "<gnusound>/Settings" "")
+;(menu-path "<gnusound>/-Orphan/Clear" "")
+;(menu-path "<gnusound>/-Orphan/Save As..." "")
+;(menu-path "<gnusound>/-Orphan/Save" "<Control>s")
+;(menu-path "<gnusound>/-Orphan/Close" "<Control>w")
+;(menu-path "<gnusound>/View" "")
+;(menu-path "<gnusound>/-Orphan/About..." "")
+;(menu-path "<gnusound>/-Orphan/Open..." "F3")
+;(menu-path "<gnusound>/-Orphan/Paste" "<Control>v")
+;(menu-path "<gnusound>/-Orphan/Exit" "<Control>q")
+;(menu-path "<gnusound>/-Orphan/New File" "")
+;(menu-path "<gnusound>/-Orphan/Undo" "<Control>z")
+;(menu-path "<gnusound>/-Orphan/Preferences..." "")
+;(menu-path "<gnusound>/Edit" "")
+;(menu-path "<gnusound>/-Orphan/Properties..." "")
+;(menu-path "<gnusound>/-Orphan/Copy" "<Control>c")

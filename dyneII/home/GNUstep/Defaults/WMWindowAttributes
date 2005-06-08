@@ -1,0 +1,346 @@
+{
+  qps.Qps = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/qps.Qps.xpm";
+  };
+  "mozilla-bin.Mozilla-bin" = {
+    Icon = Netscape.xpm;
+  };
+  "firefox-bin.Firefox-bin" = {
+    Icon = Netscape.xpm;
+  };
+  xwc.Xwc = {
+    AlwaysUserIcon = Yes;
+    Icon = Brain.xpm;
+  };
+  Xdialog.Xdialog = {
+    Icon = Gear.xpm;
+  };
+  LinNeighborhood.LinNeighborhood = {
+    Icon = Ftp.png;
+  };
+  Ted.Ted = {
+    Icon = WordEditor.xpm;
+  };
+  mp4live.Mp4live = {
+    Icon = "T2-Film.xpm";
+  };
+  gmc.Gmc = {
+    NoAppIcon = YES;
+  };
+  Stepman = {
+    Icon = Bookshelf.xpm;
+  };
+  terminatorX.TerminatorX = {
+    Icon = HandPunch.xpm;
+  };
+  "phoenix-bin.Phoenix-bin" = {
+    Icon = Mozilla.png;
+  };
+  lopster.Lopster = {
+    Icon = WheelbarrowFull.xpm;
+  };
+  xfsamba.Xfsamba = {
+    Icon = Ftp.png;
+  };
+  "gdam-launcher.Gdam-launcher" = {
+    Icon = HandPointing.xpm;
+  };
+  muse.Muse = {
+    Icon = Radio.xpm;
+  };
+  fd5.FloppyDisk = {
+    Icon = floppy_32_03.png;
+  };
+  AcroRead = {
+    AlwaysUserIcon = Yes;
+    Icon = pdf.tiff;
+  };
+  Logo.WMPanel = {
+    Icon = GNUstep.tiff;
+  };
+  "audacity-1.2.Audacity-1.2" = {
+    Icon = Speaker.png;
+  };
+  xvkbd.XVkbd = {
+    KeepInsideScreen = Yes;
+    NoHideOthers = Yes;
+    Unfocusable = Yes;
+  };
+  Dockit = {
+    Icon = GNUstep.tiff;
+  };
+  xcalc = {
+    AlwaysUserIcon = Yes;
+    Icon = "HP-16C-48.xpm";
+  };
+  AbiWord_d.AbiWord_d = {
+    Icon = WordEditor.xpm;
+  };
+  xaos.XaoS = {
+    Icon = EscherTriangle.xpm;
+  };
+  "audacity-1.0.Audacity-1.0" = {
+    Icon = Speaker.png;
+  };
+  XTerm = {
+    Icon = Terminal.tiff;
+  };
+  groupLeader.WPrefs = {
+    Icon = bomb.png;
+  };
+  lyX.XForm = {
+    AlwaysUserIcon = Yes;
+    Icon = write.tiff;
+  };
+  xmixer = {
+    Icon = mixer.tiff;
+  };
+  gkrellm2.Gkrellm2 = {
+    NoResizebar = Yes;
+    KeepInsideScreen = Yes;
+    NoAppIcon = Yes;
+    NoHideOthers = Yes;
+    AlwaysUserIcon = Yes;
+    SkipWindowList = Yes;
+    NoLanguageButton = Yes;
+    DontSaveSession = Yes;
+    KeepOnBottom = Yes;
+    Icon = EscherTriangle.xpm;
+    NoCloseButton = Yes;
+    NoTitlebar = Yes;
+    NoMiniaturizeButton = Yes;
+    SharedAppIcon = No;
+    Omnipresent = Yes;
+    Unfocusable = Yes;
+  };
+  .ardDisk = {
+    Icon = hd.png;
+  };
+  Emacs = {
+    Icon = ColorGNU.xpm;
+  };
+  "*" = {
+    Icon = defaultAppIcon.tiff;
+    SharedAppIcon = Yes;
+  };
+  . = {
+    Icon = qjackctl.xpm;
+  };
+  Xman = {
+    AlwaysUserIcon = Yes;
+    Icon = Bookshelf.xpm;
+  };
+  xplaycd = {
+    Icon = Radio.xpm;
+  };
+  ScilabGraphic6.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  nedit.NEdit = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/nedit.NEdit.xpm";
+  };
+  ScilabGraphic5.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  "gftp-gtk.Gftp-gtk" = {
+    Icon = Ftp.png;
+  };
+  WSoundServer = {
+    Icon = sound.tiff;
+  };
+  ScilabGraphic4.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  xclock.XClock = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/xclock.XClock.xpm";
+  };
+  ScilabGraphic3.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  Ghostview = {
+    Icon = Ghost.xpm;
+  };
+  ScilabGraphic2.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  ScilabGraphic1.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  gmp4player.Gmp4player = {
+    Icon = TerminalLinux.xpm;
+  };
+  ScilabGraphic0.Xscilab = {
+    KeepInsideScreen = YES;
+  };
+  .ome = {
+    Icon = home64.png;
+  };
+  UsbStorage = {
+    Icon = usbstorage.png;
+  };
+  XConsole = {
+    Icon = inspect.xpm;
+    Omnipresent = Yes;
+  };
+  xmms.Xmms = {
+    NoAppIcon = Yes;
+  };
+  ardour_editor.Ardour = {
+    KeepInsideScreen = Yes;
+    Icon = Microphone.xpm;
+  };
+  xchat.Xchat = {
+    Icon = XChat.png;
+  };
+  CdRom = {
+    Icon = cdrom.png;
+  };
+  Logo.WMDock = {
+    Icon = tre.png;
+  };
+  DockApp = {
+    NoAppIcon = NO;
+  };
+  freej.Freej = {
+    Icon = freej.xpm;
+  };
+  Gimp = {
+    AlwaysUserIcon = Yes;
+    Icon = wilber.tiff;
+  };
+  panel.Panel = {
+    NoAppIcon = YES;
+  };
+  everybuddy.Everybuddy = {
+    Icon = FootballUS.xpm;
+  };
+  HardDisk = {
+    Icon = hd64.png;
+  };
+  manualBrowser.Xman = {
+    AlwaysUserIcon = Yes;
+    Icon = Book.xpm;
+  };
+  xterm.XTerm = {
+    Icon = GNUterm.tiff;
+  };
+  Fte = {
+    Icon = Clipboard.tif;
+  };
+  home.Home = {
+    Icon = home64.png;
+  };
+  aumix.Aumix = {
+    Icon = mixer.xpm;
+  };
+  .ynebolic = {
+    Icon = db_32_03.png;
+  };
+  Fig = {
+    AlwaysUserIcon = Yes;
+    Icon = draw.tiff;
+  };
+  bluefish.Bluefish = {
+    Icon = Beer.xpm;
+  };
+  FoxApp.FoxWindow = {
+    Icon = dot_c_32x32.gif;
+  };
+  login.Gaim = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/login.Gaim.xpm";
+  };
+  bookmarks.Netscape = {
+    NoAppIcon = YES;
+  };
+  xeyes.XEyes = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/xeyes.XEyes.xpm";
+  };
+  gnusound.Gnusound = {
+    Icon = Speaker.png;
+  };
+  D4X = {
+    KeepInsideScreen = Yes;
+  };
+  FloppyDisk = {
+    Icon = floppy.png;
+  };
+  dynesplash.Dynesplash = {
+    NoResizebar = Yes;
+    Icon = db_32_03.png;
+  };
+  Logo.WMClip = {
+    Icon = "/usr/share/WindowMaker/Pixmaps/tile.xpm";
+  };
+  sylpheed.Sylpheed = {
+    Icon = NewsAgent.xpm;
+  };
+  xv = {
+    AlwaysUserIcon = Yes;
+    Icon = xv.tiff;
+  };
+  gqview.Gqview = {
+    Icon = gqview.png;
+  };
+  XMMS_Player.xmms = {
+    Icon = Speaker.png;
+  };
+  cd4.CdRom = {
+    Icon = cd_32_03.png;
+  };
+  xmcd = {
+    Icon = Radio.xpm;
+  };
+  soundtracker.Soundtracker = {
+    Icon = HandReach.xpm;
+  };
+  Netscape = {
+    Icon = Netscape.xpm;
+  };
+  NXTerm = {
+    Icon = Terminal.tiff;
+  };
+  cd.CdRom = {
+    Icon = cdrom.png;
+  };
+  xjed = {
+    Icon = Clipboard.xpm;
+  };
+  xhome = {
+    Icon = home64.png;
+  };
+  unnamed.nethack = {
+    Icon = "/home/GNUstep/.AppInfo/WindowMaker/unnamed.nethack.xpm";
+  };
+  XPaint = {
+    AlwaysUserIcon = Yes;
+    Icon = Paint.xpm;
+  };
+  Xmessage = {
+    Icon = Reference.xpm;
+  };
+  Xmag = {
+    Icon = inspect.xpm;
+  };
+  xedit = {
+    Icon = notepad.tiff;
+  };
+  ardour.Ardour = {
+    Icon = Microphone.xpm;
+  };
+  D4X_DnDBasket.D4X_DnDBasket = {
+    NoResizebar = Yes;
+    KeepInsideScreen = Yes;
+    SkipWindowList = Yes;
+    DontSaveSession = Yes;
+    KeepOnTop = Yes;
+    NoCloseButton = Yes;
+    NoTitlebar = Yes;
+    NoMiniaturizeButton = Yes;
+    Omnipresent = Yes;
+    Unfocusable = Yes;
+  };
+  XLess = {
+    AlwaysUserIcon = YES;
+    Icon = Reference.xpm;
+  };
+}

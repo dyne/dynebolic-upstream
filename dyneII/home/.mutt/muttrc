@@ -1,0 +1,288 @@
+##########################################################################
+# MUTT CONFIGFILE /// SUCK THIZZZZZ
+# // jrml
+##########################################################################
+
+
+#reset all
+
+##########################################################################
+## Personal options
+#set edit_hdrs
+unset use_domain
+#set alternates = "jaromil@(enemy.org|kyuzz.org|autistici.org)"
+#set hostname = "dyne.org"
+#set realname = "jaromil"
+set folder = ~/Mail
+set spoolfile = /var/spool/mail/root
+set record = ~/Mail/sent-mail
+set mbox = ~/Mail/INBOX
+set postponed=~/Mail/postponed-msgs
+##########################################################################
+
+## Alias options
+set alias_file = ~/.mutt/aliases
+source ~/.mutt/aliases
+
+##########################################################################
+## General options
+#set locale = "C"
+unset suspend
+unset wait_key
+
+#iconv-hook iso-8859-1 8859-1
+#set charset = iso-8859-1
+#set charset = "utf-8"
+#set send_charset = us-ascii
+#set date_format = "!%a, %b %d, %Y at %I:%M:%S%p %Z"
+#set default_hook = "~f %s !~P | (~P ~C %s)"
+set tmpdir = ~/tmp
+#set shell = retrieved from passwd file
+#set simple_search = "~f %s | ~s %s"
+
+
+##########################################################################
+## Main menu
+#set collapse_unread
+set arrow_cursor
+set ascii_chars
+set auto_tag
+unset beep
+unset help
+set mark_old
+unset markers
+#set resolve
+unset sort_re
+set wrap_search = yes
+#set index_format = "%4C %Z %{%b %d} %-15.15L (%4l) %s"
+#set mail_check = 5
+set timeout = 300
+set delete = yes
+#set reply_regexp = "^(re|aw):[ \t]*"
+set sort = threads
+#set status_chars = "-*%A"
+
+#default
+set status_format="%r%v [%?M?%M/?%m] %?n?%n new, ?%?p?%p postponed, ?%?t?%t +tagged, ?%?d?%d deleted, ?%?b?%b more to go.?%> %r"
+
+#set to_chars = " +TCF"
+set sort_aux = reverse-date
+
+##########################################################################
+## Pager options
+#set prompt_after
+unset smart_wrap
+#unset tilde
+set pager_stop
+set pager_format = "-%S- %C/%m: %-20.20n   %s"
+set quote_regexp="^ *[a-zA-Z]*[]>|}=][]>|}:=]*"
+
+##########################################################################
+## Compose options
+set editor = "vim -c :so~/.mutt/email.vim"
+set weed = yes
+
+##########################################################################
+## Reply options
+set reply_to = ask-yes
+
+##########################################################################
+## Sending options
+set allow_8bit
+#set bounce_delivered
+set followup_to = yes
+set honor_followup_to = yes
+#unset force_name
+#unset save_name
+#set use_from
+set abort_nosubject = no
+set abort_unmodified = no
+set copy = yes
+
+##########################################################################
+## Forward options
+set forward_decode = yes
+set forward_format = "[Fwd] %s"
+#set mime_forward
+
+##########################################################################
+## Folders and mailbox
+set noconfirmappend
+#set confirmcreate
+#unset mh_purge
+#unset save_address
+set save_empty
+#set folder_format = "%N %F %2l %-8.8u %-8.8g %8s %d %f"
+#set move = ask-no
+set mbox_type = mbox
+
+##########################################################################
+## Attaching documents and MIME options
+#set attach_sep = newline
+#set attach_split
+#set fcc_attach
+set fcc_clear = no
+#set attach_format = "%u%D%t%2n %T%.40d%> [%.7m/%.10M, %.6e, %s] "
+#set message_format = "%s"
+
+##########################################################################
+## mailcap and MIME
+set mailcap_sanitize
+set mailcap_path = ~/.mutt/mailcap
+
+##########################################################################
+## Using PGP 
+#forget the passphrase in 3 hours
+set pgp_timeout = 11800 #  3600
+#unset pgp_long_ids
+set pgp_replyencrypt
+#set pgp_autosign
+#unset pgp_autoencrypt
+#set pgp_encryptself
+unset pgp_replysign
+#set pgp_strict_enc
+set pgp_verify_sig = yes
+
+# CLEARTEXT INLINE GPG
+set pgp_create_traditional = no
+macro compose \cx "Fgpg --clearsign --comment \"http://gnupg.org\"\nyy"
+macro pager \cv "|gpg --verify;sleep 1\n"
+macro pager \ef "|view-x-face\n"
+macro index \cd "<enter-command>unset wait_key\n<pipe-entry>spamassassin -r\n<enter-command>set wait_key\n<delete-message>"
+
+# decode application/pgp
+set pgp_decode_command="gpg %?p?--passphrase-fd 0? --no-verbose --batch -o - %f"
+
+# verify a pgp/mime signature
+set pgp_verify_command="gpg --no-verbose --batch -o - --verify %s %f"
+
+# decrypt a pgp/mime attachment
+set pgp_decrypt_command="gpg --passphrase-fd 0 --no-verbose --batch -o - %f"
+
+# create a pgp/mime signed attachment
+set pgp_sign_command="gpg -q --batch -o - --passphrase-fd 0 --armor --detach-sign --textmode %?a?-u %a? %f"
+
+# create a application/pgp signed (old-style) message
+set pgp_clearsign_command="gpg --no-verbose --batch -o - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f"
+
+# create a pgp/mime encrypted attachment
+set pgp_encrypt_only_command="pgpewrap gpg -v --batch -o - --encrypt --textmode --armor --always-trust -- -r %r -- %f"
+
+# create a pgp/mime encrypted and signed attachment
+set pgp_encrypt_sign_command="pgpewrap gpg --passphrase-fd 0 -v --batch -o - --encrypt --sign %?a?-u %a? --armor --always-trust -- -r %r -- %f"
+
+# import a key into the public key ring
+set pgp_import_command="gpg --no-verbose --import -v %f"
+
+# export a key from the public key ring
+set pgp_export_command="gpg --no-verbose --export --armor %r"
+
+# verify a key
+set pgp_verify_key_command="gpg --no-verbose --batch --fingerprint --check-sigs %r"
+
+# read in the public key ring
+set pgp_list_pubring_command="gpg --no-verbose --batch --with-colons --list-keys %r" 
+
+# read in the secret key ring
+set pgp_list_secring_command="gpg --no-verbose --batch --with-colons --list-secret-keys %r" 
+
+# receive key from keyserver:
+set pgp_getkeys_command="gpg --recv-key %r"
+
+
+##########################################################################
+## Printing options
+set print_command = lpr
+#set print = ask-no
+
+##########################################################################
+## General Sendmail options
+unset use_8bitmime
+#set sendmail_wait = 0
+set sendmail = "/usr/sbin/sendmail"
+
+
+##########################################################################
+## BOGOFILTER - spam filtering with bayesian algos
+## macros to educate your filters
+#macro index s "<enter-command>unset wait_key\n<pipe-entry>bogofilter -N\n<enter-command>set wait_key\n<save-entry>"
+#macro pager s "<enter-command>unset wait_key\n<pipe-entry>bogofilter -N\n<enter-command>set wait_key\n<save-entry>"
+#
+#macro index r "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<reply>"
+#macro pager r "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<reply>"
+#
+#macro index g "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<group-reply>"
+#macro pager g "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<group-reply>"
+#
+#macro index l "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<list-reply>"
+#macro pager l "<enter-command>unset wait_key\n<pipe-entry>bogofilter -n\n<enter-command>set wait_key\n<list-reply>"
+#
+#macro index X "<enter-command>unset wait_key\n<pipe-entry>bogofilter -S\n<enter-command>set wait_key\n<delete-message>"
+#macro pager X "<enter-command>unset wait_key\n<pipe-entry>bogofilter -S\n<enter-command>set wait_key\n<delete-message>"
+
+
+# main menu
+
+bind index t create-alias
+bind index w search
+bind index x sync-mailbox
+bind index $ sort-mailbox
+bind index a tag-prefix
+bind index \; tag-entry
+
+bind index      <pagedown>    next-page
+bind index      <pageup>  previous-page
+bind index      <home>      first-entry
+bind index      <end>        last-entry
+bind index      <right> display-message
+bind index      <left>             noop
+bind index      <           first-entry
+bind index      \e<         first-entry
+bind index      >            last-entry
+bind index      \e>          last-entry
+bind index      Q                  quit
+
+
+# Not possible to simulate zoom-out...
+macro index z l~T\r
+
+
+
+bind pager w search
+bind pager \n noop	# PINE prints "No default action for this menu."
+bind pager <up> previous-line
+bind pager <down> next-line
+
+# PINE has different defaults for this variables
+set hdr_format="%Z %3C %{%b %d} %-19.19L (%5c) %s"
+
+########################################################################
+## Color settings
+color hdrdefault cyan default
+color quoted brightgreen default
+color signature green default
+color indicator brightyellow cyan
+color error brightred default
+color status cyan default
+color tree brightred default	# the thread tree in the index menu
+color tilde magenta default
+color message brightcyan default
+color markers brightcyan default
+color attachment brightmagenta default
+color search default green	# how to hilite search patterns in the pager
+
+color header brightred default ^(From|Subject):
+color body magenta default "(ftp|http)://[^ ]+"	# point out URLs
+color body magenta default [-a-z_0-9.]+@[-a-z_0-9.]+	# e-mail addresses
+color underline brightgreen default
+
+# attributes when using a mono terminal
+#mono header underline ^(From|Subject):
+mono quoted bold
+
+# User Defined Headers
+my_hdr X-Operating-System: dyne:bolic `uname -a`
+
+
+## end of muttrc
+########################################################################

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# this wrapper is necessary to set the language variable on each command
+# which is launched by the window manager
+# language is setup by the lost-in-babylon application, inside /etc/LANGUAGE
+
+if [ -e /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
+$@
+

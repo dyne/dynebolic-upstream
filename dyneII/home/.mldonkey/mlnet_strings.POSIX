@@ -1,0 +1,1500 @@
+(************************************)
+(*                                  *)
+
+         module "Gui_options"
+
+(*                                  *)
+(************************************)
+
+"Key bindings for console tab" = "Key bindings for console tab"
+
+"Key bindings for results tab" = "Key bindings for results tab"
+
+"Key bindings for queries tab" = "Key bindings for queries tab"
+
+"Key bindings for friends tab" = "Key bindings for friends tab"
+
+"Key bindings for downloads tab" = "Key bindings for downloads tab"
+
+"Key bindings for servers tab" = "Key bindings for servers tab"
+
+"Global key bindings" = "Global key bindings"
+
+(************************************)
+(*                                  *)
+
+         module "Configwin"
+
+(*                                  *)
+(************************************)
+
+"Value" = "Value"
+
+"Apply" = "Apply"
+
+"Cancel" = "Cancel"
+
+"Ok" = "Ok"
+
+"Edit" = "Edit"
+
+"Up" = "Up"
+
+"Remove" = "Remove"
+
+"Add" = "Add"
+
+(************************************)
+(*                                  *)
+
+         module "DriverMain"
+
+(*                                  *)
+(************************************)
+
+"Core stopped\n" = "Core stopped\n"
+
+"Disabling output to console, to enable: stdout true\n" = "Disabling output to console, to enable: stdout true\n"
+
+"Core started" = "Core started"
+
+"Or with browser: http://%s:%d\n" = "Or with browser: http://%s:%d\n"
+
+"To command: telnet %s %d\n" = "To command: telnet %s %d\n"
+
+"Check http://www.mldonkey.net/ for updates\n" = "Check http://www.mldonkey.net/ for updates\n"
+
+"Welcome to MLdonkey client\n" = "Welcome to MLdonkey client\n"
+
+"enabled" = "enabled"
+
+"disabled" = "disabled"
+
+"Network %s %s\n" = "Network %s %s\n"
+
+" : print version number and exit" = " : print version number and exit"
+
+" <filename> : check file format" = " <filename> : check file format"
+
+"<ip> : undocumented" = "<ip> : undocumented"
+
+" : display information on the implementations" = " : display information on the implementations"
+
+": keep output to stdout after startup" = ": keep output to stdout after startup"
+
+": keep output to stderr after startup" = ": keep output to stderr after startup"
+
+": start as a daemon (detach from console and run in background" = ": start as a daemon (detach from console and run in background"
+
+" : find another port when one is already used" = " : find another port when one is already used"
+
+(************************************)
+(*                                  *)
+
+         module "DriverCommands"
+
+(*                                  *)
+(************************************)
+
+"<ip> :\t\t\tcheck whether an IP is blocked" = "<ip> :\t\t\tcheck whether an IP is blocked"
+
+":\t\t\tdisplay the list of blocked IP ranges that were hit" = ":\t\t\tdisplay the list of blocked IP ranges that were hit"
+
+":\t\t\t\tfor debugging only" = ":\t\t\t\tfor debugging only"
+
+":\t\t\t\tclose all files (use to free space on disk after remove)" = ":\t\t\t\tclose all files (use to free space on disk after remove)"
+
+"<bool> :\t\t\tuse poll instead of select" = "<bool> :\t\t\tuse poll instead of select"
+
+":\t\t\tclose all opened sockets" = ":\t\t\tclose all opened sockets"
+
+":\t\t\t\tprint memory stats" = ":\t\t\t\tprint memory stats"
+
+"<theme>:\t\t\tselect html_theme" = "<theme>:\t\t\tselect html_theme"
+
+" : print RSS feeds" = " : print RSS feeds"
+
+":\t\t\tselect html_mods_style <#>" = ":\t\t\tselect html_mods_style <#>"
+
+":\t\t\t\ttoggle html_mods" = ":\t\t\t\ttoggle html_mods"
+
+":\t\t\t\tclose logging to file" = ":\t\t\t\tclose logging to file"
+
+"<file> :\t\t\tstart logging in file <file>" = "<file> :\t\t\tstart logging in file <file>"
+
+":\t\t\t\tdetach process from console and run in background" = ":\t\t\t\tdetach process from console and run in background"
+
+":\t\t\t\tclear the table of clients being debugged" = ":\t\t\t\tclear the table of clients being debugged"
+
+"<client nums> :\t\tdebug file state" = "<client nums> :\t\tdebug file state"
+
+"<client nums> :\t\tdebug message in communications with these clients" = "<client nums> :\t\tdebug message in communications with these clients"
+
+"<true|false> :\t\t\treactivate log to stdout" = "<true|false> :\t\t\treactivate log to stdout"
+
+"<width> <height> :\t\t\tset terminal width and height (devel)" = "<width> <height> :\t\t\tset terminal width and height (devel)"
+
+":\t\t\t\t\ttoggle ansi terminal (devel)" = ":\t\t\t\t\ttoggle ansi terminal (devel)"
+
+":\t\t\t\t\tdump current log state to console" = ":\t\t\t\t\tdump current log state to console"
+
+":\t\t\treload messages file" = ":\t\t\treload messages file"
+
+"<file> :\t\t\tdownload all the links contained in the file" = "<file> :\t\t\tdownload all the links contained in the file"
+
+"<link> :\t\t\t\tdownload ed2k, sig2dat, torrent or other link" = "<link> :\t\t\t\tdownload ed2k, sig2dat, torrent or other link"
+
+"<num> \"<new name>\" :\t\tchange name of download <num> to <new name>" = "<num> \"<new name>\" :\t\tchange name of download <num> to <new name>"
+
+"<file number> :\t\t\tstart previewer for file <file number>" = "<file number> :\t\t\tstart previewer for file <file number>"
+
+"<num> :\t\t\t\t$bview file info$n" = "<num> :\t\t\t\t$bview file info$n"
+
+":\t\t\t\t$bmove downloaded files to incoming directory$n" = ":\t\t\t\t$bmove downloaded files to incoming directory$n"
+
+"<num> :\t\t\t\tresume a paused download (use arg 'all' for all files)" = "<num> :\t\t\t\tresume a paused download (use arg 'all' for all files)"
+
+"<num> :\t\t\t\tpause a download (use arg 'all' for all files)" = "<num> :\t\t\t\tpause a download (use arg 'all' for all files)"
+
+"<num> :\t\t\tverify chunks of file <num>" = "<num> :\t\t\tverify chunks of file <num>"
+
+":\t\t\t\tdisplay downloaders list" = ":\t\t\t\tdisplay downloaders list"
+
+"<num> :\t\t\t\tcancel download (use arg 'all' for all files)" = "<num> :\t\t\t\tcancel download (use arg 'all' for all files)"
+
+" <num> : print the segments downloaded in file" = " <num> : print the segments downloaded in file"
+
+" <yes|no|what>: confirm cancellation" = " <yes|no|what>: confirm cancellation"
+
+"<priority> <files numbers> :\tchange file priorities" = "<priority> <files numbers> :\tchange file priorities"
+
+":\t\t\t\tshow users currently uploading" = ":\t\t\t\tshow users currently uploading"
+
+":\t\t\t\t\tlist links of shared files" = ":\t\t\t\t\tlist links of shared files"
+
+":\t\t\t\tstatistics on upload" = ":\t\t\t\tstatistics on upload"
+
+"<dir> :\t\t\t\tshare directory <dir>" = "<dir> :\t\t\t\tshare directory <dir>"
+
+"<priority> <dir> [<strategy>] :\t\t\tshare directory <dir> with <priority> [and sharing strategy <strategy>]" = "<priority> <dir> [<strategy>] :\t\t\tshare directory <dir> with <priority> [and sharing strategy <strategy>]"
+
+":\t\t\t\tprint shared directories" = ":\t\t\t\tprint shared directories"
+
+":\t\t\t\tcheck shared files for removal" = ":\t\t\t\tcheck shared files for removal"
+
+":\t\t\t\t$bprint options values by section$n" = ":\t\t\t\t$bprint options values by section$n"
+
+":\t\t\t\t\tprint all options" = ":\t\t\t\t\tprint all options"
+
+":\t\t\t\t\t$bdisplay options$n" = ":\t\t\t\t\t$bdisplay options$n"
+
+":\t\t\t\t\tsave" = ":\t\t\t\t\tsave"
+
+"<option_name> <option_value> :\t$bchange option value$n" = "<option_name> <option_value> :\t$bchange option value$n"
+
+":\t\t\tforce download of an already downloaded file" = ":\t\t\tforce download of an already downloaded file"
+
+"<num> :\t\t\t\t$bfile to download$n" = "<num> :\t\t\t\t$bfile to download$n"
+
+":\t\t\tview custom queries" = ":\t\t\tview custom queries"
+
+":\t\t\t\t\tview all queries" = ":\t\t\t\t\tview all queries"
+
+"<query> :\t\t\t\tsearch for files locally\n\n\tWith special args:\n\t-network <netname>\n\t-minsize <size>\n\t-maxsize <size>\n\t-media <Video|Audio|...>\n\t-Video\n\t-Audio\n\t-format <format>\n\t-title <word in title>\n\t-album <word in album>\n\t-artist <word in artist>\n\t-field <field> <fieldvalue>\n\t-not <word>\n\t-and <word> \n\t-or <word>\n" = "<query> :\t\t\t\tsearch for files locally\n\n\tWith special args:\n\t-network <netname>\n\t-minsize <size>\n\t-maxsize <size>\n\t-media <Video|Audio|...>\n\t-Video\n\t-Audio\n\t-format <format>\n\t-title <word in title>\n\t-album <word in album>\n\t-artist <word in artist>\n\t-field <field> <fieldvalue>\n\t-not <word>\n\t-and <word> \n\t-or <word>\n"
+
+"<query> :\t\t\t\t$bsearch for files on all networks$n\n;\n\tWith special args:\n\t-network <netname>\n\t-minsize <size>\n\t-maxsize <size>\n\t-media <Video|Audio|...>\n\t-Video\n\t-Audio\n\t-format <format>\n\t-title <word in title>\n\t-album <word in album>\n\t-artist <word in artist>\n\t-field <field> <fieldvalue>\n\t-not <word>\n\t-and <word> \n\t-or <word>\n\n" = "<query> :\t\t\t\t$bsearch for files on all networks$n\n;\n\tWith special args:\n\t-network <netname>\n\t-minsize <size>\n\t-maxsize <size>\n\t-media <Video|Audio|...>\n\t-Video\n\t-Audio\n\t-format <format>\n\t-title <word in title>\n\t-album <word in album>\n\t-artist <word in artist>\n\t-field <field> <fieldvalue>\n\t-not <word>\n\t-and <word> \n\t-or <word>\n\n"
+
+"[<num>] :\t\t\t\t$bview results of a search$n" = "[<num>] :\t\t\t\t$bview results of a search$n"
+
+"<num1> <num2> ...:\t\t\t\tforget searches <num1> <num2> ..." = "<num1> <num2> ...:\t\t\t\tforget searches <num1> <num2> ..."
+
+" <num> : disable a particular network" = " <num> : disable a particular network"
+
+" <num> : enable a particular network" = " <num> : enable a particular network"
+
+" :\t\t\t\tprint all networks" = " :\t\t\t\tprint all networks"
+
+"<cmd> :\t\t\t\tstart command <cmd> (must be allowed in 'allowed_commands' option or by 'allow_any_command' if arguments)" = "<cmd> :\t\t\t\tstart command <cmd> (must be allowed in 'allowed_commands' option or by 'allow_any_command' if arguments)"
+
+":\t\t\t\tprint current bandwidth stats" = ":\t\t\t\tprint current bandwidth stats"
+
+"<m> :\t\t\t\tdisable upload during <m> minutes (multiple of 5)" = "<m> :\t\t\t\tdisable upload during <m> minutes (multiple of 5)"
+
+"<client num> :\t\t\tprint files from friend <client num>" = "<client num> :\t\t\tprint files from friend <client num>"
+
+":\t\t\t\tdisplay all friends" = ":\t\t\t\tdisplay all friends"
+
+"<client numbers> :\tremove friend (use arg 'all' for all friends)" = "<client numbers> :\tremove friend (use arg 'all' for all friends)"
+
+"<client num> :\t\tadd client <client num> to friends" = "<client num> :\t\tadd client <client num> to friends"
+
+"<client num> :\t\t\task friend files" = "<client num> :\t\t\task friend files"
+
+":\t\t\t\t\tview friends" = ":\t\t\t\t\tview friends"
+
+"<num> :\t\t\t\tdisconnect from server" = "<num> :\t\t\t\tdisconnect from server"
+
+"[<num>] :\t\t\t\tconnect to more servers (or to server <num>)" = "[<num>] :\t\t\t\tconnect to more servers (or to server <num>)"
+
+"<num> :\t\t\tprint banner of connected server <num>" = "<num> :\t\t\tprint banner of connected server <num>"
+
+"<server numbers> :\t\t\tremove server (use arg 'all' for all servers)" = "<server numbers> :\t\t\tremove server (use arg 'all' for all servers)"
+
+":\t\t\t\t\tlist all known servers" = ":\t\t\t\t\tlist all known servers"
+
+":\t\t\t\t\t$blist connected servers$n" = ":\t\t\t\t\t$blist connected servers$n"
+
+"<hour> \"<command>\" :\tadd a command to be executed every day" = "<hour> \"<command>\" :\tadd a command to be executed every day"
+
+"<user> <passwd> :\t\tadd a new mldonkey user" = "<user> <passwd> :\t\tadd a new mldonkey user"
+
+":\t\t\t\tmessage [<client num> <msg>]" = ":\t\t\t\tmessage [<client num> <msg>]"
+
+":\t\t\t\tmessage_log [refresh delay in seconds]" = ":\t\t\t\tmessage_log [refresh delay in seconds]"
+
+" <minutes> : print activity in the last <minutes> minutes" = " <minutes> : print activity in the last <minutes> minutes"
+
+":\t\t\t\tprint mldonkey version" = ":\t\t\t\tprint mldonkey version"
+
+"<num> :\t\t\t\tview client (use arg 'all' for all clients)" = "<num> :\t\t\t\tview client (use arg 'all' for all clients)"
+
+":\t\t\t\trecover lost files from temp directory" = ":\t\t\t\trecover lost files from temp directory"
+
+"<kind> <url> :\t\t\tload this file from the web.\n\t\t\t\t\tkind is either server.met (if the downloaded file is a server.met)" = "<kind> <url> :\t\t\tload this file from the web.\n\t\t\t\t\tkind is either server.met (if the downloaded file is a server.met)"
+
+":\t\t\t\t\t$bsave and kill the server$n" = ":\t\t\t\t\t$bsave and kill the server$n"
+
+":\t\t\t\t\t$bclose telnet$n" = ":\t\t\t\t\t$bclose telnet$n"
+
+":\t\t\t\tdump heap for debug" = ":\t\t\t\tdump heap for debug"
+
+(************************************)
+(*                                  *)
+
+         module "BTInteractive"
+
+(*                                  *)
+(************************************)
+
+" <filename> : generate the corresponding <filename>.torrent file\nin torrents/tracked/. The file is automatically tracked, and seeded if\n    in incoming/" = " <filename> : generate the corresponding <filename>.torrent file\nin torrents/tracked/. The file is automatically tracked, and seeded if\n    in incoming/"
+
+" : print all .torrent files on this server" = " : print all .torrent files on this server"
+
+(************************************)
+(*                                  *)
+
+         module "CommonOptions"
+
+(*                                  *)
+(************************************)
+
+"Album Search" = "Album Search"
+
+"Movie Search" = "Movie Search"
+
+"MP3 Search" = "MP3 Search"
+
+"Complex Search" = "Complex Search"
+
+"Mp3 Options" = "Mp3 Options"
+
+"Simple Options" = "Simple Options"
+
+"Max Size" = "Max Size"
+
+"Min Size" = "Min Size"
+
+"keywords" = "keywords"
+
+"List of overnet peers" = "List of overnet peers"
+
+"(internal)" = "(internal)"
+
+"The MD4 of the Overnet client" = "The MD4 of the Overnet client"
+
+"These IP addresses cannot be peers. Elements are separated by spaces, wildcard=255 ie: use 192.168.0.255 for 192.168.0.* " = "These IP addresses cannot be peers. Elements are separated by spaces, wildcard=255 ie: use 192.168.0.255 for 192.168.0.* "
+
+"Interval (in seconds) before republish files" = "Interval (in seconds) before republish files"
+
+"Max number of hits in a search on Overnet" = "Max number of hits in a search on Overnet"
+
+"Period between two queries in the overnet tree (should not be set under 5)" = "Period between two queries in the overnet tree (should not be set under 5)"
+
+"How long shoud a search on Overnet wait for the last answer before terminating" = "How long shoud a search on Overnet wait for the last answer before terminating"
+
+"allow extended search to search on overnet" = "allow extended search to search on overnet"
+
+"maximal number of peers to keep overnet connected (should be >2048)" = "maximal number of peers to keep overnet connected (should be >2048)"
+
+"port for overnet" = "port for overnet"
+
+"The protocol version sent on Overnet connections replies" = "The protocol version sent on Overnet connections replies"
+
+"The protocol version sent on Overnet connections" = "The protocol version sent on Overnet connections"
+
+"Size of the filename storage used to answer queries" = "Size of the filename storage used to answer queries"
+
+"The links between files being downloaded" = "The links between files being downloaded"
+
+"The files that were downloaded" = "The files that were downloaded"
+
+"(only for development tests)" = "(only for development tests)"
+
+"How many sources to use to download each chunk" = "How many sources to use to download each chunk"
+
+"login of client on eDonkey network (nothing default to global one)" = "login of client on eDonkey network (nothing default to global one)"
+
+"min connected users for each server" = "min connected users for each server"
+
+"Set the maximal rank of a client to be kept as a client" = "Set the maximal rank of a client to be kept as a client"
+
+"Set the number of hours you want client to remain banned" = "Set the number of hours you want client to remain banned"
+
+"true if you want your client IP to be set from servers ID" = "true if you want your client IP to be set from servers ID"
+
+"true if you want your client to ban\n    clients that try queue jumping (3 reconnections faster than 9 minutes)" = "true if you want your client to ban\n    clients that try queue jumping (3 reconnections faster than 9 minutes)"
+
+"true if you want your mldonkey to lose some\nupload bandwidth sending messages to clients which are banned :)" = "true if you want your mldonkey to lose some\nupload bandwidth sending messages to clients which are banned :)"
+
+"Are the cancelled files added to the old files list to prevent re-download ?" = "Are the cancelled files added to the old files list to prevent re-download ?"
+
+"The prefix which is appended to options names\n    when they are used in the telnet/WEB interfaces" = "The prefix which is appended to options names\n    when they are used in the telnet/WEB interfaces"
+
+"How often should we check all servers (minimum 4 hours, 0 to disable)" = "How often should we check all servers (minimum 4 hours, 0 to disable)"
+
+"Minimal number of servers remaining after remove_old_servers" = "Minimal number of servers remaining after remove_old_servers"
+
+"How often should remove old donkey be called (in seconds, 0 to disable)" = "How often should remove old donkey be called (in seconds, 0 to disable)"
+
+"The subdirectory of temp/ where files should be moved to" = "The subdirectory of temp/ where files should be moved to"
+
+"The weight of upload on a donkey connection compared to upload on other\n  peer-to-peer networks. Setting it to 5 for example means that a donkey \n  connection will be allowed to send 5 times more information per second than\n  an Open Napster connection. This is done to favorise donkey connections\n  over other networks, where upload is less efficient, without preventing\n  upload from these networks." = "The weight of upload on a donkey connection compared to upload on other\n  peer-to-peer networks. Setting it to 5 for example means that a donkey \n  connection will be allowed to send 5 times more information per second than\n  an Open Napster connection. This is done to favorise donkey connections\n  over other networks, where upload is less efficient, without preventing\n  upload from these networks."
+
+"How long can a silent server stay connected" = "How long can a silent server stay connected"
+
+"Should we try to download chunks in random order (false = linearly) ?" = "Should we try to download chunks in random order (false = linearly) ?"
+
+"Uploaded zones (1 zone = 180 kBytes) needed to enable the dynamic upload lifetime" = "Uploaded zones (1 zone = 180 kBytes) needed to enable the dynamic upload lifetime"
+
+"Each client upload lifetime depends on download-upload ratio" = "Each client upload lifetime depends on download-upload ratio"
+
+"How long a downloading client can stay in my upload queue (in minutes >5)" = "How long a downloading client can stay in my upload queue (in minutes >5)"
+
+"How long can a silent client stay in the upload queue" = "How long can a silent client stay in the upload queue"
+
+"How long should we wait in the queue of another client" = "How long should we wait in the queue of another client"
+
+"A list of ports that specify servers to remove\n    from server list. Servers with ports on this list can't be added, and\n    will eventually be removed" = "A list of ports that specify servers to remove\n    from server list. Servers with ports on this list can't be added, and\n    will eventually be removed"
+
+"The MD4 of this client" = "The MD4 of this client"
+
+"Minimal number of sources for a file" = "Minimal number of sources for a file"
+
+"Maximal number of sources for each file" = "Maximal number of sources for each file"
+
+"Allow mldonkey to propagate your sources to other donkey clients" = "Allow mldonkey to propagate your sources to other donkey clients"
+
+"Maximal number of incoming connections at any moment (default 10000 = unlimited :)" = "Maximal number of incoming connections at any moment (default 10000 = unlimited :)"
+
+"Number of servers that can be used to walk\nbetween servers" = "Number of servers that can be used to walk\nbetween servers"
+
+"Set this option to false if you don't want mldonkey\n    to change the master servers it is connected to" = "Set this option to false if you don't want mldonkey\n    to change the master servers it is connected to"
+
+"Set this option to false if you don't want auto\n    update of servers list" = "Set this option to false if you don't want auto\n    update of servers list"
+
+"immediately close connection to servers that don't grant a High ID" = "immediately close connection to servers that don't grant a High ID"
+
+"The minimal number of users for a server\n    to be admitted as one of the 5 master servers" = "The minimal number of users for a server\n    to be admitted as one of the 5 master servers"
+
+"A list of server IP to remove from server list.\n    Servers on this list can't be added, and will eventually be removed" = "A list of server IP to remove from server list.\n    Servers on this list can't be added, and will eventually be removed"
+
+"The delay between computations of the md4 of chunks" = "The delay between computations of the md4 of chunks"
+
+"Should mldonkey try to detect sources masquerading as others and ban them" = "Should mldonkey try to detect sources masquerading as others and ban them"
+
+"Should mldonkey accept compressed packets from emule" = "Should mldonkey accept compressed packets from emule"
+
+"Should mldonkey try to detect sources responsible for corruption and ban them" = "Should mldonkey try to detect sources responsible for corruption and ban them"
+
+"max number of days after which an unconnected server is removed" = "max number of days after which an unconnected server is removed"
+
+"The number of UDP packets you send every check_client_connections_delay" = "The number of UDP packets you send every check_client_connections_delay"
+
+"The number of servers you want to stay connected to" = "The number of servers you want to stay connected to"
+
+"The delay between server connection rounds" = "The delay between server connection rounds"
+
+"Delay used to request file sources" = "Delay used to request file sources"
+
+"The port used for connection by other donkey clients." = "The port used for connection by other donkey clients."
+
+"Max number of messages of Chat remembered" = "Max number of messages of Chat remembered"
+
+"Max number of UDP packets per round for eXtended Search" = "Max number of UDP packets per round for eXtended Search"
+
+"Directories where files will be shared" = "Directories where files will be shared"
+
+"The list of known friends" = "The list of known friends"
+
+"Shortcuts for special specialized searches" = "Shortcuts for special specialized searches"
+
+"Maximal number of saved searches" = "Maximal number of saved searches"
+
+"List of known servers" = "List of known servers"
+
+"" = ""
+
+"The files currently being downloaded" = "The files currently being downloaded"
+
+"The files whose download is finished" = "The files whose download is finished"
+
+"A space-separated list of keywords. Each keyword triggers\n  printing information on the corresponding messages:\n  mc : debug client messages\n  mct : debug emule clients tags\n  ms : debug server messages\n  connect : debug connections\n  net : debug net\n  verb : debug other\n  loc : debug source research\n  sp : debug source propagation \n  sm : debug source management\n  do : some download warnings\n  up : some upload warnings\n  unk : unknown messages\n  ov : overnet\n  share: debug sharing\n  md4 : md4 computation\n  udp : udp messages\n  hc: http_client messages\n  hs: http_server messages\n" = "A space-separated list of keywords. Each keyword triggers\n  printing information on the corresponding messages:\n  mc : debug client messages\n  mct : debug emule clients tags\n  ms : debug server messages\n  connect : debug connections\n  net : debug net\n  verb : debug other\n  loc : debug source research\n  sp : debug source propagation \n  sm : debug source management\n  do : some download warnings\n  up : some upload warnings\n  unk : unknown messages\n  ov : overnet\n  share: debug sharing\n  md4 : md4 computation\n  udp : udp messages\n  hc: http_client messages\n  hs: http_server messages\n"
+
+"The file in which you want mldonkey to log its debug messages. If you\n  set this option, mldonkey will log this info in the file until you use the\n'close_log' command. The log file may become very large. You can\n    also enable logging in a file after startup using the 'log_file' command." = "The file in which you want mldonkey to log its debug messages. If you\n  set this option, mldonkey will log this info in the file until you use the\n'close_log' command. The log file may become very large. You can\n    also enable logging in a file after startup using the 'log_file' command."
+
+"size of log in number of records" = "size of log in number of records"
+
+"If this option is set, IP addresses on the local network are allowed \n(only for debugging)" = "If this option is set, IP addresses on the local network are allowed \n(only for debugging)"
+
+"(internal option)" = "(internal option)"
+
+"Maximal number of results displayed for a search" = "Maximal number of results displayed for a search"
+
+"The percentage of free memory before a compaction is triggered" = "The percentage of free memory before a compaction is triggered"
+
+"This option defines a set of date at which some commands have to be executed.\n  For each tuple, the first argument is a list of week days (from 0 to 6), \n  the second is a list of hours (from 0 to 23) and the last one a command to\n  execute. Can be used with 'pause all' and 'resume all' for example to\n  resume and pause downloads automatically for the night." = "This option defines a set of date at which some commands have to be executed.\n  For each tuple, the first argument is a list of week days (from 0 to 6), \n  the second is a list of hours (from 0 to 23) and the last one a command to\n  execute. Can be used with 'pause all' and 'resume all' for example to\n  resume and pause downloads automatically for the night."
+
+"How many samples go into an estimate of transfer rates" = "How many samples go into an estimate of transfer rates"
+
+"The delay between one glance at a file and another" = "The delay between one glance at a file and another"
+
+"timeout when connecting to a server" = "timeout when connecting to a server"
+
+"The delay between two saves of the 'downloads.ini' file (default is 15 minutes)" = "The delay between two saves of the 'downloads.ini' file (default is 15 minutes)"
+
+"Maximal size of the buffers of a client" = "Maximal size of the buffers of a client"
+
+"Minimal number of results for filter form to appear" = "Minimal number of results for filter form to appear"
+
+"Whether to display results already downloaded" = "Whether to display results already downloaded"
+
+"The minimal delay between two connections to the same client (in seconds)" = "The minimal delay between two connections to the same client (in seconds)"
+
+"Size of the minor heap in kB" = "Size of the minor heap in kB"
+
+"Should the MLSUBMIT.REG file be created" = "Should the MLSUBMIT.REG file be created"
+
+"The IP address used to bind the p2p clients" = "The IP address used to bind the p2p clients"
+
+"The delay between reloads of the vd output in the WEB interface" = "The delay between reloads of the vd output in the WEB interface"
+
+"Force compaction every <n> hours (in [1..24])" = "Force compaction every <n> hours (in [1..24])"
+
+"Message printed at startup (automatically downloaded from the previous\n    URL directory" = "Message printed at startup (automatically downloaded from the previous\n    URL directory"
+
+"The height of the command frame in pixel (depends on your screen and browser sizes)" = "The height of the command frame in pixel (depends on your screen and browser sizes)"
+
+"This option controls whether the WEB interface should use frames or not" = "This option controls whether the WEB interface should use frames or not"
+
+"The realm shown when connecting with a WEB browser" = "The realm shown when connecting with a WEB browser"
+
+"Delay between updates to the GUI" = "Delay between updates to the GUI"
+
+"Is the default terminal an ANSI terminal (escape sequences can be used)" = "Is the default terminal an ANSI terminal (escape sequences can be used)"
+
+"The size long client names will be shortened to in the interface" = "The size long client names will be shortened to in the interface"
+
+"The size long names will be shortened to in the interface" = "The size long names will be shortened to in the interface"
+
+"The size of the buffer between the client and its GUI. Can be useful\nto increase when the connection between them has a small bandwith" = "The size of the buffer between the client and its GUI. Can be useful\nto increase when the connection between them has a small bandwith"
+
+"Timeout on client connections when not queued" = "Timeout on client connections when not queued"
+
+"show all eMule mods in statistics" = "show all eMule mods in statistics"
+
+"build statistics about eMule mods" = "build statistics about eMule mods"
+
+"Flush buffers if buffers exceed buffer_writes_threshold kB (experimental)" = "Flush buffers if buffers exceed buffer_writes_threshold kB (experimental)"
+
+"Buffer writes and flush after buffer_writes_delay seconds (experimental)" = "Buffer writes and flush after buffer_writes_delay seconds (experimental)"
+
+"filters on replies (replies will be kept)." = "filters on replies (replies will be kept)."
+
+"keep seen files in history to allow local search (can be expensive in memory)" = "keep seen files in history to allow local search (can be expensive in memory)"
+
+"(experimental)" = "(experimental)"
+
+"use the chat to indicate when a file has been downloaded" = "use the chat to indicate when a file has been downloaded"
+
+"the id to use for communicating with the core console through chat interface" = "the id to use for communicating with the core console through chat interface"
+
+"The IP address used to bind the chat server" = "The IP address used to bind the chat server"
+
+"port used by the external chat application to use the core as a proxy" = "port used by the external chat application to use the core as a proxy"
+
+"hostname of the external chat application" = "hostname of the external chat application"
+
+"port of the external chat application" = "port of the external chat application"
+
+"Regexp of messages to filter out, example: string1\\|string2\\|string3" = "Regexp of messages to filter out, example: string1\\|string2\\|string3"
+
+"Allow others to browse our share list (0: none, 1: friends only, 2: everyone" = "Allow others to browse our share list (0: none, 1: friends only, 2: everyone"
+
+"The users that are defined on this core. The default user is\ncalled 'admin', and uses an empty password. To create new users,\nlogin as admin in mldonkey, and use the 'add_user' command." = "The users that are defined on this core. The default user is\ncalled 'admin', and uses an empty password. To create new users,\nlogin as admin in mldonkey, and use the 'add_user' command."
+
+"Allow you to use any command with ! in the interface instead of only the\nones in allowed_commands" = "Allow you to use any command with ! in the interface instead of only the\nones in allowed_commands"
+
+"Commands that you are allowed to be call from the interface. These\ncommands should short, so that the core is not blocked more than necessary." = "Commands that you are allowed to be call from the interface. These\ncommands should short, so that the core is not blocked more than necessary."
+
+"Name of GUI to start" = "Name of GUI to start"
+
+"Directory where mldonkey binaries are installed" = "Directory where mldonkey binaries are installed"
+
+"Name of program used for preview (first arg is local filename, second arg\n    is name of file as searched on eDonkey" = "Name of program used for preview (first arg is local filename, second arg\n    is name of file as searched on eDonkey"
+
+"Sharing strategy the share command will use when none is specified" = "Sharing strategy the share command will use when none is specified"
+
+"The directory where downloaded files should be moved after commit" = "The directory where downloaded files should be moved after commit"
+
+"The upload prio of the incoming directory" = "The upload prio of the incoming directory"
+
+"The directory where temporary files should be put" = "The directory where temporary files should be put"
+
+"Send an UDP packet to a central servers with the list of servers you\n  are currently connected to, for the central server to be able to\n    generate accurate server lists." = "Send an UDP packet to a central servers with the list of servers you\n  are currently connected to, for the central server to be able to\n    generate accurate server lists."
+
+"How many megabytes should MLdonkey keep for saving configuration files." = "How many megabytes should MLdonkey keep for saving configuration files."
+
+"Should MLdonkey try to recover downloads of files in temp/ at startup" = "Should MLdonkey try to recover downloads of files in temp/ at startup"
+
+"Automatically Start the GUI" = "Automatically Start the GUI"
+
+"Ask for GUI start" = "Ask for GUI start"
+
+"The UID of the user (0=disabled) you want mldonkey to run as, after the ports\n  have been bound (can be use not to run with root priviledges when \na port < 1024 is needed)" = "The UID of the user (0=disabled) you want mldonkey to run as, after the ports\n  have been bound (can be use not to run with root priviledges when \na port < 1024 is needed)"
+
+"The login of the user you want mldonkey to run as, after the ports\n  have been bound (can be use not to run with root priviledges when \na port < 1024 is needed)" = "The login of the user you want mldonkey to run as, after the ports\n  have been bound (can be use not to run with root priviledges when \na port < 1024 is needed)"
+
+"The command which is called when a download is started. Arguments\nare '-file <num>'" = "The command which is called when a download is started. Arguments\nare '-file <num>'"
+
+"A command that is called when a file is completely\n    downloaded. Arguments are: <file_name on disk> <md4> <size>" = "A command that is called when a file is completely\n    downloaded. Arguments are: <file_name on disk> <md4> <size>"
+
+"The maximal length of zero bytes between non-zero bytes in a file that\nshould be interpreted as downloaded during a recovery" = "The maximal length of zero bytes between non-zero bytes in a file that\nshould be interpreted as downloaded during a recovery"
+
+"The maximal number of files in Downloading state (other ones are Queued)" = "The maximal number of files in Downloading state (other ones are Queued)"
+
+"Set to true if you want MLdonkey to emulate sparse files on your disk.\n  Files will use less space, but <preview> and <recover> won't work anymore.\n  Works only on Edonkey plugin. EXPERIMENTAL." = "Set to true if you want MLdonkey to emulate sparse files on your disk.\n  Files will use less space, but <preview> and <recover> won't work anymore.\n  Works only on Edonkey plugin. EXPERIMENTAL."
+
+"Set to false if you don't want mldonkey to automatically put completed files in incoming directory" = "Set to false if you don't want mldonkey to automatically put completed files in incoming directory"
+
+"Put a prefix for the filename here which shows up in the notification mail" = "Put a prefix for the filename here which shows up in the notification mail"
+
+"Send filename in mail subject" = "Send filename in mail subject"
+
+"Does your mail-server need <...> around addresses" = "Does your mail-server need <...> around addresses"
+
+"Your e-mail if you want to receive mails when downloads are completed" = "Your e-mail if you want to receive mails when downloads are completed"
+
+"The port to use on the mail server (default 25)" = "The port to use on the mail server (default 25)"
+
+"The mail server you want to use (must be SMTP). Use hostname or IP address" = "The mail server you want to use (must be SMTP). Use hostname or IP address"
+
+"Direct TCP connections to HTTP proxy (the proxy should support CONNECT)" = "Direct TCP connections to HTTP proxy (the proxy should support CONNECT)"
+
+"Port of HTTP proxy" = "Port of HTTP proxy"
+
+"Direct HTTP queries to HTTP proxy" = "Direct HTTP queries to HTTP proxy"
+
+"IP:port of the network redirector" = "IP:port of the network redirector"
+
+"URL where mldonkey can download update information on the network" = "URL where mldonkey can download update information on the network"
+
+"The size of the minimal packet you want mldonkey to send when data is\navailable on the connection" = "The size of the minimal packet you want mldonkey to send when data is\navailable on the connection"
+
+"The size of the frame packet on your network (on my cable link, it is 250)" = "The size of the frame packet on your network (on my cable link, it is 250)"
+
+"The size of the MTU of a TCP/IP packet on your connection" = "The size of the MTU of a TCP/IP packet on your connection"
+
+"The size of the header of a TCP/IP packet on your connection (ppp adds\n    14 bytes sometimes, so modify to take that into account)" = "The size of the header of a TCP/IP packet on your connection (ppp adds\n    14 bytes sometimes, so modify to take that into account)"
+
+"IP blocking list filename (peerguardian format)" = "IP blocking list filename (peerguardian format)"
+
+"URLs of RSS feeds" = "URLs of RSS feeds"
+
+"A list of lines to download on the WEB: each line has \n    the format: (kind, period, url), where kind is either\n    'server.met' (for a server.met file), or 'comments.met' for\n    a file of comments, and period is the period between updates \n    (in hours), and url is the url of the file to download.\n    IMPORTANT: Put the URL and the kind between quotes.\n    EXAMPLE:\n web_infos = [\n  ('server.met', 24, 'http://www.primusnet.ch/users/komintern/ed2k/min/server.met');\n  ('guarding.p2p', 48, 'http://homepage.ntlworld.com/tim.leonard1/guarding.p2p')\n\n ]\n  " = "A list of lines to download on the WEB: each line has \n    the format: (kind, period, url), where kind is either\n    'server.met' (for a server.met file), or 'comments.met' for\n    a file of comments, and period is the period between updates \n    (in hours), and url is the url of the file to download.\n    IMPORTANT: Put the URL and the kind between quotes.\n    EXAMPLE:\n web_infos = [\n  ('server.met', 24, 'http://www.primusnet.ch/users/komintern/ed2k/min/server.met');\n  ('guarding.p2p', 48, 'http://homepage.ntlworld.com/tim.leonard1/guarding.p2p')\n\n ]\n  "
+
+"Use the IP specified by 'client_ip' instead of trying to determine it\n    ourself. Don't set this option to true if you have dynamic IP." = "Use the IP specified by 'client_ip' instead of trying to determine it\n    ourself. Don't set this option to true if you have dynamic IP."
+
+"The last IP address used for this client" = "The last IP address used for this client"
+
+"Whether to use checkboxes in the WEB interface for search result list" = "Whether to use checkboxes in the WEB interface for search result list"
+
+"Whether to use checkboxes in the WEB interface for download list" = "Whether to use checkboxes in the WEB interface for download list"
+
+"html_mods_theme to use (located in relative html_themes/<theme_name> directory, leave blank to use internal theme" = "html_mods_theme to use (located in relative html_themes/<theme_name> directory, leave blank to use internal theme"
+
+"bw_stats refresh delay (seconds)" = "bw_stats refresh delay (seconds)"
+
+"Maximum chat messages to log in memory" = "Maximum chat messages to log in memory"
+
+"Whether to load the mldonkey_messages.ini file (false=use internal settings)" = "Whether to load the mldonkey_messages.ini file (false=use internal settings)"
+
+"Whether to display the pending slots in uploaders command" = "Whether to display the pending slots in uploaders command"
+
+"Change height of download indicator bar in vd output" = "Change height of download indicator bar in vd output"
+
+"Whether to display the Queues in vd # output" = "Whether to display the Queues in vd # output"
+
+"Whether to display the Priority column in vd output" = "Whether to display the Priority column in vd output"
+
+"Whether to display the Last column in vd output" = "Whether to display the Last column in vd output"
+
+"Whether to display the Age column in vd output" = "Whether to display the Age column in vd output"
+
+"Whether to display the Active Sources column in vd output" = "Whether to display the Active Sources column in vd output"
+
+"Whether to display the Net column in vd output" = "Whether to display the Net column in vd output"
+
+"Whether to use relative availability in the WEB interface" = "Whether to use relative availability in the WEB interface"
+
+"Whether to use human readable GMk number format" = "Whether to use human readable GMk number format"
+
+"Which html_mods style to use (set with html_mods_style command)" = "Which html_mods style to use (set with html_mods_style command)"
+
+"Whether to use the modified WEB interface" = "Whether to use the modified WEB interface"
+
+"Set to true if you also want mldonkey to download HTTP files (experimental)" = "Set to true if you also want mldonkey to download HTTP files (experimental)"
+
+"Set to true if you also want mldonkey to run as a OpenFT sub node (experimental)" = "Set to true if you also want mldonkey to run as a OpenFT sub node (experimental)"
+
+"Set to true if you also want mldonkey to run as a direct-connect node (experimental)" = "Set to true if you also want mldonkey to run as a direct-connect node (experimental)"
+
+"Set to true if you also want mldonkey to run as a Fasttrack sub node (experimental)" = "Set to true if you also want mldonkey to run as a Fasttrack sub node (experimental)"
+
+"Set to true if you also want mldonkey to run as a gnutella2 sub node (experimental)" = "Set to true if you also want mldonkey to run as a gnutella2 sub node (experimental)"
+
+"Set to true if you also want mldonkey to run as a gnutella1 sub node (experimental)" = "Set to true if you also want mldonkey to run as a gnutella1 sub node (experimental)"
+
+"Set to true if you also want mldonkey to run as an audiogalaxy satellite (experimental)" = "Set to true if you also want mldonkey to run as an audiogalaxy satellite (experimental)"
+
+"Set to true if you also want mldonkey to run as a soulseek client (experimental)" = "Set to true if you also want mldonkey to run as a soulseek client (experimental)"
+
+"Set to true if you also want mldonkey to run as a napster client (experimental)" = "Set to true if you also want mldonkey to run as a napster client (experimental)"
+
+"Set to true if you also want mldonkey to run as a donkey client" = "Set to true if you also want mldonkey to run as a donkey client"
+
+"Set to true if you also want mldonkey to run as an Bittorrent client" = "Set to true if you also want mldonkey to run as an Bittorrent client"
+
+"Set to true if you also want mldonkey to run as an overnet client (enable_donkey must be true)" = "Set to true if you also want mldonkey to run as an overnet client (enable_donkey must be true)"
+
+"This option enables MLdonkey to always read as much data as possible\n  from a channel, but use more CPU as it must then copy the data in the\n    channel buffer." = "This option enables MLdonkey to always read as much data as possible\n  from a channel, but use more CPU as it must then copy the data in the\n    channel buffer."
+
+"list of IP addresses allowed to connect to the core with no limit on\nupload/download and upload slots.  List separated by spaces, wildcard=255 \nie: use 192.168.0.255 for 192.168.0.* " = "list of IP addresses allowed to connect to the core with no limit on\nupload/download and upload slots.  List separated by spaces, wildcard=255 \nie: use 192.168.0.255 for 192.168.0.* "
+
+"No-limit IPs" = "No-limit IPs"
+
+"The delay in milliseconds to wait in the event loop. Can be decreased to\nincrease the bandwidth usage, or increased to lower the CPU usage." = "The delay in milliseconds to wait in the event loop. Can be decreased to\nincrease the bandwidth usage, or increased to lower the CPU usage."
+
+"Maximal number of connections that can be opened per second" = "Maximal number of connections that can be opened per second"
+
+"Set this to true if you want to have dynamic upload slot allocation (experimental)" = "Set this to true if you want to have dynamic upload slot allocation (experimental)"
+
+"How many slots can be used for upload" = "How many slots can be used for upload"
+
+"Maximal number of opened connections" = "Maximal number of opened connections"
+
+"The maximal download rate you can tolerate on your link in kBytes/s (0 = no limit)\n  The limit will apply on all your connections (clients and servers) and both\ncontrol and data messages." = "The maximal download rate you can tolerate on your link in kBytes/s (0 = no limit)\n  The limit will apply on all your connections (clients and servers) and both\ncontrol and data messages."
+
+"The maximal upload rate you can tolerate on your link in kBytes/s (0 = no limit)\n  The limit will apply on all your connections (clients and servers) and both\ncontrol and data messages." = "The maximal upload rate you can tolerate on your link in kBytes/s (0 = no limit)\n  The limit will apply on all your connections (clients and servers) and both\ncontrol and data messages."
+
+"Improved telnet interface" = "Improved telnet interface"
+
+"Should *all* sources for a file be shown on HTML/telnet vd <num>" = "Should *all* sources for a file be shown on HTML/telnet vd <num>"
+
+"The IP address used to bind the telnet server" = "The IP address used to bind the telnet server"
+
+"The IP address used to bind the gui server" = "The IP address used to bind the gui server"
+
+"The IP address used to bind the http server" = "The IP address used to bind the http server"
+
+"port for user interaction" = "port for user interaction"
+
+"The port to connect via telnet" = "The port to connect via telnet"
+
+"The port used to connect to your client with a WEB browser" = "The port used to connect to your client with a WEB browser"
+
+"The port to connect via HTTP" = "The port to connect via HTTP"
+
+"port for GiFT Graphical Interfaces interaction" = "port for GiFT Graphical Interfaces interaction"
+
+"The port to connect for GiFT GUIs" = "The port to connect for GiFT GUIs"
+
+"port for Graphical Interfaces" = "port for Graphical Interfaces"
+
+"The port to connect the GUI" = "The port to connect the GUI"
+
+"list of IP address allowed to connect to the core via telnet/GUI/WEB\nlist separated by spaces, wildcard=255 ie: use 192.168.0.255 for 192.168.0.* " = "list of IP address allowed to connect to the core via telnet/GUI/WEB\nlist separated by spaces, wildcard=255 ie: use 192.168.0.255 for 192.168.0.* "
+
+"Allowed IPs" = "Allowed IPs"
+
+"small name of client" = "small name of client"
+
+(************************************)
+(*                                  *)
+
+         module "CommonMessages"
+
+(*                                  *)
+(************************************)
+
+"Bad number of arguments" = "Bad number of arguments"
+
+"Full access enabled" = "Full access enabled"
+
+"Bad login/password" = "Bad login/password"
+
+"Command not authorized\n use 'auth <user> <password>' before." = "Command not authorized\n use 'auth <user> <password>' before."
+
+"Available commands are:\n" = "Available commands are:\n"
+
+(************************************)
+(*                                  *)
+
+         module "Gui_messages"
+
+(*                                  *)
+(************************************)
+
+"Requests" = "Requests"
+
+"Filename" = "Filename"
+
+"Comment" = "Comment"
+
+"Bitrate" = "Bitrate"
+
+"Codec" = "Codec"
+
+"Duration" = "Duration"
+
+"Description" = "Description"
+
+"Files" = "Files"
+
+"Address" = "Address"
+
+"Connected Time" = "Connected Time"
+
+"IP Address" = "IP Address"
+
+"File uploaded" = "File uploaded"
+
+"Uploaded" = "Uploaded"
+
+"Mod" = "Mod"
+
+"Brand" = "Brand"
+
+"Rating" = "Rating"
+
+"Type" = "Type"
+
+"Kind" = "Kind"
+
+"Priority" = "Priority"
+
+"ETA" = "ETA"
+
+"Status" = "Status"
+
+"Net" = "Net"
+
+"Rate" = "Rate"
+
+"State" = "State"
+
+"%" = "%"
+
+"MD4" = "MD4"
+
+"Font to display texts in the Graph tab" = "Font to display texts in the Graph tab"
+
+"Font for the networks labels in the Networks Tab" = "Font for the networks labels in the Networks Tab"
+
+"Font for the main notebook tabs labels" = "Font for the main notebook tabs labels"
+
+"Font for the list & trees texts" = "Font for the list & trees texts"
+
+"Color for the average upload rate" = "Color for the average upload rate"
+
+"Color for the average download rate" = "Color for the average download rate"
+
+"Color for the upload rate" = "Color for the upload rate"
+
+"Color for the download rate" = "Color for the download rate"
+
+"Color for the uploads graph grid" = "Color for the uploads graph grid"
+
+"Color for the downloads graph grid" = "Color for the downloads graph grid"
+
+"Color for the uploads graph background" = "Color for the uploads graph background"
+
+"Color for the downloads graph background" = "Color for the downloads graph background"
+
+"Time range for the uploads graph" = "Time range for the uploads graph"
+
+"Time range for the downloads graph" = "Time range for the downloads graph"
+
+"Max upload bandwith capacity (ko/s)" = "Max upload bandwith capacity (ko/s)"
+
+"Max download bandwith capacity (ko/s)" = "Max download bandwith capacity (ko/s)"
+
+"Columns for the list of shared files upload information" = "Columns for the list of shared files upload information"
+
+"Columns for the results of searches and files of a friends" = "Columns for the results of searches and files of a friends"
+
+"Columns of the room lists" = "Columns of the room lists"
+
+"Columns of the users lists" = "Columns of the users lists"
+
+"Columns for the locations of a file" = "Columns for the locations of a file"
+
+"Columns for the friends" = "Columns for the friends"
+
+"Columns for the downloaded files" = "Columns for the downloaded files"
+
+"Columns for the files being downloaded" = "Columns for the files being downloaded"
+
+"Columns for the servers" = "Columns for the servers"
+
+"What is the maximum length of a client name displayed in the friends and uploads lists" = "What is the maximum length of a client name displayed in the friends and uploads lists"
+
+"What is the maximum length of a file name displayed in the results list" = "What is the maximum length of a file name displayed in the results list"
+
+"What is the maximum length of a file name displayed in the downloads list" = "What is the maximum length of a file name displayed in the downloads list"
+
+"Filter the sources that have only a file availability" = "Filter the sources that have only a file availability"
+
+"What is displayed in availability column : graphical or text" = "What is displayed in availability column : graphical or text"
+
+"Display various icons in the lists" = "Display various icons in the lists"
+
+"How are displayed the Tabs : left, right, top, bottom" = "How are displayed the Tabs : left, right, top, bottom"
+
+"The last tab opened before closing the GUI" = "The last tab opened before closing the GUI"
+
+"Height of GUI window" = "Height of GUI window"
+
+"Width of GUI window" = "Width of GUI window"
+
+"Size in % of up part of the uploads vpane" = "Size in % of up part of the uploads vpane"
+
+"Size in % of upper part of the rooms vpane" = "Size in % of upper part of the rooms vpane"
+
+"Size in % of left part of the second rooms hpane" = "Size in % of left part of the second rooms hpane"
+
+"Size in % of left part of the rooms hpane" = "Size in % of left part of the rooms hpane"
+
+"Size in % of the directories part of the files box" = "Size in % of the directories part of the files box"
+
+"Size in % of up part of the friends vpane" = "Size in % of up part of the friends vpane"
+
+"Size in % of left part of the friends hpane" = "Size in % of left part of the friends hpane"
+
+"Size in % of upper part of the servers hpane" = "Size in % of upper part of the servers hpane"
+
+"For bundle binaries, should we directly pass structures \n   between the core and the GUI (faster), or copy them (fewer bugs)" = "For bundle binaries, should we directly pass structures \n   between the core and the GUI (faster), or copy them (fewer bugs)"
+
+"The size of the buffer to the core" = "The size of the buffer to the core"
+
+"What is displayed in toolbar buttons : small or big icons" = "What is displayed in toolbar buttons : small or big icons"
+
+"What is displayed in toolbar buttons : text, icon or both" = "What is displayed in toolbar buttons : text, icon or both"
+
+"Calculate % availability ignoring already present chunks" = "Calculate % availability ignoring already present chunks"
+
+"Display the availability of a chunk as height or color coded bar" = "Display the availability of a chunk as height or color coded bar"
+
+"If use_availability_height is true, which availability corresponds to a full bar ?" = "If use_availability_height is true, which availability corresponds to a full bar ?"
+
+"Whether sizes are printed using G(iga), M(ega) and k(ilo) suffixes." = "Whether sizes are printed using G(iga), M(ega) and k(ilo) suffixes."
+
+"The depth to which the directories of a friend are automatically expanded" = "The depth to which the directories of a friend are automatically expanded"
+
+"Auto-resize lists columns" = "Auto-resize lists columns"
+
+"Unified color background for lists" = "Unified color background for lists"
+
+"Color for the Network Name when disabled" = "Color for the Network Name when disabled"
+
+"Color for the Network Name when enabled" = "Color for the Network Name when enabled"
+
+"Color for tab not selected" = "Color for tab not selected"
+
+"Color for tab selected" = "Color for tab selected"
+
+"Color for the result list in the queries tab" = "Color for the result list in the queries tab"
+
+"Color for users whose list of files has been retrieved" = "Color for users whose list of files has been retrieved"
+
+"Color for servers or users with which a connection is being established" = "Color for servers or users with which a connection is being established"
+
+"Color for not connected servers or users" = "Color for not connected servers or users"
+
+"Color for connected servers or users" = "Color for connected servers or users"
+
+"Color for unavailable files" = "Color for unavailable files"
+
+"Color for available files, not downloading" = "Color for available files, not downloading"
+
+"Color for files being downloaded" = "Color for files being downloaded"
+
+"Color for downloaded files" = "Color for downloaded files"
+
+"Default color in lists" = "Default color in lists"
+
+"What is the language of your system" = "What is the language of your system"
+
+"History of connected cores" = "History of connected cores"
+
+"Your login name (default is admin)" = "Your login name (default is admin)"
+
+"The password to use when connecting to the server" = "The password to use when connecting to the server"
+
+"The server hostname to connect to" = "The server hostname to connect to"
+
+"The server port to connect to" = "The server port to connect to"
+
+"Average uploads rate" = "Average uploads rate"
+
+"Average download rate" = "Average download rate"
+
+"Uploads rate" = "Uploads rate"
+
+"Download rate" = "Download rate"
+
+"Uploads grid" = "Uploads grid"
+
+"Downloads grid" = "Downloads grid"
+
+"Uploads background" = "Uploads background"
+
+"Downloads background" = "Downloads background"
+
+"Uploads time range +(s, mn, h, d, w)" = "Uploads time range +(s, mn, h, d, w)"
+
+"Downloads time range +(s, mn, h, d, w)" = "Downloads time range +(s, mn, h, d, w)"
+
+"Max upload rate (ko/s)" = "Max upload rate (ko/s)"
+
+"Max download rate (ko/s)" = "Max download rate (ko/s)"
+
+"Shared files upload info" = "Shared files upload info"
+
+"Results" = "Results"
+
+"File locations" = "File locations"
+
+"Maximum length of a client name" = "Maximum length of a client name"
+
+"Maximum length of a result name" = "Maximum length of a result name"
+
+"Maximum length of a file name" = "Maximum length of a file name"
+
+"Display only reliable sources" = "Display only reliable sources"
+
+"Use graphical represention for availability" = "Use graphical represention for availability"
+
+"Use icons in the lists" = "Use icons in the lists"
+
+"Mini icons in toolbars" = "Mini icons in toolbars"
+
+"Tab position" = "Tab position"
+
+"Style of toolbars" = "Style of toolbars"
+
+"Use relative % availability" = "Use relative % availability"
+
+"Use height encoded availability" = "Use height encoded availability"
+
+"Use size suffixes (G, M, k)" = "Use size suffixes (G, M, k)"
+
+"Files auto-expand depth" = "Files auto-expand depth"
+
+"Auto-resize" = "Auto-resize"
+
+"Graphic texts" = "Graphic texts"
+
+"Networks labels" = "Networks labels"
+
+"Main tabs labels" = "Main tabs labels"
+
+"Lists & Trees" = "Lists & Trees"
+
+"Network diabled" = "Network diabled"
+
+"Network enabled" = "Network enabled"
+
+"Lists background" = "Lists background"
+
+"Tab not selected" = "Tab not selected"
+
+"Tab selected" = "Tab selected"
+
+"Files result" = "Files result"
+
+"Files listed" = "Files listed"
+
+"Not connected" = "Not connected"
+
+"Not available" = "Not available"
+
+"Available" = "Available"
+
+"Downloaded" = "Downloaded"
+
+"Default" = "Default"
+
+"Misc" = "Misc"
+
+"Client" = "Client"
+
+"Columns titles" = "Columns titles"
+
+"Layout" = "Layout"
+
+"Fonts" = "Fonts"
+
+"Colors" = "Colors"
+
+"Plugins" = "Plugins"
+
+"Options" = "Options"
+
+"GUI" = "GUI"
+
+"Login" = "Login"
+
+"Language" = "Language"
+
+"GUI server" = "GUI server"
+
+"Password" = "Password"
+
+"Hostname" = "Hostname"
+
+"GUI port" = "GUI port"
+
+"Add Column Before" = "Add Column Before"
+
+"Add Column After" = "Add Column After"
+
+"Remove Column" = "Remove Column"
+
+"Sort" = "Sort"
+
+"Autosize" = "Autosize"
+
+"Graph" = "Graph"
+
+"Console" = "Console"
+
+"Rooms" = "Rooms"
+
+"Search" = "Search"
+
+"Friends" = "Friends"
+
+"Networks" = "Networks"
+
+"Reconnect To" = "Reconnect To"
+
+"Scan Ports" = "Scan Ports"
+
+"Reconnect" = "Reconnect"
+
+"Kill core" = "Kill core"
+
+"Gui" = "Gui"
+
+"Exit" = "Exit"
+
+"Im" = "Im"
+
+"About" = "About"
+
+"Not Connected" = "Not Connected"
+
+"Shared: %5d/%-12s   U/D bytes/s: %7d[%5d]/%-7d[%5d]" = "Shared: %5d/%-12s   U/D bytes/s: %7d[%5d]/%-7d[%5d]"
+
+"Downloaded Files: %d/%d" = "Downloaded Files: %d/%d"
+
+"Connected to %d/%d server(s)" = "Connected to %d/%d server(s)"
+
+"Unknown action: " = "Unknown action: "
+
+"Authorization Failed\nPlease, click the Settings button -> GUI -> GUI server and enter a valid password" = "Authorization Failed\nPlease, click the Settings button -> GUI -> GUI server and enter a valid password"
+
+"Bad Password" = "Bad Password"
+
+"Please wait ... Generating Sources icons" = "Please wait ... Generating Sources icons"
+
+"Please wait ... Removing Sources icons" = "Please wait ... Removing Sources icons"
+
+"Please wait ... Generating Rooms icons" = "Please wait ... Generating Rooms icons"
+
+"Please wait ... Removing Rooms icons" = "Please wait ... Removing Rooms icons"
+
+"Please wait ... Generating Searches icons" = "Please wait ... Generating Searches icons"
+
+"Please wait ... Removing Searches icons" = "Please wait ... Removing Searches icons"
+
+"Please wait ... Generating Friends icons" = "Please wait ... Generating Friends icons"
+
+"Please wait ... Removing Friends icons" = "Please wait ... Removing Friends icons"
+
+"Please wait ... Generating Downloads icons" = "Please wait ... Generating Downloads icons"
+
+"Please wait ... Removing Downloads icons" = "Please wait ... Removing Downloads icons"
+
+"Please wait ... Generating Servers icons" = "Please wait ... Generating Servers icons"
+
+"Please wait ... Removing Servers icons" = "Please wait ... Removing Servers icons"
+
+"Quit" = "Quit"
+
+"Settings" = "Settings"
+
+"File" = "File"
+
+"Uploads" = "Uploads"
+
+"Downloads" = "Downloads"
+
+"Command" = "Command"
+
+"Clear Console" = "Clear Console"
+
+"Hide/Show pending slots" = "Hide/Show pending slots"
+
+"Copy ed2k link to console/clipboard" = "Copy ed2k link to console/clipboard"
+
+"Add New Directory" = "Add New Directory"
+
+"Directory : " = "Directory : "
+
+"Uploaders" = "Uploaders"
+
+"Add a Shared Directory" = "Add a Shared Directory"
+
+"Add a new shared directory" = "Add a new shared directory"
+
+"Priority :" = "Priority :"
+
+"Add Shared Directory" = "Add Shared Directory"
+
+"Shared files" = "Shared files"
+
+"Browse files" = "Browse files"
+
+"Opened Rooms" = "Opened Rooms"
+
+"Available Rooms" = "Available Rooms"
+
+"Close the current room" = "Close the current room"
+
+"Close room" = "Close room"
+
+"Do you want to download the %d files in the directory %s ?" = "Do you want to download the %d files in the directory %s ?"
+
+"Download the selected directory" = "Download the selected directory"
+
+"Download selected directory" = "Download selected directory"
+
+"Waiting for %d replies" = "Waiting for %d replies"
+
+"%d Results" = "%d Results"
+
+"Extended Search" = "Extended Search"
+
+"Force Download" = "Force Download"
+
+"Download" = "Download"
+
+"Gay" = "Gay"
+
+"PS2" = "PS2"
+
+"Hentai" = "Hentai"
+
+"XBOX" = "XBOX"
+
+"Books" = "Books"
+
+"Consoles" = "Consoles"
+
+"Adult" = "Adult"
+
+"Funstuff" = "Funstuff"
+
+"Series" = "Series"
+
+"Anime" = "Anime"
+
+"Software" = "Software"
+
+"PC Games" = "PC Games"
+
+"Screeners" = "Screeners"
+
+"DVD Rips" = "DVD Rips"
+
+"Size" = "Size"
+
+"Completesources" = "Completesources"
+
+"Availability" = "Availability"
+
+"Soundtrack" = "Soundtrack"
+
+"Rock" = "Rock"
+
+"Folk" = "Folk"
+
+"Data" = "Data"
+
+"Classical" = "Classical"
+
+"Blues" = "Blues"
+
+"All" = "All"
+
+"Categories" = "Categories"
+
+"Rest" = "Rest"
+
+"Track" = "Track"
+
+"Track/Title" = "Track/Title"
+
+"Artist" = "Artist"
+
+"Fields" = "Fields"
+
+"Sort by" = "Sort by"
+
+"Number of results" = "Number of results"
+
+"Title" = "Title"
+
+"Min Bitrate" = "Min Bitrate"
+
+"Max size" = "Max size"
+
+"Min size" = "Min size"
+
+"Format" = "Format"
+
+"Media" = "Media"
+
+"Keywords" = "Keywords"
+
+"Collection" = "Collection"
+
+"Documentation" = "Documentation"
+
+"Image" = "Image"
+
+"Program" = "Program"
+
+"Video" = "Video"
+
+"Audio" = "Audio"
+
+"And Not" = "And Not"
+
+"Max Hits" = "Max Hits"
+
+"Network :" = "Network :"
+
+"Show hidden fields" = "Show hidden fields"
+
+"All Networks" = "All Networks"
+
+"Stop Search" = "Stop Search"
+
+"Close Search" = "Close Search"
+
+"Subscribe" = "Subscribe"
+
+"Submit" = "Submit"
+
+"Local Search" = "Local Search"
+
+"IMDB" = "IMDB"
+
+"FreeDB" = "FreeDB"
+
+"Jigle" = "Jigle"
+
+"ShareReactor" = "ShareReactor"
+
+"Complex" = "Complex"
+
+"MP3" = "MP3"
+
+"Movie" = "Movie"
+
+"Album" = "Album"
+
+"Remove friend" = "Remove friend"
+
+"Name" = "Name"
+
+"Find friend" = "Find friend"
+
+"Direct" = "Direct"
+
+"Contact" = "Contact"
+
+"Friend" = "Friend"
+
+"Files Listed" = "Files Listed"
+
+"Messages" = "Messages"
+
+"ed2k link : " = "ed2k link : "
+
+"Add to friends" = "Add to friends"
+
+"Save" = "Save"
+
+"Save all" = "Save all"
+
+"Edit mp3 tags" = "Edit mp3 tags"
+
+"Get format info" = "Get format info"
+
+"Set priority" = "Set priority"
+
+"Verify chunks" = "Verify chunks"
+
+"Retry connect" = "Retry connect"
+
+"Pause/Resume" = "Pause/Resume"
+
+"Preview" = "Preview"
+
+"Show/Hide Sources" = "Show/Hide Sources"
+
+"MP3 tags Editor" = "MP3 tags Editor"
+
+"Cancel the following file(s) ?\n" = "Cancel the following file(s) ?\n"
+
+"Cancel File(s)" = "Cancel File(s)"
+
+"Very Low" = "Very Low"
+
+"Low" = "Low"
+
+"Normal" = "Normal"
+
+"High" = "High"
+
+"Very High" = "Very High"
+
+"Unknown" = "Unknown"
+
+"Black Listed" = "Black Listed"
+
+"Removed" = "Removed"
+
+"Failed %d" = "Failed %d"
+
+"Ranked %d out" = "Ranked %d out"
+
+"Queued Out" = "Queued Out"
+
+"Ranked %d" = "Ranked %d"
+
+"Initiating" = "Initiating"
+
+"New Host" = "New Host"
+
+"Connecting" = "Connecting"
+
+"Connected" = "Connected"
+
+"Aborted : %s" = "Aborted : %s"
+
+"Done" = "Done"
+
+"Complete" = "Complete"
+
+"Paused" = "Paused"
+
+"Queued" = "Queued"
+
+"Cancelled" = "Cancelled"
+
+" Waiting..." = " Waiting..."
+
+"Downloading" = "Downloading"
+
+"Save file as : " = "Save file as : "
+
+"Save file as" = "Save file as"
+
+"Clear list" = "Clear list"
+
+"More servers" = "More servers"
+
+"Connect" = "Connect"
+
+"View users" = "View users"
+
+"Disconnect" = "Disconnect"
+
+"Servers" = "Servers"
+
+"Users" = "Users"
+
+"View all" = "View all"
+
+"View all servers (even not connected)" = "View all servers (even not connected)"
+
+"Network : " = "Network : "
+
+"Address ( ip : port ) : " = "Address ( ip : port ) : "
+
+"Add a server" = "Add a server"
+
+"Add server by Address" = "Add server by Address"
+
+"SOULSEEK" = "SOULSEEK"
+
+"Display Soulseek" = "Display Soulseek"
+
+"FASTTRACK" = "FASTTRACK"
+
+"Display Fasttrack" = "Display Fasttrack"
+
+"GNUTELLA" = "GNUTELLA"
+
+"Display Gnutella" = "Display Gnutella"
+
+"OPEN NAPSTER" = "OPEN NAPSTER"
+
+"Display Open Napster" = "Display Open Napster"
+
+"EDONKEY / OVERNET" = "EDONKEY / OVERNET"
+
+"Display Edonkey / Overnet" = "Display Edonkey / Overnet"
+
+"DIRECT CONNECT" = "DIRECT CONNECT"
+
+"Display Direct Connect" = "Display Direct Connect"
+
+"BITTORRENT" = "BITTORRENT"
+
+"Display BitTorrent" = "Display BitTorrent"
+

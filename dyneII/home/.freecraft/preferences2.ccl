@@ -1,0 +1,17 @@
+;;; -----------------------------------------
+;;; $Id: ccl.c,v 1.89 2003/03/08 06:59:57 nehalmistry Exp $
+(original-fog-of-war)
+(set-video-fullscreen! #t)
+(set-local-player-name! "jaromil")
+(set-show-tips! #t)
+(set-current-tip! 1)
+(set-fog-of-war! #t)
+(set-show-command-key! #t)
+(set-video-sync-speed! 120)
+(set-mouse-scroll-speed! 1)
+(set-key-scroll-speed! 1)
+(sound-on)
+(set-sound-volume! 128)
+(music-off)
+(set-music-volume! 128)
+(set-cd-mode! 'off)

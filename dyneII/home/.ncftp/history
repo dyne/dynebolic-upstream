@@ -1,0 +1,18 @@
+quit
+ls
+cd ..
+ls
+cd pub
+ls
+cd ..
+cat README.ftp 
+cd pub/
+ls
+cd mci
+ls -la
+cd image
+cd ..
+ls
+cat README.ftp 
+exit
+quit

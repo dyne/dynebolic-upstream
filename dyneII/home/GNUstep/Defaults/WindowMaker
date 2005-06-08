@@ -1,0 +1,110 @@
+{
+  HighlightColor = "#ffffff";
+  AdvanceToNewWorkspace = NO;
+  EdgeResistance = 30;
+  MenuTextFont = "sans serif:slant=0:weight=100:width=100:pixelsize=13";
+  ShadeSpeed = fast;
+  UTitleBack = (hgradient, "rgb:90/90/90", "rgb:c0/c0/c0");
+  MoveResizeKey = None;
+  PTitleBack = (hgradient, "rgb:50/50/50", "rgb:80/80/80");
+  WindowShortcut10Key = None;
+  PixmapPath = (
+    "/usr/share/WindowMaker/Pixmaps",
+    "/usr/share/WindowMaker/Backgrounds",
+    "/usr/share/pixmaps",
+    "/home/GNUstep/Library/WindowMaker/Backgrounds"
+  );
+  MenuDisabledColor = "#636563";
+  MenuStyle = flat;
+  MenuTextBack = (hgradient, "rgb:c0/c0/c0", "rgb:90/90/90");
+  IconBack = (dgradient, "rgb:a6/a6/b6", "rgb:51/55/61");
+  MenuTitleBack = (hgradient, "rgb:20/20/70", "rgb:00/00/20");
+  FTitleBack = (hgradient, "rgb:00/00/10", "rgb:20/20/70");
+  IconificationStyle = twist;
+  MiniaturizeKey = "Mod1+M";
+  ResizebarBack = (hgradient, "rgb:90/90/90", "rgb:c0/c0/c0");
+  MenuTextColor = "#000000";
+  HighlightTextColor = "#000000";
+  MenuTitleColor = "#ffffff";
+  WorkspaceNameDisplayPosition = center;
+  ShadeKey = "Mod1+space";
+  WindowMenuKey = F10;
+  FTitleColor = "#ffffff";
+  AppIconBalloons = NO;
+  WorkspaceBack = (spixmap, "/usr/share/WindowMaker/Backgrounds/lambru2.jpg", gray20);
+  IconTitleFont = "sans serif:slant=0:weight=100:width=100:pixelsize=11";
+  HideOthersKey = None;
+  SmoothWorkspaceBack = YES;
+  UTitleColor = "#313431";
+  IconPath = (
+    "/usr/share/WindowMaker/Icons",
+    "/usr/share/WindowMaker/Pixmaps",
+    "/usr/X11R6/share/foxicons",
+    "/usr/share/icons",
+    "/usr/share/pixmaps"
+  );
+  PTitleColor = "#ffffff";
+  WorkspaceBorder = AllDirections;
+  Attraction = NO;
+  RaiseDelay = 30;
+  HelpBalloons = NO;
+  WindowPlaceOrigin = (0, 0);
+  WindowPlacement = smart;
+  WindowShortcut8Key = None;
+  CClipTitleColor = gray30;
+  WindowShortcut9Key = None;
+  ClipTitleColor = black;
+  IconTitleColor = white;
+  DisableBlinking = NO;
+  Workspace10Key = "Mod1+0";
+  IconSlideSpeed = fast;
+  CycleWorkspaces = YES;
+  RaiseKey = "Mod1+Up";
+  AntialiasedText = YES;
+  MouseMiddleButtonAction = OpenWindowListMenu;
+  HideKey = "Mod1+H";
+  MiniwindowTitleBalloons = NO;
+  WindowTitleFont = "Fixed:slant=0:weight=200:width=100:pixelsize=14";
+  NoWindowOverDock = NO;
+  ClipTitleFont = "serif:slant=0:weight=100:width=100:pixelsize=8";
+  CloseKey = "Mod1+F4";
+  FocusNextKey = "Mod1+Tab";
+  DisplayFont = "-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-*-*";
+  WindowShortcut1Key = None;
+  WindowShortcut2Key = None;
+  WindowShortcut3Key = None;
+  WindowShortcut4Key = None;
+  WindowShortcut5Key = None;
+  MaximizeKey = "Control+Mod1+Insert";
+  AlignSubmenus = YES;
+  MenuTitleFont = "sans serif:slant=0:weight=200:width=100:pixelsize=14";
+  WindowShortcut6Key = None;
+  RootMenuKey = F12;
+  LargeDisplayFont = "Courier 10 Pitch:slant=0:weight=200:width=100:pixelsize=36";
+  WindowShortcut7Key = None;
+  ColormapSize = 3;
+  MouseLeftButtonAction = SelectWindows;
+  WorkspaceBorderSize = 1;
+  MenuScrollSpeed = fast;
+  ResizeDisplay = line;
+  Workspace7Key = "Mod1+7";
+  Workspace6Key = "Mod1+6";
+  Workspace5Key = "Mod1+5";
+  Workspace4Key = "Mod1+4";
+  Workspace3Key = "Mod1+3";
+  Workspace2Key = "Mod1+2";
+  FocusPrevKey = "Control+Tab";
+  Workspace1Key = "Mod1+1";
+  WindozeCycling = YES;
+  ConstrainWindowSize = NO;
+  MenuTitleJustify = right;
+  CirculateRaise = YES;
+  TitleJustify = left;
+  ScreenSwitchKey = None;
+  DisableSound = YES;
+  WindowListKey = F11;
+  IconTitleBack = "#101040";
+  Workspace9Key = "Mod1+9";
+  Workspace8Key = "Mod1+8";
+  HMaximizeKey = None;
+}

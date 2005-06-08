@@ -1,0 +1,69 @@
+GRIP 2
+cd_device /dev/cdrom
+force_scsi 
+ripexename /usr/bin/cdparanoia
+ripcmdline -d %c %t:[.%s]-%t:[.%e] %w
+wav_filter_cmd 
+disc_filter_cmd 
+mp3exename /usr/bin/oggenc
+mp3cmdline -o %m -a %a -l %d -t %n -b %b %w
+dbserver freedb.freedb.org
+ripfileformat ~/mp3/%A/%d/%n.wav
+mp3fileformat ~/mp3/%A/%d/%n.ogg
+m3ufileformat ~/mp3/%A-%d.m3u
+delete_wavs 1
+add_m3u 1
+rel_m3u 1
+add_to_db 0
+use_proxy 0
+proxy_name 
+proxy_port 8000
+proxy_user 
+proxy_pswd 
+cdupdate 
+user_email root@dynebolic
+ripnice 0
+mp3nice 0
+mp3_filter_cmd 
+doid3 0
+doid3v2 0
+tag_mp3_only 1
+id3_comment Created by Grip
+max_wavs 99
+auto_rip 0
+eject_after_rip 1
+eject_delay 0
+delay_before_rip 0
+beep_after_rip 1
+faulty_eject 0
+poll_drive 1
+poll_interval 1
+use_proxy_env 0
+db_cgi ~cddb/cddb.cgi
+cddb_submit_email freedb-submit@freedb.org
+db_use_freedb 1
+dbserver2 
+db2_cgi ~cddb/cddb.cgi
+no_interrupt 0
+stop_first 0
+play_first 1
+play_on_insert 0
+automatic_cddb 1
+automatic_reshuffle 1
+no_lower_case 0
+no_underscore 0
+allow_high_bits 0
+allow_these_chars 
+keep_min_size 1
+num_cpu 1
+kbits_per_sec 128
+selected_encoder 6
+selected_ripper 0
+play_mode 0
+playloop 1
+volume 255
+disable_paranoia 0
+disable_extra_paranoia 0
+disable_scratch_detect 0
+disable_scratch_repair 0
+calc_gain 0

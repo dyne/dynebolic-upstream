@@ -1,0 +1,123 @@
+<graph>
+<id>IDSTART/example2ENDID</id>
+<name>example2</name>
+<data>
+<dataitem> <key>1025</key> <buf>76 21 ~3cstr~3e~3cl~3e8~3c/l~3e~3cd~3eFilename~3c/d~3e~3c/str~3e</buf> </dataitem>
+</data>
+<nodes>
+<node> <id>1</id> <type>mod_frbinmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>24 95</buf> </dataitem>
+<dataitem> <key>1024</key> <buf>~3cstr~3e~3cl~3e21~3c/l~3e~3cd~3eImage Source:Filename~3c/d~3e~3c/str~3e 1 0 ~3cstr~3e~3cl~3e9~3c/l~3e~3cd~3eline_edit~3c/d~3e~3c/str~3e 40 44| { file_mask1=[*.*]; file_mask1_name=[All files]; file_mask2=[*.bmp;*.jpg;*.png;*.tiff;*.ppm;*.pcx;*.gif;*.jpeg;*.xpm]; file_mask2_name=[Images]; file_mask3=[*.avi;*.mpg;*.mpeg;*.divx;*.rm;*.mov;*.wmv]; file_mask3_name=[Videos]; hidden=[false]; widget_type=[file_selector];  } </buf> </dataitem>
+</data>
+</node>
+<node> <id>2</id> <type>mod_frboutmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>227 42</buf> </dataitem>
+</data>
+</node>
+<node> <id>4</id> <type>mod_plasmamodule</type>
+<data>
+<dataitem> <key>0</key> <buf>142 46</buf> </dataitem>
+</data>
+</node>
+<node> <id>5</id> <type>mod_signalmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>29 1</buf> </dataitem>
+</data>
+</node>
+<node> <id>6</id> <type>mod_signalmodule</type>
+<data>
+<dataitem> <key>0</key> <buf>28 48</buf> </dataitem>
+</data>
+</node>
+</nodes>
+<connections>
+<connect>
+<from> <node_id>4</node_id> <plug_id>r</plug_id> </from>
+<to> <node_id>2</node_id> <plug_id>in</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>5</node_id> <plug_id>Signal</plug_id> </from>
+<to> <node_id>4</node_id> <plug_id>time</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>6</node_id> <plug_id>Signal</plug_id> </from>
+<to> <node_id>4</node_id> <plug_id>frq</plug_id> </to>
+</connect>
+<connect>
+<from> <node_id>1</node_id> <plug_id>result</plug_id> </from>
+<to> <node_id>4</node_id> <plug_id>b</plug_id> </to>
+</connect>
+</connections>
+<snapshots>
+<snapshot> <id>IDSTART/example2ENDID</id> <name>default</name>
+<values>
+<value><plug> <node_id>1</node_id> <plug_id>fileName</plug_id> </plug>
+<buf>img/033.jpg~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>flush</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>frame</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>x_size</plug_id> </plug>
+<buf>640~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>y_size</plug_id> </plug>
+<buf>480~00</buf></value>
+<value><plug> <node_id>1</node_id> <plug_id>cache</plug_id> </plug>
+<buf>no~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>in</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>options</plug_id> </plug>
+<buf>2~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>xsize</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>ysize</plug_id> </plug>
+<buf>480~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>brightness</plug_id> </plug>
+<buf>0.5~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>contrast</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>gamma</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>monitor</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>driver</plug_id> </plug>
+<buf>default~00</buf></value>
+<value><plug> <node_id>2</node_id> <plug_id>server</plug_id> </plug>
+<buf>default~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>time</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>amp</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>frq</plug_id> </plug>
+<buf>1~00</buf></value>
+<value><plug> <node_id>4</node_id> <plug_id>b</plug_id> </plug>
+<buf>~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>Amplitude</plug_id> </plug>
+<buf>5~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>Frequenz</plug_id> </plug>
+<buf>.1~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>Phase</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>Position</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>signal</plug_id> </plug>
+<buf>noize~00</buf></value>
+<value><plug> <node_id>5</node_id> <plug_id>mode</plug_id> </plug>
+<buf>real~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>Amplitude</plug_id> </plug>
+<buf>27~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>Frequenz</plug_id> </plug>
+<buf>.01~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>Phase</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>Position</plug_id> </plug>
+<buf>0~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>signal</plug_id> </plug>
+<buf>noize~00</buf></value>
+<value><plug> <node_id>6</node_id> <plug_id>mode</plug_id> </plug>
+<buf>real~00</buf></value>
+</values>
+</snapshot>
+</snapshots>
+</graph>

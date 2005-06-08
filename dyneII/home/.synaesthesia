@@ -1,0 +1,18 @@
+# Synaesthesia config file
+x 10
+y 30
+width 0
+height 0
+# Point style: either diamonds or stars
+diamonds
+# Fade style: either fade, wave or heat
+fade
+brightness 0.330000
+pointsize 0.125000
+fgred 0.000000
+fggreen 0.500000
+bgred 1.000000
+bggreen 0.200000
+dsp /dev/dsp
+mixer /dev/mixer
+cdrom /dev/cdrom

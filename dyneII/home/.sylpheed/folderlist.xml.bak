@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-5"?>
+
+<folderlist>
+    <folder type="mh" name="Mailbox" path="Mail">
+        <folderitem type="inbox" name="inbox" path="inbox" threaded="1" mtime="1076075373" new="0" unread="0" total="0" />
+        <folderitem type="outbox" name="sent" path="sent" threaded="1" mtime="1076075373" new="0" unread="0" total="0" />
+        <folderitem type="queue" name="queue" path="queue" threaded="1" mtime="0" new="0" unread="0" total="0" />
+        <folderitem type="draft" name="draft" path="draft" threaded="1" mtime="0" new="0" unread="0" total="0" />
+        <folderitem type="trash" name="trash" path="trash" threaded="1" mtime="0" new="0" unread="0" total="0" />
+    </folder>
+</folderlist>

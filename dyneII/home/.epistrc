@@ -1,0 +1,15 @@
+control+mod1 Return exec db-xterm "[ d y n e : b o l i c ] L33T XTERM"
+control+mod1 P exec phoenix http://dyne.org
+control+mod1 L exec links -g http://dyne.org
+control+mod1 G exec gimp
+control+mod1 X exec xmms
+
+control+mod1 Home maximize
+control+mod1 Z shadeWindow
+control+mod1 W close
+mod1 F4 close
+
+control+mod1 Right bigmoveright
+control+mod1 Left bigmoveleft
+control+mod1 Up bigmoveup
+control+mod1 Down bigmovedown

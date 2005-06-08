@@ -1,0 +1,7 @@
+#!/bin/sh
+
+exec epist &
+exec gkrellm2 -w &
+exec idesk &
+exec ~/doc/aiuto.new &
+exec fluxbox &

@@ -1,0 +1,84 @@
+view_html_toolbar: 1
+view_custom_toolbar: 1
+view_main_toolbar: 1
+view_filebrowser: 1
+transient_htdialogs: 0
+browser_command: phoenix -remote openURL(%s)
+image_editor_command: gimp-remote -n "%s"&
+editor_font: fixed,*
+editor_tab_width: 8
+notebook_tab_font: fixed,*
+notebook_tab_position: bottom
+weblint_command: /usr/bin/weblint
+main_window_height: 400
+main_window_width: 600
+main_filelist_size: 150
+max_recent_files: 10
+max_dir_history: 5
+filelist_filter: all web files
+filebrowser_filter_image: .gif:.png:.jpg:.jpeg
+filebrowser_filter_php: .php:.phtml:.php3:.php4:.phps
+filebrowser_filter_html: .htm:.html:.shtml
+filebrowser_filter_jscript: .js
+filebrowser_filter_css: .css
+filebrowser_filter_other: .htdocs:.asp:.pl:.cgi:.jsp
+thumbnail_string: _thumbnail
+thumbnail_type: jpg
+closing_paragraph_tag: 1
+closing_list_item_tag: 1
+allow_the_use_of_css: 1
+allow_the_use_of_font: 1
+format_by_context: 1
+use_xhtml: 0
+allow_the_use_of_ruby: 0
+allow_the_use_of_html4: 1
+allow_the_use_of_frames: 1
+force_an_dtd: 0
+url_in_dtd: 0
+xml_starting_line: 0
+lowercase_tags: 1
+word_wrap: 0
+autoindent: 1
+line_wrap: 1
+fontset: 0
+force_white_background: 1
+drop_at_drop_position: 0
+link_management: 1
+defaulthighlight: 1
+cont_highlight_full: 0
+continuous_highlight_update: 1
+used_html_version: HTML 4.0 Transitional
+external_filters: Tidy: /usr/bin/tidy -quiet --wrap 0:
+external_commands: Midnight Commander: /usr/X11R6/bin/rxvt -fn 10x20 -e /usr/bin/mc &:
+highlight_patterns: #22AA00:"[^"]*":
+highlight_patterns: #1D9200:(&)[a-zA-Z]+(;):
+highlight_patterns: #969696:(<!--)([^>]|([^-]>))*-->:
+highlight_patterns: #eead0e:<(/)?((a )|(img)|(/a))[^>]*>:
+highlight_patterns: #4080bf:<(/)?(form|input|select|textarea|option)[^>]*>:
+highlight_patterns: #00AAAA:<(/)?(table|td|tr|th)[^>]*>:
+highlight_patterns: #bd0000:<(/)?script[^>]*>:
+highlight_patterns: #0000FF:(class|function|var|extends|if|else|elseif|for|while|do|switch|case|break|return):
+highlight_patterns: #ee0000:(<\\?)([^?]|\\?[^>])*(\\?>):
+highlight_patterns: #000080:<[^!%?][^>]*>:
+spell_checker_command: /usr/bin/ispell 
+spell_checker_language: default
+spell_checker_accept_compound: 0
+spell_checker_use_esc_chars: 0
+spell_checker_use_pers_dict: 0
+spell_checker_pers_dict: 
+backup_filestring: ~
+backup_file: 1
+backup_by_copy: 0
+backup_abort_style: ask
+auto_convert_CR: 1
+allow_multi_instances: 0
+num_undo_levels: 100
+clear_undo_on_save: 0
+conv_ctrl_enter: 0
+conv_shift_enter: 0
+shift_enter_text: <br>\n
+ctrl_enter_text: \n</p>\n<p>
+conv_special_char: 0
+open_in_running_bluefish: 1
+autocomplet_html_tags: 0
+autocomplet_delay: 0

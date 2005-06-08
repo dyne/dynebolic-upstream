@@ -1,0 +1,150 @@
+{
+  Dock = {
+    Applications768 = (
+      {
+        Name = .ynebolic;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        PasteCommand = "gqview /home";
+        Name = .ome;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /home";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      }
+    );
+    Lowered = No;
+    Position = "-32,0";
+    Applications = (
+      {
+        Name = .ynebolic;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        PasteCommand = "gqview /home";
+        Name = .ome;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "xwc /home";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      }
+    );
+  };
+  Clip = {
+    Name = Logo.WMClip;
+    Lock = No;
+    AutoLaunch = No;
+    Command = "-";
+    Position = "0,0";
+    Forced = No;
+    BuggyApplication = No;
+  };
+  Workspace = "DESK 1";
+  Workspaces = (
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = (
+          {
+            PasteCommand = "xterm -tn xterm -bg black -fg white -T \"[ d y n e : b o l i c ]  XTERMINAL\" -geometry 118x20 -e /bin/zsh %s";
+            Name = xterm.XTerm;
+            Lock = No;
+            AutoLaunch = No;
+            Command = "xterm -tn xterm -bg black -fg white -T \"[ d y n e : b o l i c ]  XTERMINAL\" -geometry 118x20 -e /bin/zsh";
+            Position = "0,1";
+            Forced = No;
+            BuggyApplication = No;
+            Omnipresent = No;
+          },
+          {
+            PasteCommand = "/usr/lib/MozillaFirefox/firefox-bin %s";
+            Name = "firefox-bin.Firefox-bin";
+            Lock = No;
+            AutoLaunch = No;
+            Command = "/usr/lib/MozillaFirefox/firefox-bin";
+            Position = "1,0";
+            Forced = No;
+            BuggyApplication = No;
+            Omnipresent = No;
+          }
+        );
+      };
+      Name = "DESK 1";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 2";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 3";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 4";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 5";
+    },
+    {
+      Clip = {
+        AutoAttractIcons = No;
+        AutoCollapse = No;
+        Lowered = Yes;
+        Collapsed = No;
+        AutoRaiseLower = No;
+        Applications = ();
+      };
+      Name = "DESK 6";
+    }
+  );
+  Applications = ();
+}

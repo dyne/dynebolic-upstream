@@ -1,0 +1,74 @@
+// ReZound program generated data; be careful if modifying.  Modify ONLY when ReZound is NOT running.  Consider making a backup before modifying!
+
+AudioOutputMethods={"oss","alsa","jack","portaudio"};
+DesiredOutputBufferCount=2;
+DesiredOutputBufferSize=2048;
+DesiredOutputChannelCount=2;
+DesiredOutputSampleRate=44100;
+LADSPA_PATH="/usr/lib/ladspa";
+OSSInputDevice="/dev/dsp";
+OSSOutputDevice="/dev/dsp";
+SeenAboutDialogCount=3;
+SeenAboutDialogVersion="0.11.1beta";
+clipboardDir="/tmp";
+clipboardFilenamePrefix="rezclip";
+crossfadeEdges=1;
+crossfadeFadeMethod=0;
+crossfadeStartTime=10.000000;
+crossfadeStopTime=10.000000;
+fallbackWorkDir="/tmp";
+loopGapLengthSeconds=0.750000;
+promptDialogDirectory="";
+shareDirectory="/usr/share/rezound";
+skipMiddleMarginSeconds=2.000000;
+whichClipboard=0;
+
+FOX
+{
+	drawVerticalCuePositions=true;
+	followPlayPosition=true;
+	initialLengthToShow=120.000000;
+	renderClippingWarning=true;
+	showTimeUnits={true,false,false};
+	snapToCueDistance=5;
+	snapToCues=true;
+
+	WindowDimensions
+	{
+		ReZound_H=600;
+		ReZound_W=799;
+		ReZound_X=38;
+		ReZound_Y=50;
+	}
+}
+
+Meters
+{
+	meterUpdateTime=50;
+
+	Analyzer
+	{
+		enabled=true;
+		peakFallDelayTime=400;
+		peakFallRate=0.025000;
+	}
+	Level
+	{
+		RMSWindowTime=200;
+		enabled=true;
+		maxPeakFallDelayTime=500;
+		maxPeakFallRate=0.020000;
+	}
+	StereoPhase
+	{
+		enabled=true;
+		pointCount=100;
+		unrotate=true;
+	}
+}
+
+ReopenHistory
+{
+	maxReopenHistory=16;
+}
+

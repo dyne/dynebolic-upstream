@@ -1,0 +1,71 @@
+{
+  LargeDisplayFont = "-*-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*";
+  HighlightColor = white;
+  FTitleColor = black;
+  MenuTextFont = "-b&h-lucida-medium-r-normal-*-12-*-*-*-p-*-iso8859-1";
+  WorkspaceBack = (spixmap, "/usr/share/WindowMaker/Backgrounds/dyne10a5_bg04.jpg", gray20);
+  UTitleBack = (hgradient, "rgb:90/90/90", "rgb:d0/d0/d0");
+  IconTitleFont = "-b&h-lucida-medium-r-normal-*-10-*-*-*-p-*-iso8859-1";
+  PTitleBack = (hgradient, "rgb:50/50/50", "rgb:80/80/80");
+  WindowTitleFont = "-b&h-lucida-medium-r-normal-*-12-*-*-*-p-*-iso8859-1";
+  UTitleColor = gray20;
+  ClipTitleFont = "-b&h-lucida-medium-r-normal-*-10-*-*-*-p-*-iso8859-1";
+  MenuDisabledColor = gray40;
+  MenuStyle = normal;
+  MenuTextBack = (hgradient, "rgb:d0/d0/d0", "rgb:80/80/80");
+  PTitleColor = white;
+  IconBack = (dgradient, "rgb:a6/a6/b6", "rgb:51/55/61");
+  DisplayFont = "-b&h-lucida-medium-r-normal-*-12-*-*-*-p-*-iso8859-1";
+  MenuTitleBack = (
+    mhgradient,
+    "rgb:c0/29/15",
+    "rgb:c0/29/15",
+    yellow,
+    yellow,
+    "rgb:c0/29/15",
+    black,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white
+  );
+  FTitleBack = (
+    mhgradient,
+    "rgb:c0/29/15",
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    white,
+    black,
+    "rgb:c0/29/15",
+    yellow,
+    yellow,
+    "rgb:c0/29/15",
+    "rgb:c0/29/15"
+  );
+  TitleJustify = left;
+  CClipTitleColor = gray30;
+  ResizebarBack = (solid, "#b0b0b0");
+  MenuTextColor = black;
+  ClipTitleColor = black;
+  IconTitleBack = white;
+  HighlightTextColor = black;
+  IconTitleColor = black;
+  MenuTitleFont = "-b&h-lucida-bold-r-normal-*-12-*-*-*-p-*-iso8859-1";
+  MenuTitleColor = black;
+}

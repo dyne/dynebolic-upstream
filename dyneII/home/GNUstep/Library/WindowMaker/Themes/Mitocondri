@@ -1,0 +1,35 @@
+{
+  LargeDisplayFont = "-*-helvetica-bold-r-normal-*-24-*-*-*-*-*-*-*";
+  HighlightColor = "#ffe0ac";
+  FTitleColor = "#ffffff";
+  MenuTextFont = "-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-*-*";
+  WorkspaceBack = (
+    spixmap,
+    "/usr/share/WindowMaker/Backgrounds/mitowall03_800x600.jpg",
+    gray20
+  );
+  UTitleBack = (mhgradient, "#000000", "#595969", "#444661", "#202831");
+  IconTitleFont = "-*-helvetica-medium-r-normal-*-8-*-*-*-*-*-*-*";
+  PTitleBack = (mhgradient, "#000000", "#7390aa", "#405e81", "#3d4a59");
+  WindowTitleFont = "-*-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*";
+  UTitleColor = gray;
+  ClipTitleFont = "-*-helvetica-medium-r-normal-*-10-*-*-*-*-*-*-*";
+  MenuDisabledColor = "#9e9a9e";
+  MenuStyle = normal;
+  MenuTextBack = (mhgradient, "#000000", "#494c63", "#444661", "#202841");
+  PTitleColor = "#ffffff";
+  IconBack = (mhgradient, "#000000", "#595969", "#444661", "#202831");
+  DisplayFont = "-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-*-*";
+  MenuTitleBack = (mhgradient, "#000000", "#3d637f", "#315c77", "#333f3e");
+  FTitleBack = (mhgradient, "#000000", "#3d637f", "#315c77", "#333f3e");
+  TitleJustify = center;
+  CClipTitleColor = "#718a79";
+  ResizebarBack = (mhgradient, "#000000", "#494c63", "#444661", "#202841");
+  MenuTextColor = "#ffffff";
+  ClipTitleColor = "#fff38c";
+  IconTitleBack = "#4d748f";
+  HighlightTextColor = "#000000";
+  IconTitleColor = white;
+  MenuTitleFont = "-*-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*";
+  MenuTitleColor = "#ffffff";
+}

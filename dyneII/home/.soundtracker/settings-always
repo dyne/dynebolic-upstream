@@ -1,0 +1,16 @@
+loadmod-path = /usr/share/dixan/
+savemod-path = ~/
+savemodaswav-path = ~/
+savesongasxm-path = ~/
+loadsmpl-path = ~/
+savesmpl-path = ~/
+loadinstr-path = ~/
+saveinstr-path = ~/
+loadpat-path = rm
+savepat-path = unzip
+rm-path = rm
+unzip-path = unzip
+lha-path = lha
+gz-path = zcat
+bz2-path = bunzip2
+gui-disable-splash = 0
