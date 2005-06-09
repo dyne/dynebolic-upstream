@@ -1,0 +1,21 @@
+
+HERE YOU FIND HOW TO BOOT FROM A RUNNING MS-DOS or WIN95
+ (without a bootable CDROM)
+
+loadlin.exe is quite an ancient MS-DOS software
+(released under GNU GPL)
+
+it can boot a Linux kernel from a running Win95 or DOS system
+
+you can use it to run dynebolic without rebooting
+it can be useful on old systems that cannot boot from CD
+
+you need to give it a path to two files into the isolinux/ directory:
+the Linux kernel and the initrd.gz ramdisk
+and you still need to have the dynebol.sys file at the beginning of
+the filesystem of any storage device attached (harddisk or cdrom)
+
+for more information see http://elserv.ffm.fgan.de/~lermen/
+and the included files manual.txt, params.txt, initrd.txt
+
+

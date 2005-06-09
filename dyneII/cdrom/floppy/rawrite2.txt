@@ -1,0 +1,32 @@
+rawrite version 2.0 - 04/30/92 - Write disk image files to floppy
+diskettes. Version 1 by Mark Becker; hacked by Guy Helmer to improve
+performance.
+
+I'm releasing my improvements on rawrite.c to the public for general
+testing.  rawrite 1.2 was horribly slow on the computers I tried it
+on.  The main loop was writing only three sectors to the disk during
+each iteration.  Comments revealed that the original author found
+full-track writes didn't work on some machines; my bet for the reason
+for this problem is that the source buffer happened to cross a 64Kb
+physical memory boundary, which the PC's DMA can't handle.
+
+I've included code to check for the DMA boundary problem and changed
+the program to write a track full of sectors in each iteration of the
+main loop.  The result of this modification is that version 2 should
+only take 1/5 or 1/6 of the time that version 1 took to write a 1.2Mb
+or 1.44Mb diskette.  The performance increase is nice :-)
+
+I've also added the features to accept the disk image file, target
+diskette drive, and a "don't wait" option from the command line.  If
+the "don't wait" option is specified, the program doesn't pause for
+the user to insert the diskette and press <Enter>; it assumes the
+diskette is ready and waiting in the target drive.  Version 2 only
+accepts drives A and B as target drives.
+
+Please check this program - I'm not 100% postive that it will work for
+all PC's. If it doesn't work, try Mark's rawrite version 1.2 to see if
+it will work for you, and maybe drop me an email describing the
+problem you encountered and the type of system you were using.
+
+Guy Helmer
+ghelmer@dsuvax.dsu.edu

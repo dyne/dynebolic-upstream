@@ -1,0 +1,176 @@
+= 1.4.2 upgrade "LUMUMBA"
+ - XFree86 4.5 with wider video card support
+ - More modem support for USB and ADSL connections
+ - Updated software: WindowMaker-0.91
+ - Usability fixes
+
+= 1.4.1 bugfix "LUMUMBA"
+ - OpenMosix automatical startup and discovery
+ - Mozilla suite 1.7.5 (Firefox and Thunderbird dropped)
+ - Mail encrypted with Sylpheed 1.0.3, GpgME and Enigma
+ - Easier switch xBox PAL <-> NTSC and virtual keyboard
+ - Wider PC laptop hardware support
+ - Updated software:
+   Blender-2.36, Ardour-0.9-beta28, Gimp-2.0.6, Xine-1.0
+ - Fix to Rezound linkage to libFOX 1.2
+ - Various fixes and documentation updates
+ - Shiny new splash screen in gtk2 :)
+
+
+= 1.4 major update "LUMUMBA"
+ - Pure Data equipped with all major extensions:
+   PDP, PiDiP, RRadical, grid, pique, bonk, choice,
+   fiddle, freeverb, zexy, GEM-0.90, OSC and more
+   (10x to Aymeric, Derek, Frank, Yves, Tom and PD!)
+ - Blender-2.33a + Yafray-0.0.7 + Python game engine
+ - FreeJ-0.7.1 "BIKO" - RASTASOFTWARE!
+   console remote controller (VJ over Ethernet) and
+   Procedural Video Scripting: evolution from NLE systems
+ - updated Linux 2.4.26, Alsa, OpenMosix and SquashFS-2.1
+   with improved efficience and wider device support
+   including Zoran devices and most video boards
+ - Xbox support up to recent versions and cromwell bios
+ - Python is included with GUI extensions
+ - Fix to modem connection, now fully functional
+ - new software: Jamin-0.8, InkScape-0.39, poedit-1.2.5,
+   KPhone-4.0.2, TimeMachine-0.2.4, tftp-hpa-0.38,
+   Bomb-1.26, Pure-Ftpd-1.0.20, mlDonkey-2.5.22,
+   Circle-0.41c, Aqualung-0.9b2, FLAC-1.1, iftop-0.17p1,
+   Emacs-21.3, Seq24-0.5.2, Thunderbird-1.0,
+   Chestnut-dialer-0.1, libtheora-1.0a4
+ - Mobilemesh wireless adaptive routing daemon
+   see /usr/mobilemesh (10x to Elektra)
+ - updated software: FreeJ-0.7.1, MuSE-0.9.1,
+   ImageMagick-6, LADSPA, Jack-0.98.1, Blender-2.33a,
+   Cinelerra-1.2.1, Gaim-1.0, GQview-1.4.3, isolinux 2.10,
+   GEM-0.90, pd-0.37-4, Audacity-1.2.2, LiVES-0.9.1,
+   BlueFish-0.13, EffecTV-0.3.9, MPlayer-1.0pre5,
+   QJackCtl-0.2.10, Hydrogen-0.9, SDL-1.2.7, png-1.2.7,
+   Xfe-0.72, libFOX-1.2.9, Firefox-1.0, Rezound-0.11.1beta,
+   ogg-1.1.1, vorbis-1.0.1, Hydrogen-0.9.1, mjpegtools-1.6.2
+ - new games: Eboard, Racer and Eat The Whistle!
+   tk-solitaire and Starfighter-1.1.1 plus the juicy
+   updates for Wesnoth-0.8.6
+ - more documentation in the dynebolic user's manual
+ - lectrobrain :: thk03
+
+= 1.3 update & bugfix "DYNE:TRAX"
+ - Revamped streaming tools with Ogg/Vorbis audio
+   trasmission fully supported now! for a 100% free
+   radio, now dyne:bolic comes with the latest version
+   of MuSE and Icecast streaming software.
+ - bug fix to nesting
+ - updated software: Audacity-1.2, dvgrab-1.5, MuSE-0.9,
+   Kino-0.6.5, Blender-2.32, Cinelerra-1.1.9, Icecast2,
+   litestream-1.2, XChat-2.0.8, FreeJ-0.6.1-cvs
+ - new software: Avidemux-2.0.22, Ghostscript-7.05
+ - new games: Gnu Arcade Volley
+ - mufhd0
+
+= 1.2 milestone "DYNE:TRAX"
+ - dockable system: dynebolic can run from harddisk,
+   simply copying the /dyne dir on your partition.
+   It goes much faster then, especially on xbox.
+ - [dyne:trax] sound production suite:
+   native ALSA + JACK low latency rackable sound studio
+   audio software included:
+   alsa-patch-bay-1.0, cheesetracker-0.9.1,
+   freqtweak-0.5.3, jack-rack-1.4.3, ladcca-0.4,
+   qjackctl-0.2.4, Soundtracker-0.6.7,
+   spiralsyntmodular-0.2.2, pd-0.37-1test6 with
+   iemlib, zexy and GEM, Hydrogen.
+ - new software: JahShaka-1.9a5, jack-0.94 (dyne:trax)
+   Scribus-1.0.1, Firewallbuilder-1.1.2, potrace-1.2,
+   Mutt-1.5.6i, OpenMash (mbone conferencing tools),
+   xvidcap-1.1.3, Transcode-0.6.12, Gringotts-1.2.7
+ - updated software: Mpeg4Ip-1.0, RDesktop-1.3.1,
+   Rezound-0.9b, Palantir-2.5.4, FreeJ-0.6.1-cvs,
+   Firefox-0.8, Gtk-2.2.4, GnuPG-1.2.4, Gpa-0.7-cvs,
+   Sylpheed-0.9.9, xmms-1.2.9, qt-3.3, AbiWord-2.0.5,
+   TerminatorX-3.81
+ - more devices supported: usbvision, scpca5xx, acx100
+   and all other vanilla upgrades in kernel 2.4.22
+ - new games: Liquidwar-5.6.1, Wesnoth-0.6.99.2
+ - video and audio extras
+ - removed software: Trommler (subst with Hydrogen)
+ - rewrite of startup files, taschino2 nesting utility
+
+= 1.1.1 bugfix "MAKROLAB"
+ - iso format fixed to boot on AWARD bios
+ - fix to pam auth: added missing /etc/security
+ - new tools: stty
+
+= 1.1 major bugfix "MAKROLAB" (bugfix)
+ - fixes to: nesting mechanism, openmosix config file,
+   adsl-start script, iptables libraries path, wm menu,
+   net configure script for multiple devices
+ - upgraded gpgme and gpa, restored GnuPG in Sylpheed
+ - X is now restartable (ZAP with ctrl-alt-backspace)
+ - new X resolution 1280x1024
+ - pci.ids device database updated
+ - upgrade to palantir 2.5.3 and fix to config path
+ - btaudio soundcards set as secondary audio devices
+
+= 1.0 milestone "MAKROLAB"
+ - openmosix clustering support (also for xbox!)
+ - DRI 3d accelleration on matrox, intel and other cards
+ - new softwares: iceage, mjpegtools, most, gvidm, LiVES,
+   e2undel, ntfstools, parted
+ - new games: armagetron
+ - updated software: perl-5.8.0, irssi-0.8.6, XFree86-4.3
+   cardmgr-3.2.3, sylpheed-0.9.6, vim-6.2, e2fsprofs-1.34
+ - more supported vga cards and fixes to autodetection
+ - fixes to nesting procedure and keyboard setting
+ - fix to publicvoice.fm login procedure
+ - interactive debug mode at startup 
+ - xbox fixes: network, audio, joypad
+ 
+= 1.0 beta "OTOLKULTIVATOR"
+ - new NESTING mechanism that lets you save your /home
+   and data on harddisk or usb storage, also with pass
+   protection thru AES128 filesystem encryption.
+ - localization support: many languages now supported
+ - new network configuration tool
+ - support for automounting of usb dongles and cameras
+ - new softwares: ffmpeg, WPrefs, figlet, arp, xf86cfg,
+   trommler, mkfs tools, cfdisk, badblocks, dosfstools,
+   grip, gcombust, silc, dvgrab, kino, vic-openmash, exim
+ - updated softwares: mplayer-0.90, mozilla firebird,
+   rezound-0.8, gmudix-0.10, MuSE-0.8.1-cvs, FreeJ-0.5.1,
+   HasciiCam-0.9.1, cinelerra-cvs, xpdf-2.02pl1
+ - new libs: quicktime, openquicktime, Xvid
+ - new games: foobillard, cannonsmash
+ - more documentation
+ - rewrite & cleanup of major parts of the rc files
+ - fixes to:
+   automount module loading, many new vga cards,
+   soundcards when secondary dsp is present (bttv),
+   cupsd, windowmaker configuration, /etc/modules*,
+   resolv.conf, csh, freej, iptables, monitor refresh,
+   logging and bugreporting, shutdown and cd ejection,
+   nforce ethernet,
+ - new d:b chiptune jingle by dixan
+
+= 1.0 alpha "VOYAGER+LAILA"
+ - can boot on XBOX (just read some instructions!)
+ - new look! windowmaker desktop environment
+ - automount for harddisks, CDs and floppy
+ - new splashscreen (in GLADE/C by jaromil)
+ - new supported devices:
+   more VGA cards, ECI adsl pppoe modems, Serial mouse
+ - new softwares:
+ 	cinelerra (video edit), rezound (sound edit),
+	xrmap (geopolitical navigator incl. factbook),
+	swh-ladspa plugins, ethereal
+	games: powermanga, freecraft, xmahjongg, xwelltris
+ - updated softwares:
+ 	bluefish, linphone-1.10.1, gnusound,
+	lopster-1.2, blender-1.26, MuSE-0.8.1,
+	terminatorX-3.80
+ - fixes to:
+ 	harddisk detection, xfsamba, pcmcia networks
+
+= previous versions....
+ they are available online for historical reasons, but
+ no changelog was kept... 
+

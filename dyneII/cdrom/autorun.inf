@@ -1,0 +1,9 @@
+[autorun]
+label = dyne:bolic
+open = CLICK_ME.HTM
+shellexecute = CLICK_ME.HTM
+icon = dynebol.ico
+shell\readme = README
+shell\readme\command = notepad.exe README.TXT
+shell\license = LICENSE
+shell\license\command = nodepad.exe LICENSE.TXT

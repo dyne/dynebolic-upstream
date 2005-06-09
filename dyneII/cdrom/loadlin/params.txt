@@ -1,0 +1,386 @@
+------------------------------------------------------------------------
+
+    LOADLIN 1.6 ((C) 1994..1995 lermen@elserv.ffm.fgan.de)
+     and
+    Linux version: 0.99.14, 0.99.15, 1.0, 1.1.47, 1.3.97
+
+------------------------------------------------------------------------
+NOTE:
+
+The below list of Linux commandline parameters is quite out of date,
+though most of it will be still valid at this time (1.3.97).
+I only edited a few new things into it.
+A much better list of boot parameters can be found in Paul Gortmakers
+BootPrompt-HOWTO, which can be accessed via WWW:
+
+    http://sunsite.unc.edu/mdw/HOWTO/BootPrompt-HOWTO.html
+or
+    http://rsphy1.anu.edu/~gpg109/BootPrompt-HOWTO.html
+
+------------------------------------------------------------------------
+
+This is a list of command line parameters recognized and interpreted by:
+========================================================================
+
+  1. LOADLIN
+       initrd=file      file name of the initial ramdisk to be loaded
+                        by LAODLIN. See initrd.txt for more information
+       vga=mode
+
+  2. The Linux kernel
+       mem=number       (for > 0.99.15,  number = end of physical memory in bytes)
+       root=device
+       ro
+       rw
+       no387
+       debug            sets console_loglevel = 10
+       no-hlt           disables check of HLT isntruction at startup
+       load_ramdisk=N   N=0 or 1
+       prompt_ramdisk=N N=0 or 1
+
+  3. init
+       single
+       auto
+
+  4. Some drivers
+       reserve=port1,num1,...,port5,num5 #reserves 80x86 ioports
+       ether=irq,base_addr,mem_start,mem_end,dev_name
+       hd=cyl,head,sect                  # for 2 drives you need this twice
+                                         # first relates to drive 0
+       bmouse=irq
+       max_scsi_luns=n                          # (n should be between 1 and 8)
+       st0x=base_address,irq                    # SEAGATE controller ST01/ST02
+       tmc8xx=base_address,irq                  # Future Domain TMC-885,TMC-950
+       t128=address,irq                         # Trantor T128/T128F/T228
+       ncr5380=port,irq,dma                     # Generic NCR5380 driver
+       aha152x=portbase,irq,scsiid,reconnect    # Adaptec AHA-152x driver
+       xd=type,irq,iobase,dma
+       mcd=port,irq
+       sound=0x0TTPPPID, ..
+       sbpcd=sbport,SoundBlaster
+       sbpcd=LMport,LaserMate
+       sbpcd=SpeaFXport,SPEA
+
+
+  5. Environment
+       All parameters of format  name=xxxx  which are not recogized by
+       the kernel or a driver are put onto the environment.
+
+       LOADLIN itself always puts  BOOT_IMAGE=imagefile  onto the environ-
+       ment.  The user may put additional values onto the environment in
+       order to allow  /etc/rc  to behave differently for a given condition.
+
+
+==============================================================================
+
+Following are detailed descriptions:
+
+
+Parameters recognized by LOADLIN:
+=================================
+
+  ramdisk=size
+  ------------
+        size      number of Kbytes for the RAMDISK device.
+                  The image for the ramdisk is loaded by the
+                  kernel at startup from a floppy drive, if
+                  root=/dev/fdx  is also given.
+                  After loading the image, the kernel then makes
+                  the ramdisk the root device (NOT the floppy).
+                  In addition to this, LOADLIN prompts for inserting
+                  the ramdisk image into the floppy drive if it no
+                  longer needs the drive (i.e. after loading the kernel).
+
+  vga=mode
+  --------
+        mode      -3  the user is asked to specify the VGA mode
+                 ask  equal to -3
+                  -2  80x50 extended VGA mode
+            extended  equal to -2
+                  -1  80x25 normal mode
+              normal  equal to -1
+                   0  as if "0" was entered at the boot prompt
+                   .
+                   .
+                   n  as if the number "n" was entered at the boot prompt
+
+  ro
+  --
+        "ro" forces the root device to be mounted read-only (Not for UMSDOS!)
+
+  rw
+  --
+        "rw" forces the root device to be mounted read/write.
+
+  initrd=file
+  -----------
+        file name of the initial ramdisk to be loaded
+        by LAODLIN. See initrd.txt for more information
+
+------------------------------------------------------------------------------
+
+Parameters recognized only by the kernel:
+=========================================
+
+  root=device
+  -----------
+        device     may be a symbolic device name such as "/dev/hda2"
+                   or the numeric device number (hex)
+                   (highbyte=major, lowbyte=minor)
+                   recognized symbolic devices (with their partitions) are:
+                   "hda", "hdb", "hdc", "hdd",
+                   "sda", "sdb", "sdc", "sdd", "sde",
+                   "fd", "xda", "xdb"
+
+
+        Examples:
+        root=302
+        root=/dev/hda2
+        root=/dev/sda10
+
+
+  mem=number
+  ----------
+        number     End of physical RAM, this is recognized by kernels
+                   of 0.99.15 and higher and is useful if the exact
+                   installed RAM size cannot be determined automatically.
+                   may be 0x1000000, 16M, 4096K or some thing like that.
+                   mem=nopentium disables 4M page tables.
+
+
+
+  no387
+  -----
+        "no387" disables use of the hardware math coprocessor.
+
+  since 1.1.47 (or perhaps earlier) the following options are no more
+  passed to init:
+
+  ro,rw,no387
+  -----------
+
+
+  debug  sets console_loglevel high enough to dispay all
+  -----
+
+  no-hlt
+  ------
+         disables check of HLT instruction at startup.
+         If you have a clone 486, this option is *very* usefull.
+
+------------------------------------------------------------------------------
+
+Option Parameters recognized by "init":
+=======================================
+
+  single
+  ------
+        Enter "single user mode" on boot
+
+
+  auto
+  ----
+
+  ro,rw,no387   (forwarded from kernels < 1.1.47).   (see !!comment!! above)
+  -----------
+
+
+------------------------------------------------------------------------------
+
+
+
+Configuration of ethernet cards:
+================================
+
+  ether=irq,base_addr,mem_start,mem_end,dev_name
+  ---------------------------------------------
+        irq        number, IRQ-number (3..15)
+        base_addr  number, IO-base (0x280,...)
+        mem_start  number, shared mem start
+        mem_end    number, shared mem end
+        dev_name   string,
+                        eth0..3     all configured ethernetcards
+                        dl0         D-Link DE600 pocket adaptor
+                        atp0        AT-LAN-TEC (RealTek) pocket adaptor
+                        plip0..2    parallel IP (PLIP)
+                        sl0..3      serial IP (SLIP)
+        example:
+                ether=10,0x280,0xc8000,0xcbfff,eth0
+
+  related files: net/inet/eth.c, drivers/net/Space.c
+
+------------------------------------------------------------------------------
+
+Reserving I/O port space:
+=========================
+
+  reserve=port1,num1,...,port5,num5
+  ---------------------------------
+
+        portn     first IOport-address in range
+        numn      number of addresses in this range to reserve
+                  (there will be bits set to "1" in "ioport_register")
+
+  related files:  kernel/ioport.c
+
+
+------------------------------------------------------------------------------
+
+Setting hard disk parameters for the root device:
+=================================================
+
+  hd=cyl,head,sect
+  ---------------
+         # NOTE: if you have two drives, you must put
+         #       two hd= params into the commandline
+         #       the first for drive 1, the second for drive 2
+         #       eg.
+         #       loadlin zimage hd=1001,15,17 hd=989,15,56 root=/dev/hdb2 ro
+         #       (this example from my machine however is not needed,
+         #       you need it only, if Linux can't get the drive params properly
+         #       from the BIOS).
+  related files: drivers/block/hd.c
+  config:        CONFIG_BLK_DEV_HD
+
+------------------------------------------------------------------------------
+
+Setting IDE CDrom support (ATAPI)
+=================================
+
+  hdX=cdrom
+  ---------
+
+  Where X may be a,b,c,d.
+  Example:
+    hdc=cdrom
+
+------------------------------------------------------------------------------
+
+Setting the IRQ for the bus-mouse:
+==================================
+
+  bmouse=irq
+  ----------
+  related files: drivers/char/busmouse.c
+  config:        CONFIG_BUSMOUSE
+
+
+
+------------------------------------------------------------------------------
+
+Parameters for SCSI controllers:
+================================
+
+  max_scsi_luns=n                           (n should be between 1 and 8)
+
+  st0x=base_address,irq                     SEAGATE controller ST01/ST02
+
+  tmc8xx=base_address,irq                   Future Domain TMC-885,TMC-950
+
+  t128=address,irq                          Trantor T128/T128F/T228
+
+  ncr5380=port,irq,dma                      Generic NCR5380 driver
+
+  aha152x=portbase,irq,scsiid,reconnect     Adaptec AHA-152x driver
+
+
+
+  related files: drivers/scsi/seagate.c, t128.c, g_NCR5380.c, aha152x.c
+
+  config:        CONFIG_SCSI_SEAGATE, CONFIG_SCSI_T128,
+                 CONFIG_SCSI_GENERIC_NCR5380, CONFIG_SCSI_AHA152X
+
+
+------------------------------------------------------------------------------
+
+Parameters for SCSI Tapes:
+=========================
+
+  st=buffer_size,write_threshould,max_buffers
+
+     buffer_size       Size of tape buffer in Kbyte (i.e. ST_BLOCK_SIZE)
+     write_threshould  Number of Kbytes to buffer before write.
+                       (must be < buffer_size)
+     max_buffers       Number of buffers to reserve
+
+  related files: drivers/scsi/st.c
+  config:        CONFIG_CHR_DEV_ST
+
+------------------------------------------------------------------------------
+
+Parameter for XT hard disk controller (DTC 5150X):
+==================================================
+
+  xd=type,irq,iobase,dma
+  ----------------------
+
+  related files: drivers/block/xd.c
+  config:        CONFIG_BLK_DEV_XD
+
+------------------------------------------------------------------------------
+
+Parameter for Mitsumi CDROM driver:
+===================================
+
+  mcd=port,irq
+  ------------
+
+  related files: drivers/block/mcd.c
+  config:        CONFIG_MCD
+
+
+------------------------------------------------------------------------------
+
+Parameter for sound cards:
+==========================
+
+  sound=0x0TTPPPID, ..
+  ----------------
+     all values are enbedded in one longint, the above format
+     shows a hex number, each place is a hex-digit
+
+     TT         Supported card type.
+                This is the index into the list of configured cards
+                If all cards are configured (which normally is not the case)
+                the following order is kept:
+                        Roland MPU-401
+                        Gravis Ultrasound
+                        ProAudio Spectrum
+                        SoundBlaster
+                        SoundBlaster 16
+                        SB16 MPU-401 (SB16-MIDI port)
+                        AdLib
+
+     PPP        Port Address
+
+     I          IRQ
+
+     D          DMA Channel
+
+
+  related files: drivers/sound/dev_table.h,dev_table.c
+  config:        CONFIG_SOUND
+
+------------------------------------------------------------------------------
+
+Parameter for IDE-style CD-ROM device driver (Kotobuki/Matsushita/Panasonic):
+=============================================================================
+
+  sbpcd=sbport,SoundBlaster
+  ------------------------
+  sbpcd=LMport,LaserMate
+  ----------------------
+  sbpcd=SpeaFXport,SPEA
+  ----------------------
+
+        sbport     soundblaster base port +0x10 (i.e 0x230 = 0x220+0x10)
+        LMport     MPU-type port at 0x300 or equivalent
+        SpeaFXport base port on SpeaFX card
+
+  related files: drivers/block/sbpcd.c
+  config:        CONFIG_SBPCD
+
+
+
+------------------------------------------------------------------------------
+

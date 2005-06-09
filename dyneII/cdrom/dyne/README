@@ -1,0 +1,46 @@
+
+dynebolic dockable binary system - see http://dynebolic.org
+
+in this directory you find the files forming the dyne:bolic
+system, which you can boot with a cd.
+
+
+
+DOCK THE SYSTEM AND RUN FROM HARDDISK:
+you can copy this /dyne directory folder inside the root
+of your partition (i.e. c:\) to dock the system and make
+it run from harddisk (goes much faster especially on xbox).
+
+for more information about docking and dynebolic in general
+please refer to the dynebolic user's manual available at
+http://dynebolic.org/manual
+
+
+
+INTEGRITY CHECK:
+the md5 hash sums are unique numbers identifying the files
+each hash sum is cryptographically signed by the mantainer
+(see gnupg.org)
+mantainer of this dynebolic release is jaromil /@/ dyne.org
+you'll find his key at http://korova.dyne.org/jaromil.pub
+and on http://pgp.mit.edu ID 0x5B6E6D97
+
+
+
+RUN FROM HARDDISK:
+if you have another GNU/Linux system already installed, you
+can use the bootloader (grub or lilo) to start dyne:bolic
+without the need for a floppy or CD: just have a new menu
+entry to be selected at boot.
+
+In the dyne directory you will find configuration entry files
+for most popular booting systems: grub.conf and lilo.conf
+append them to your configuration and edit as needed.
+
+if you're online, this simple operation can be very quick:
+lynx -dump dynebolic.org/lilo.conf >> /etc/lilo.conf
+or if you have Grub
+lynx -dump dynebolic.org/grub.conf >> /boot/grub/grub.conf
+
+happy hacking! ;^)
+
