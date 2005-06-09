@@ -38,12 +38,13 @@ choose_nest() {
 		# go for it, we assume also var.tgz is there
 		notice "home and settings will be lost at reboot"
 	        notice "initializing virtual filesystem in memory"
-		RAMSIZE=`cat /proc/meminfo |grep MemTotal: |chomp -- 2`
+		RAMSIZE=`cat /proc/meminfo | awk '/MemTotal/{print $2}'`
 		SHMSIZE=`expr $RAMSIZE / 1024 / 4`
 		act "RAM detected: `expr $RAMSIZE / 1024` Mb"
 		act "VFS size: $SHMSIZE Mb"
-		echo "tmpfs /dev/shm tmpfs defaults,size=${SHMSIZE}m 0 0" >> /boot/fstab
-		cp -f /boot/fstab /etc
+		echo "tmpfs\t/dev/shm\ttmpfs\tdefaults,size=${SHMSIZE}m\t0\t0" >> /boot/fstab
+		cat /etc/fstab /boot/fstab | sort | uniq > /tmp/fstab
+                mv /tmp/fstab /etc/fstab
 		mount /dev/shm
 		
 		# creating /var /tmp and /home

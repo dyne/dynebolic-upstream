@@ -1,4 +1,4 @@
-#!/bin/sh --no-zle
+#!/bin/zsh --no-zle
 #
 # generic shutdown script for dyne:bolic
 # this should be run at halt and reboot and whenever
@@ -28,10 +28,8 @@ fi
 echo " .  wait to sync processes"
 wait
 
-if [ -x /usr/sbin/autofs ]; then
-    echo -n " .  "
-    /usr/sbin/autofs stop
-fi
+echo -n " .  "
+/etc/init.d/rc.autofs stop
 
 if [ -x /usr/sbin/swapoff ]; then
     act "release swap"
@@ -45,9 +43,9 @@ act "umount all volumes"
 /bin/umount -a
 
 echo " .  sync harddrives" # this never hurts
-/sbin/sync
+/bin/sync
 
-if [ "$DYNE_SYS_MEDIA" == "cd" ]; then
+if [ $DYNE_SYS_MEDIA = cd ]; then
     echo "[*] ejecting dyne:bolic cd"
     eject "$DYNE_SYS_DEV"
 fi

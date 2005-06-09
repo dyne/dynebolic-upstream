@@ -62,12 +62,12 @@ print "}"
 ' > /boot/WMState
 
     
-    if [ -r /home/GNUstep/Defaults/WMState ]; then
-	rm -f /home/GNUstep/Defaults/WMState
+    if [ -r /var/run/WMState ]; then
+	rm -f /var/run/WMState
     fi
-    cp /usr/share/dynebolic/templates/WMState.head /home/GNUstep/Defaults/WMState
-    cat /boot/WMState >> /home/GNUstep/Defaults/WMState
-    cat /usr/share/dynebolic/templates/WMState.foot >> /home/GNUstep/Defaults/WMState
+    cp /usr/share/dynebolic/WMState.head /var/run/WMState
+    cat /boot/WMState >> /var/run/WMState
+    cat /usr/share/dynebolic/WMState.foot >> var/run/WMState
     
     act "WindowMaker configured"
 }

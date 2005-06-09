@@ -1,4 +1,4 @@
-#!/bin/sh --no-zle
+#!/bin/zsh --no-zle
 #
 # dyne:bolic hardware setup script
 # run after system detect
@@ -63,7 +63,7 @@ fi
 
 
 # if the system has been allready mounted you can go on
-if [ ! -x /usr/bin/mufhd0 ]; then
+if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 
     if [ -r ${DYNE_SYS_MNT}/dynebol.sys ]; then # for compatibility
 	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dynebol.sys /usr
@@ -90,7 +90,7 @@ if [ ! -x /usr/bin/mufhd0 ]; then
 	sleep 10
     fi
     
-    if [ ! -x /usr/bin/mufhd0 ]; then
+    if [ ! -x /usr/bin ]; then
 	# no system found on any harddisk or cdrom
 	error "No dyne:bolic system has been found on any cdrom or harddisk"
 	error "check your harddisk dock or CD: no /dyne directory is present."
@@ -100,12 +100,15 @@ if [ ! -x /usr/bin/mufhd0 ]; then
 	notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
     fi
 	
+else
+    notice "your system seems to be already mounted, great!"
 fi
 
-export PATH=$PATH:/usr/bin:/usr/sbin
+# now the system is mounted expand our PATH
+export PATH=$PATH:/usr/bin:/usr/sbin:/usr/X11R6/bin
 
-# configure language
-/usr/etc/rc.language
+# configure languages
+/etc/init.d/rc.language
 
 act "dyne:bolic setup on `date`" >> $LOG
 echo "$LIBDYNE_ID" >> $LOG
@@ -121,89 +124,77 @@ dmesg -n 1
 
 notice "activate runtime configurations"
 
-#act "reset boot log file in /var/log"
-#if [ -r /var/log/dynebolic.log ]; then
-#  rm /var/log/dynebolic.log
-#fi
-#mv ${LOG} /var/log/dynebolic.log
-
-notice "setup network loopback device"
+act "network loopback device"
 ifconfig lo 127.0.0.1
 
-echo -n "[*] "; /usr/sbin/autofs start
+echo -n "[*] "; /etc/init.d/rc.autofs start
 
 # detect and mount swap partitions
-/usr/etc/rc.swap &
+for gh in `fdisk -l | grep -iE "linux.*swap*" | awk '{print $1}'`; do
+    act "activating swap partition $gh"
+    echo "$gh swap swap sw 0 0" >> /etc/fstab
+    swapon $gh
+done
+
 
 # detect xbox
 # in case we're on xbox then executes just the
 # script for it, avoiding modules detection and
 # pcmcia and power management etc...
 if [ ! -z "`uname -a | grep xbox`" ]; then
+
   # this is a customized configure file for XBOX
   # it loads the needed modules
-    /usr/etc/rc.xbox
-    
-else
+  /etc/init.d/rc.xbox
+
+else # not an xbox
     
 # configure pcmcia cards
-    /usr/etc/rc.pcmcia start
+  /etc/init.d/rc.pcmcia start
     
 # load necessary kernel modules
-    /usr/etc/rc.modules
-    
-# load appropriate power management system
-# DEACTIVATED by jaromil on 4 july 2003 (1.0 beta devel)
-# /usr/etc/rc.powman
+  /etc/init.d/rc.modules
     
 fi
 
 
 # configure videocard
-/usr/etc/rc.vga
-
-# configure mouse
-# now is all compiled into the kernel
-/usr/etc/rc.mouse
+/etc/init.d/rc.vga
 
 # configure your sound card
-/usr/etc/rc.sound
+/etc/init.d/rc.sound
 
 # configure firewire
-/usr/etc/rc.firewire
+/etc/init.d/rc.firewire
 
 # configure network
-/usr/etc/rc.net
+/etc/init.d/rc.net
 
 # launch daemons in sequence
-
+# TODO: use runit svscan for this
 # configure ssh client
-/usr/etc/rc.ssh &
+#/usr/etc/rc.ssh &
 
 # configure cups daemon
-/usr/etc/rc.cupsd &
+#/usr/etc/rc.cupsd &
 
 # start samba services
-/usr/etc/rc.samba &
+#/usr/etc/rc.samba &
 
 # start pure ftp daemon
-/usr/etc/rc.ftp &
+#/usr/etc/rc.ftp &
 
 # start http boa daemon
-/usr/etc/rc.httpd &
+#/usr/etc/rc.httpd &
 
 # configure your mail transport
-/usr/etc/rc.mail &
-
-# configure openmosix clustering
-/usr/etc/rc.mosix
+#/usr/etc/rc.mail &
 
 # link the extras in the home
 if [ ! -r /home/extras ]; then
-  source /boot/dynenv
-  if [ -r /mnt/dynebolic/extras ]; then
+  if [ -r ${DYNE_SYS_MNT}/extras ]; then
     act "linking extras in home"
-    ln -s /mnt/dynebolic/extras /home/extras
+    ln -s ${DYNE_SYS_MNT}/extras /home/extras
   fi
 fi
 

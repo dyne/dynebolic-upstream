@@ -5,12 +5,12 @@
 source /etc/zsh/common
 
 # boot modes
-if [ -r /tmp/volatile ]; then
-  source /etc/zsh/volatile
+if [ -r /tmp/dyne ]; then
+  source /etc/zsh/dyne
 elif [ -r /tmp/ascii ]; then
   source /etc/zsh/ascii
 else
-  source /etc/zsh/dyne
+  source /etc/zsh/volatile
 fi
 
 # generated at boot

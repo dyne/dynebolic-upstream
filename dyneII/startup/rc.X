@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 #
 # dyne:bolic X startup script
 # by jaromil
@@ -41,19 +41,17 @@ if [ $ASCII ]; then
     cat > /etc/zshrc <<EOF
 # here is the motd
 cd
-cat /etc/ascii.motd
 echo "you are running `uname -mnrsp`"
-echo "uptime: `uptime`"
+echo "uptime: `/usr/bin/uptime`"
 echo
 fortune -s
 echo
 EOF
-    cat /etc/ascii.motd
     exit 0;
 fi
 
-
-
+## full dyne mode
+touch /tmp/dyne
 
 ## setup the interactive shell prompt for X
 if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi
@@ -61,7 +59,7 @@ cat > /etc/zshrc <<EOF
 # here is the motd
 cd
 echo "you are running `uname -mnrsp`"
-echo "uptime: `uptime`"
+echo "uptime: `/usr/bin/uptime`"
 echo
 fortune -s
 echo
@@ -72,47 +70,5 @@ EOF
 wmaker_gen_volumes
 
 
-notice "starting X graphical interface"
-if [ -e /boot/Xok ]; then rm -f /boot/Xok; fi
-echo
-echo
-echo
-/sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-
-echo
-echo
-
-while [ -e /boot/Xok ]; do
-  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-done
-
-if [ -z "`grep fbdev /etc/XF86Config`" ]; then
-  echo
-  echo
-  error "your graphic card seems to lack XFree86 native support"
-  echo
-  notice "in 5 seconds we will try to start framebuffer video mode"
-  act "resolution is limited to 800x600 16bit color depth"
-  echo
-  echo
-  sleep 5
-  mv /etc/XF86Config "/etc/XF86Config.bad-`date '+%e-%m-%y'`"
-  cp /etc/XF86Config.dist /etc/XF86Config
-  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-fi
-
-while [ -e /boot/Xok ]; do
-  /sbin/agetty -n -l `login -c /usr/X11R6/bin/xinit` 38400 tty7 linux;
-done
-
-echo
-echo
-error "the X graphical interface cannot start automatically"
-error "you can try to configure it by yourself using the command"
-error "'xf86cfg -textmode' and choose your video hardware devices"
-error "from a list of supported cards."
-echo
-notice "good luck!"
-echo
-echo
+exit 0
 

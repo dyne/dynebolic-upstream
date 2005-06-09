@@ -42,7 +42,7 @@ if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
 
 # logging functions
-if [ ! -z $FILE_ID ]; then
+if [ ! -z ${FILE_ID} ]; then
     echo >> $LOG
     echo "RC: $FILE_ID" >> $LOG
     echo >> $LOG
@@ -122,7 +122,7 @@ loadmod() {
     fi
 
     # if the system is mounted
-    if [ -r /usr/bin/mufhd0 ]; then
+    if [ -x /usr/bin ]; then
 	if [ -r /etc/modules.deny ]; then
 	    if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
 	# skip modules included in /etc/modules.deny
@@ -144,8 +144,9 @@ loadmod() {
     
     else # if we are in volatile mode (system not yet mounted)
 	
-	# look for the module in /boot
-	TRYMOD=`find /boot -name "${MODULE}*"`
+	# look for the module in /boot/modules/$KRN
+	KRN=`uname -r`
+	TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}*"`
 	if [ -r ${TRYMOD} ]; then
 	    insmod ${TRYMOD} 1>>$LOG 2>>$LOG
 	    if [ $? = 0 ]; then

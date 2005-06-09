@@ -21,22 +21,24 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-PACKAGE="dyne:bolic SDK"
-VERSION="2.0"
-REPOSITORY="rsync.dyne.org::dynebolic-dev"
-ISO="dynebolic-dev.iso"
-PFX="." # you can change it to static path where dynesdk resides
-
-# standard output message routines
-# it's always useful to wrap them, in case we change behaviour later
-notice() { echo "[*] $1"; }
-act() { echo " .  $1"; }
-error() { echo "[!] $1"; }
+if [ -r /lib/dyne/utils.sh ]; then
+  source /lib/dyne/utils.sh
+else
+  # standard output message routines
+  # it's always useful to wrap them, in case we change behaviour later
+  notice() { echo "[*] $1"; }
+  act() { echo " .  $1"; }
+  error() { echo "[!] $1"; }
+fi
 func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
+PACKAGE="dyne:bolic SDK"
+VERSION="2.0"
+ISO="dynebolic-dev.iso"
+PFX="/SDK" # you can change it to static path where dynesdk resides
+
 notice "$PACKAGE version $VERSION - software development kit"
-act "Copyleft 2003-2004 by jaromil - http://dynebolic.org"
-act "$ID"
+act "Copyleft 2003-2005 by jaromil - RASTASOFT.org"
 
 OPTS=`getopt -o hvp:u:r:i:q -n 'dynesdk' -- "$@"`
 
@@ -48,26 +50,19 @@ while true; do
 	    notice "SYNOPSIS: dynesdk [-hv] [-p prefix] [-u user -h host] COMMAND"
 	    act "-h     print this help"
 	    act "-v     print out the version of this sdk tool"
-	    act "-p     path to the sdk base directory (default ./)"
+	    act "-p     path to the sdk base directory (default /SDK)"
 	    act "-u     username for online operations"
 	    act "-r     server hosting the online sdk"
 	    act "-i     dynebolic iso (default ./dynebolic-dev.iso)"
             act "-q     be quick and skip checksums and crypto sigs"
-	    notice "macro COMMANDS:"
-	    act "checkout: download the sdk from an online server"
-	    act "commit: uploads the current sdk to the server (be careful!)"
-	    act "explode: opens an existing dyne:bolic iso into an SDK"
-	    act "implode: packs a dyne:bolic iso from the current SDK"
-	    act "chroot: dive inside the dyne:bolic SDK"
-	    act "sdk-create: a all-in-one script to"
-			act "            checkout,mkiso,explode creating a dir SDK"
-	    act "            WARN! for sdk-create at least 2.4G of free space needed"
-	    notice "micro COMMANDS:"
-	    act "mkinitrd: makes an initrd.gz of INITRD_SIZE (6400KB)"
+
+	    notice "COMMANDS:"
+	    act "mkinitrd: makes an initrd.gz of INITRD_SIZE (8192KB)"
 	    act "mkhome: packs the home into the cdrom directory"
 	    act "mkvar: packs the var into the cdrom directory"
 	    act "mksquash: packs the squashed filesystem in the cdrom"
 	    act "mkiso: packs the cdrom directory into a bootable iso"
+
 	    notice "right sequence:"
 	    act "To create a working SDK the right sequence is the following: "
 	    act "checkout    - to get the sdk from server"
@@ -79,7 +74,6 @@ while true; do
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
 	-u) USER=$2; shift 2 ;;
-	-r) REPOSITORY="$2::dynebolic-dev"; shift 2 ;;
 	-i) ISO="$2"; shift 2 ;;
         -q) QUICK="yes"; shift 1 ;;
 	--) shift; break ;;
@@ -100,26 +94,17 @@ check_sw() {
     fi
 }
 
-#if [ "`whoami`" != "root" ]; then
-#    error "you must be ROOT on your machine to use dyne:bolic SDK"
-#    exit -1
-#fi
+if [ "`whoami`" != root ]; then
+    error "you must be ROOT on your machine to use dyne:bolic SDK"
+    exit -1
+fi
 
-if [ -z $PFX ]; then
-    error "no SDK directory prefix configured yet, read the help"
-    act "you just need to do it once, settings are then stored."
+if [ ! -x "$PFX" ]; then
+    error "the SDK directory is not existing"
+    error "create the directory $PFX or set the -p option properly"
     exit 0
 fi
 
-# if this is missing, no development server can be accessed
-if [ -z $RSYNC ]; then 
-    check_sw "rsync";
-    if [ $RET ]; then RSYNC=$RET; fi
-fi
-if [ -z $LYNX ]; then
-    check_sw "lynx";
-    if [ $RET ]; then LYNX=$RET; fi
-fi
 # if those are missing, the iso can't be packed
 if [ -z $MKISOFS ]; then
     check_sw "mkisofs";
@@ -135,9 +120,18 @@ fi
 ### MICRO COMMAND FUNCTIONS
 ########################################################################
 
+mksdk() {
+    if [ ! -x $PFX/cdrom ]; then
+        act "creating SDK skeleton in $PFX"
+	cp -ra /usr/share/dynebolic/cdrom "$PFX/"
+    fi
+    cd $PFX
+    mkdir -p tmp initrd usr var home
+    cd - > /dev/null
+}
+
 exinitrd() {
     act "generating initrd tree (please wait)"
-    mkdir $PFX/initrd
     # TODO: controllare se l'initrd.gz esiste in cdrom
     gunzip $PFX/cdrom/dyne/initrd.gz
     mount -o loop -t ext2 $PFX/cdrom/dyne/initrd $PFX/tmp
@@ -148,80 +142,123 @@ exinitrd() {
 
 mkinitrd() {
     notice "making the initrd compressed filesystem"
-   
-    if [ ! -r $PFX/initrd/etc/DYNEBOLIC ]; then exinitrd; fi 
 
-    act "setup startup files"
-    if [ ! -x $PFX/../startup ]; then
-      error "no startup files present in $PFX/../startup"
-      error "you can place the dynebolic cvs in the parent directory"
-      error "in order to automatically update from there"
-      sleep 2
-    else
-      act "updating from cvs startup from parent directory"
-      cp -vf $PFX/../startup/rc.* $PFX/initrd/etc
-      cp -vf $PFX/../startup/inittab $PFX/initrd/etc
-      cp -vf $PFX/../startup/lib/*.sh $PFX/initrd/lib/dyne
+    # create the directory if it's not there
+    if [ ! -x $PFX/initrd ]; then
+	mkdir -p $PFX/initrd
+    fi
+   
+    # delete old contents
+    if [ -r $PFX/initrd/etc/DYNEBOLIC ]; then
+	rm -rf $PFX/initrd/*
     fi
 
     cd $PFX/initrd
-    act "cleaning up configs and logs"
-    rm -rf tmp/*
-    rm -f etc/XF86Config
-    rm -f etc/HOSTNAME etc/NETWORK
-    rm -f etc/fstab
-    rm -f etc/auto.removable
-    rm -f boot/Xok
 
-    cd -; cd $PFX
-      
+    act "creating the ramdisk filesystem"
+    cp -ra /etc .
+    cp -ra /lib .
+    cp -ra /bin .
+    cp -ra /sbin .
+    mkdir boot dev proc rem root sys tmp usr var vol mnt home
+    touch /boot/dynenv
+
+    act "cleaning up configs and logs"
+    rm -f etc/X11/XF86Config
+    rm -f etc/HOSTNAME etc/NETWORK
+    rm -f etc/auto.removable
+
+   
+    if [ -x $PFX/startup/.svn ]; then
+	act "setup startup files from subversion repository"
+	cp -vf $PFX/startup/rc.*     etc/
+	cp -vf $PFX/startup/zshenv   etc/
+	cp -vf $PFX/startup/inittab  etc/
+	cp -ravf $PFX/startup/zsh    etc/
+        cp -ravf $PFX/startup/init.d etc/
+	cp -ravf $PFX/startup/X11    etc/
+	cp -ravf $PFX/startup/lib    lib/dyne
+    fi
+
+    ######## KERNEL MODULES
+    if [ -z $KRN ]; then KRN=`uname -r`; fi
+    act "setup boot kernel modules for ${KRN}"
+    MODULES="fat,loop,msdos,ntfs,smbfs,ufs,vfat,befs"
+    mkdir -p boot/modules/${KRN}
+    for m in `iterate $MODULES`; do
+	M=`find /usr/lib/modules/${KRN}/ -name "${m}.ko"`
+	cp ${M} boot/modules/${KRN}/
+        act ${M}
+    done
+
+    cd - > /dev/null
+    cd $PFX
+
+    #### COPY THE KERNEL
+    ## this is not really inside the ramdisk initrd
+    ## but we do it here
+    if [ -r /boot/linux-${KRN} ]; then
+      act "kernel found in /boot/linux-${KRN}"
+      cp /boot/linux-${KRN} cdrom/dyne/linux
+    else
+      error "kernel linux-${KRN} not found in /boot"
+    fi
+	     
     act "generate device file"
-    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=7700
-    act "formatting filesystem"
+    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=9000
+    act "formatting ramdisk filesystem"
     mke2fs -m 0 -i 1024 cdrom/dyne/initrd
-    act "populating initrd loopback device"
+    act "populating ramdisk static file"
     mount -o loop,rw cdrom/dyne/initrd tmp
     cp -ra initrd/* tmp
     rm -r tmp/lost+found
-    
-
     umount tmp
+
     act "tuning filesystem"
     tune2fs -c 0 -i 0 cdrom/dyne/initrd
     rm -f cdrom/dyne/initrd.gz
     gzip -9 cdrom/dyne/initrd
     act "`stat cdrom/dyne/initrd.gz`"
-    cd -; sync
+    cd - > /dev/null
+    sync
 }
 
 mkhome() {
     notice "packaging /home";
-    cd $PFX
+    cd $PFX/home
+    cp -ra /home/luther/* .
+    cp -ra /home/luther/.* .
+    # todo
+    rm -rf .mozilla
+    rm -f  .ssh/known_*
+    # touch to avoid errors on zsh host completion
+    touch  .ssh/known_hosts
+    cd - > /dev/null ; cd $PFX
     tar cfz cdrom/dyne/home.tgz home
     act "`stat $PFX/cdrom/dyne/home.tgz`"
-    cd -; sync
+    cd - > /dev/null ; sync
 }
 
 mkvar() {
     notice "packaging /var";
-    cd $PFX
-    rm var/log/dynebolic.log 1>/dev/null 2>/dev/null
+    cd $PFX/var
+    cp -ra /var/* .
+    rm -rf cache/*
+    rm -rf lock/*
+    rm -rf tmp/*
+    rm -rf run/*
+    rm -rf log/*
+    mkdir log/hotplug log/login cache/samba
+    cd - > /dev/null; cd $PFX
     tar cfz cdrom/dyne/var.tgz var
     act "`stat cdrom/dyne/var.tgz`"
-    cd -; sync
+    cd - > /dev/null; sync
 }
 
 mksquash() {
     notice "making the /usr squashed filesystem (please wait, takes long!)"
-    act "setup startup files"
-    if [ ! -x $PFX/../startup ]; then
-      error "no startup files present in $PFX/../startup"
-      sleep 2
-    else
-      cp -f $PFX/../startup/usr/rc.* $PFX/usr/etc
-    fi
     act "start compressing: `date`"
-    $MKSQUASHFS $PFX/usr $PFX/cdrom/dyne/dynebol.sys -noappend -all-root
+    $MKSQUASHFS /usr $PFX/cdrom/dyne/dynebol.sys -noappend
     chmod -x $PFX/cdrom/dyne/dynebol.sys
     act "end: `date`"
     act "`stat $PFX/cdrom/dyne/dynebol.sys`"
@@ -230,11 +267,11 @@ mksquash() {
 
 mkiso() {
     notice "making the dynebolic ISO"
-    cp -f $0 $PFX/cdrom/devel/
+    cp -f `which $0` $PFX/cdrom/devel/
     echo "# Forged on `hostname`.`dnsdomainname` the `date` " | tee $PFX/cdrom/dyne/VERSION
     echo "# using `$MKISOFS --version` on `uname -srm`" | tee -a $PFX/cdrom/dyne/VERSION
     echo >> $PFX/cdrom/dyne/VERSION
-    DYNE_SYS_VER="`cat $PFX/usr/etc/DYNEBOLIC`"
+    DYNE_SYS_VER="`cat /usr/etc/DYNEBOLIC`"
     echo "DYNE_SYS_VER=$DYNE_SYS_VER" | tee -a $PFX/cdrom/dyne/VERSION
 #    echo "MD5: `md5sum $PFX/cdrom/dyne/dynebol.sys`" | tee -a $PFX/cdrom/VERSION
 #    echo >> $PFX/cdrom/VERSION
@@ -251,7 +288,11 @@ mkiso() {
       gpg -b -a $PFX/cdrom/dyne/dynebol.sys.md5
       gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
     fi
-    echo "proceeding to pack the ISO image"
+    act "purging subversion files in the cdrom"
+    for svn in `find $PFX/cdrom -name '.svn'`; do
+      rm -rf ${svn}
+    done
+    act "proceeding to pack the ISO image"
     $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
@@ -292,40 +333,6 @@ umount_chroot() {
 ########################################################################
 ### MACRO COMMAND FUNCTIONS
 ########################################################################
-
-checkout() {
-    notice "checkout from dyne:bolic main tree repository"
-    act "this function connects online to download the development tree"
-    act "access to the main tree repository is restricted to d:b developers"
-    echo "---"
-    if [ -z $USER ]; then
-        echo "** ACCESS FOR DEVELOPERS ONLY! **"
-        echo -n "User:"
-        read -r USER
-    fi 
-    notice "logging into rsync daemon with user '$USER'"
-    rsync -Parl $USER@$REPOSITORY $PFX
-    echo "---"
-}
-
-commit() {
-    notice "commit into dyne:bolic main tree repository"
-    act "WARNING: USE THIS FUNCTION WITH EXTREME CAUTION"
-    act "you are going to commit your changes in the main development tree"
-    act "you are supposed to be coordinating with other developers in order"
-    act "to NOT overwrite changes being done. RSYNC DOESN'T MERGES DIFFERENCES"
-    act "you are warned, CURSES and BAD LUCK to you if you use this without"
-    act "correctly coordinating with the rest of the developers."
-    echo "---"
-    if [ -z $USER ]; then
-        echo "** ACCESS FOR DEVELOPERS ONLY! **"
-        echo -n "User:"
-        read -r USER
-    fi
-    notice "logging into rsync daemon with user '$USER'"
-    rsync -Parl --delete $PFX/cdrom $USER@$REPOSITORY
-    echo "---"
-}
 
 explode() {
     notice "creating a dyne:bolic SDK in $PFX"
@@ -426,19 +433,11 @@ sdkcreate() {
 	notice "dyne:bolic simple development kit ready"
 }
 
-
-# create the temporary directory
-if [ ! -x $PFX/tmp ]; then mkdir $PFX/tmp; fi
+# be sure the SDK skeleton is there
+mksdk
 
 case "$CMD" in
-    # macro commands
-    checkout) checkout ;;
-    commit) commit ;;
-    explode) explode ;;
-    implode) implode ;;
-    chroot) chroot ;;
-    sdk-create) sdk-create ;;
-    # micro commands
+    # execute commands
     mkinitrd) mkinitrd ;;
     mkhome) mkhome ;;
     mkvar) mkvar ;;

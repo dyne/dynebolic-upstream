@@ -1,3 +1,4 @@
+#!/bin/zsh
 
 source /lib/dyne/utils.sh
 
@@ -134,6 +135,7 @@ scan_harddisk() {
 # $1 = device, without partition number (es: hda)
 #  DEV=$1
 
+    ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
 
     for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
 	
@@ -141,7 +143,7 @@ scan_harddisk() {
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
 
 	MOUNT_OPTS=""
-	MOUNT_FS="-t auto"
+	MOUNT_FS=""
 	if [ "`uname -a | grep xbox`" ]; then
 	    MOUNT_FS="-t fatx"
 	    MOUNT_OPTS="-o umask=777"
@@ -177,27 +179,37 @@ scan_harddisk() {
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn
 	for PART in ${(f)PARTITIONS}; do
 
-	    PART_FS="`echo $PART|awk '{print $6}'`"
-	    PART_DEV="`echo $PART|cut -d' ' -f1|cut -d/ -f3`"
-	    
-	    act "scanning ${PART_FS} partition ${PART_DEV}"
+	    PART_FS="`echo $PART|awk '{print $7}'`"
+            PART_DEV="`echo $PART|cut -d' ' -f1`"
 	    
 	    HD_NUM=`expr $HD_NUM + 1`
 	    MNT="/vol/hd${HD_NUM}"
 	    
-	    if [ ! -x ${MNT} ]; then mkdir ${MNT}; fi
+	    if [ ! -x ${MNT} ]; then mkdir -p ${MNT}; fi
+	            
+            # skip it if already mounted as root (partition install)
+            if [ $ROOT_PART = $PART_DEV ]; then
+
+               act "$PART_FS partition $PART_DEV already mounted as root"
+               continue
+
+            fi 
 	    
-	    mount ${MOUNT_FS} ${MOUNT_OPTS} /dev/${PART_DEV} ${MNT} 1>/dev/null 2>/dev/null
+	    act "scanning ${PART_FS} partition ${PART_DEV}"
+    
+	    mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
 
 	    if [ $? != 0 ]; then
-		error "can't mount ${PART_DEV}: not a valid filesystem"
-		HD_NUM=`expr $HD_NUM - 1`
-		continue
+	      error "can't mount ${PART_DEV} : not a valid filesystem"
+	      HD_NUM=`expr $HD_NUM - 1`
+	      continue
 	    fi
+
+	    PART_DEV=`basename $PART_DEV`
 	    
 	    add_volume hdisk ${PART_DEV} hd${HD_NUM} ${PART_FS}
 	    
-          # have you got a home there?
+            # have you got a home there?
 	    # deprecated: got_home ${MNT}
 
 	done
@@ -215,9 +227,9 @@ scan_usbstorage() {
 # in order to support usb keyboards attached from the very beginning
 #    loadmod usb-ohci
 #    loadmod usb-uhci
+# load usb 2.0 support (removed, now loaded by pcimodules)
+#    loadmod ehci-hcd
 
-  # load usb 2.0 support
-    loadmod ehci-hcd
 
   # load usb storage driver
     loadmod usb-storage
@@ -250,7 +262,7 @@ scan_usbstorage() {
 	    
 	    mount ${DEV} /rem/${USB_MNT} -t vfat
 	    
-	    add_volume usb "`echo $DEV|cut -d/ -f3`" ${USB_MNT} vfat
+	    add_volume usb `basename ${DEV}` ${USB_MNT} vfat
 	    
 	done
     fi
