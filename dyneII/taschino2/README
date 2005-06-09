@@ -1,0 +1,10 @@
+
+this is the new dock and nest installation system for dyne:bolic
+by jaromil  (started feb 2004)
+
+it uses gtk+-2 and libglade-2.0
+
+for further documentation, see dynebolic.org
+
+GNU GPL (c)2004 Denis "jaromil" Rojo
+
