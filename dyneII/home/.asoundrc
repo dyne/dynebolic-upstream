@@ -1,9 +1,0 @@
-pcm.emu10k1 {
-	type hw
-	card 0
-}
-
-ctl.emu10k1 {
-	type hw
-	card 0
-}

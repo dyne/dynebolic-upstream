@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<instant>
-  <Editor zoom-focus="0" zoom="2048.000000" snap-to="0" snap-mode="0" show-waveforms="yes" show-waveforms-recording="yes" show-measures="yes" follow-playhead="no" xfades-visible="yes" region-list-sort-type="ByName" mouse-mode="MouseObject" editor-mixer-button="no">
-    <geometry x_size="966" y_size="480" x_pos="6" y_pos="16" x_off="7" y_off="39" canvas_region_list_pane_pos="804" track_list_canvas_pane_pos="73" region_selection_pane_pos="167" route_group_pane_pos="50"/>
-  </Editor>
-  <Mixer narrow-strips="no"/>
-</instant>

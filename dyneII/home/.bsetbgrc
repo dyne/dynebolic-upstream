@@ -1,5 +1,0 @@
-### xv
-FULL="xv -max -smooth -root -quit"
-TILE="xv -root -quit"
-CENTER="xv -rmode 5 -root -quit"
-DEFAULT="xv -rmode 5 -root -quit"

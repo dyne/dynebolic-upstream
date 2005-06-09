@@ -1,7 +1,0 @@
-# toxine playlist
-
-entry {
-	identifier = dvd:/;
-	mrl = dvd:/;
-};
-# END

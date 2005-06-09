@@ -1,5 +1,0 @@
-# file created by xfsamba, if removed xfsamba returns to defaults.
-# do a bitwise or for preferences with 1048576 (0x100000) to enable smaller dialogs.
-preferences : 512
-custom_font :fixed
-ctree_color : 10000,10000,10000

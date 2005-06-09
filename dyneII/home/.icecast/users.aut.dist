@@ -1,9 +1,0 @@
-# This is the user authentication file. 
-# To use this file, copy it to etc/users.aut in the icecast base directory
-# The syntax is simple, one user and password per line.
-# Separate the user from the password with a colon.
-# The password should be in cleartext unless you've compiled
-# icecast with crypt support.
-# Example:
-# eel:mypassword
-# you:yourpassword

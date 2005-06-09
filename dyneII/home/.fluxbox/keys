@@ -1,8 +1,0 @@
-mod1 Tab :NextWindow
-mod1 1 :Workspace 1
-mod1 2 :Workspace 2
-mod1 3 :Workspace 3
-mod1 4 :Workspace 4
-mod1 5 :Workspace 5
-mod1 6 :Workspace 6
-mod1 X :execCommand db-xterm
