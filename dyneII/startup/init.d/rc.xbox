@@ -1,0 +1,78 @@
+#!/bin/zsh
+#
+# loads modules for xbox
+#
+# by lo smilzo & jaromil
+# copyleft 2003
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+FILE_ID="\$Id: rc.xbox 101 2005-03-15 17:44:31Z jaromil $"
+
+source /lib/dyne/utils.sh
+
+notice "launching dyne:bolic on XBOX!"
+
+act "loading autofs4 module"
+loadmod autofs4
+
+act "loading network card module"
+loadmod nvnet
+
+act "loading soundcard modules"
+loadmod i810_audio
+
+act "loading gamepad module"
+loadmod xpad
+
+act "loading samba module"
+loadmod smbfs
+
+notice "configure XFree86 for XBOX"
+cp -f /etc/XF86Config.xbox /etc/XF86Config
+
+sync
+
+if [ -r /etc/xbox_norm ]; then
+  source /etc/xbox_norm
+# Date: Mon, 28 Apr 2003 12:09:36 +0200
+# To: jaromil@dyne.org
+# From: Lo Smilzo <smilzo@sfrajone.org>
+# Subject: gestione video
+# questo va' lanciato prima di x con la seguente riga di comando
+# /usr/sbin/xbv -PAL -auto 640 480 9.0 9.0
+# /usr/sbin/xbv -PALBDGHI -auto 800 600 15.00 15.00
+  if [ "$XBOX_NORM"=="pal-800" ]; then
+     notice "setup the screen at PAL 800 resolution"
+     xbox_pal.sh 800
+  elif [ "$XBOX_NORM"=="pal-640" ]; then
+     notice "setup the screen at PAL 640 resolution"
+     xbox_pal.sh
+  elif [ "$XBOX_NORM"=="ntsc-800" ]; then
+     notice "setup the screen at NTCS 800 resolution"
+     xbox_ntsc.sh 800
+  elif [ "$XBOX_NORM"=="ntsc-640" ]; then
+     notice "setup the screen at NTCS 800 resolution"
+     xbox_ntsc.sh
+  else
+     echo; echo; echo
+     notice "default resolution is PAL"
+     echo
+     notice "switch to NTSC with MENU -> SYSTEM -> Xbox NTSC"
+     echo; echo; echo
+     sleep 5
+  fi
+fi
+

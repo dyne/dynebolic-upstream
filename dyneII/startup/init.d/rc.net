@@ -1,0 +1,57 @@
+#!/bin/zsh
+#
+# This file is released under the GPL Licence version 2 or above
+# Please read the Licence Terms at www.gnu.org
+# jaromil@dyne.org
+#
+# /usr/etc/rc.net: Network initialization script.
+
+# /usr/sbin/dhcpcd -t 20 1>/dev/null 2>/dev/null
+# as of mant suggestions i received, drazen pantic among the others
+# is a better idea to use pump, brings better luck
+
+FILE_ID="\$Id: rc.net 99 2005-01-02 23:28:52Z jaromil $"
+source /lib/dyne/utils.sh
+
+if [ -e /etc/NETWORK ]; then
+  source /etc/NETWORK
+else
+  notice "start scanning for dhcp network"
+  /sbin/dhcpcd &
+fi
+
+# setup hostname from /etc/HOSTNAME or randomize with the eth0 MAC address if needed
+if [ -e /etc/HOSTNAME ]; then
+    HOSTNAME="`cat /etc/HOSTNAME`"
+else
+    # random hostname generation using first macaddress
+    MACADDR="`/sbin/ifconfig eth0 2>/dev/null \
+              | grep HWaddr \
+              | cut -d ' '  -f11 \
+              | sed -e 's/[\:\$]//g'`"
+    if [ $MACADDR ]; then
+      HOSTNAME="dynebolic${MACADDR}"
+    else
+      HOSTNAME="dynebolic"
+    fi
+    echo "$HOSTNAME" > /etc/HOSTNAME
+fi
+
+hostname "$HOSTNAME"
+notice "your hostname is `hostname`"
+
+# setup the hostname in /etc/hosts to resolve it at least in loopback
+if ! [ "`grep $HOSTNAME /etc/hosts`" ]; then
+  echo "127.0.0.1	$HOSTNAME" >> /etc/hosts
+fi
+
+notice "activating point to point protocol"
+loadmod ppp_generic
+loadmod ppp_async
+loadmod ppp_deflate
+
+#notice "loading iptables nat and masquerading kernel modules"
+#loadmod iptable_filter
+#loadmod iptable_nat
+#loadmod iptable_mangle
+
