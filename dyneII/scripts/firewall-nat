@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# minimalist script to activate NAT (aka masquerading)
+# to route a local are network on the internet, i.e:
+# sharing a modem connection among many computers, etc.
+#
+# (c) copyleft 2003-2005 by Denis "jaromil" Rojo
+
+modprobe -k iptable_filter iptable_nat
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "usage: firewall-nat [external interface] [internal interface]"
+  echo "example: firewall-nat ppp0 eth0"
+  echo "         to route your local network over the modem connection"
+  exit 1
+fi
+
+if [ -z "fconfig $1]; then
+  echo "error: interface $1 is not present"
+  exit 0
+fi
+
+if [ -z "fconfig $2]; then
+  echo "error: interface $2 is not present"
+  exit 0
+fi
+
+
+# now flush all current tables
+# if you have a firewall running this will deactivate it!
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+
+# Set up IP FORWARDing and Masquerading
+iptables --table nat --append POSTROUTING --out-interface $1 -j MASQUERADE
+iptables --append FORWARD --in-interface $2 -j ACCEPT
+# should we use sysctl here?
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
