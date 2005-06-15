@@ -1,8 +1,8 @@
 # miscellaneous procedures called by dyne:bolic initialization scripts
 #
-# Copyleft 2003-2004 by Denis Rojo aka jaromil <jaromil@dyne.org>
+# Copyleft 2003-2005 by Denis Rojo aka jaromil <jaromil@dyne.org>
 # with contributions by Alex Gnoli aka smilzo <smilzo@sfrajone.org>
-# (this was started in one night hacking together in metro olografix)
+# (this was started in one night hacking together in Metro Olografix)
 #
 #  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
 #  * 
@@ -21,16 +21,16 @@
 #  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-LIBDYNE_ID="\$Id: libdyne.sh,v 1.7 2004/05/25 15:28:52 jaromil Exp $"
-
 # source /etc/zsh/common
 
 # initialize logfile
 LOG="/boot/startup.log"
-if [ ! -r ${LOG} ]; then
-    LOG="/boot/startup.log"
-    if [ ! -r ${LOG} ]; then touch ${LOG}; fi
-fi
+if [ ! -r ${LOG} ]; then touch ${LOG}; fi
+
+# list of supported filesystems, used by:
+# dynesdk - to copy the needed kernel modules in the initrd
+# volumes.sh - to load the modules at startup, for mount autodetection
+SUPPORTED_FS="msdos,fat,vfat,ntfs,ufs,befs,jfs,jffs,jffs2,reiserfs"
 
 # load dynebolic environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
@@ -97,6 +97,7 @@ $1 == variable { print $2; }
 	    echo "${CFG_VAL}"
 	    return 0
 	fi
+
     fi
 	
     return 1
@@ -122,7 +123,7 @@ loadmod() {
     fi
 
     # if the system is mounted
-    if [ -x /usr/bin ]; then
+    if [ -x /usr/sbin/modprobe ]; then
 	if [ -r /etc/modules.deny ]; then
 	    if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
 	# skip modules included in /etc/modules.deny
@@ -132,7 +133,7 @@ loadmod() {
 	fi
 
     # finally we do it
-	modprobe ${MODULE} 1>>$LOG 2>>$LOG
+	/usr/sbin/modprobe ${MODULE} 1>>$LOG 2>>$LOG
 	if [ $? = 0 ]; then
 	    act "loaded kernel module $MODULE"
 	    return

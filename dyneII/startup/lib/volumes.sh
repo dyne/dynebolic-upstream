@@ -137,6 +137,15 @@ scan_harddisk() {
 
     ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
 
+	
+    # load all kernel modules for supported filesystems
+    # refer to SUPPORTED_FS defined in utils.sh
+    # all unused modules will be removed at the end of this function
+    act "load modules to scan supported filesystems"
+    for m in `iterate $SUPPORTED_FS`; do
+	loadmod ${m}
+    done
+
     for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
 	
         # skip if not an harddisk
@@ -144,35 +153,18 @@ scan_harddisk() {
 
 	MOUNT_OPTS=""
 	MOUNT_FS=""
+
 	if [ "`uname -a | grep xbox`" ]; then
 	    MOUNT_FS="-t fatx"
 	    MOUNT_OPTS="-o umask=777"
 	fi
-	
-        # load the filesystem kernel modules needed  
-	PARTITIONS=`fdisk -l /dev/${DEV} |grep -v swap \
-                    | grep -iE 'Linux|NTFS|FAT|BSD|BEOS'`
 
+	PARTITIONS=`fdisk -l /dev/${DEV} | grep -Evi 'swap|extended' | grep '^/dev'`
 
-	if [ "`echo $PARTITIONS|grep -i DOS`" ]; then
-	    loadmod msdos
-	fi
-	if [ "`echo $PARTITIONS|grep -i FAT`" ]; then
-	    loadmod fat
-	    loadmod vfat
-	fi
-	if [ "`echo $PARTITIONS|grep -i NTFS`" ]; then
-	    loadmod ntfs
-	fi
+	# setup special flags needed for most common BSD fs
 	if [ "`echo $PARTITIONS|grep -iE 'BSD|ufs'`" ]; then
-	    loadmod ufs
-	    # by default we mount the most common
 	    MOUNT_FS="-t ufs"
 	    MOUNT_OPTS="-o ufstype=44bsd"
-	fi
-	if [ "`echo $PARTITIONS|grep -i BEOS`" ]; then
-	    loadmod bfs
-	    MOUNT_FS="-t bfs"
 	fi
 
         # cycle thru partitions
@@ -214,6 +206,15 @@ scan_harddisk() {
 
 	done
 	  
+    done
+
+    # now remove all unused filesystem kernel modules
+    act "cleanup unused filesystem modules"
+    USEDFS=`mount | awk '{print $5}'`
+    for fs in `iterate $SUPPORTED_FS`; do
+	if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
+		rmmod ${fs}
+	fi
     done
 
 }

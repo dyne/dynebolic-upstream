@@ -93,8 +93,6 @@ notice "starting device filesystem daemon"
 
 sync
 
-# mount the pty/pts device filesystem
-
 notice "load loopback device kernel module"
 if [ -z "`uname -a | grep xbox`" ]; then
     loadmod loop \

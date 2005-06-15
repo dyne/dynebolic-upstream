@@ -3,7 +3,7 @@
 # dyne:bolic hardware setup script
 # run after system detect
 #
-# copyleft 2001 - 2004 jaromil @ dyne.org
+# copyleft 2001 - 2005 jaromil @ dyne.org
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 

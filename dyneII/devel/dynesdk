@@ -183,13 +183,15 @@ mkinitrd() {
     ######## KERNEL MODULES
     if [ -z $KRN ]; then KRN=`uname -r`; fi
     act "setup boot kernel modules for ${KRN}"
-    MODULES="fat,loop,msdos,ntfs,smbfs,ufs,vfat,befs"
     mkdir -p boot/modules/${KRN}
-    for m in `iterate $MODULES`; do
+    for m in `iterate $SUPPORTED_FS`; do
 	M=`find /usr/lib/modules/${KRN}/ -name "${m}.ko"`
 	cp ${M} boot/modules/${KRN}/
         act ${M}
     done
+    # copy also the loopback device and samba modules
+    cp `find /usr/lib/modules/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
+    cp `find /usr/lib/modules/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
 
     cd - > /dev/null
     cd $PFX
