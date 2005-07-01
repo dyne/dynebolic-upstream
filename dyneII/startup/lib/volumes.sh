@@ -180,7 +180,7 @@ scan_harddisk() {
 	    if [ ! -x ${MNT} ]; then mkdir -p ${MNT}; fi
 	            
             # skip it if already mounted as root (partition install)
-            if [ $ROOT_PART = $PART_DEV ]; then
+            if [ "$ROOT_PART" = "$PART_DEV" ]; then
 
                act "$PART_FS partition $PART_DEV already mounted as root"
                continue

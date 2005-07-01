@@ -30,7 +30,7 @@ if [ ! -r ${LOG} ]; then touch ${LOG}; fi
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
-SUPPORTED_FS="msdos,fat,vfat,ntfs,ufs,befs,jfs,jffs,jffs2,reiserfs"
+SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,jfs,reiserfs"
 
 # load dynebolic environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
@@ -40,13 +40,6 @@ if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 
 
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
-
-# logging functions
-if [ ! -z ${FILE_ID} ]; then
-    echo >> $LOG
-    echo "RC: $FILE_ID" >> $LOG
-    echo >> $LOG
-fi
 
 notice() {
     echo "[*] ${1}" | tee -a $LOG 
@@ -157,6 +150,7 @@ loadmod() {
 	fi
 	# look for the module in all harddisks
 	for HD in `ls /vol |grep hd`; do
+	    if ! [ -x /vol/${HD}/dyne ]; then continue; fi
 	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}*"`
 	    insmod ${TRYMOD} 1>>$LOG 2>>$LOG
 	    if [ $? = 0 ]; then

@@ -71,13 +71,17 @@ fi
 # wipe out startup logs and files
 rm -f /boot/startup.log
 rm -f /boot/dynenv
+touch /boot/dynenv
 rm -f /boot/volumes
 rm -f /boot/auto.removable
 touch /boot/auto.removable
 rm -f /tmp/ascii
 rm -f /tmp/dyne
 rm -f /etc/mtab
-rm -rf /var/run/*
+if [ -x /var/run ]; then
+  rm -rf /var/run/*
+fi
+####
 
 
 notice "dyne:bolic hardware device detection"
