@@ -35,7 +35,11 @@ func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 PACKAGE="dyne:bolic SDK"
 VERSION="2.0"
 ISO="dynebolic-dev.iso"
-PFX="/SDK" # you can change it to static path where dynesdk resides
+if [ -z $DYNESDK ]; then
+  PFX="/SDK" # you can change it to static path where dynesdk resides
+else
+  PFX=${DYNESDK}
+fi
 
 notice "$PACKAGE version $VERSION - software development kit"
 act "Copyleft 2003-2005 by jaromil - RASTASOFT"
@@ -213,10 +217,18 @@ mkinitrd() {
 	cp -vf $PFX/startup/rc.*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
-	cp -ravf $PFX/startup/zsh    etc/
-        cp -ravf $PFX/startup/init.d etc/
-	cp -ravf $PFX/startup/X11    etc/
-	cp -ravf $PFX/startup/lib    lib/dyne
+	for f in `ls $PFX/startup/zsh/`; do
+		cp -avf ${PFX}/startup/zsh/${f} etc/zsh/
+	done
+        for f in `ls $PFX/startup/init.d/`; do
+		cp -avf ${PFX}/startup/init.d/${f} etc/init.d/
+	done
+	for f in `ls $PFX/startup/X11/`; do
+		cp -ravf ${PFX}/startup/X11/${f} etc/X11/
+	done
+	for f in `ls $PFX/startup/lib/`; do
+		cp -ravf ${PFX}/startup/lib/${f} lib/dyne/
+	done
     fi
 
     ######## KERNEL MODULES
@@ -306,6 +318,7 @@ mksquash() {
 
 mkiso() {
     notice "making the dynebolic ISO"
+    if ! [ -x ${PFX}/cdrom/devel ]; then mkdir -p ${PFX}/cdrom/devel; fi
     cp -f `which $0` $PFX/cdrom/devel/
     echo "# Forged on `hostname`.`dnsdomainname` the `date` " \
     	| tee $PFX/cdrom/dyne/VERSION
