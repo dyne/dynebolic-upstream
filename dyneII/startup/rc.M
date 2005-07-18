@@ -65,7 +65,10 @@ fi
 # if the system has been allready mounted you can go on
 if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 
-    if [ -r ${DYNE_SYS_MNT}/dynebol.sys ]; then # for compatibility
+    if [ -x ${DYNE_SYS_MNT}/dyne/usr ]; then
+	notice "Mounting writable usr filesystem from ${DYNE_SYS_MNT}/dyne/usr"
+	mount -o bind ${DYNE_SYS_MNT}/dyne/usr /usr
+    elif [ -r ${DYNE_SYS_MNT}/dynebol.sys ]; then # for compatibility
 	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dynebol.sys /usr
     elif [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
 	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dynebol.sys /usr
@@ -75,10 +78,10 @@ if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 	echo
 	error "A problem occurred while mounting the dynebol.sys"
 	error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
-	if [ $DYNE_SYS_MEDIA == cdrom ]; then
+	if [ $DYNE_SYS_MEDIA = cdrom ]; then
 	    error "it looks like your CDROM is corrupted!"
 	fi
-	if [ $DYNE_SYS_MEDIA == dvd ]; then
+	if [ $DYNE_SYS_MEDIA = dvd ]; then
 	    error "it looks like your DVD is corrupted!"
 	fi
 	error "burn your dyne:bolic more carefully"
@@ -88,6 +91,7 @@ if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 	
 	echo; echo;
 	sleep 10
+	exit
     fi
     
     if [ ! -x /usr/bin ]; then
