@@ -156,12 +156,15 @@ settle() {
   cp -ra mnt/* $SETTLE/
   umount mnt
   rm initrd
-  act "settling usr binaries from $DOCK/dynebol.sys (please wait, takes long)"
+
+  act "settling usr binaries from $DOCK/dynebol.sys"
+  act "please wait, this operation requires long time"
   mount -o loop -t squashfs $DOCK/dynebol.sys mnt
   cp -ra mnt/* $SETTLE/usr/
   umount mnt
+
   act "settling home and var"
-  tar xfz $DOCK/home.tgz -C $SETTLE/home
+  tar xfz $DOCK/home.tgz -C $SETTLE
   tar xfz $DOCK/var.tgz -C $SETTLE
   notice "settlement is now established!"
 
@@ -364,6 +367,7 @@ mksdk
 
 case "$CMD" in
     # execute commands
+    settle) settle ;;
     mkinitrd) mkinitrd ;;
     mkhome) mkhome ;;
     mkvar) mkvar ;;
