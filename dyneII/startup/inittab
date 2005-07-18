@@ -26,12 +26,12 @@ si:S:sysinit:/etc/rc.S
 rc:123:wait:/etc/rc.M
 
 # TERMINALS
-c1:123:respawn:/sbin/agetty -n 38400 tty1 linux
-c2:123:respawn:/sbin/agetty -n 38400 tty2 linux
-c3:123:respawn:/sbin/agetty -n 38400 tty3 linux
-c4:123:respawn:/sbin/agetty -n 38400 tty4 linux
-c5:123:respawn:/sbin/agetty -n 38400 tty5 linux
-c6:123:respawn:/sbin/agetty -n 38400 tty6 linux
+c1:123:respawn:/sbin/mingetty tty1 
+c2:123:respawn:/sbin/mingetty tty2
+c3:123:respawn:/sbin/mingetty tty3
+c4:123:respawn:/sbin/mingetty tty4
+c5:123:respawn:/sbin/mingetty tty5
+c6:123:respawn:/sbin/mingetty tty6
 
 # X11
 x1:3:wait:/etc/rc.X
