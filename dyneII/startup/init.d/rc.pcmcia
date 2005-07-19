@@ -103,7 +103,7 @@ for x in "1" ; do
         if [ "$SCHEME" ] ; then umask 022 ; echo $SCHEME > $SC ; fi
 	fgrep -q pcmcia /proc/devices
 	if [ $? -ne 0 ] ; then
-	    PC=/lib/modules/`uname -r`/pcmcia
+	    PC=/lib/modules/`uname -r`/kernel/drivers/pcmcia
 	    if [ -d $PC ] ; then
 		act "probing modules"
 		loadmod pcmcia_core

@@ -1,15 +1,17 @@
 # dyne:bolic common shell environment
 
-export HOME="/home"
 export HOSTTYPE="i586"
 export LANG="POSIX"
-export LOGNAME="root"
 export MACHTYPE="i586-pc-linux-gnu"
 export OSTYPE="linux-gnu"
-export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/home/bin:/usr/mash"
-export USER="root"
 export SHELL="/bin/zsh"
-export TERM="linux"
+
+# now we are multiuser
+#export HOME="/home"
+#export LOGNAME="root"
+#export USER="root"
+#export TERM="linux"
+#export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin"
 
 # A lucky prompt:
 PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'

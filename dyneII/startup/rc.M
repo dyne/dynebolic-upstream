@@ -65,16 +65,28 @@ fi
 # if the system has been allready mounted you can go on
 if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 
-    if [ -x ${DYNE_SYS_MNT}/dyne/usr ]; then
-	notice "Mounting writable usr filesystem from ${DYNE_SYS_MNT}/dyne/usr"
+    if [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
+
+        if [ ! -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
+	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dynebol.sys /mnt/usr
+	# load union filesystem module
+	insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
+        # mount read-only /usr into /mnt/usr
+	mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
+        # create directory where to store unionfs changes
+	mkdir -p /var/cache/union/usr_rw
+        # assign /usr writable union to /var/cache/union/usr_rw
+	/usr/sbin/unionctl /usr --add --before /mnt/usr \
+                           --mode rw /var/cache/union/usr_rw
+
+    elif [ -x ${DYNE_SYS_MNT}/dyne/usr ]; then
+
+	notice "Mounting writable usr filesystem from dock in ${DYNE_SYS_MNT}"
 	mount -o bind ${DYNE_SYS_MNT}/dyne/usr /usr
-    elif [ -r ${DYNE_SYS_MNT}/dynebol.sys ]; then # for compatibility
-	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dynebol.sys /usr
-    elif [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
-	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dynebol.sys /usr
+
     fi
 
-    if [ $? != 0 ]; then # if we cannot mount
+    if [ ! -x /usr/bin ]; then # if we cannot mount
 	echo
 	error "A problem occurred while mounting the dynebol.sys"
 	error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
@@ -88,13 +100,7 @@ if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 	error "refer to the USER UPDATED FAQ"
 	error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
 	error "may the source be with you :^)"
-	
 	echo; echo;
-	sleep 10
-	exit
-    fi
-    
-    if [ ! -x /usr/bin ]; then
 	# no system found on any harddisk or cdrom
 	error "No dyne:bolic system has been found on any cdrom or harddisk"
 	error "check your harddisk dock or CD: no /dyne directory is present."
@@ -195,10 +201,10 @@ fi
 #/usr/etc/rc.mail &
 
 # link the extras in the home
-if [ ! -r /home/extras ]; then
+if [ ! -r /extras ]; then
   if [ -r ${DYNE_SYS_MNT}/extras ]; then
     act "linking extras in home"
-    ln -s ${DYNE_SYS_MNT}/extras /home/extras
+    ln -s ${DYNE_SYS_MNT}/extras /extras
   fi
 fi
 
@@ -209,7 +215,7 @@ fi
 # you can also put it in a floppy a:\dynebol.sh
 # and then uncomment the proper lines in /etc/rc.S
 if [ -e /etc/rc.local ]; then
-  /etc/rc.local
+  source /etc/rc.local
 fi
 
 echo "[*] boot sequence completed on `date`" >> $LOG

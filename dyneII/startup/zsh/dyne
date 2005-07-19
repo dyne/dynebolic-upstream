@@ -31,7 +31,7 @@ export LADSPA_PATH="/usr/lib/ladspa"
 export LIBIND_PATH="/usr/lib/libind"
 export MANPATH="/usr/share/man:/usr/X11R6/man"
 export PAGER="/usr/bin/less"
-export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/home/bin:/usr/mash"
+export PATH=".:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin"
 export XWINHOME="/usr/X11R6"
 export X11HOME="$XWINHOME"
 

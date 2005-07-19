@@ -68,8 +68,6 @@ print "}"
     cp /usr/share/dynebolic/WMState.head /var/run/WMState
     cat /boot/WMState >> /var/run/WMState
     cat /usr/share/dynebolic/WMState.foot >> var/run/WMState
-    
-    act "WindowMaker configured"
 }
 
 

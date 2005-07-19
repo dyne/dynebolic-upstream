@@ -24,7 +24,10 @@ FILE_ID="\$Id: rc.X,v 1.3 2004/06/19 18:16:04 jaromil Exp $"
 if [ -r /tmp/volatile ]; then exit 0; fi
 
 source /lib/dyne/utils.sh
-source /lib/dyne/wmaker.sh
+
+# now the system is mounted expand our PATH
+export PATH=$PATH:/usr/bin:/usr/sbin:/usr/X11R6/bin
+
 source /etc/LANGUAGE
 
 ######## ASCII MODe
@@ -50,8 +53,22 @@ EOF
     exit 0;
 fi
 
+
+
 ## full dyne mode
 touch /tmp/dyne
+
+# generate windowmaker volumes entries
+source /lib/dyne/wmaker.sh
+wmaker_gen_volumes
+
+# generate .Xauthority files
+mkxauth -q -u root -c
+for user in `ls /home`; do
+	mkxauth -q -u ${user} -c
+done
+
+
 
 ## setup the interactive shell prompt for X
 if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi
@@ -64,10 +81,6 @@ echo
 fortune -s
 echo
 EOF
-
-
-# generate windowmaker volumes entries
-wmaker_gen_volumes
 
 
 exit 0

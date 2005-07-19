@@ -48,19 +48,24 @@ choose_nest() {
 		mount /dev/shm
 		
 		# creating /var /tmp and /home
-		act "populating /var from CD"
+		act "populating /var from dock"
 		tar xfz ${MNT}/var.tgz -C /dev/shm
 		mount -o bind /dev/shm/var /var
 		
-		act "populating /home from CD"
+		act "populating /home from dock"
 		tar xfz ${MNT}/home.tgz -C /dev/shm
 		mount -o bind /dev/shm/home /home
+		sync
+		for user in `ls /home`; do
+		    act "setting up home for ${user}"
+		    chown -R ${user}:users /home/${user}
+		done
 		
 		act "building /tmp"
 		mkdir /dev/shm/tmp
 		mount -o bind /dev/shm/tmp /tmp
 		
-		DYNE_NEST_PATH=${MNT}
+		export DYNE_NEST_PATH=${MNT}
 	    fi
 
 	done
@@ -69,6 +74,7 @@ choose_nest() {
     fi # NESTS_NUM = 0
     
     notice "nests found: $NESTS_NUM =- TODO"
+    cat /boot/volumes | grep nst
 }
 
 activate_nest() {

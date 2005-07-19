@@ -379,7 +379,7 @@ choose_volumes() {
 	    fi
 
 	    # TODO: choice for harddisk or cdrom
-	    notice "mounting the harddisk docked system"
+	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	    DYNE_SYS_MEDIA=hdisk
 	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
 	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
@@ -388,7 +388,7 @@ choose_volumes() {
 
 	else # and there is no cdrom
 
-	    notice "mounting the harddisk docked system"
+	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	    DYNE_SYS_MEDIA=hdisk
 	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
 	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"

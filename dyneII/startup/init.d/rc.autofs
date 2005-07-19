@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/sh
 #
 # $Id: rc.autofs.in,v 1.4 2000/01/22 22:17:34 hpa Exp $
 #

@@ -140,7 +140,7 @@ cp /boot/auto.removable /etc
 
 ### now load the module available to ramdisk
 ## this is useful if we want to mount remote network systems
-CFG_MODULES="`get_config modules_ramdisk`"
+CFG_MODULES="`get_config modules_ramdisk`" # list of modules (no extension) or 'autodetect' - modules need to be provided in ramdisk
 if [ $CFG_MODULES ]; then
     notice "load kernel modules available to ramdisk"
 
@@ -162,7 +162,7 @@ fi
 #### if network boot is configured...
 # at this point all modules should be loaded in order to have
 # the network card recognized. put needed modules in /boot or in a dock
-BOOT_NETWORK="`get_config network_boot`"
+BOOT_NETWORK="`get_config network_boot`" # "iface ip_address netmask gateway dns" or "dhcp"
 if [ $BOOT_NETWORK ]; then
 
     if [ "`ifconfig -a | grep eth`" ]; then
@@ -176,32 +176,52 @@ if [ $BOOT_NETWORK ]; then
 
 	else
 
-	# network_boot="iface,ip_address,netmask"
-	    IFACE=`echo $BOOT_NETWORK|awk 'BEGIN{FS=","}{print $1}'`
-	    IP=`echo $BOOT_NETWORK|awk 'BEGIN{FS=","}{print $2}'`
-	    NETMASK=`echo $BOOT_NETWORK|awk 'BEGIN{FS=","}{print $3}'`
+	    IFACE=`echo $BOOT_NETWORK  |awk '{print $1}'`
+	    IP=`echo $BOOT_NETWORK     |awk '{print $2}'`
+	    NETMASK=`echo $BOOT_NETWORK|awk '{print $3}'`
+	    GW=`echo $BOOT_NETWORK     |awk '{print $4}'`
+	    DNS=`echo $BOOT_NETWORK    |awk '{print $5}'`
 	    ifconfig ${IFACE} ${IP} netmask ${NETMASK}
+	    route add default gw ${GW}
+	    echo "nameserver $DNS" > /etc/resolv.conf
 
 	fi
 
 
 
-#### FTP UPDATE
+#### FTP DOWNLOAD
 
-	# dock_upgrade_ftp="network_address remote_dir"
-	DOCK_FTP=`get_config dock_upgrade_ftp`
+
+	DOCK_FTP=`get_config dock_download_ftp` # remote_host remote_dyne_dir local_destination_dir
 	if [ $DOCK_FTP ]; then
 	    REMOTE_HOST="`echo $DOCK_FTP|awk '{ print $1 }'`"
-	    REMOTE_DIR="`echo $DOCK_FTP|awk '{ print $2 }'`"
-	    notice "Configured to upgrade from ftp://${REMOTE_HOST}/${REMOTE_DIR}"
-	    notice "TODO"
+	    REMOTE_DIR="`echo $DOCK_FTP |awk '{ print $2 }'`"
+	    LOCAL_DIR="`echo $DOCK_FTP  |awk '{ print $3 }'`"
+	    notice "Configured to download a dock from ftp://${REMOTE_HOST}/${REMOTE_DIR}"
+	    act "will save the dock in $LOCAL_DIR"
+	    ncftpget -R $REMOTE_HOST $LOCAL_DIR $REMOTE_DIR
 	fi
-	
+
+
+
+#### RSYNC UPDATE
+
+	DOCK_RSYNC=`get_config dock_update_rsync` # rsync.host::module/dyne local_destination_dir
+	if [ $DOCK_RSYNC ]; then
+	    REMOTE_RSYNC="`echo $DOCK_RSYNC |awk '{ print $1 }'`"
+	    LOCAL_DIR="`echo $DOCK_RSYNC   |awk '{ print $2 }'`"
+	    notice "Upgrading the system from rsync://$REMOTE_RSYNC"
+	    act "will save the dock in $LOCAL_DIR"
+	    rsync -Pr ${REMOTE_RSYNC} ${LOCAL_DIR}
+	fi
+
+
+
 
 #### SAMBA REMOTE DOCKING
 
-	# dock_mount_samba="//network_address/mount"
-	DOCK_SAMBA=`get_config dock_mount_samba`
+
+	DOCK_SAMBA=`get_config dock_mount_samba` # //network_address/mount (public access)
 	if [ $DOCK_SAMBA ]; then
 	    notice "Configured to mount samba dock ${DOCK_SAMBA}"
 	    loadmod smbfs

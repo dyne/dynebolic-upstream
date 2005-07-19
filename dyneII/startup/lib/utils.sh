@@ -30,7 +30,7 @@ if [ ! -r ${LOG} ]; then touch ${LOG}; fi
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
-SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,jfs,reiserfs"
+SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,jfs,reiserfs,usb-storage"
 
 # load dynebolic environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
