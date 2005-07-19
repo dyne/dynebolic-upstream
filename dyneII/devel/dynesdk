@@ -55,13 +55,11 @@ while true; do
 	    act "-h     print this help"
 	    act "-v     print out the version of this sdk tool"
 	    act "-p     path to the sdk base directory (default /SDK)"
-	    act "-r     online subversion development repository"
-	    act "-s	partition where to settle (default ask)"
+	    act "-s     partition where to settle (default ask)"
             act "-q     be quick and skip checksums and crypto sigs"
 
 	    notice "COMMANDS:"
 	    act "settle     settle a writable installation on harddisk"
-	    act "update     update startup files from online repository"
 	    act "mkinitrd   makes an initrd.gz of INITRD_SIZE (8192KB)"
 	    act "mkhome     packs the home into the cdrom directory"
 	    act "mkvar      packs the var into the cdrom directory"
@@ -71,7 +69,6 @@ while true; do
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
-	-r) SVN=$2; shift 2 ;;
 	-s) SETTLE=$2; shift 2 ;;
         -q) QUICK="yes"; shift 1 ;;
 	--) shift; break ;;
@@ -181,7 +178,7 @@ mksdk() {
 	cp -ra /usr/share/dynebolic/cdrom "$PFX/"
     fi
     cd $PFX
-    mkdir -p tmp initrd usr var home
+    mkdir -p tmp initrd var home
     cd - > /dev/null
 }
 
@@ -232,6 +229,11 @@ mkinitrd() {
 	for f in `ls $PFX/startup/lib/`; do
 		cp -ravf ${PFX}/startup/lib/${f} lib/dyne/
 	done
+    fi
+
+    if [ -r /etc/rc.local ]; then
+	act "including /etc/rc.local startup settings"
+	cp -vf /etc/rc.local etc/
     fi
 
     ######## KERNEL MODULES
@@ -302,7 +304,8 @@ mkvar() {
     rm -rf tmp/*
     rm -rf run/*
     rm -rf log/*
-    mkdir log/hotplug log/login cache/samba
+    mkdir -p log/hotplug log/login log/setup
+    mkdir -p cache/samba cache/union
     cd - > /dev/null; cd $PFX
     tar cfz cdrom/dyne/var.tgz var
     act "`stat cdrom/dyne/var.tgz`"
