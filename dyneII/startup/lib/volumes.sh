@@ -23,6 +23,7 @@ add_volume() {
 	  PFX=/vol
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
+	      if [ -x ${PFX}/${MNT}/dyne/usr ]; then FLAGS="$FLAGS sys"; fi
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
 	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
 	  fi

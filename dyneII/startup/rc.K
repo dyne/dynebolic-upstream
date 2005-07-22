@@ -4,10 +4,8 @@
 # this should be run at halt and reboot and whenever
 # the computer goes down, it also ejects the CD when present
 #
-# GNU GPL 2001-2004 by jaromil @ dyne.org
+# GNU GPL 2001-2005 by jaromil @ dyne.org
 #
-
-FILE_ID="\$Id: rc.K,v 1.4 2005/01/02 23:24:04 jaromil Exp $"
 
 source /lib/dyne/utils.sh
 
@@ -28,8 +26,11 @@ fi
 echo " .  wait to sync processes"
 wait
 
-echo -n " .  "
-/etc/init.d/rc.autofs stop
+# shutdown automounter
+if [ -x /etc/init.d/rc.autofs ]; then
+  echo -n " .  "
+  /etc/init.d/rc.autofs stop
+fi
 
 if [ -x /usr/sbin/swapoff ]; then
     act "release swap"

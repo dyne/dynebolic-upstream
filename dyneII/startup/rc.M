@@ -63,8 +63,9 @@ fi
 
 
 # if the system has been allready mounted you can go on
-if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
-
+if [ $DYNE_SYS_MEDIA = pre_mounted ]; then
+    notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
+else
     if [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
 
         if [ ! -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
@@ -73,11 +74,8 @@ if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 	insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
         # mount read-only /usr into /mnt/usr
 	mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
-        # create directory where to store unionfs changes
-	mkdir -p /var/cache/union/usr_rw
-        # assign /usr writable union to /var/cache/union/usr_rw
-	/usr/sbin/unionctl /usr --add --before /mnt/usr \
-                           --mode rw /var/cache/union/usr_rw
+	# writable union will be mounted later on...
+	UNION_USR_RW=/var/cache/union/usr_rw
 
     elif [ -x ${DYNE_SYS_MNT}/dyne/usr ]; then
 
@@ -106,12 +104,7 @@ if [ $DYNE_SYS_MEDIA != pre_mounted ]; then
 	error "check your harddisk dock or CD: no /dyne directory is present."
 	touch /tmp/volatile
 	exit 0;
-    else
-	notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
     fi
-	
-else
-    notice "your system seems to be already mounted, great!"
 fi
 
 # now the system is mounted expand our PATH
@@ -206,6 +199,15 @@ if [ ! -r /extras ]; then
     act "linking extras in home"
     ln -s ${DYNE_SYS_MNT}/extras /extras
   fi
+fi
+
+if [ ${UNION_USR_RW} ]; then
+  notice "making /usr writable with unionfs"
+  # create directory where to store unionfs changes
+  mkdir -p /var/cache/union/usr_rw
+  # assign /usr writable union to /var/cache/union/usr_rw
+  /usr/sbin/unionctl /usr --add --before /mnt/usr \
+                     --mode rw /var/cache/union/usr_rw
 fi
 
 
