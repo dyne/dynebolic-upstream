@@ -131,48 +131,25 @@ scan_cdrom() {
 
 ###### HARDDISK
 
-HD_NUM=0
-scan_harddisk() {
-# $1 = device, without partition number (es: hda)
-#  DEV=$1
-
-    ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
-
-	
-    # load all kernel modules for supported filesystems
-    # refer to SUPPORTED_FS defined in utils.sh
-    # all unused modules will be removed at the end of this function
-    act "load modules to scan supported filesystems"
-    for m in `iterate $SUPPORTED_FS`; do
-	loadmod ${m}
-    done
-
-    for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
-	
-        # skip if not an harddisk
-	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
-
-	MOUNT_OPTS=""
-	MOUNT_FS=""
-
-	if [ "`uname -a | grep xbox`" ]; then
-	    MOUNT_FS="-t fatx"
-	    MOUNT_OPTS="-o umask=777"
-	fi
-
-	PARTITIONS=`fdisk -l /dev/${DEV} | grep -Evi 'swap|extended' | grep '^/dev'`
-
-	# setup special flags needed for most common BSD fs
-	if [ "`echo $PARTITIONS|grep -iE 'BSD|ufs'`" ]; then
-	    MOUNT_FS="-t ufs"
-	    MOUNT_OPTS="-o ufstype=44bsd"
-	fi
+scan_partitions() {
+# scans a list of fdisk format partitions
+PARTITIONS=${1}
 
         # cycle thru partitions
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn
 	for PART in ${(f)PARTITIONS}; do
 
-	    PART_FS="`echo $PART|awk '{print $7}'`"
+	# setup special flags needed for most common BSD fs
+	if [ "`echo $PARTITIONS|grep -iE 'BSD|ufs'`" ]; then
+	    MOUNT_FS="-t ufs"
+	    MOUNT_OPTS="-o ufstype=44bsd"
+	else
+	    MOUNT_FS=""
+	    MOUNT_OPTS=""
+	fi
+
+
+	    PART_FS="`echo $PART|awk '{print $6}'`"
             PART_DEV="`echo $PART|cut -d' ' -f1`"
 	    
 	    HD_NUM=`expr $HD_NUM + 1`
@@ -206,7 +183,57 @@ scan_harddisk() {
 	    # deprecated: got_home ${MNT}
 
 	done
-	  
+	
+
+
+}
+
+
+HD_NUM=0
+scan_harddisk() {
+# $1 = device, without partition number (es: hda)
+#  DEV=$1
+
+    ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
+
+	
+    # load all kernel modules for supported filesystems
+    # refer to SUPPORTED_FS defined in utils.sh
+    # all unused modules will be removed at the end of this function
+    act "load modules to scan supported filesystems"
+    for m in `iterate $SUPPORTED_FS`; do
+	loadmod ${m}
+    done
+
+    # scan IDE harddisks
+    for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
+	
+        # skip if not an harddisk
+	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
+
+	MOUNT_OPTS=""
+	MOUNT_FS=""
+
+	if [ "`uname -a | grep xbox`" ]; then
+	    MOUNT_FS="-t fatx"
+	    MOUNT_OPTS="-o umask=777"
+	fi
+
+	# IDE partitions
+	PARTITIONS=`fdisk -l /dev/${DEV} |  \
+                    grep -Evi 'swap|extended' | grep '^/dev'`
+	scan_partitions ${PARTITIONS}
+
+    done
+
+    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
+
+	# TODO: be sure to detect it's an harddisk
+
+	PARTITIONS=`fdisk -l /dev/${DEV} | \
+                    grep -Evi 'swap|extended' | grep '^/dev'`
+	scan_partitions ${PARTITIONS}
+
     done
 
     # now remove all unused filesystem kernel modules
@@ -219,6 +246,7 @@ scan_harddisk() {
     done
 
 }
+
 
 scan_usbstorage() {
 

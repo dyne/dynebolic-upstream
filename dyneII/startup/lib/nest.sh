@@ -148,13 +148,10 @@ activate_nest() {
 		mount -o bind /dev/shm/var /var
 		
 		act "populating /home from dock"
+		mkdir -p /home/luther
 		tar xfz ${MNT}/home.tgz -C /dev/shm
-		mount -o bind /dev/shm/home /home
-		sync
-		for user in `ls /home`; do
-		    act "setting up home for ${user}"
-		    chown -R ${user}:users /home/${user}
-		done
+		mount -o bind /dev/shm/home /home/luther
+		chown -R luther:users /home/luther
 		
 		act "building /tmp"
 		mkdir /dev/shm/tmp
