@@ -116,13 +116,6 @@ fi
 ########################################################################
 
 settle() {
-  if [ -z $SETTLE ]; then
-	  error "no volume selected for settling"
-	  error "you need to specify a directory with -s"
-	  error "to settle on a partition, format it and mount it there"
-	  exit -1
-  fi
-
   if [ ! -x $DYNE_SYS_MNT/dyne ]; then
 	  error "no dyne/ system directory found"
 	  error "specify it in DYNE_SYS_MNT environmental variable"
@@ -133,7 +126,7 @@ settle() {
 	  act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
   fi
   
-  act "settling on $SETTLE, it will occupy approx 2Gb"
+  act "settling on $DYNE_SYS_MNT/dyne, it will occupy approx 2Gb"
   act "data inside the directory will be overwritten"
   echo "[?] are you sure you want to settle (y/N) ?"
   ask_yesno 10
@@ -143,27 +136,18 @@ settle() {
   fi
 
   DOCK=$DYNE_SYS_MNT/dyne
-  notice "establishing settlement, please wait..."
-  mkdir $SETTLE/install_tmp ; cd $SETTLE/install_tmp
-  act "settling base filesystem from ramdisk $DOCK/initrd.gz"
-  cp $DOCK/initrd.gz .
-  gunzip initrd.gz
-  mkdir mnt
-  mount -o loop initrd mnt
-  cp -ra mnt/* $SETTLE/
-  umount mnt
-  rm initrd
-
+  cd ${DOCK}
+  mkdir tmp
+  mkdir usr
   act "settling usr binaries from $DOCK/dynebol.sys"
   act "please wait, this operation requires long time"
-  mount -o loop -t squashfs $DOCK/dynebol.sys mnt
-  cp -ra mnt/* $SETTLE/usr/
-  umount mnt
+  mount -o loop -t squashfs dynebol.sys tmp
+  cp -ra tmp/* usr/
+  umount tmp
+  rm -r tmp
 
-  act "settling home and var"
-  tar xfz $DOCK/home.tgz -C $SETTLE
-  tar xfz $DOCK/var.tgz -C $SETTLE
   notice "settlement is now established!"
+  act "the /usr system directory will be writable at the next boot"
 
   act "to make the system bootable setup your bootloader accordingly"
   act "for a fresh bootloader install run:"
@@ -204,7 +188,7 @@ mkinitrd() {
     cp -ra /bin .
     cp -ra /sbin .
     mkdir boot dev proc rem root sys tmp usr var vol mnt home
-    touch /boot/dynenv
+    echo "# Ramdisk version $DYNE_INITRD_VER" > /boot/dynenv
 
     act "cleaning up configs and logs"
     rm -f etc/X11/XF86Config
@@ -237,17 +221,23 @@ mkinitrd() {
     fi
 
     ######## KERNEL MODULES
+
     if [ -z $KRN ]; then KRN=`uname -r`; fi
+
+    if [ -x /mnt/usr/lib/modules ]; then
+      MODDIR=/mnt/usr/lib/modules
+    else MODDIR=/usr/lib/modules; fi
+
     act "setup boot kernel modules for ${KRN}"
     mkdir -p boot/modules/${KRN}
     for m in `iterate $SUPPORTED_FS`; do
-	M=`find /usr/lib/modules/${KRN}/ -name "${m}.ko"`
+	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
 	cp ${M} boot/modules/${KRN}/
         act ${M}
     done
     # copy also the loopback device and samba modules
-    cp `find /usr/lib/modules/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
-    cp `find /usr/lib/modules/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+    cp `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
+    cp `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
 
     cd - > /dev/null
     cd $PFX
@@ -283,13 +273,13 @@ mkinitrd() {
 
 mkhome() {
     notice "packaging /home";
-    cd $PFX/home
-    cp -ra /home/luther .
-    rm -rf .mozilla
-    rm -f  .ssh/known_*
+    cd $PFX
+    if [ -x home ]; then rm -rf home; fi
+    cp -ra /home/luther home
+    rm -rf home/.mozilla
+    rm -f  home/.ssh/known_*
     # touch to avoid errors on zsh host completion
-    touch  .ssh/known_hosts
-    cd - > /dev/null ; cd $PFX
+    touch  home/.ssh/known_hosts
     tar cfz cdrom/dyne/home.tgz home
     act "`stat $PFX/cdrom/dyne/home.tgz`"
     cd - > /dev/null ; sync
