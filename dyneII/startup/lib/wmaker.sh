@@ -1,3 +1,8 @@
+# dyne:II startup scripts
+# (C) 2005 Denis "jaromil" Rojo
+# GNU GPL License
+
+
 # generate volumes entries in the upper right dock of wmaker
 
 # a volume entry is one line:

@@ -1,4 +1,6 @@
-#!/bin/zsh
+# dyne:II startup scripts
+# (C) 2005 Denis "jaromil" Rojo
+# GNU GPL License
 
 source /lib/dyne/utils.sh
 
@@ -287,7 +289,7 @@ scan_usbstorage() {
 	    
         # make first a 'usb' so taschino can find a usb key
 	    USB_NUM=`expr $USB_NUM + 1`
-	    if [ $USB_NUM == 1 ]; then USB_MNT="usb"
+	    if [ $USB_NUM = 1 ]; then USB_MNT="usb"
 	    else USB_MNT="usb${USB_NUM}"; fi
 	    
 	    mount ${DEV} /rem/${USB_MNT} -t vfat
@@ -387,14 +389,14 @@ choose_volumes() {
 
 	    echo; echo; echo; echo; echo;
 	    # prompt if upgrading from cd is desired
-	    if [ x$ask_update == xtrue ]; then
+	    if [ x$ask_update = xtrue ]; then
 		notice "the dyne:bolic system on your harddisk is different from the CDROM"
 		act "CDROM\t:: sys $DYNE_SYS_VER\t:: init $DYNE_INITRD_VER"
 		act "HDISK\t:: sys $HD_SYS_VER\t:: init $HD_INITRD_VER"
 		echo "[?] do you want to upgrade the system on your harddisk? (y/n)"
 		echo; echo; echo; echo; echo;
 		ask_yesno 10 y n
-		if [ $? == 1 ]; then
+		if [ $? = 1 ]; then
 		    notice "upgrading harddisk system version to $DYNE_SYS_VER"
 		    act "please wait while transferring files..."
 		    echo; echo; echo;	    
@@ -458,7 +460,7 @@ choose_volumes() {
 		ask_update=true; fi
 	    
 	    # prompt if upgrading from cd is desired
-	    if [ x$ask_update == xtrue ]; then
+	    if [ x$ask_update = xtrue ]; then
 		# QUAAAA
 		ask_yesno
 	    fi
