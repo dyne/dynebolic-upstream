@@ -115,15 +115,26 @@ fi
 ### COMMAND FUNCTIONS
 ########################################################################
 
-settle() {
+mksdk() {
+
   if [ ! -x $DYNE_SYS_MNT/dyne ]; then
-	  error "no dyne/ system directory found"
-	  error "specify it in DYNE_SYS_MNT environmental variable"
-	  exit -1
+
+      error "no dyne/ system directory found"
+      error "specify it in DYNE_SYS_MNT environmental variable"
+      exit -1
+	  
+  elif [ -x $DYNE_SYS_MNT/dyne/SDK ]; then
+
+      error "an SDK is already present in your active dock"
+      error "please check $DYNE_SYS_MNT/dyne/SDK"
+      exit -1
+      
   else
-	  source $DYNE_SYS_MNT/dyne/VERSION
-	  notice "settling from system on $DYNE_SYS_MNT/dyne"
-	  act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
+      
+      source $DYNE_SYS_MNT/dyne/VERSION
+      notice "settling from system on $DYNE_SYS_MNT/dyne"
+      act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
+      
   fi
   
   act "settling on $DYNE_SYS_MNT/dyne, it will occupy approx 2Gb"
@@ -135,36 +146,38 @@ settle() {
 	  exit 1
   fi
 
-  DOCK=$DYNE_SYS_MNT/dyne
-  cd ${DOCK}
+  cd ${DYNE_SYS_MNT}/dyne
+
+  mkdir SDK
   mkdir tmp
-  mkdir usr
-  act "settling usr binaries from $DOCK/dynebol.sys"
-  act "please wait, this operation requires long time"
-  mount -o loop -t squashfs dynebol.sys tmp
-  cp -ra tmp/* usr/
+  mkdir SDK/usr
+  act "settling usr binaries from ${DYNE_SYS_MNT}/dyne/dynebol.sys"
+  act "please wait, this operation requires long time..."
+  mount -o loop dynebol.sys tmp
+  cp -ra tmp/* SDK/usr/
   umount tmp
   rm -r tmp
 
+  act "downloading dyne:II liveCD skeleton files from online repository"
+  cd -; cd ${DYNE_SYS_MNT}/dyne/SDK
+  svn co svn://dyne.org/dynebolic/dyneII/startup
+  svn co svn://dyne.org/dynebolic/dyneII/cdrom
+  svn co svn://dyne.org/dynebolic/dyneII/devel
+  mkdir tmp initrd var home
+
+  cd -
+
   notice "settlement is now established!"
   act "the /usr system directory will be writable at the next boot"
-
+  echo
   act "to make the system bootable setup your bootloader accordingly"
   act "for a fresh bootloader install run:"
   act "grub-install --root-directory=$SETTLE \"(hdX)\""
   act "please refer to the documentation of grub for further information"
-	  
+  echo
+  
 }
 
-mksdk() {
-    if [ ! -x $PFX/cdrom ]; then
-        act "creating SDK skeleton in $PFX"
-	cp -ra /usr/share/dynebolic/cdrom "$PFX/"
-    fi
-    cd $PFX
-    mkdir -p tmp initrd var home
-    cd - > /dev/null
-}
 
 
 mkinitrd() {
@@ -232,12 +245,11 @@ mkinitrd() {
     mkdir -p boot/modules/${KRN}
     for m in `iterate $SUPPORTED_FS`; do
 	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
-	cp ${M} boot/modules/${KRN}/
-        act ${M}
+	cp -v ${M} boot/modules/${KRN}/
     done
     # copy also the loopback device and samba modules
-    cp `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
-    cp `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+    cp -v `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
+    cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
 
     cd - > /dev/null
     cd $PFX
@@ -245,9 +257,14 @@ mkinitrd() {
     #### COPY THE KERNEL
     ## this is not really inside the ramdisk initrd
     ## but we do it here
+    # form a default SDK location path
+    SDK_KERNEL=src/kernel/linux/arch/`uname -i`/boot/bzImage 
     if [ -r /boot/linux-${KRN} ]; then
       act "kernel found in /boot/linux-${KRN}"
       cp /boot/linux-${KRN} cdrom/dyne/linux
+    elif [ -r ${SDK_KERNEL} ]; then
+      act "kernel found in ${PFX}/${SDK_KERNEL}"
+      cp ${SDK_KERNEL} cdrom/dyne/linux
     else
       error "kernel linux-${KRN} not found in /boot"
     fi
@@ -360,12 +377,12 @@ mksdk
 
 case "$CMD" in
     # execute commands
-    settle) settle ;;
+    mksdk)    mksdk    ;;
     mkinitrd) mkinitrd ;;
-    mkhome) mkhome ;;
-    mkvar) mkvar ;;
+    mkhome)   mkhome   ;;
+    mkvar)    mkvar    ;;
     mksquash) mksquash ;;
-    mkiso) mkiso ;;
+    mkiso)    mkiso    ;;
     
     *) error "command \"$CMD\" not recognized"
 esac
