@@ -102,11 +102,19 @@ loadmod() {
 
     MODULE=${1}
 
+    # check if it is a denied module we skip
+    MODULES_DENY="`get_config modules_deny`"
+    for m in `iterate ${MODULES_DENY}`; do
+        if [ $MODULE = $m ]; then
+           act "$MODULE denied ... SKIPPED"
+        fi
+    done
+
     # in interactive mode we ask 
     INTERACTIVE="`get_config modules_prompt`"
     if [ $INTERACTIVE ]; then 
-	echo -n "[?] do you want to load kernel module $MODULE " | tee -a $LOG
-	getkey 10
+	echo -n "[?] do you want to load kernel module $MODULE [y/N] ?" | tee -a $LOG
+	ask_yesno 10
 	if [ $? = 1 ]; then
 	    echo " ... SKIPPED" | tee -a $LOG
 	    return
@@ -119,7 +127,7 @@ loadmod() {
     if [ -x /usr/sbin/modprobe ]; then
 	if [ -r /etc/modules.deny ]; then
 	    if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
-	# skip modules included in /etc/modules.deny
+	    # skip modules included in /etc/modules.deny
 		act "skipping kernel module $MODULE (match in /etc/modules.deny)"
 		return
 	    fi
