@@ -36,7 +36,7 @@ PACKAGE="dyne:bolic SDK"
 VERSION="2.0"
 ISO="dynebolic-dev.iso"
 if [ -z $DYNESDK ]; then
-  PFX="/SDK" # you can change it to static path where dynesdk resides
+  PFX="$DYNE_SYS_MNT/dyne/SDK" # you can change it to static path where dynesdk resides
 else
   PFX=${DYNESDK}
 fi
@@ -94,10 +94,12 @@ if [ "`whoami`" != root ]; then
     exit -1
 fi
 
-if [ ! -x "$PFX" ]; then
+if [ ! $CMD = mksdk ]; then
+  if [ ! -x "$PFX" ]; then
     error "the SDK directory is not existing"
     error "create the directory $PFX or set the -p option properly"
     exit 0
+  fi
 fi
 
 # if those are missing, the iso can't be packed
@@ -148,24 +150,24 @@ mksdk() {
 
   cd ${DYNE_SYS_MNT}/dyne
 
-  mkdir SDK
   mkdir tmp
-  mkdir SDK/usr
+  mkdir usr
   act "settling usr binaries from ${DYNE_SYS_MNT}/dyne/dynebol.sys"
   act "please wait, this operation requires long time..."
   mount -o loop dynebol.sys tmp
-  cp -ra tmp/* SDK/usr/
+  cp -ra tmp/* usr/
   umount tmp
   rm -r tmp
 
   act "downloading dyne:II liveCD skeleton files from online repository"
-  cd -; cd ${DYNE_SYS_MNT}/dyne/SDK
+  mkdir SDK
+  cd - > /dev/null
+  cd ${DYNE_SYS_MNT}/dyne/SDK
   svn co svn://dyne.org/dynebolic/dyneII/startup
   svn co svn://dyne.org/dynebolic/dyneII/cdrom
-  svn co svn://dyne.org/dynebolic/dyneII/devel
   mkdir tmp initrd var home
 
-  cd -
+  cd - > /dev/null
 
   notice "settlement is now established!"
   act "the /usr system directory will be writable at the next boot"
@@ -371,9 +373,6 @@ mkiso() {
 
 
 ########################################################################
-
-# be sure the SDK skeleton is there
-mksdk
 
 case "$CMD" in
     # execute commands
