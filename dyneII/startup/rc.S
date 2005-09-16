@@ -250,7 +250,7 @@ fi
 
 #### if /usr is not already mounted then let's go looking for a system
 #### this control lets have dyne:bolic run from a partition
-if [ ! -x /usr/share ]; then
+if [ ! -x /usr/bin/dynesplash ]; then
     
   # call the procedure to select and upgrade detected systems
   # see /lib/dyne/volumes.sh

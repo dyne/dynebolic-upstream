@@ -66,7 +66,13 @@ fi
 if [ $DYNE_SYS_MEDIA = pre_mounted ]; then
     notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
 else
-    if [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
+
+    if [ -x ${DYNE_SYS_MNT}/dyne/usr/bin/dynesplash ]; then
+
+	notice "Mounting writable usr filesystem from dock in ${DYNE_SYS_MNT}"
+	mount -o bind ${DYNE_SYS_MNT}/dyne/usr /usr
+
+    elif [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
 
         if [ ! -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
 	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dynebol.sys /mnt/usr
@@ -76,11 +82,6 @@ else
 	mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
 	# writable union will be mounted later on...
 	UNION_USR_RW=/var/cache/union/usr_rw
-
-    elif [ -x ${DYNE_SYS_MNT}/dyne/usr ]; then
-
-	notice "Mounting writable usr filesystem from dock in ${DYNE_SYS_MNT}"
-	mount -o bind ${DYNE_SYS_MNT}/dyne/usr /usr
 
     fi
 

@@ -82,6 +82,8 @@ fortune -s
 echo
 EOF
 
+# start X
+su - luther -c startx
 
 exit 0
 

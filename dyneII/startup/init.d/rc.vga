@@ -26,11 +26,12 @@ if [ ! -z "`echo ${VGACARD} | grep Unknown`" ]; then
   exit 0;
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep -iE ' nvidia| riva| viper| tnt| geforce' | grep -v Unknown`" ]; then
-  act "using XFree86 'nv' driver for your nVidia card"
-  sed "s/fbdev/nv/g" $DISTCFG > $CFG
-  exit 0;
-fi
+# nvidia suxxx
+#if [ ! -z "`echo ${VGACARD} | grep -iE ' nvidia| riva| viper| tnt| geforce' | grep -v Unknown`" ]; then
+#  act "using XFree86 'nv' driver for your nVidia card"
+#  sed "s/fbdev/nv/g" $DISTCFG > $CFG
+#  exit 0;
+#fi
 
 if [ ! -z "`echo ${VGACARD} | grep -i ' matrox'`" ]; then
   act "using XFree86 'mga' driver for your Matrox card"
