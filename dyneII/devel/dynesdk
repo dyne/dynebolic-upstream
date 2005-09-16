@@ -167,6 +167,9 @@ mksdk() {
   svn co svn://dyne.org/dynebolic/dyneII/cdrom
   mkdir tmp initrd var home
 
+  act "downloading dyne:II kernel source and modules"
+  rsync -P -r dyne.org::dynebolic-dev-anon/dyneII-kernel/ kernel
+
   cd - > /dev/null
 
   notice "settlement is now established!"
@@ -203,6 +206,8 @@ mkinitrd() {
     cp -ra /bin .
     cp -ra /sbin .
     mkdir boot dev proc rem root sys tmp usr var vol mnt home
+    ln -s /usr usr/share
+    ln -s /etc/terminfo usr/terminfo
     echo "# Ramdisk version $DYNE_INITRD_VER" > /boot/dynenv
 
     act "cleaning up configs and logs"
@@ -260,15 +265,25 @@ mkinitrd() {
     ## this is not really inside the ramdisk initrd
     ## but we do it here
     # form a default SDK location path
-    SDK_KERNEL=src/kernel/linux/arch/`uname -i`/boot/bzImage 
-    if [ -r /boot/linux-${KRN} ]; then
-      act "kernel found in /boot/linux-${KRN}"
-      cp /boot/linux-${KRN} cdrom/dyne/linux
-    elif [ -r ${SDK_KERNEL} ]; then
-      act "kernel found in ${PFX}/${SDK_KERNEL}"
-      cp ${SDK_KERNEL} cdrom/dyne/linux
+    SDK_KERNEL=${PFX}/kernel/linux/arch/`uname -i`/boot/bzImage 
+    if [ -r ${SDK_KERNEL} ]; then
+
+      act "new kernel found in SDK build"
+      cp -v ${PFX}/${SDK_KERNEL} cdrom/dyne/linux
+
+    elif [ -r ${DYNE_SYS_MNT}/dyne/linux ]; then
+
+      act "kernel found in current dock"
+      cp -v ${DYNE_SYS_MNT}/dyne/linux cdrom/dyne/linux
+
+    elif [ -r cdrom/dyne/linux ]; then
+
+      act "kernel already present in SDK"
+
     else
       error "kernel linux-${KRN} not found in /boot"
+      error "aborting operation: you should build a kernel!"
+      exit -1 
     fi
 	     
     act "generate device file"
