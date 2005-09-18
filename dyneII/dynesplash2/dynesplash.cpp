@@ -202,22 +202,26 @@ int main(int argc, char **argv) {
   
   FILE *ftmp = NULL;
   char guipath[512];
+//  char cwd[512];
+
+//  getcwd(cwd,511);
+//  chdir("/usr/share/dynebolic/splash");
 
   sprintf(guipath,"dynesplash.glade");
 
   ftmp = fopen(guipath,"r");
   if(!ftmp) {
-    fprintf(stdout,"file missing: dynesplash.glade\n");
-    sprintf(guipath,"/usr/share/dynebolic/dynesplash.glade");
+    sprintf(guipath,"/usr/share/dynebolic/splash/dynesplash.glade");
     ftmp = fopen(guipath,"r");
   }
   if(!ftmp) {
+    fprintf(stdout,"file missing: dynesplash.glade\n");
     fprintf(stdout,"fatal error: GUI description not found");
     exit(0);
   } else fclose(ftmp);
 
   /* internationalization stuff */
-  bindtextdomain ("dynesplash", "/usr/share/dynebolic/dynesplash");
+  bindtextdomain ("dynesplash", "/usr/share/dynebolic/splash");
   textdomain ("dynesplash");
   gtk_set_locale ();
 
@@ -251,6 +255,8 @@ int main(int argc, char **argv) {
 // radio
   CONNECT_ARG("radio_www_button","clicked",goto_url,www_radio);
   CONNECT("radio_tunein_button","clicked",on_radio_tunein);
+
+//  chdir(cwd);
 
   gtk_main();
 
