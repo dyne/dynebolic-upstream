@@ -56,6 +56,13 @@
 
 
 source /lib/dyne/utils.sh
+
+if [ -z $INIT_VERSION ]; then
+  error "This file is part of dyne system startup sequence"
+  error "and should be only run by the init(1) process"
+  exit -1
+fi
+
 source /lib/dyne/volumes.sh
 source /lib/dyne/nest.sh
 
@@ -75,12 +82,15 @@ touch /boot/dynenv
 rm -f /boot/volumes
 rm -f /boot/auto.removable
 touch /boot/auto.removable
-rm -f /tmp/ascii
-rm -f /tmp/dyne
+rm -f /boot/dyne
+rm -f /boot/ascii
+rm -f /boot/volatile
 rm -f /etc/mtab
 if [ -x /var/run ]; then
   rm -rf /var/run/*
 fi
+# create a /tmp directory in ramdisk
+mkdir     /tmp
 ####
 
 

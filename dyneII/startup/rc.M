@@ -23,6 +23,14 @@
 
 source /lib/dyne/utils.sh
 
+if [ -z $INIT_VERSION ]; then
+  error "This file is part of dyne system startup sequence"
+  error "and should be only run by the init(1) process"
+  exit -1
+fi
+
+source /lib/dyne/modules.sh
+
 source /boot/dynenv
 
 ######## HOME IS MOUNTER HERE
@@ -108,11 +116,23 @@ else
     fi
 fi
 
+##########################################
+# WE'RE in MULTI USER now!
+
 # now the system is mounted expand our PATH
 export PATH=$PATH:/usr/bin:/usr/sbin:/usr/X11R6/bin
 
 # configure languages
 /etc/init.d/rc.language
+
+# create a /tmp directory
+chmod a+w /tmp # world writable tmp
+chmod +t /tmp  # sticky bit
+
+# secure the /root hideout
+chown root:root /root
+chmod go-rwx /root
+
 
 act "dyne:bolic setup on `date`" >> $LOG
 echo "$LIBDYNE_ID" >> $LOG
@@ -196,9 +216,9 @@ fi
 
 # link the extras in the home
 if [ ! -r /extras ]; then
-  if [ -r ${DYNE_SYS_MNT}/extras ]; then
+  if [ -r ${DYNE_SYS_MNT}/dyne/extras ]; then
     act "linking extras in home"
-    ln -s ${DYNE_SYS_MNT}/extras /extras
+    ln -s ${DYNE_SYS_MNT}/dyne/extras /extras
   fi
 fi
 
@@ -211,6 +231,16 @@ if [ ${UNION_USR_RW} ]; then
                      --mode rw /var/cache/union/usr_rw
 fi
 
+if [ -x ${DYNE_SYS_MNT}/dyne/modules ]; then
+   notice "activating additional dyne modules"
+
+   # regenerate /etc/zsh/modules
+   rm /etc/zsh/modules
+   touch /etc/zsh/modules
+
+   activate_dyne_modules 
+   # see /lib/dyne/modules.sh
+fi
 
 # execute rc.local if present
 # you can create rc.local in the /etc directory

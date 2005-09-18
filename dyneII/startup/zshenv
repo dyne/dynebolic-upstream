@@ -13,6 +13,9 @@ else
   source /etc/zsh/volatile
 fi
 
+# dyne modules paths
+source /etc/zsh/modules
+
 # generated at boot
 source /boot/dynenv
 

@@ -18,16 +18,19 @@ add_volume() {
   if [ ! -r /boot/volumes ]; then touch /boot/volumes; fi
 
   FLAGS=""
+  DOCK=dyne
+    
 
   case ${MEDIA} in
 
       "hdisk")
 	  PFX=/vol
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -x ${PFX}/${MNT}/dyne/usr ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
+	      if [ -x ${PFX}/${MNT}/${DOCK}/usr ];         then FLAGS="$FLAGS sys"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
+              if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];         then FLAGS="$FLAGS sdk"; fi
 	  fi
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
 	  # TODO: entry in fstab?
@@ -228,14 +231,12 @@ scan_harddisk() {
 
     done
 
-    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
-
+#    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
+     for DEV in `find /dev/scsi -name 'disc'`; do
 	# TODO: be sure to detect it's an harddisk
-
-	PARTITIONS=`fdisk -l /dev/${DEV} | \
+	PARTITIONS=`fdisk -l ${DEV} | \
                     grep -Evi 'swap|extended' | grep '^/dev'`
 	scan_partitions ${PARTITIONS}
-
     done
 
     # now remove all unused filesystem kernel modules

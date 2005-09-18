@@ -157,16 +157,21 @@ loadmod() {
 	    fi
 	fi
 	# look for the module in all harddisks
-	for HD in `ls /vol |grep hd`; do
-	    if ! [ -x /vol/${HD}/dyne ]; then continue; fi
-	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}*"`
-	    insmod ${TRYMOD} 1>>$LOG 2>>$LOG
-	    if [ $? = 0 ]; then
-		act "loaded kernel module $MODULE"
-		return 
-	    fi
-	done
+        if [ -r /boot/hdsyslist ]; then
+	  for HD in `cat /boot/hdsyslist | awk '{print $2}'`; do
+	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}.ko"`
+            if [ -r ${TRYMOD} ]; then
+               insmod ${TRYMOD} 1>>$LOG 2>>$LOG
+	       if [ $? = 0 ]; then
+	 	  act "loaded kernel module $MODULE"
+		  return 
+	       fi
+            fi
+	  done
+        fi
     fi
+
+    error "kernel module $MODULE not found"
 }
 
 
