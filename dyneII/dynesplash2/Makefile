@@ -3,7 +3,7 @@
 
 CC = gcc
 CPP = g++
-CFLAGS = -g -DDEBUG -pipe -Wall -O2 -ffast-math
+CFLAGS = -g -DDEBUG -pipe -Wall -Os -ffast-math -mmmx
 INSTALL = install -c
 PREFIX = /usr
 DATADIR = $(PREFIX)/share/dynebolic/splash

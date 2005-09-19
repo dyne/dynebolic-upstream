@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
 
   ftmp = fopen(guipath,"r");
   if(!ftmp) {
-    sprintf(guipath,"/usr/share/dynebolic/splash/dynesplash.glade");
+    sprintf(guipath,"/usr/share/dyne/splash/dynesplash.glade");
     ftmp = fopen(guipath,"r");
   }
   if(!ftmp) {
@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
   } else fclose(ftmp);
 
   /* internationalization stuff */
-  bindtextdomain ("dynesplash", "/usr/share/dynebolic/splash");
+  bindtextdomain ("dynesplash", "/usr/share/dyne/splash");
   textdomain ("dynesplash");
   gtk_set_locale ();
 
