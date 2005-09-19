@@ -34,7 +34,7 @@ func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
 PACKAGE="dyne:bolic SDK"
 VERSION="2.0"
-ISO="dynebolic-dev.iso"
+ISO="dyneII-dev.iso"
 if [ -z $DYNESDK ]; then
   PFX="$DYNE_SYS_MNT/dyne/SDK" # you can change it to static path where dynesdk resides
 else
@@ -44,7 +44,7 @@ fi
 notice "$PACKAGE version $VERSION - software development kit"
 act "Copyleft 2003-2005 by jaromil - RASTASOFT"
 
-OPTS=`getopt -o hvp:u:r:i:s:q -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o hvp:u:r:i:s:m:q -n 'dynesdk' -- "$@"`
 
 #eval set -- "$OPTS"
 
@@ -56,6 +56,7 @@ while true; do
 	    act "-v     print out the version of this sdk tool"
 	    act "-p     path to the sdk base directory (default /SDK)"
 	    act "-s     partition where to settle (default ask)"
+            act "-m     additional modules to add in ramdisk"
             act "-q     be quick and skip checksums and crypto sigs"
 
 	    notice "COMMANDS:"
@@ -64,12 +65,14 @@ while true; do
 	    act "mkhome     packs the home into the cdrom directory"
 	    act "mkvar      packs the var into the cdrom directory"
 	    act "mksquash   packs the squashed filesystem in the cdrom"
+	    act "mkmods     packs all the add-on modules into the cdrom"
 	    act "mkiso      packs the cdrom directory into a bootable iso"
 
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
 	-s) SETTLE=$2; shift 2 ;;
+	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
         -q) QUICK="yes"; shift 1 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
@@ -134,51 +137,53 @@ mksdk() {
   else
       
       source $DYNE_SYS_MNT/dyne/VERSION
-      notice "settling from system on $DYNE_SYS_MNT/dyne"
+      notice "creating SDK inside $DYNE_SYS_MNT/dyne"
       act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
       
   fi
   
-  act "settling on $DYNE_SYS_MNT/dyne, it will occupy approx 2Gb"
-  act "data inside the directory will be overwritten"
-  echo "[?] are you sure you want to settle (y/N) ?"
+  cd ${DYNE_SYS_MNT}/dyne
+  mkdir SDK
+
+  act "I can uncompress dyne.sys, it will occupy approx 2Gb"
+  act "this way your /usr will become writable."
+  act "You should do it only if you really need: it will make"
+  act "it harder to merge your modifications with upgrades to"
+  act "the dyne core."
+  echo "[?] do you want to uncompress the dyne.sys (y/N) ?"
   ask_yesno 10
-  if [ $? != 1 ]; then
-	  act "operation aborted."
-	  exit 1
+  if [ $? = 1 ]; then
+    mkdir tmp
+    mkdir SDK/sys
+    act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne/dyne.sys"
+    act "please wait, this operation requires long time..."
+    mount -o loop dyne.sys tmp
+    cp -rau tmp/* SDK/sys/
+    umount tmp
+    rm -r tmp
   fi
 
-  cd ${DYNE_SYS_MNT}/dyne
-
-  mkdir tmp
-  mkdir usr
-  act "settling usr binaries from ${DYNE_SYS_MNT}/dyne/dynebol.sys"
-  act "please wait, this operation requires long time..."
-  mount -o loop dynebol.sys tmp
-  cp -ra tmp/* usr/
-  umount tmp
-  rm -r tmp
 
   act "downloading dyne:II liveCD skeleton files from online repository"
-  mkdir SDK
   cd - > /dev/null
   cd ${DYNE_SYS_MNT}/dyne/SDK
   svn co svn://dyne.org/dynebolic/dyneII/startup
   svn co svn://dyne.org/dynebolic/dyneII/cdrom
-  mkdir tmp initrd var home
+  # mkdir tmp initrd var home
 
   act "downloading dyne:II kernel source and modules"
   rsync -P -r dyne.org::dynebolic-dev-anon/dyneII-kernel/ kernel
 
   cd - > /dev/null
 
-  notice "settlement is now established!"
-  act "the /usr system directory will be writable at the next boot"
+  notice "the SDK has been succesfully created!"
   echo
   act "to make the system bootable setup your bootloader accordingly"
   act "for a fresh bootloader install run:"
   act "grub-install --root-directory=$SETTLE \"(hdX)\""
   act "please refer to the documentation of grub for further information"
+  act "an example grub.conf and lilo.conf entry is also in ${DYNE_SYS_MNT}/dyne"
+  act "happy hacking! ;)"
   echo
   
 }
@@ -188,16 +193,12 @@ mksdk() {
 mkinitrd() {
     notice "making the initrd compressed filesystem"
 
-    # create the directory if it's not there
-    if [ ! -x $PFX/initrd ]; then
-	mkdir -p $PFX/initrd
+    # cleanup if needed
+    if [ -x $PFX/initrd ]; then
+        rm -rf $PFX/initrd
     fi
-   
-    # delete old contents
-    if [ -r $PFX/initrd/etc/DYNEBOLIC ]; then
-	rm -rf $PFX/initrd/*
-    fi
-
+  
+    mkdir -p $PFX/initrd
     cd $PFX/initrd
 
     act "creating the ramdisk filesystem"
@@ -205,7 +206,7 @@ mkinitrd() {
     cp -ra /lib .
     cp -ra /bin .
     cp -ra /sbin .
-    mkdir boot dev proc rem root sys tmp usr var vol mnt home
+    mkdir boot dev proc rem root sys usr var vol mnt home
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
     echo "# Ramdisk version $DYNE_INITRD_VER" > /boot/dynenv
@@ -218,7 +219,7 @@ mkinitrd() {
    
     if [ -x $PFX/startup/.svn ]; then
 	act "setup startup files from subversion repository"
-	cp -vf $PFX/startup/rc.*     etc/
+	cp -vf $PFX/startup/rc_*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
 	for f in `ls $PFX/startup/zsh/`; do
@@ -254,9 +255,23 @@ mkinitrd() {
 	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
 	cp -v ${M} boot/modules/${KRN}/
     done
+
     # copy also the loopback device and samba modules
     cp -v `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
     cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+
+    # copy any additional module specified on commandline
+    if [ $ADD_RAMDISK_MODULES ]; then
+      act "adding extra modules selected on commandline"
+      for m in `iterate $ADD_RAMDISK_MODULES`; do
+    	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
+	  if [ -r ${M} ]; then
+	    cp -vu ${M} boot/modules/${KRN}/
+	  else
+	    error "module ${m} not found"
+          fi
+      done
+    fi
 
     cd - > /dev/null
     cd $PFX
@@ -291,10 +306,13 @@ mkinitrd() {
     act "formatting ramdisk filesystem"
     mke2fs -m 0 -i 1024 cdrom/dyne/initrd
     act "populating ramdisk static file"
+    mkdir -p tmp
     mount -o loop,rw cdrom/dyne/initrd tmp
     cp -ra initrd/* tmp
     rm -r tmp/lost+found
     umount tmp
+    rm -r tmp
+    rm -rf initrd
 
     act "tuning filesystem"
     tune2fs -c 0 -i 0 cdrom/dyne/initrd
@@ -314,40 +332,45 @@ mkhome() {
     rm -f  home/.ssh/known_*
     # touch to avoid errors on zsh host completion
     touch  home/.ssh/known_hosts
+    touch  home/.ssh/known_hosts2
     tar cfz cdrom/dyne/home.tgz home
+    rm -rf home
     act "`stat $PFX/cdrom/dyne/home.tgz`"
     cd - > /dev/null ; sync
 }
 
 mkvar() {
     notice "packaging /var";
-    cd $PFX/var
-    cp -ra /var/* .
-    rm -rf cache/*
-    rm -rf lock/*
-    rm -rf tmp/*
-    rm -rf run/*
-    rm -rf log/*
-    mkdir -p log/hotplug log/login log/setup
-    mkdir -p cache/samba cache/union
-    cd - > /dev/null; cd $PFX
+    if [ -x var ]; then rm -rf var; fi
+    cd $PFX
+    mkdir var
+    cp -ra /var/* var/
+    rm -rf var/local/*
+    rm -rf var/cache/*
+    rm -rf var/lock/*
+    rm -rf var/tmp/*
+    rm -rf var/run/*
+    rm -rf var/log/*
+    mkdir -p var/log/hotplug var/log/login var/log/setup
+    mkdir -p var/cache/samba var/cache/union
     tar cfz cdrom/dyne/var.tgz var
     act "`stat cdrom/dyne/var.tgz`"
+    rm -rf var
     cd - > /dev/null; sync
 }
 
 mksquash() {
     notice "making the /usr squashed filesystem (please wait, takes long!)"
     act "start compressing: `date`"
-    $MKSQUASHFS /usr $PFX/cdrom/dyne/dynebol.sys -noappend
-    chmod -x $PFX/cdrom/dyne/dynebol.sys
+    $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys -noappend
+    chmod -x $PFX/cdrom/dyne/dyne.sys
     act "end: `date`"
-    act "`stat $PFX/cdrom/dyne/dynebol.sys`"
+    act "`stat $PFX/cdrom/dyne/dyne.sys`"
     sync
 }
 
 mkiso() {
-    notice "making the dynebolic ISO"
+    notice "making the dyneII ISO"
     if ! [ -x ${PFX}/cdrom/devel ]; then mkdir -p ${PFX}/cdrom/devel; fi
     cp -f `which $0` $PFX/cdrom/devel/
     echo "# Forged on `hostname`.`dnsdomainname` the `date` " \
@@ -357,7 +380,7 @@ mkiso() {
     echo >> $PFX/cdrom/dyne/VERSION
     DYNE_SYS_VER="`cat /usr/etc/DYNEBOLIC`"
     echo "DYNE_SYS_VER=$DYNE_SYS_VER" | tee -a $PFX/cdrom/dyne/VERSION
-#    echo "MD5: `md5sum $PFX/cdrom/dyne/dynebol.sys`" | tee -a $PFX/cdrom/VERSION
+#    echo "MD5: `md5sum $PFX/cdrom/dyne/dyne.sys`" | tee -a $PFX/cdrom/VERSION
 #    echo >> $PFX/cdrom/VERSION
     DYNE_INITRD_VER="`cat $PFX/initrd/etc/DYNEBOLIC`"
     echo "DYNE_INITRD_VER=$DYNE_INITRD_VER" | tee -a $PFX/cdrom/dyne/VERSION
@@ -366,17 +389,17 @@ mkiso() {
       rm $PFX/cdrom/dyne/*.md5 2>/dev/null 1>/dev/null
       rm $PFX/cdrom/dyne/*.asc 2>/dev/null 1>/dev/null
       echo "please wait while generating md5 sums"
-      md5sum $PFX/cdrom/dyne/dynebol.sys > $PFX/cdrom/dyne/dynebol.sys.md5
+      md5sum $PFX/cdrom/dyne/dyne.sys > $PFX/cdrom/dyne/dyne.sys.md5
       md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
       echo "cryptographically signing the md5 sums"
-      gpg -b -a $PFX/cdrom/dyne/dynebol.sys.md5
+      gpg -b -a $PFX/cdrom/dyne/dyne.sys.md5
       gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
     fi
     act "purging subversion files in the cdrom"
     for svn in `find $PFX/cdrom -name '.svn'`; do
       rm -rf ${svn}
     done
-    ISO=dynebolic-${DYNE_SYS_VER}.iso
+    ISO=dyne-${DYNE_SYS_VER}.iso
     act "proceeding to pack the ISO image $ISO"
     $MKISOFS -o $PFX/$ISO -J -R -udf \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -386,6 +409,38 @@ mkiso() {
     sync
 }
 
+mkmods() {
+    notice "compressing the modules in the cdrom"
+    if ! [ -x ${PFX}/modules ]; then
+	error "nothing in SDK/modules - are you really developing a module?"
+	exit -1
+    fi
+
+    for mod in `ls --color=none ${PFX}/modules`; do
+
+	if ! [ -r ${PFX}/modules/${mod}/VERSION ]; then
+	    error "module ${mod} misses VERSION information: skipped"
+	    continue
+	fi
+	
+	act "compressing ${PFX}/cdrom/dyne/modules/${mod}"
+	act "please wait, this may take a while..."
+
+	mkdir -p ${PFX}/cdrom/dyne/modules
+
+	$MKSQUASHFS ${PFX}/modules/${mod} ${PFX}/cdrom/dyne/modules/${mod}.dyne
+	
+	act "done with ${mod}"
+	echo
+
+    done
+
+    chmod -x  $PFX/cdrom/dyne/modules/*.dyne
+    chmod a+r $PFX/cdrom/dyne/modules/*.dyne
+
+    act "modules were succesfully compressed in ${PFX}/cdrom/dyne/modules"
+    ls -lh $PFX/cdrom/dyne/modules/*.dyne
+}
 
 ########################################################################
 
@@ -397,6 +452,7 @@ case "$CMD" in
     mkvar)    mkvar    ;;
     mksquash) mksquash ;;
     mkiso)    mkiso    ;;
+    mkmods)   mkmods   ;;
     
     *) error "command \"$CMD\" not recognized"
 esac
