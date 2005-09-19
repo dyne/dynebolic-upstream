@@ -19,7 +19,7 @@ print "{"
 print "Name = \"Hd" NR+2 ".HardDisk\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
-print "Command = \"xwc " $3 "\";"
+print "Command = \"xfe " $3 "\";"
 print "Position = \"0," NR+2 "\";"
 print "Forced = no;";
 print "BuggyApplication = no;"
@@ -32,7 +32,7 @@ print "{"
 print "Name = \"Floppy" NR+2 ".FloppyDisk\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
-print "Command = \"xwc " $3 "\";"
+print "Command = \"xfe " $3 "\";"
 print "Position = \"0," NR+2 "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
@@ -45,7 +45,7 @@ print "{"
 print "Name = \"Usb" NR+2 ".UsbStorage\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
-print "Command = \"xwc " $3 "\";"
+print "Command = \"xfe " $3 "\";"
 print "Position = \"0," NR+2 "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
@@ -58,7 +58,7 @@ print "{"
 print "Name = \"Cd" NR+2 ".CdRom\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
-print "Command = \"xwc " $3 "\";"
+print "Command = \"xfe " $3 "\";"
 print "Position = \"0," NR+2 "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
@@ -68,11 +68,11 @@ print "}"
 
     
     if [ -r /var/run/WMState ]; then
-	rm -f /var/run/WMState
+	rm -f /var/local/WMState
     fi
-    cp /usr/share/dynebolic/WMState.head /var/run/WMState
-    cat /boot/WMState >> /var/run/WMState
-    cat /usr/share/dynebolic/WMState.foot >> var/run/WMState
+    cp /usr/share/dyne/WMState.head /var/local/WMState
+    cat /boot/WMState >> /var/local/WMState
+    cat /usr/share/dyne/WMState.foot >> /var/local/WMState
 }
 
 

@@ -30,9 +30,9 @@ else
               | cut -d ' '  -f11 \
               | sed -e 's/[\:\$]//g'`"
     if [ $MACADDR ]; then
-      HOSTNAME="dynebolic${MACADDR}"
+      HOSTNAME="dyne-${MACADDR}"
     else
-      HOSTNAME="dynebolic"
+      HOSTNAME="dyne"
     fi
     echo "$HOSTNAME" > /etc/HOSTNAME
 fi

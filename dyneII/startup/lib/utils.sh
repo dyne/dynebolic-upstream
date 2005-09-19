@@ -32,10 +32,10 @@ if [ ! -r ${LOG} ]; then touch ${LOG}; fi
 # volumes.sh - to load the modules at startup, for mount autodetection
 SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,jfs,reiserfs,usb-storage"
 
-# load dynebolic environmental variable
+# load dyne environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
 
-# load dynebolic language settings
+# load dyne language settings
 if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 
 
@@ -81,8 +81,8 @@ $1 == variable { print $2; }
 
     # check if there is a config file in our dock
     # if yes take the configuration from that
-    if [ -r $DYNE_SYS_MNT/dynebol.cfg ]; then
-	CFG_VAL=`cat $DYNE_SYS_MNT/dynebol.cfg | awk -v name="$1" '
+    if [ -r $DYNE_SYS_MNT/dyne.cfg ]; then
+	CFG_VAL=`cat $DYNE_SYS_MNT/dyne.cfg | awk -v name="$1" '
 BEGIN { FS = "="; IGNORECASE = 1; variable = name; }
 $1 == variable { print $2; }
 '`

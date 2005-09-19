@@ -34,7 +34,7 @@ source /lib/dyne/modules.sh
 source /boot/dynenv
 
 ######## HOME IS MOUNTER HERE
-############ ALL MEDIA MOUNTED, now MOUNT dynebol.sys
+############ ALL MEDIA MOUNTED, now MOUNT dyne.sys
 ##### UNLESS VOLATILE MODE :
 VOLATILE="`get_config volatile`"
 if [ $VOLATILE ]; then
@@ -56,12 +56,13 @@ if [ $VOLATILE ]; then
     echo "you are floating in limbo"
     echo
     echo "available commands:"
-    echo "ee - text editor"
-    echo "insmod - see modules in /boot"
-    echo "ifconfig and pump - configure network"
-    echo "ncftpget - ftp download"
-    echo "rsync - incremental update"
-    echo "grep and awk - wild script"
+    echo "zile - emacs like text editor"
+    echo "insmod - see modules in /boot/modules"
+    echo "ifconfig and dhcpcd - configure network"
+    echo "ncftpget - FTP download tool"
+    echo "rsync - incremental update from network"
+    echo "grep, sed and awk - wild scripting"
+    echo "samba filesystem is supported as well
     echo "happy hacking ;)"
 EOF
     
@@ -72,18 +73,18 @@ fi
 
 # if the system has been allready mounted you can go on
 if [ $DYNE_SYS_MEDIA = pre_mounted ]; then
-    notice "dynebolic system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
+    notice "dyne system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
 else
 
-    if [ -x ${DYNE_SYS_MNT}/dyne/usr/bin/dynesplash ]; then
+    if [ -x ${DYNE_SYS_MNT}/dyne/SDK/sys/bin/dynesplash ]; then
 
-	notice "Mounting writable usr filesystem from dock in ${DYNE_SYS_MNT}"
-	mount -o bind ${DYNE_SYS_MNT}/dyne/usr /usr
+	notice "Mounting SDK filesystem from dock in ${DYNE_SYS_MNT}"
+	mount -o bind ${DYNE_SYS_MNT}/dyne/SDK/sys /usr
 
-    elif [ -r ${DYNE_SYS_MNT}/dyne/dynebol.sys ]; then
+    elif [ -r ${DYNE_SYS_MNT}/dyne/dyne.sys ]; then
 
         if [ ! -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
-	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dynebol.sys /mnt/usr
+	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dyne.sys /mnt/usr
 	# load union filesystem module
 	insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
         # mount read-only /usr into /mnt/usr
@@ -95,8 +96,8 @@ else
 
     if [ ! -x /usr/bin ]; then # if we cannot mount
 	echo
-	error "A problem occurred while mounting the dynebol.sys"
-	error "dynebolic found a corrupted dynebol.sys on ${DYNE_SYS_DEV}"
+	error "A problem occurred while mounting the dyne.sys"
+	error "corrupted dyne.sys on ${DYNE_SYS_DEV}"
 	if [ $DYNE_SYS_MEDIA = cdrom ]; then
 	    error "it looks like your CDROM is corrupted!"
 	fi
@@ -194,26 +195,6 @@ fi
 # configure network
 /etc/init.d/rc.net
 
-# launch daemons in sequence
-# TODO: use runit svscan for this
-# configure ssh client
-#/usr/etc/rc.ssh &
-
-# configure cups daemon
-#/usr/etc/rc.cupsd &
-
-# start samba services
-#/usr/etc/rc.samba &
-
-# start pure ftp daemon
-#/usr/etc/rc.ftp &
-
-# start http boa daemon
-#/usr/etc/rc.httpd &
-
-# configure your mail transport
-#/usr/etc/rc.mail &
-
 # link the extras in the home
 if [ ! -r /extras ]; then
   if [ -r ${DYNE_SYS_MNT}/dyne/extras ]; then
@@ -231,21 +212,21 @@ if [ ${UNION_USR_RW} ]; then
                      --mode rw /var/cache/union/usr_rw
 fi
 
-if [ -x ${DYNE_SYS_MNT}/dyne/modules ]; then
-   notice "activating additional dyne modules"
 
-   # regenerate /etc/zsh/modules
-   rm /etc/zsh/modules
-   touch /etc/zsh/modules
+##########################################
+## activate all dyne modules
+## looks into dyne/modules
+## or in dyne/SDK/modules if sdk=true
+notice "activating additional dyne modules"
 
-   activate_dyne_modules 
-   # see /lib/dyne/modules.sh
-fi
+activate_dyne_modules 
+# see /lib/dyne/modules.sh
+
 
 # execute rc.local if present
 # you can create rc.local in the /etc directory
 # and put there the commands to be executed here
-# you can also put it in a floppy a:\dynebol.sh
+# you can also put it in a floppy a:\dyne.sh
 # and then uncomment the proper lines in /etc/rc.S
 if [ -e /etc/rc.local ]; then
   source /etc/rc.local

@@ -79,8 +79,8 @@ activate_nest() {
 
   # nestclean here:
   # zap old logs
-  if [ -r /mnt/nest/var/log/dynebolic.log ]; then
-    rm /mnt/nest/var/log/dynebolic.log
+  if [ -r /mnt/nest/var/log/dyne.log ]; then
+    rm /mnt/nest/var/log/dyne.log
   fi
   # wipe out /tmp
   if [ -x /mnt/nest/tmp ]; then
@@ -118,7 +118,7 @@ activate_nest() {
   fi
 
 
-  else # no dynebol.nst found, use system defaults
+  else # no dyne.nst found, use system defaults
 	
 	# look for default dyne:bolic home environment
 	SYSDEF="`cat /boot/volumes|grep sys`"
@@ -196,11 +196,11 @@ choose_nest() {
 	# media mnt fsys
         MNT=`cat /boot/nests|awk 'NR=1{print $2}'` 
         # check encryption
-        if [ -r ${MNT}/dyne/dynebol.nst ]; then
-    	    NEST="${MNT}/dyne/dynebol.nst"
+        if [ -r ${MNT}/dyne/dyne.nst ]; then
+    	    NEST="${MNT}/dyne/dyne.nst"
 	    unset ENCRYPT
-	elif [ -r ${MNT}/dyne/dynebolE.nst ]; then
-	    NEST="${MNT}/dyne/dynebolE.nst"
+	elif [ -r ${MNT}/dyne/dyne-aes.nst ]; then
+	    NEST="${MNT}/dyne/dyne-aes.nst"
 	    ENCRYPT="AES128"
 	else unset NEST; fi
 
@@ -236,7 +236,7 @@ got_home() {
 	VOL=${1}
     fi
 
-    # check if a nest is configured in boot prompt of dynebol.cfg
+    # check if a nest is configured in boot prompt of dyne.cfg
     CFG_NEST=`get_config nest`
     if [ $CFG_NEST ]; then
 	echo -n "[?] use the configured nest in ${CFG_NEST} (Y/n)"
@@ -253,11 +253,11 @@ got_home() {
 
     # if there is no configurated nest then scan this device
     if [ -z $NEST ]; then
-	if [ -r ${}/dynebol.nst ]; then
-	    NEST="${VOL}/dynebol.nst"
+	if [ -r ${}/dyne.nst ]; then
+	    NEST="${VOL}/dyne.nst"
 	    unset ENCRYPT
-	elif [ -r ${VOL}/dynebolE.nst ]; then
-	    NEST="${VOL}/dynebolE.nst"
+	elif [ -r ${VOL}/dyne-aes.nst ]; then
+	    NEST="${VOL}/dyne-aes.nst"
 	    ENCRYPT="AES128"
 	else unset NEST; fi
     fi

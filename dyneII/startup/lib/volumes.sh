@@ -26,11 +26,10 @@ add_volume() {
       "hdisk")
 	  PFX=/vol
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -x ${PFX}/${MNT}/${DOCK}/usr ];         then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
-              if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];         then FLAGS="$FLAGS sdk"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
+              if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
 	  fi
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
 	  # TODO: entry in fstab?
@@ -48,9 +47,9 @@ add_volume() {
       "usb")
 	  PFX=/rem
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi	      
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi	      
 	  fi
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
 	  echo "${MNT} -fstype=${FS},sync :/dev/${DEV}"  >> /boot/auto.removable
@@ -59,9 +58,9 @@ add_volume() {
       "cdrom"|"dvd")
 	  PFX=/rem
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dynebol.cfg ]; then FLAGS="$FLAGS cfg"; fi
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
 	  else
 	      umount ${PFX}/${MNT}
 	      rm -r ${PFX}/${MNT}
