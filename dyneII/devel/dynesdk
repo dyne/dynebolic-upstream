@@ -53,25 +53,23 @@ while true; do
 	-h)
 	    notice "SYNOPSIS: dynesdk [-hv] [-p prefix] [-u user -h host] COMMAND"
 	    act "-h     print this help"
-	    act "-v     print out the version of this sdk tool"
-	    act "-p     path to the sdk base directory (default /SDK)"
-	    act "-s     partition where to settle (default ask)"
+	    act "-v     print out the version of this tool"
+	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/dyne/SDK)"
             act "-m     additional modules to add in ramdisk"
             act "-q     be quick and skip checksums and crypto sigs"
 
 	    notice "COMMANDS:"
-	    act "settle     settle a writable installation on harddisk"
-	    act "mkinitrd   makes an initrd.gz of INITRD_SIZE (8192KB)"
-	    act "mkhome     packs the home into the cdrom directory"
-	    act "mkvar      packs the var into the cdrom directory"
-	    act "mksquash   packs the squashed filesystem in the cdrom"
-	    act "mkmods     packs all the add-on modules into the cdrom"
-	    act "mkiso      packs the cdrom directory into a bootable iso"
+	    act "mksdk      create an SDK environment inside the harddisk dock"
+	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
+	    act "mkhome     packs the home into the SDK/cdrom"
+	    act "mkvar      packs the var into the SDK/cdrom"
+	    act "mksquash   packs the squashed filesystem in the SDK/cdrom"
+	    act "mkmods     packs all the add-on modules into the SDK/cdrom"
+	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
 
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
-	-s) SETTLE=$2; shift 2 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
         -q) QUICK="yes"; shift 1 ;;
 	--) shift; break ;;
@@ -149,7 +147,7 @@ mksdk() {
   act "this way your /usr will become writable."
   act "You should do it only if you really need: it will make"
   act "it harder to merge your modifications with upgrades to"
-  act "the dyne core."
+  act "the main dyne core."
   echo "[?] do you want to uncompress the dyne.sys (y/N) ?"
   ask_yesno 10
   if [ $? = 1 ]; then
@@ -167,22 +165,29 @@ mksdk() {
   act "downloading dyne:II liveCD skeleton files from online repository"
   cd - > /dev/null
   cd ${DYNE_SYS_MNT}/dyne/SDK
-  svn co svn://dyne.org/dynebolic/dyneII/startup
-  svn co svn://dyne.org/dynebolic/dyneII/cdrom
+  svn co svn://code.dyne.org/dynebolic/dyneII/startup
+  svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
+  svn co svn://code.dyne.org/dynebolic/dyneII/devel
   # mkdir tmp initrd var home
 
-  act "downloading dyne:II kernel source and modules"
-  rsync -P -r dyne.org::dynebolic-dev-anon/dyneII-kernel/ kernel
+  act "I can download the kernel sources, it will occupy approx 100MB"
+  act "this way you will be able to recompile the dyne:II kernel."
+  act "You should do it only if you really need: compiling a kernel"
+  act "requires deep knowledge of Linux and in case you do anything"
+  act "wrong it might break your system."
+  echo "[?] do you want to download the dyne:II kernel sources (y/N) ?"
+  ask_yesno 10
+  if [ $? = 1 ]; then
+    act "downloading dyne:II kernel source and modules"
+    rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
+  fi
 
   cd - > /dev/null
 
   notice "the SDK has been succesfully created!"
   echo
-  act "to make the system bootable setup your bootloader accordingly"
-  act "for a fresh bootloader install run:"
-  act "grub-install --root-directory=$SETTLE \"(hdX)\""
-  act "please refer to the documentation of grub for further information"
-  act "an example grub.conf and lilo.conf entry is also in ${DYNE_SYS_MNT}/dyne"
+  act "if you need instructions, please refer to the online documentation"
+  act "available at http://dev.dynebolic.org"
   act "happy hacking! ;)"
   echo
   
@@ -360,10 +365,29 @@ mkvar() {
 }
 
 mksquash() {
-    notice "making the /usr squashed filesystem (please wait, takes long!)"
+    notice "preparing the /usr squashed filesystem"
+
+    # copy the current dynesdk inside the new system
+    cp -v $PFX/devel/dynesdk /usr/sbin/dynesdk
+
+    echo "[?] would you like to update the PCI database (y/N) ?"
+    ask_yesno 10
+    if [ $? = 1 ]; then
+      mv /usr/share/pci.ids /usr/share/pci.ids.old
+      wget -O - http://pci-ids.ucw.cz/pci.ids.bz2 | bunzip2 > /usr/share/pci.ids
+      if [ -r /usr/share/pci.ids ]; then
+	rm /usr/share/pci.ids.old
+      else
+        error "operation failed. you need to be online to do that!"
+	mv /usr/share/pci.ids.old /usr/share/pci.ids
+      fi
+    fi
+
     act "start compressing: `date`"
+    act "(please wait, takes long!)"
     $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys -noappend
-    chmod -x $PFX/cdrom/dyne/dyne.sys
+    chmod a+r $PFX/cdrom/dyne/dyne.sys
+    chmod -x  $PFX/cdrom/dyne/dyne.sys
     act "end: `date`"
     act "`stat $PFX/cdrom/dyne/dyne.sys`"
     sync
@@ -382,7 +406,7 @@ mkiso() {
     echo "DYNE_SYS_VER=$DYNE_SYS_VER" | tee -a $PFX/cdrom/dyne/VERSION
 #    echo "MD5: `md5sum $PFX/cdrom/dyne/dyne.sys`" | tee -a $PFX/cdrom/VERSION
 #    echo >> $PFX/cdrom/VERSION
-    DYNE_INITRD_VER="`cat $PFX/initrd/etc/DYNEBOLIC`"
+    DYNE_INITRD_VER="`cat /etc/DYNEBOLIC`"
     echo "DYNE_INITRD_VER=$DYNE_INITRD_VER" | tee -a $PFX/cdrom/dyne/VERSION
     if [ -z $QUICK ]; then
     # generate md5sum hashes and gpg signatures in separate files
