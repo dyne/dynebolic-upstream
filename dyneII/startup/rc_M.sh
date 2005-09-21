@@ -62,7 +62,7 @@ if [ $VOLATILE ]; then
     echo "ncftpget - FTP download tool"
     echo "rsync - incremental update from network"
     echo "grep, sed and awk - wild scripting"
-    echo "samba filesystem is supported as well
+    echo "samba filesystem is supported as well"
     echo "happy hacking ;)"
 EOF
     

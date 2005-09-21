@@ -1,5 +1,5 @@
-#!/bin/zsh --no-zle
+#!/bin/ash
 
-/etc/rc.K
+/etc/rc_K.sh
 echo "[*] Reboot."
 reboot

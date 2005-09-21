@@ -1,4 +1,4 @@
-#!/bin/zsh --no-zle
+#!/bin/ash
 #
 # generic shutdown script for dyne:bolic
 # this should be run at halt and reboot and whenever
@@ -7,9 +7,12 @@
 # GNU GPL 2001-2005 by jaromil @ dyne.org
 #
 
-source /lib/dyne/utils.sh
+#source /lib/dyne/utils.sh
+#source /boot/dynenv
 
-notice "closing dyne:bolic session"
+PATH=/bin:/sbin
+
+echo "[*] closing dyne:bolic session"
 
 # Kill all processes.
 # INIT is supposed to handle this entirely now, but this didn't always
@@ -17,9 +20,9 @@ notice "closing dyne:bolic session"
 # Since INIT already notified the user that processes were being killed,
 # we'll avoid echoing this info this time around.
 if [ "$1" != "fast" ]; then # shutdown did not already kill all processes
-   /sbin/killall5 -15
-   /bin/sleep 5
-   /sbin/killall5 -9
+   killall5 -15
+   sleep 5
+   killall5 -9
 fi
 
 # This is to ensure all processes have completed on SMP machines:
@@ -33,26 +36,27 @@ if [ -x /etc/init.d/rc.autofs ]; then
 fi
 
 if [ -x /usr/sbin/swapoff ]; then
-    act "release swap"
+    echo " .  release swap"
     /usr/sbin/swapoff -a
 fi
 
-act "unload all kernel modules"
-/sbin/rmmod -a
+echo " .  unload all kernel modules"
+rmmod -a
 
-act "umount all volumes"
-/bin/umount -a
+echo " .  umount all volumes"
+umount -a
 
 echo " .  sync harddrives" # this never hurts
-/bin/sync
+sync
 
-if [ $DYNE_SYS_MEDIA = cd ]; then
+if [ $DYNE_SYS_MEDIA = "cdrom" ]; then
     echo "[*] ejecting dyne:bolic cd"
     eject "$DYNE_SYS_DEV"
 fi
 
+
 # sleep 1 fixes problems with some hard drives that
 # don't finish syncing before reboot or poweroff
-/bin/sleep 1
+sleep 1
 
 

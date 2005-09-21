@@ -88,7 +88,7 @@ if [ ! -z "`echo ${VGACARD} | grep -i ' ati'`" ]; then
 fi
 
 
-if [ ! -z "`echo ${VGACARD} | grep -i ' savage'`" ]; then
+if [ ! -z "`echo ${VGACARD} | grep -i 'savage'`" ]; then
   act "using XFree86 'savage' driver for your Savage card"
   sed "s/fbdev/savage/g" $DISTCFG > $CFG
   exit 0;
