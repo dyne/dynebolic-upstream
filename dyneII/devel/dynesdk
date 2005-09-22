@@ -32,6 +32,8 @@ else
 fi
 func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
+source /lib/dyne/modules.sh
+
 PACKAGE="dyne:bolic SDK"
 VERSION="2.0"
 ISO="dyneII-dev.iso"
@@ -43,6 +45,12 @@ fi
 
 notice "$PACKAGE version $VERSION - software development kit"
 act "Copyleft 2003-2005 by jaromil - RASTASOFT"
+
+if ! [ -x /lib/dyne ]; then
+  error "dyne shell libraries are not present on this system"
+  error "can't run the dynesdk, use it inside dyne:II"
+  exit 0
+fi
 
 OPTS=`getopt -o hvp:u:r:i:s:m:q -n 'dynesdk' -- "$@"`
 
@@ -58,14 +66,17 @@ while true; do
             act "-m     additional modules to add in ramdisk"
             act "-q     be quick and skip checksums and crypto sigs"
 
-	    notice "COMMANDS:"
+            notice "MODULE DEVELOPMENT COMMANDS:"
 	    act "mksdk      create an SDK environment inside the harddisk dock"
+            act "mount      re/mount all SDK/modules in /opt"
+	    act "squash     packs all the add-on modules into the SDK/cdrom"
+	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
+            
+	    notice "CORE DEVELOPMENT COMMANDS:"
 	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
 	    act "mkhome     packs the home into the SDK/cdrom"
 	    act "mkvar      packs the var into the SDK/cdrom"
-	    act "mksquash   packs the squashed filesystem in the SDK/cdrom"
-	    act "mkmods     packs all the add-on modules into the SDK/cdrom"
-	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
+	    act "mkusr      packs the dyne.sys in the SDK/cdrom"
 
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
@@ -91,18 +102,31 @@ check_sw() {
 }
 
 if [ "`whoami`" != root ]; then
-    error "you must be ROOT on your machine to use dyne:bolic SDK"
-    exit -1
+    error "you must be ROOT on your machine to use the dyne SDK"
+    exit 0
 fi
 
-if [ ! $CMD = mksdk ]; then
-  if [ ! -x "$PFX" ]; then
-    error "the SDK directory is not existing"
-    error "create the directory $PFX or set the -p option properly"
+if [ $DYNE_SYS_MEDIA = cdrom ]; then
+    error "running from CDROM: you need to DOCK your system"
+    error "copy the dyne/ directory into your harddisk"
+    exit 0
+fi
+
+if ! [ -x $DYNE_SYS_MNT/dyne ]; then
+    error "no dyne/ system directory found in ${DYNE_SYS_MNT}"
+    error "please correct your DYNE environmental variables"
+    error "this doesn't seems an usual dock, uh?"
+    exit 0
+fi
+
+if ! [ $CMD = mksdk ]; then
+  if ! [ -x $PFX/cdrom ]; then
+    error "no dyne/SDK/cdrom directory found in ${PFX}/cdrom"
+    error "you need to run 'dynesdk mksdk' first or fetch a cdrom skeleton"
     exit 0
   fi
 fi
-
+	
 # if those are missing, the iso can't be packed
 if [ -z $MKISOFS ]; then
     check_sw "mkisofs";
@@ -119,29 +143,25 @@ fi
 ########################################################################
 
 mksdk() {
-
-  if [ ! -x $DYNE_SYS_MNT/dyne ]; then
-
-      error "no dyne/ system directory found"
-      error "specify it in DYNE_SYS_MNT environmental variable"
-      exit -1
-	  
-  elif [ -x $DYNE_SYS_MNT/dyne/SDK ]; then
-
-      error "an SDK is already present in your active dock"
-      error "please check $DYNE_SYS_MNT/dyne/SDK"
-      exit -1
-      
-  else
-      
-      source $DYNE_SYS_MNT/dyne/VERSION
-      notice "creating SDK inside $DYNE_SYS_MNT/dyne"
-      act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
-      
-  fi
   
-  cd ${DYNE_SYS_MNT}/dyne
-  mkdir SDK
+  source $DYNE_SYS_MNT/dyne/VERSION
+  notice "creating SDK inside $DYNE_SYS_MNT/dyne"
+  act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
+      
+  mkdir -p ${PFX}
+  cd ${PFX}
+
+  act "downloading dyne:II liveCD skeleton files from online repository"
+  if ! [ -x startup ]; then
+    svn co svn://code.dyne.org/dynebolic/dyneII/startup
+  fi
+  if ! [ -x cdrom ]; then
+    svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
+  fi
+  if ! [ -x devel ]; then
+    svn co svn://code.dyne.org/dynebolic/dyneII/devel
+  fi
+
 
   act "I can uncompress dyne.sys, it will occupy approx 2Gb"
   act "this way your /usr will become writable."
@@ -152,23 +172,14 @@ mksdk() {
   ask_yesno 10
   if [ $? = 1 ]; then
     mkdir tmp
-    mkdir SDK/sys
+    mkdir sys
     act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne/dyne.sys"
     act "please wait, this operation requires long time..."
-    mount -o loop dyne.sys tmp
-    cp -rau tmp/* SDK/sys/
+    mount -o loop ${DYNE_SYS_MNT}/dyne/dyne.sys tmp
+    cp -rau tmp/* sys/
     umount tmp
     rm -r tmp
   fi
-
-
-  act "downloading dyne:II liveCD skeleton files from online repository"
-  cd - > /dev/null
-  cd ${DYNE_SYS_MNT}/dyne/SDK
-  svn co svn://code.dyne.org/dynebolic/dyneII/startup
-  svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
-  svn co svn://code.dyne.org/dynebolic/dyneII/devel
-  # mkdir tmp initrd var home
 
   act "I can download the kernel sources, it will occupy approx 100MB"
   act "this way you will be able to recompile the dyne:II kernel."
@@ -191,6 +202,43 @@ mksdk() {
   act "happy hacking! ;)"
   echo
   
+}
+
+mountmods() {
+    mount_sdk_modules
+}
+
+squash() {
+    notice "compressing the modules in the cdrom"
+    if ! [ -x ${PFX}/modules ]; then
+	error "nothing in SDK/modules - are you really developing a module?"
+	exit -1
+    fi
+
+    for mod in `ls --color=none ${PFX}/modules`; do
+
+	if ! [ -r ${PFX}/modules/${mod}/VERSION ]; then
+	    error "module ${mod} misses VERSION information: skipped"
+	    continue
+	fi
+	
+	act "compressing ${PFX}/cdrom/dyne/modules/${mod}"
+	act "please wait, this may take a while..."
+
+	mkdir -p ${PFX}/cdrom/dyne/modules
+
+	$MKSQUASHFS ${PFX}/modules/${mod} ${PFX}/cdrom/dyne/modules/${mod}.dyne
+	
+	act "done with ${mod}"
+	echo
+
+    done
+
+    chmod -x  $PFX/cdrom/dyne/modules/*.dyne
+    chmod a+r $PFX/cdrom/dyne/modules/*.dyne
+
+    act "modules were succesfully compressed in ${PFX}/cdrom/dyne/modules"
+    ls -lh $PFX/cdrom/dyne/modules/*.dyne
 }
 
 
@@ -364,7 +412,7 @@ mkvar() {
     cd - > /dev/null; sync
 }
 
-mksquash() {
+mkusr() {
     notice "preparing the /usr squashed filesystem"
 
     # copy the current dynesdk inside the new system
@@ -395,8 +443,6 @@ mksquash() {
 
 mkiso() {
     notice "making the dyneII ISO"
-    if ! [ -x ${PFX}/cdrom/devel ]; then mkdir -p ${PFX}/cdrom/devel; fi
-    cp -f `which $0` $PFX/cdrom/devel/
     echo "# Forged on `hostname`.`dnsdomainname` the `date` " \
     	| tee $PFX/cdrom/dyne/VERSION
     echo "# using `$MKISOFS --version` on `uname -srm`" \
@@ -408,7 +454,7 @@ mkiso() {
 #    echo >> $PFX/cdrom/VERSION
     DYNE_INITRD_VER="`cat /etc/DYNEBOLIC`"
     echo "DYNE_INITRD_VER=$DYNE_INITRD_VER" | tee -a $PFX/cdrom/dyne/VERSION
-    if [ -z $QUICK ]; then
+    if [ $SIGN ]; then
     # generate md5sum hashes and gpg signatures in separate files
       rm $PFX/cdrom/dyne/*.md5 2>/dev/null 1>/dev/null
       rm $PFX/cdrom/dyne/*.asc 2>/dev/null 1>/dev/null
@@ -416,13 +462,33 @@ mkiso() {
       md5sum $PFX/cdrom/dyne/dyne.sys > $PFX/cdrom/dyne/dyne.sys.md5
       md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
       echo "cryptographically signing the md5 sums"
-      gpg -b -a $PFX/cdrom/dyne/dyne.sys.md5
-      gpg -b -a $PFX/cdrom/dyne/initrd.gz.md5
+      gpg $SIGN -b -a $PFX/cdrom/dyne/dyne.sys.md5
+      gpg $SIGN -b -a $PFX/cdrom/dyne/initrd.gz.md5
     fi
-    act "purging subversion files in the cdrom"
+
+    act "checking if the CDROM is complete"
+    if ! [ -r $PFX/cdrom/dyne/initrd.gz ]; then
+      act "ramdisk is missing, using the current one"
+      cp -v ${DYNE_SYS_MNT}/dyne/initrd.gz ${PFX}/cdrom/dyne/
+    fi
+    if ! [ -r $PFX/cdrom/dyne/home.tgz ]; then
+      act "home is missing, using the current one"
+      cp -v ${DYNE_SYS_MNT}/dyne/home.tgz ${PFX}/cdrom/dyne/
+    fi
+    if ! [ -r $PFX/cdrom/dyne/var.tgz ]; then
+      act "var is missing, using the current one"
+      cp -v ${DYNE_SYS_MNT}/dyne/var.tgz ${PFX}/cdrom/dyne/
+    fi
+    if ! [ -r $PFX/cdrom/dyne/dyne.sys ]; then
+      act "dyne.sys usr system is missing, using the current one"
+      cp -v ${DYNE_SYS_MNT}/dyne/dyne.sys ${PFX}/cdrom/dyne/
+    fi
+
+    # purge subversion files in the cdrom
     for svn in `find $PFX/cdrom -name '.svn'`; do
       rm -rf ${svn}
     done
+
     ISO=dyne-${DYNE_SYS_VER}.iso
     act "proceeding to pack the ISO image $ISO"
     $MKISOFS -o $PFX/$ISO -J -R -udf \
@@ -433,50 +499,19 @@ mkiso() {
     sync
 }
 
-mkmods() {
-    notice "compressing the modules in the cdrom"
-    if ! [ -x ${PFX}/modules ]; then
-	error "nothing in SDK/modules - are you really developing a module?"
-	exit -1
-    fi
-
-    for mod in `ls --color=none ${PFX}/modules`; do
-
-	if ! [ -r ${PFX}/modules/${mod}/VERSION ]; then
-	    error "module ${mod} misses VERSION information: skipped"
-	    continue
-	fi
-	
-	act "compressing ${PFX}/cdrom/dyne/modules/${mod}"
-	act "please wait, this may take a while..."
-
-	mkdir -p ${PFX}/cdrom/dyne/modules
-
-	$MKSQUASHFS ${PFX}/modules/${mod} ${PFX}/cdrom/dyne/modules/${mod}.dyne
-	
-	act "done with ${mod}"
-	echo
-
-    done
-
-    chmod -x  $PFX/cdrom/dyne/modules/*.dyne
-    chmod a+r $PFX/cdrom/dyne/modules/*.dyne
-
-    act "modules were succesfully compressed in ${PFX}/cdrom/dyne/modules"
-    ls -lh $PFX/cdrom/dyne/modules/*.dyne
-}
-
 ########################################################################
 
 case "$CMD" in
     # execute commands
     mksdk)    mksdk    ;;
+    mount)    mountmods;;
+    squash)   squash   ;;
+    mkiso)    mkiso    ;;
+
     mkinitrd) mkinitrd ;;
     mkhome)   mkhome   ;;
     mkvar)    mkvar    ;;
-    mksquash) mksquash ;;
-    mkiso)    mkiso    ;;
-    mkmods)   mkmods   ;;
+    mkusr)    mkusr    ;;
     
     *) error "command \"$CMD\" not recognized"
 esac
