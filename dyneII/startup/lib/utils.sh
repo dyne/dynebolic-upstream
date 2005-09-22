@@ -33,7 +33,7 @@ if [ ! -r ${LOG} ]; then touch ${LOG}; fi
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
-SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,jfs,reiserfs,usb-storage"
+SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,xfs,reiserfs,usb-storage"
 
 # load dyne environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
@@ -152,16 +152,47 @@ loadmod() {
 	# look for the module in /boot/modules/$KRN
 	KRN=`uname -r`
 	TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}*"`
+        if [ $2 ]; then  # there are arguments
+          MODARGS=`echo $@ | cut -d' ' -f 2-`
+        else
+          MODARGS=""
+        fi
+
 	if [ -r ${TRYMOD} ]; then
-	    insmod ${TRYMOD} 1>>$LOG 2>>$LOG
+
+          mod_name=`basename ${TRYMOD}`
+          if [ `echo ${mod_name} | grep ko.bz2` ]; then
+
+            # it is a compressed module
+            mod_name=`basename ${TRYMOD} .bz2`
+            # uncompress it in /tmp
+            bunzip2 -c ${TRYMOD} > /tmp/${mod_name}
+            # load it
+            insmod /tmp/${mod_name} ${MODARGS} 1>>$LOG 2>>$LOG
 	    if [ $? = 0 ]; then
 		act "loaded kernel module $MODULE"
 		return 
 	    fi
-	fi
-	# look for the module in all harddisks
+            # remove the uncompressed module in /tmp
+            rm /tmp/${mod_name}
+
+          else # it's not a compressed module
+
+	    insmod ${TRYMOD} ${MODARGS} 1>>$LOG 2>>$LOG
+	    if [ $? = 0 ]; then
+		act "loaded kernel module $MODULE"
+		return 
+	    fi
+
+          fi
+
+	fi # the module it's not in the ramdisk
+
+	# look for the module in all harddisk docks
         if [ -r /boot/hdsyslist ]; then
+
 	  for HD in `cat /boot/hdsyslist | awk '{print $2}'`; do
+
 	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}.ko"`
             if [ -r ${TRYMOD} ]; then
                insmod ${TRYMOD} 1>>$LOG 2>>$LOG
@@ -170,8 +201,11 @@ loadmod() {
 		  return 
 	       fi
             fi
+
 	  done
+
         fi
+
     fi
 
     error "kernel module $MODULE not found"
@@ -185,6 +219,13 @@ iterate() {
     BEGIN { RS = "," }
           { print $0 }';
 }
+
+iterate_backwards() {
+    echo "$1" | awk '
+    BEGIN { FS = "," }
+          { for(c=NF; c>0; c--) print $c }';
+}
+# I LOVE AWK \o/
 
 # appends a new line to a text file, if not duplicate
 append_line() { # args:   file    new-line

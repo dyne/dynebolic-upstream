@@ -64,7 +64,7 @@ wmaker_gen_volumes
 
 # generate .Xauthority files
 mkxauth -q -u root -c
-for user in `ls /home`; do
+for user in `/usr/bin/ls /home`; do
 	mkxauth -q -u ${user} -c
 done
 

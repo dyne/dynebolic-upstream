@@ -144,12 +144,12 @@ activate_nest() {
 		
 		# creating /var /tmp and /home
 		act "populating /var from dock"
-		tar xfz ${MNT}/var.tgz -C /dev/shm
+		tar xz -f ${MNT}/var.tgz -C /dev/shm
 		mount -o bind /dev/shm/var /var
 		
 		act "populating /home from dock"
 		mkdir -p /home/luther
-		tar xfz ${MNT}/home.tgz -C /dev/shm
+		tar xz -f ${MNT}/home.tgz -C /dev/shm
 		mount -o bind /dev/shm/home /home/luther
 		chown -R luther:users /home/luther
 		
@@ -345,11 +345,11 @@ EOF
 	
     # creating /var /tmp and /home
 	act "populating /var from CD"
-	tar xfz ${VOL}/var.tgz -C /dev/shm
+	tar xz -f ${VOL}/var.tgz -C /dev/shm
 	mount -o bind /dev/shm/var /var
 	
 	act "populating /home from CD"
-	tar xfz ${VOL}/home.tgz -C /dev/shm
+	tar xz -f ${VOL}/home.tgz -C /dev/shm
 	mount -o bind /dev/shm/home /home
 	
 	act "building /tmp"

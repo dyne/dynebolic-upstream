@@ -241,7 +241,7 @@ scan_harddisk() {
     # now remove all unused filesystem kernel modules
     act "cleanup unused filesystem modules"
     USEDFS=`mount | awk '{print $5}'`
-    for fs in `iterate $SUPPORTED_FS`; do
+    for fs in `iterate_backwards $SUPPORTED_FS`; do
 	if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
 		rmmod ${fs}
 	fi

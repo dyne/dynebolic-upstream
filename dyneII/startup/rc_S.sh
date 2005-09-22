@@ -108,12 +108,12 @@ notice "starting device filesystem daemon"
 sync
 
 notice "load loopback device kernel module"
-if [ -z "`uname -a | grep xbox`" ]; then
-    loadmod loop \
-	max_loop=128 lo_prealloc=100,1,500,6,200 lo_nice=-10
-else
+if [ "`uname -a | grep xbox`" ]; then
     loadmod loop-aes-xbox \
 	max_loop=128 lo_prealloc=100,1,1000,6,200 lo_nice=-10
+else
+    loadmod loop \
+	max_loop=128 lo_prealloc=100,1,500,6,200 lo_nice=-10
 fi
 
 

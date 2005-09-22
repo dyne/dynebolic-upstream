@@ -1,7 +1,6 @@
 
-RPROMPT="%T"
 TERM="linux"
 
-alias links="links -driver fb -g -mode 800x600"
+alias links="links -g -driver sdl"
 alias mplayer="mplayer -vo fb"
 

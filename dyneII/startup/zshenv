@@ -2,7 +2,7 @@
 # this file gets executed every time a zsh is opened
 
 # common environment
-source /etc/zsh/common
+source /etc/zsh/common 2>/dev/null 1>/dev/null
 
 # boot modes
 if [ -r /tmp/dyne ]; then
