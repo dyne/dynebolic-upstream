@@ -219,7 +219,7 @@ fi
 ## or in dyne/SDK/modules if sdk=true
 notice "activating additional dyne modules"
 
-activate_dyne_modules 
+mount_compressed_modules
 # see /lib/dyne/modules.sh
 
 

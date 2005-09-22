@@ -20,8 +20,11 @@
 #  * this source code; if not, write to:
 #  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
-# source /etc/zsh/common
+# this script gets sourced by all dyne shell scripts
+# we check here against multiple inclusion
+if [ -z $DYNE_SHELL_UTILS ]; then
+DYNE_SHELL_UTILS=included
+  
 
 # initialize logfile
 LOG="/boot/startup.log"
@@ -183,6 +186,22 @@ iterate() {
           { print $0 }';
 }
 
+# appends a new line to a text file, if not duplicate
+append_line() { # args:   file    new-line
+
+    if [ `grep '$2' '$1'` ]; then  return;  fi
+
+    if ! [ -w $1 ]; then
+      error "file $1 is not writable"
+      error "can't add line: $2"
+      return
+    fi
+
+    # finally add it at the end
+    echo "$2" >> $1
+
+}
+
 # $1 = timeout
 # $2 = (optional) yes key
 # $3 = (optional) no key
@@ -227,3 +246,6 @@ ask_choice() {
 	done
     done
 }
+
+
+fi # DYNE_SHELL_UTILS=included
