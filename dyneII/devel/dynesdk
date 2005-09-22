@@ -262,12 +262,13 @@ mkinitrd() {
     mkdir boot dev proc rem root sys usr var vol mnt home
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
-    echo "# Ramdisk version $DYNE_INITRD_VER" > /boot/dynenv
+    echo "# Ramdisk version $DYNE_INITRD_VER" > boot/dynenv
 
     act "cleaning up configs and logs"
     rm -f etc/X11/XF86Config
     rm -f etc/HOSTNAME etc/NETWORK
     rm -f etc/auto.removable
+    rm -f etc/blkid.tab*
 
    
     if [ -x $PFX/startup/.svn ]; then
@@ -306,12 +307,22 @@ mkinitrd() {
     mkdir -p boot/modules/${KRN}
     for m in `iterate $SUPPORTED_FS`; do
 	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
-	cp -v ${M} boot/modules/${KRN}/
+        if [ ${M} ]; then
+	  cp -v ${M} boot/modules/${KRN}/
+          strip --strip-unneeded boot/modules/${KRN}/${m}.ko
+          bzip2 -9 boot/modules/${KRN}/${m}.ko
+        else
+          error "module ${m} not found in ${MODDIR}/${KRN}/"
+        fi
     done
 
     # copy also the loopback device and samba modules
     cp -v `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
     cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+    strip --strip-unneeded boot/modules/${KRN}/loop.ko
+    strip --strip-unneeded boot/modules/${KRN}/smbfs.ko
+    bzip2 -9 boot/modules/${KRN}/loop.ko
+    bzip2 -9 boot/modules/${KRN}/smbfs.ko
 
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
@@ -443,7 +454,7 @@ mkusr() {
 
 mkiso() {
     notice "making the dyneII ISO"
-    echo "# Forged on `hostname`.`dnsdomainname` the `date` " \
+    echo "# Forged on `date` " \
     	| tee $PFX/cdrom/dyne/VERSION
     echo "# using `$MKISOFS --version` on `uname -srm`" \
     	| tee -a $PFX/cdrom/dyne/VERSION
