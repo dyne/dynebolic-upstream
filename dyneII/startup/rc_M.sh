@@ -83,9 +83,9 @@ else
 
     elif [ -r ${DYNE_SYS_MNT}/dyne/dyne.sys ]; then
 
-        if [ ! -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
+        if ! [ -x /mnt/usr ]; then mkdir -p /mnt/usr; fi
 	mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dyne.sys /mnt/usr
-	# load union filesystem module
+	# load union filesystem module from inside the squash
 	insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
         # mount read-only /usr into /mnt/usr
 	mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
@@ -94,7 +94,7 @@ else
 
     fi
 
-    if [ ! -x /usr/bin ]; then # if we cannot mount
+    if ! [ -x /usr/bin ]; then # if we cannot mount
 	echo
 	error "A problem occurred while mounting the dyne.sys"
 	error "corrupted dyne.sys on ${DYNE_SYS_DEV}"

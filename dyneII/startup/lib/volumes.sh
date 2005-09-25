@@ -20,7 +20,6 @@ add_volume() {
   FLAGS=""
   DOCK=dyne
     
-
   case ${MEDIA} in
 
       "hdisk")
@@ -56,16 +55,6 @@ add_volume() {
 	  ;;
       
       "cdrom"|"dvd")
-	  PFX=/rem
-	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
-	  else
-	      umount ${PFX}/${MNT}
-	      rm -r ${PFX}/${MNT}
-	  fi
-
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
 	  echo "${MNT} -fstype=${FS},ro :/dev/${DEV}" >> /boot/auto.removable
 	  ;;
@@ -119,16 +108,39 @@ scan_cdrom() {
 	
 	act "scanning ${DEV} -> ${MNT} (${CDFS})"
 	
-	if [ ! -x /rem/${MNT} ]; then mkdir /rem/${MNT}; fi
-	
-	mount -t ${CDFS} -o ro /dev/${DEV} /rem/${MNT} 1>/dev/null 2>/dev/null
+	mkdir -p /mnt/dynecd
 
-        # device was not mounted: media is not found inside, delete dir
-	if [ $? != 0 ]; then rm /rem/${MNT}; fi
-	
-	add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
+#	if [ ! -x /rem/${MNT} ]; then mkdir /rem/${MNT}; fi	
+#	mount -t ${CDFS} -o ro /dev/${DEV} /rem/${MNT} 1>/dev/null 2>/dev/null
+
+	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynecd 1>/dev/null 2>/dev/null
+
+	if [ $? != 0 ]; then # device was not mounted
+
+	# media is not found inside, delete dir
+	# and add the CD as automount device
+	    rm -r /mnt/dynecd
+	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
+
+	elif [ -r /mnt/dynecd/dyne/dyne.sys ]; then # device contains dyne sys
 	    
-	
+	    FLAGS=sys # check if it has also a config file
+	    if [ -r /mnt/dynecd/dyne/dyne.cfg ]; then
+		FLAGS="$FLAGS cfg"
+	    fi
+	    
+            # leave it mounted and add it to the list of volumes
+	    append_line /boot/volumes "${MEDIA} /dev/${DEV} /mnt/dynecd ${CDFS} ${FLAGS}"
+	    
+	else # device has a CD inside, not the dyne one
+
+	    # unmount it and add it to automount devices
+	    umount /mnt/dynecd
+	    rm -r /mnt/dynecd
+	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
+
+	fi
+	    	
     done
 }
 
@@ -231,12 +243,20 @@ scan_harddisk() {
     done
 
 #    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
-     for DEV in `find /dev/scsi -name 'disc'`; do
+    if ! [ -x /dev/scsi ]; then
+
+      act "no SCSI devices detected"
+
+    else
+
+      for DEV in `find /dev/scsi -name 'disc'`; do
 	# TODO: be sure to detect it's an harddisk
 	PARTITIONS=`fdisk -l ${DEV} | \
                     grep -Evi 'swap|extended' | grep '^/dev'`
 	scan_partitions ${PARTITIONS}
-    done
+      done
+
+    fi
 
     # now remove all unused filesystem kernel modules
     act "cleanup unused filesystem modules"
@@ -319,7 +339,7 @@ scan_usbstorage() {
 choose_volumes() {
 
     # count the harddisk
-    HDSYS=`cat /boot/volumes|grep -E 'hdisk.*sys'`
+    HDSYS=`cat /boot/volumes|grep -E 'hdisk.*(sys|sdk)'`
     HDSYS_NUM=0
 
     for v in ${(f)HDSYS}; do
@@ -472,7 +492,8 @@ choose_volumes() {
 	    notice "multiple dyne:bolic systems have been detected on your harddisks"
 	    act "choose the one you want to run (first is default after 10 seconds):"
 	    C=0
-	    for i in `cat /boot/hdsyslist`; do
+            HDSYSLIST=`cat /boot/hdsyslist`
+	    for i in ${(f)HDSYSLIST}; do
 		C=`expr $C + 1`
 		DEV=`echo $i| awk '{print $1}'`
 		MNT=`echo $i| awk '{print $2}'`

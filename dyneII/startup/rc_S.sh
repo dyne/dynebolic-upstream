@@ -1,6 +1,6 @@
 #!/bin/zsh --no-zle
 #
-# dyne:bolic startup script
+# dyne:II startup script
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -107,14 +107,8 @@ notice "starting device filesystem daemon"
 
 sync
 
-notice "load loopback device kernel module"
-if [ "`uname -a | grep xbox`" ]; then
-    loadmod loop-aes-xbox \
-	max_loop=128 lo_prealloc=100,1,1000,6,200 lo_nice=-10
-else
-    loadmod loop \
-	max_loop=128 lo_prealloc=100,1,500,6,200 lo_nice=-10
-fi
+notice "load loopback device kernel module (max 64 loops)"
+loadmod loop max_loop=64
 
 
 
@@ -294,16 +288,6 @@ echo "export DYNE_NEST_VER=${DYNE_NEST_VER}" >> /boot/dynenv
 echo "export DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
 
 
-
-
-
-# TODO:
-# scsi
-# tftp
-# usb sys
-# nfs
-# a me mi piace la gnutella con lufs :)
-# if you feel like, mail dynebolic@dyne.org with the patch
 
 
 

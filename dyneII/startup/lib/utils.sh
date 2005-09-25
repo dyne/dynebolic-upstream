@@ -162,19 +162,24 @@ loadmod() {
 
           mod_name=`basename ${TRYMOD}`
           if [ `echo ${mod_name} | grep ko.bz2` ]; then
-
             # it is a compressed module
+            cd /boot/modules/${KRN}
+
             mod_name=`basename ${TRYMOD} .bz2`
             # uncompress it in /tmp
-            bunzip2 -c ${TRYMOD} > /tmp/${mod_name}
+            bunzip2 -c ${TRYMOD} > ${mod_name}
             # load it
-            insmod /tmp/${mod_name} ${MODARGS} 1>>$LOG 2>>$LOG
+            insmod ${mod_name} ${MODARGS}
 	    if [ $? = 0 ]; then
-		act "loaded kernel module $MODULE"
+		act "loaded kernel module $TRYMOD $MODARGS"
 		return 
 	    fi
+
             # remove the uncompressed module in /tmp
-            rm /tmp/${mod_name}
+            # this doesn't works, why? :/
+            rm -f ${mod_name}
+
+            cd -
 
           else # it's not a compressed module
 
@@ -230,7 +235,13 @@ iterate_backwards() {
 # appends a new line to a text file, if not duplicate
 append_line() { # args:   file    new-line
 
-    if [ `grep '$2' '$1'` ]; then  return;  fi
+    if ! [ -r $1 ]; then
+	touch $1
+    else
+	if [ `grep '$2' '$1'` ]; then
+	    return;
+	fi
+    fi
 
     if ! [ -w $1 ]; then
       error "file $1 is not writable"

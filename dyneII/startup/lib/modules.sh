@@ -21,7 +21,8 @@ add_module_path() {
     
     # library files
     if [ -x /opt/${mod}/lib ]; then
-     append_line /etc/ld.so.conf "/opt/${mod}/lib"
+#     append_line /etc/ld.so.conf "/opt/${mod}/lib"
+     append_line /etc/zsh/modules "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/${mod}/lib"
      append_line /etc/zsh/modules \
        "export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH:/opt/${mod}/lib/pkgconfig"
     fi

@@ -121,7 +121,7 @@ activate_nest() {
   else # no dyne.nst found, use system defaults
 	
 	# look for default dyne:bolic home environment
-	SYSDEF="`cat /boot/volumes|grep sys`"
+	SYSDEF=`cat /boot/volumes|grep -E '(sys|sdk)'`
 	for d in ${(f)SYSDEF}; do # cycle thru the systems found
 	    MNT="`echo $d|awk '{print $3}'`" # get the mountpoint
 
@@ -137,9 +137,8 @@ activate_nest() {
 		SHMSIZE=`expr $RAMSIZE / 1024 / 4`
 		act "RAM detected: `expr $RAMSIZE / 1024` Mb"
 		act "VFS size: $SHMSIZE Mb"
-		echo "tmpfs\t/dev/shm\ttmpfs\tdefaults,size=${SHMSIZE}m\t0\t0" >> /boot/fstab
-		cat /etc/fstab /boot/fstab | sort | uniq > /tmp/fstab
-                mv /tmp/fstab /etc/fstab
+                append_line /etc/fstab "tmpfs\t/dev/shm\ttmpfs\tdefaults,size=${SHMSIZE}m\t0\t0"
+                mkdir -p /dev/shm # since 2.6.13 we need to create this dir by hand
 		mount /dev/shm
 		
 		# creating /var /tmp and /home

@@ -35,7 +35,7 @@ if [ -x /usr/bin/dynesplash ]; then  # dock mounted
             -e 's/,[0-9]\{3\}\..*//' ~/.ssh/known_hosts`);
   }
 
-  export MANPATH="/usr/share/man:/usr/X11R6/man"
+  export MANPATH="/usr/share/man:/usr/X11R6/man:/usr/netpbm/man"
   export PAGER="/usr/bin/less"
   export PATH="/usr/bin:/usr/sbin:/bin:/sbin:."
 
