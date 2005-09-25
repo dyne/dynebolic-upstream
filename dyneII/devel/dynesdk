@@ -106,6 +106,12 @@ if [ "`whoami`" != root ]; then
     exit 0
 fi
 
+if [ -z "$DYNE_SYS_MEDIA" ]; then
+    error "it doesn't seems you are running dyne"
+    error "in case you are, please set /boot/dynenv accordingly"
+    exit 0
+fi
+
 if [ $DYNE_SYS_MEDIA = cdrom ]; then
     error "running from CDROM: you need to DOCK your system"
     error "copy the dyne/ directory into your harddisk"
@@ -309,21 +315,15 @@ mkinitrd() {
 	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
         if [ ${M} ]; then
 	  cp -v ${M} boot/modules/${KRN}/
-          strip --strip-unneeded boot/modules/${KRN}/${m}.ko
           bzip2 -9 boot/modules/${KRN}/${m}.ko
         else
           error "module ${m} not found in ${MODDIR}/${KRN}/"
         fi
     done
-
-    # copy also the loopback device and samba modules
-    cp -v `find ${MODDIR}/${KRN}/ -name "loop.ko"` boot/modules/${KRN}/
+    # also the samba module
     cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
-    strip --strip-unneeded boot/modules/${KRN}/loop.ko
-    strip --strip-unneeded boot/modules/${KRN}/smbfs.ko
-    bzip2 -9 boot/modules/${KRN}/loop.ko
     bzip2 -9 boot/modules/${KRN}/smbfs.ko
-
+    
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
       act "adding extra modules selected on commandline"
@@ -339,31 +339,6 @@ mkinitrd() {
 
     cd - > /dev/null
     cd $PFX
-
-    #### COPY THE KERNEL
-    ## this is not really inside the ramdisk initrd
-    ## but we do it here
-    # form a default SDK location path
-    SDK_KERNEL=${PFX}/kernel/linux/arch/`uname -i`/boot/bzImage 
-    if [ -r ${SDK_KERNEL} ]; then
-
-      act "new kernel found in SDK build"
-      cp -v ${PFX}/${SDK_KERNEL} cdrom/dyne/linux
-
-    elif [ -r ${DYNE_SYS_MNT}/dyne/linux ]; then
-
-      act "kernel found in current dock"
-      cp -v ${DYNE_SYS_MNT}/dyne/linux cdrom/dyne/linux
-
-    elif [ -r cdrom/dyne/linux ]; then
-
-      act "kernel already present in SDK"
-
-    else
-      error "kernel linux-${KRN} not found in /boot"
-      error "aborting operation: you should build a kernel!"
-      exit -1 
-    fi
 	     
     act "generate device file"
     dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=9000
@@ -371,7 +346,13 @@ mkinitrd() {
     mke2fs -m 0 -i 1024 cdrom/dyne/initrd
     act "populating ramdisk static file"
     mkdir -p tmp
+
     mount -o loop,rw cdrom/dyne/initrd tmp
+    if [ $? != 0 ]; then
+      error "mount of initrd filesystem failed, aborting"
+      return
+    fi
+
     cp -ra initrd/* tmp
     rm -r tmp/lost+found
     umount tmp
@@ -444,7 +425,10 @@ mkusr() {
 
     act "start compressing: `date`"
     act "(please wait, takes long!)"
-    $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys -noappend
+    if [ -r $PFX/cdrom/dyne/dyne.sys ]; then
+      rm $PFX/cdrom/dyne/dyne.sys
+    fi
+    $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys
     chmod a+r $PFX/cdrom/dyne/dyne.sys
     chmod -x  $PFX/cdrom/dyne/dyne.sys
     act "end: `date`"
@@ -478,21 +462,41 @@ mkiso() {
     fi
 
     act "checking if the CDROM is complete"
+    # the RAMDISK
     if ! [ -r $PFX/cdrom/dyne/initrd.gz ]; then
       act "ramdisk is missing, using the current one"
       cp -v ${DYNE_SYS_MNT}/dyne/initrd.gz ${PFX}/cdrom/dyne/
     fi
+    # the HOME
     if ! [ -r $PFX/cdrom/dyne/home.tgz ]; then
       act "home is missing, using the current one"
       cp -v ${DYNE_SYS_MNT}/dyne/home.tgz ${PFX}/cdrom/dyne/
     fi
+    # the VAR
     if ! [ -r $PFX/cdrom/dyne/var.tgz ]; then
       act "var is missing, using the current one"
       cp -v ${DYNE_SYS_MNT}/dyne/var.tgz ${PFX}/cdrom/dyne/
     fi
+    # the USR SQUASHED SYSTEM
     if ! [ -r $PFX/cdrom/dyne/dyne.sys ]; then
       act "dyne.sys usr system is missing, using the current one"
       cp -v ${DYNE_SYS_MNT}/dyne/dyne.sys ${PFX}/cdrom/dyne/
+    fi
+    # the KERNEL
+    if ! [ -r $PFX/cdrom/dyne/linux ]; then
+      act "linux kernel is missing"
+      SDK_KERNEL=`find ${PFX}/kernel -name "linux-${KRN}"`
+      if [ -r $SDK_KERNEL/arch/`uname -i`/boot/bzImage ]; then
+        act "using the kernel in SDK: $SDK_KERNEL"
+        cp -v $SDK_KERNEL/arch/`uname -i`/boot/bzImage cdrom/dyne/linux
+      elif [ -r ${DYNE_SYS_MNT}/dyne/linux ]; then
+        act "using the kernel found in current dock"
+        cp -v ${DYNE_SYS_MNT}/dyne/linux cdrom/dyne/linux
+      else
+        error "you're missing the kernel, provide one from a dyne CD"
+        error "or compile one yourself, if you dare ;>"
+        exit 0
+      fi
     fi
 
     # purge subversion files in the cdrom
