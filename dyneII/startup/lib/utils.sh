@@ -238,7 +238,9 @@ append_line() { # args:   file    new-line
     if ! [ -r $1 ]; then
 	touch $1
     else
-	if [ `grep '$2' '$1'` ]; then
+	grep "$2" "$1" > /dev/null
+	if [ $? = 0 ]; then
+	    # line is already present
 	    return;
 	fi
     fi

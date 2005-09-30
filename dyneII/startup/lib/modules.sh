@@ -39,19 +39,20 @@ mount_sdk_modules() {
   # use uncompressed modules in SDK
   for mod in `ls --color=none ${DYNE_SYS_MNT}/dyne/SDK/modules`; do
 
-    mounted="`mount |grep ${mod} | uniq | awk '{ print $1 }'`"
-    
-    if [ -x $mounted ]; then
-      act "module ${mod} is already mounted in /opt"
-      act "close all it's applications in use and do:"
-      act "umount /opt/${mod}"
-      continue
-    fi
-	    
+  #  mounted="`mount |grep ${mod} | uniq | awk '{ print $1 }'`"
+
     if ! [ -r ${DYNE_SYS_MNT}/dyne/SDK/modules/${mod}/VERSION ]; then
       error "SDK/module/${mod} is missing VERSION information, skipping.."
       continue
     fi 
+    
+    if [ -r /opt/${mod}/VERSION ]; then
+      act "module ${mod} is already mounted in /opt"
+#      act "close all it's applications in use and do:"
+#      act "umount /opt/${mod}"
+      continue
+    fi
+	    
 
     # uncompressed module
     mkdir -p /opt/${mod}
