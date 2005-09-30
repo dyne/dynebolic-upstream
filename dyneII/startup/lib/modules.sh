@@ -35,6 +35,7 @@ mount_sdk_modules() {
     return
   fi
 
+
   # use uncompressed modules in SDK
   for mod in `ls --color=none ${DYNE_SYS_MNT}/dyne/SDK/modules`; do
 
