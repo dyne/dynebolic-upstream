@@ -74,8 +74,6 @@ while true; do
             
 	    notice "CORE DEVELOPMENT COMMANDS:"
 	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
-	    act "mkhome     packs the home into the SDK/cdrom"
-	    act "mkvar      packs the var into the SDK/cdrom"
 	    act "mkusr      packs the dyne.sys in the SDK/cdrom"
 
 	    echo; exit 2 ;;
@@ -125,7 +123,7 @@ if ! [ -x $DYNE_SYS_MNT/dyne ]; then
     exit 0
 fi
 
-if ! [ $CMD = mksdk ]; then
+if [ "$CMD" != "mksdk" ]; then
   if ! [ -x $PFX/cdrom ]; then
     error "no dyne/SDK/cdrom directory found in ${PFX}/cdrom"
     error "you need to run 'dynesdk mksdk' first or fetch a cdrom skeleton"
@@ -233,7 +231,12 @@ squash() {
 
 	mkdir -p ${PFX}/cdrom/dyne/modules
 
-	$MKSQUASHFS ${PFX}/modules/${mod} ${PFX}/cdrom/dyne/modules/${mod}.dyne
+	if [ -r ${PFX}/cdrom/dyne/modules/${mod}.dyne ]; then
+	  rm ${PFX}/cdrom/dyne/modules/${mod}.dyne
+	fi
+
+	$MKSQUASHFS ${PFX}/modules/${mod} \
+                    ${PFX}/cdrom/dyne/modules/${mod}.dyne
 	
 	act "done with ${mod}"
 	echo
@@ -265,9 +268,11 @@ mkinitrd() {
     cp -ra /lib .
     cp -ra /bin .
     cp -ra /sbin .
-    mkdir boot dev proc rem root sys usr var vol mnt home
+    mkdir -p boot dev proc rem root sys usr vol mnt home
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
+    mknod dev/console c 5 1
+    mkdir dev/pts
     echo "# Ramdisk version $DYNE_INITRD_VER" > boot/dynenv
 
     act "cleaning up configs and logs"
@@ -275,8 +280,33 @@ mkinitrd() {
     rm -f etc/HOSTNAME etc/NETWORK
     rm -f etc/auto.removable
     rm -f etc/blkid.tab*
+    rm -f etc/zsh/modules
+    rm -f etc/fstab
+    cat << EOF > etc/fstab
+# /etc/fstab: static file system information, see man fstab
+#
+# <file system>	<mount point>   <type>  <options>       <dump>  <pass>
+/dev/ramdisk	/		ext2	defaults	1	1
+devpts		/dev/pts	devpts	defaults	0	0
+proc            /proc           proc    defaults	0	0
+sysfs		/sys		sysfs	defaults	0	0
 
-   
+EOF
+
+    act "packaging /var"
+    cp -ra /var .
+    mkdir -p var/log/hotplug var/log/login var/log/setup
+    mkdir -p var/cache/samba var/cache/union
+    mkdir -p var/local var/cache var/lock var/tmp
+    mkdir -p var/run var/log var/lib/rpm
+    rm -rf var/local/*
+    rm -rf var/cache/*
+    rm -rf var/lock/*
+    rm -rf var/tmp/*
+    rm -rf var/run/*
+    rm -rf var/log/*
+    rm -rf var/lib/rpm/*
+  
     if [ -x $PFX/startup/.svn ]; then
 	act "setup startup files from subversion repository"
 	cp -vf $PFX/startup/rc_*     etc/
@@ -320,9 +350,11 @@ mkinitrd() {
           error "module ${m} not found in ${MODDIR}/${KRN}/"
         fi
     done
-    # also the samba module
+    # also the samba and usb-storage modules
     cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
     bzip2 -9 boot/modules/${KRN}/smbfs.ko
+    cp -v `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
+    bzip2 -9 boot/modules/${KRN}/usb-storage.ko
     
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
@@ -366,42 +398,6 @@ mkinitrd() {
     act "`stat cdrom/dyne/initrd.gz`"
     cd - > /dev/null
     sync
-}
-
-mkhome() {
-    notice "packaging /home";
-    cd $PFX
-    if [ -x home ]; then rm -rf home; fi
-    cp -ra /home/luther home
-    rm -rf home/.mozilla
-    rm -f  home/.ssh/known_*
-    # touch to avoid errors on zsh host completion
-    touch  home/.ssh/known_hosts
-    touch  home/.ssh/known_hosts2
-    tar cfz cdrom/dyne/home.tgz home
-    rm -rf home
-    act "`stat $PFX/cdrom/dyne/home.tgz`"
-    cd - > /dev/null ; sync
-}
-
-mkvar() {
-    notice "packaging /var";
-    if [ -x var ]; then rm -rf var; fi
-    cd $PFX
-    mkdir var
-    cp -ra /var/* var/
-    rm -rf var/local/*
-    rm -rf var/cache/*
-    rm -rf var/lock/*
-    rm -rf var/tmp/*
-    rm -rf var/run/*
-    rm -rf var/log/*
-    mkdir -p var/log/hotplug var/log/login var/log/setup
-    mkdir -p var/cache/samba var/cache/union
-    tar cfz cdrom/dyne/var.tgz var
-    act "`stat cdrom/dyne/var.tgz`"
-    rm -rf var
-    cd - > /dev/null; sync
 }
 
 mkusr() {
@@ -467,16 +463,6 @@ mkiso() {
       act "ramdisk is missing, using the current one"
       cp -v ${DYNE_SYS_MNT}/dyne/initrd.gz ${PFX}/cdrom/dyne/
     fi
-    # the HOME
-    if ! [ -r $PFX/cdrom/dyne/home.tgz ]; then
-      act "home is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/dyne/home.tgz ${PFX}/cdrom/dyne/
-    fi
-    # the VAR
-    if ! [ -r $PFX/cdrom/dyne/var.tgz ]; then
-      act "var is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/dyne/var.tgz ${PFX}/cdrom/dyne/
-    fi
     # the USR SQUASHED SYSTEM
     if ! [ -r $PFX/cdrom/dyne/dyne.sys ]; then
       act "dyne.sys usr system is missing, using the current one"
@@ -524,8 +510,6 @@ case "$CMD" in
     mkiso)    mkiso    ;;
 
     mkinitrd) mkinitrd ;;
-    mkhome)   mkhome   ;;
-    mkvar)    mkvar    ;;
     mkusr)    mkusr    ;;
     
     *) error "command \"$CMD\" not recognized"
