@@ -3,11 +3,13 @@
 # GNU GPL License
 
 
-# generate volumes entries in the upper right dock of wmaker
+# generate volumes entries in the upper right dock
 
 # a volume entry is one line:
 # hdisk|floppy|cd|usb  /dev/ice  /vol/mountpoint  filesystem  [sys|rem]
 
+
+# ROX filer
 rox_gen_volumes() {
     if [ -r /boot/pan_Default ]; then rm /boot/pan_Default; fi
 
@@ -28,12 +30,11 @@ $1 == "dvd"    {   print "  <icon label=\"DVD " NR "\">" $3 "</icon>"    }
     echo "<end/>" >> /boot/pan_Default
     echo "</panel>" >> /boot/pan_Default
 
-    if [ -r /var/local/pan_Default ]; then
-      rm -f /var/local/pan_Default
-    fi
-    cp /boot/pan_Default /var/local/pan_Default
+    cp /boot/pan_Default \
+       /etc/xdg/rox.sourceforge.net/ROX-Filer/pan_Default
 }
 
+# Window Maker
 wmaker_gen_volumes() {
 
     if [ -r /boot/WMState ]; then rm /boot/WMState; fi
@@ -91,14 +92,10 @@ print "BuggyApplication = no;"
 print "}"
 }
 ' > /boot/WMState
-
     
-    if [ -r /var/local/WMState ]; then
-	rm -f /var/local/WMState
-    fi
-    cp /usr/share/dyne/WMState.head /var/local/WMState
-    cat /boot/WMState >> /var/local/WMState
-    cat /usr/share/dyne/WMState.foot >> /var/local/WMState
-}
+    cp /usr/share/dyne/WMState.head /etc/skel/GNUstep/Defaults/WMState
+    cat /boot/WMState >> /etc/skel/GNUstep/Defaults/WMState
+    cat /usr/share/dyne/WMState.foot >> /etc/skel/GNUstep/Defaults/WMState
 
+}
 

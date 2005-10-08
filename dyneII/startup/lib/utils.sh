@@ -28,12 +28,12 @@ DYNE_SHELL_UTILS=included
 
 # initialize logfile
 LOG="/boot/startup.log"
-if [ ! -r ${LOG} ]; then touch ${LOG}; fi
+if ! [ -r ${LOG} ]; then touch ${LOG}; fi
 
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
-SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,xfs,reiserfs,usb-storage"
+SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,xfs,reiserfs"
 
 # load dyne environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
@@ -172,7 +172,6 @@ loadmod() {
             insmod ${mod_name} ${MODARGS}
 	    if [ $? = 0 ]; then
 		act "loaded kernel module $TRYMOD $MODARGS"
-		return 
 	    fi
 
             # remove the uncompressed module in /tmp
@@ -180,6 +179,7 @@ loadmod() {
             rm -f ${mod_name}
 
             cd -
+	    return 
 
           else # it's not a compressed module
 
@@ -232,28 +232,64 @@ iterate_backwards() {
 }
 # I LOVE AWK \o/
 
+
+# checks if a file is writable
+# differs from -w coz returns true if does not exist but can be created
+is_writable() { # arg: filename
+
+  file=$1
+  writable=false
+
+  if [ -r $file ]; then # file exists
+
+    if [ -w $file ]; then writable=true; fi
+
+  else # file does not exist
+
+    touch $file 2>/dev/null
+    if [ $? = 0 ]; then
+      writable=true
+      rm $file
+    fi 
+
+  fi
+
+  if [ x$writable = xtrue ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+
+
 # appends a new line to a text file, if not duplicate
+# it sorts alphabetically the original order of line entries
 append_line() { # args:   file    new-line
 
-    if ! [ -r $1 ]; then
-	touch $1
-    else
-	grep "$2" "$1" > /dev/null
-	if [ $? = 0 ]; then
-	    # line is already present
-	    return;
-	fi
-    fi
-
-    if ! [ -w $1 ]; then
+    # first check if the file is writable
+    if [ `is_writable $1` = false ]; then
       error "file $1 is not writable"
-      error "can't add line: $2"
+      error "can't insert line: $2"
       return
     fi
 
-    # finally add it at the end
-    echo "$2" >> $1
+    tempfile="`basename $1`.append.tmp"
 
+    # create a temporary file and add the line there
+    cp $1 /tmp/$tempfile
+    echo "$2" >> /tmp/$tempfile
+
+    # delete the original
+    rm -f $1
+
+    # sort and uniq the temp file back to the original
+    cat /tmp/$tempfile | sort | uniq > $1
+
+    # remove the temporary file
+    rm -f /tmp/$tempfile
+     
+    # and we are done
 }
 
 # $1 = timeout

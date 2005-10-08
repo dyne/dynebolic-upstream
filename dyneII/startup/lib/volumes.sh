@@ -31,7 +31,8 @@ add_volume() {
               if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
 	  fi
 	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
-	  # TODO: entry in fstab?
+	  # entry in fstab
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults\t0\t0"
 	  ;;
 
 
@@ -305,7 +306,7 @@ scan_usbstorage() {
 	USB_MNT=0
 	for DEV in /dev/sd?1 ; do
 	    
-	    if [ ! -x /rem/${USB_MNT} ]; then mkdir /rem/${USB_MNT}; fi
+	    if ! [ -x /rem/${USB_MNT} ]; then mkdir /rem/${USB_MNT}; fi
 	    
         # make first a 'usb' so taschino can find a usb key
 	    USB_NUM=`expr $USB_NUM + 1`

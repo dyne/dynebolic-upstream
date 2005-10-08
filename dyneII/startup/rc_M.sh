@@ -195,14 +195,6 @@ fi
 # configure network
 /etc/init.d/rc.net
 
-# link the extras in the home
-if [ ! -r /extras ]; then
-  if [ -r ${DYNE_SYS_MNT}/dyne/extras ]; then
-    act "linking extras in home"
-    ln -s ${DYNE_SYS_MNT}/dyne/extras /extras
-  fi
-fi
-
 if [ ${UNION_USR_RW} ]; then
   notice "making /usr writable with unionfs"
   # create directory where to store unionfs changes
@@ -221,6 +213,13 @@ notice "activating additional dyne modules"
 
 mount_compressed_modules
 # see /lib/dyne/modules.sh
+
+notice "starting device filesystem daemon"
+/sbin/udevd &
+
+notice "starting system logging daemon"
+/usr/sbin/syslogd
+
 
 
 # execute rc.local if present

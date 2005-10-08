@@ -2,8 +2,6 @@
 # (C) 2005 Denis "jaromil" Rojo
 # GNU GPL License
 
-ID="$Id: $"
-   
 # Two types of modules are supported:
 # 1) compressed (squashfs) filesystems with .dyne extension in dyne/modules
 # 2) directories containing a VERSION file (not compressed) in dyne/SDK/modules
@@ -25,6 +23,12 @@ add_module_path() {
      append_line /etc/zsh/modules "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/${mod}/lib"
      append_line /etc/zsh/modules \
        "export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH:/opt/${mod}/lib/pkgconfig"
+    fi
+
+    # manual files
+    if [ -x /opt/${mod}/share/man ]; then
+      append_line /etc/zsh/modules \
+        "export MANPATH=\$MANPATH:/opt/${mod}/share/man"
     fi
 }
 
@@ -52,7 +56,6 @@ mount_sdk_modules() {
 #      act "umount /opt/${mod}"
       continue
     fi
-	    
 
     # uncompressed module
     mkdir -p /opt/${mod}
@@ -62,7 +65,6 @@ mount_sdk_modules() {
     add_module_path ${mod}
 
     act "sdk module ${mod} mounted in /opt"
-		
 
   done
 

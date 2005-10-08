@@ -44,12 +44,13 @@ echo " .  unload all kernel modules"
 rmmod -a
 
 echo " .  umount all volumes"
+umount /usr
 umount -a
 
 echo " .  sync harddrives" # this never hurts
 sync
 
-if [ $DYNE_SYS_MEDIA = "cdrom" ]; then
+if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
     echo "[*] ejecting dyne:bolic cd"
     eject "$DYNE_SYS_DEV"
 fi

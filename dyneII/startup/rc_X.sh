@@ -58,14 +58,19 @@ fi
 ## full dyne mode
 touch /tmp/dyne
 
-# generate windowmaker volumes entries
+# generate window manager volumes entries
 source /lib/dyne/wmaker.sh
 wmaker_gen_volumes
+rox_gen_volumes
 
-# generate .Xauthority files
+# xauthority file for root
 mkxauth -q -u root -c
+
 for user in `/usr/bin/ls /home`; do
-	mkxauth -q -u ${user} -c
+
+  # generate .Xauthority files
+  mkxauth -q -u ${user} -c
+
 done
 
 
@@ -83,7 +88,7 @@ echo
 EOF
 
 # start X
-su - luther -c startx
+su - luther -c startx &
 
 exit 0
 
