@@ -244,13 +244,13 @@ scan_harddisk() {
     done
 
 #    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
-    if ! [ -x /dev/scsi ]; then
+    if ! [ -e /dev/sda ]; then
 
       act "no SCSI devices detected"
 
     else
 
-      for DEV in `find /dev/scsi -name 'disc'`; do
+      for DEV in `ls /dev/sd?`; do
 	# TODO: be sure to detect it's an harddisk
 	PARTITIONS=`fdisk -l ${DEV} | \
                     grep -Evi 'swap|extended' | grep '^/dev'`

@@ -72,7 +72,7 @@ fi
 
 
 # if the system has been allready mounted you can go on
-if [ $DYNE_SYS_MEDIA = pre_mounted ]; then
+if [ "$DYNE_SYS_MEDIA" = "pre_mounted" ]; then
     notice "dyne system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
 else
 
@@ -98,10 +98,10 @@ else
 	echo
 	error "A problem occurred while mounting the dyne.sys"
 	error "corrupted dyne.sys on ${DYNE_SYS_DEV}"
-	if [ $DYNE_SYS_MEDIA = cdrom ]; then
+	if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
 	    error "it looks like your CDROM is corrupted!"
 	fi
-	if [ $DYNE_SYS_MEDIA = dvd ]; then
+	if [ "$DYNE_SYS_MEDIA" = "dvd" ]; then
 	    error "it looks like your DVD is corrupted!"
 	fi
 	error "burn your dyne:bolic more carefully"
