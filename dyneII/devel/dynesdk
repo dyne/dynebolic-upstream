@@ -219,6 +219,41 @@ squash() {
 	exit -1
     fi
 
+    if [ $1 ]; then
+        MOD=$1
+
+        if ! [ -r ${PFX}/modules/${MOD} ]; then
+            error "module ${MOD} doesn't exists in SDK"
+            exit -1
+        fi
+
+        if ! [ -r ${PFX}/modules/${MOD}/VERSION ]; then
+	    error "module ${MOD} misses VERSION information: skipped"
+            exit -1
+        fi
+	
+	act "compressing ${PFX}/cdrom/dyne/modules/${MOD}"
+	act "please wait, this may take a while..."
+
+	mkdir -p ${PFX}/cdrom/dyne/modules
+
+	if [ -r ${PFX}/cdrom/dyne/modules/${MOD}.dyne ]; then
+	  rm ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+	fi
+
+	$MKSQUASHFS ${PFX}/modules/${MOD} \
+                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+	chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+        chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+
+	act "done with ${MOD}"
+        act "copy the module into your current dock to activate it:"
+        act "cp ${PFX}/cdrom/dyne/modules/${MOD}.dyne $DYNE_SYS_MNT/dyne/modules"
+
+        return
+    fi
+
+
     for mod in `ls --color=none ${PFX}/modules`; do
 
 	if ! [ -r ${PFX}/modules/${mod}/VERSION ]; then
@@ -237,7 +272,10 @@ squash() {
 
 	$MKSQUASHFS ${PFX}/modules/${mod} \
                     ${PFX}/cdrom/dyne/modules/${mod}.dyne
-	
+	chmod a+r   ${PFX}/cdrom/dyne/modules/${mod}.dyne
+        chmod -x    ${PFX}/cdrom/dyne/modules/${mod}.dyne
+
+
 	act "done with ${mod}"
 	echo
 
@@ -504,10 +542,10 @@ mkiso() {
 
 case "$CMD" in
     # execute commands
-    mksdk)    mksdk    ;;
-    mount)    mountmods;;
-    squash)   squash   ;;
-    mkiso)    mkiso    ;;
+    mksdk)    mksdk      ;;
+    mount)    mountmods  ;;
+    squash)   squash $@  ;;
+    mkiso)    mkiso      ;;
 
     mkinitrd) mkinitrd ;;
     mkusr)    mkusr    ;;
