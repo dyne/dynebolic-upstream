@@ -24,6 +24,9 @@ FILE_ID="\$Id: rc.X,v 1.3 2004/06/19 18:16:04 jaromil Exp $"
 if [ -r /tmp/volatile ]; then exit 0; fi
 
 source /lib/dyne/utils.sh
+source /lib/dyne/wmaker.sh
+
+sync
 
 # now the system is mounted expand our PATH
 export PATH=$PATH:/usr/bin:/usr/sbin:/usr/X11R6/bin
@@ -58,9 +61,11 @@ fi
 ## full dyne mode
 touch /tmp/dyne
 
+# generate window manager menu entries
+fluxbox-generate_menu &
+
 # generate window manager volumes entries
-source /lib/dyne/wmaker.sh
-wmaker_gen_volumes
+#wmaker_gen_volumes
 rox_gen_volumes
 
 # xauthority file for root

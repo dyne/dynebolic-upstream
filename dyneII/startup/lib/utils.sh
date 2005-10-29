@@ -233,6 +233,47 @@ iterate_backwards() {
 # I LOVE AWK \o/
 
 
+# simple alphabet shell function by Jaromil
+ALPHABET="abcdefghijklmnopqrstuvwxyz"
+# takes an alphabet letter as argument
+# can return the next or previous letter
+# or simply the index position in the alphabet
+# or if the argument is a number
+#    returns the letter in the specified position of the alphabet
+alphabet() { # args: letter (next|prev)
+
+    IDX=`expr index $ALPHABET $1`
+
+    if [ $IDX = 0 ]; then # number argument
+
+	if [ "$2" = "next" ]; then
+	    num="`expr $1 + 1`"
+	elif [ "$2" = "prev" ]; then
+	    num="`expr $1 - 1`"
+	else
+	    num=$1
+	fi
+	RES="`expr substr ${ALPHABET} $num 1`"
+
+    elif   [ "$2" = "next" ]; then
+
+	NUM="`expr ${IDX} + 1`"	
+	RES="`expr substr ${ALPHABET} ${NUM} 1`"
+
+    elif [ "$2" = "prev" ]; then
+
+	NUM="`expr ${IDX} - 1`"
+	RES="`expr substr ${ALPHABET} ${NUM} 1`"
+
+    else
+ 	RES=${IDX}
+    fi
+
+    echo ${RES}
+}
+
+
+
 # checks if a file is writable
 # differs from -w coz returns true if does not exist but can be created
 is_writable() { # arg: filename

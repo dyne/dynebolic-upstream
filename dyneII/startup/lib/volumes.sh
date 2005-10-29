@@ -19,47 +19,59 @@ add_volume() {
 
   FLAGS=""
   DOCK=dyne
-    
+
+  PFX=/mnt
+  mkdir -p ${PFX}/${MNT}
+
   case ${MEDIA} in
 
       "hdisk")
-	  PFX=/vol
+	  PASS=2
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
 	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
 	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
 	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
               if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
 	  fi
-	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
-	  # entry in fstab
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults\t0\t0"
+          if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
+	  append_line /etc/fstab \
+	  "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t${PASS}"
 	  ;;
 
 
 # floppy, usb and cdrom are mounted in /rem
       
       "floppy")
-	  PFX=/rem
-	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}" >> /boot/volumes
-	  echo "floppy -fstype=auto,sync :/dev/fd0" >> /boot/auto.removable
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}"
+	  append_line /boot/auto.removable "floppy -fstype=auto,sync :/dev/fd0"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t0"
 	  ;;
-      
+     
+ 
       "usb")
-	  PFX=/rem
+	  PASS=2
 	  if [ -x ${PFX}/${MNT}/dyne ]; then
 	      if [ -r ${PFX}/${MNT}/dyne/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
 	      if [ -r ${PFX}/${MNT}/dyne/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi	      
+	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
 	  fi
-	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
-	  echo "${MNT} -fstype=${FS},sync :/dev/${DEV}"  >> /boot/auto.removable
+          if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
+	  append_line /boot/auto.removable "${MNT} -fstype=${FS},sync :/dev/${DEV}"
+	  append_line /etc/fstab \
+          "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t${PASS}"
 	  ;;
+
       
       "cdrom"|"dvd")
-	  echo "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}" >> /boot/volumes
-	  echo "${MNT} -fstype=${FS},ro :/dev/${DEV}" >> /boot/auto.removable
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
+	  append_line /boot/auto.removable "${MNT} -fstype=${FS},ro :/dev/${DEV}"
+	  append_line /etc/fstab \
+          "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group,ro\t0\t0"
 	  ;;
       
+
       *)
 	  error "unknown media type ${MEDIA} for add_volume"
 	  return 1
@@ -111,9 +123,6 @@ scan_cdrom() {
 	
 	mkdir -p /mnt/dynecd
 
-#	if [ ! -x /rem/${MNT} ]; then mkdir /rem/${MNT}; fi	
-#	mount -t ${CDFS} -o ro /dev/${DEV} /rem/${MNT} 1>/dev/null 2>/dev/null
-
 	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynecd 1>/dev/null 2>/dev/null
 
 	if [ $? != 0 ]; then # device was not mounted
@@ -148,14 +157,16 @@ scan_cdrom() {
 
 ###### HARDDISK
 
-scan_partitions() {
-# scans a list of fdisk format partitions
-PARTITIONS=${1}
-
+scan_partitions() { #arg : devicename
+    # scans a list of fdisk format partitions
+    PART_NUM=0
+    DEV=`basename $1`
+    PARTITIONS=`fdisk -l /dev/${DEV} | grep -Evi 'swap|extended' | grep '^/dev'`
+    
         # cycle thru partitions
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn
-	for PART in ${(f)PARTITIONS}; do
-
+    for PART in ${(f)PARTITIONS}; do
+	
 	# setup special flags needed for most common BSD fs
 	if [ "`echo $PARTITIONS|grep -iE 'BSD|ufs'`" ]; then
 	    MOUNT_FS="-t ufs"
@@ -164,50 +175,49 @@ PARTITIONS=${1}
 	    MOUNT_FS=""
 	    MOUNT_OPTS=""
 	fi
-
-
-	    PART_FS="`echo $PART|awk '{print $6}'`"
-            PART_DEV="`echo $PART|cut -d' ' -f1`"
-	    
-	    HD_NUM=`expr $HD_NUM + 1`
-	    MNT="/vol/hd${HD_NUM}"
-	    
-	    if [ ! -x ${MNT} ]; then mkdir -p ${MNT}; fi
-	            
-            # skip it if already mounted as root (partition install)
-            if [ "$ROOT_PART" = "$PART_DEV" ]; then
-
-               act "$PART_FS partition $PART_DEV already mounted as root"
-               continue
-
-            fi 
-	    
-	    act "scanning ${PART_FS} partition ${PART_DEV}"
-    
-	    mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
-
-	    if [ $? != 0 ]; then
-	      error "can't mount ${PART_DEV} : not a valid filesystem"
-	      HD_NUM=`expr $HD_NUM - 1`
-	      continue
-	    fi
-
-	    PART_DEV=`basename $PART_DEV`
-	    
-	    add_volume hdisk ${PART_DEV} hd${HD_NUM} ${PART_FS}
-	    
-            # have you got a home there?
-	    # deprecated: got_home ${MNT}
-
-	done
 	
+	
+	PART_FS="`echo $PART|awk '{print $6}'`"
+        PART_DEV="`echo $PART|cut -d' ' -f1`"
+	
+	PART_NUM=`expr $PART_NUM + 1`
+	
+	
+        # skip it if already mounted as root (partition install)
+        if [ "$ROOT_PART" = "$PART_DEV" ]; then
+	    
+	    act "$PART_FS partition $PART_DEV already mounted as root"
+	    continue
+	    
+        fi 
 
+	MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
+	mkdir -p ${MNT}
 
+	# TODO: should mount the partition only if not already mounted
+	if [ -z "`mount | grep '${PART_DEV}'`" ]; then
+          act "mounting ${PART_FS} partition ${PART_DEV}"
+	    
+          mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
+	    
+          if [ $? != 0 ]; then
+	    error "can't mount ${PART_DEV} : not a valid filesystem"
+	    PART_NUM=`expr $PART_NUM - 1`
+	    continue
+	  fi
+
+	  PART_DEV=`basename $PART_DEV`
+	
+	  add_volume hdisk ${PART_DEV} hd${HD_NUM}/${PART_NUM} ${PART_FS}
+	fi
+
+    done
+    
 }
 
-
 HD_NUM=0
-scan_harddisk() {
+SCSIDX=0
+scan_storage() {
 # $1 = device, without partition number (es: hda)
 #  DEV=$1
 
@@ -222,11 +232,17 @@ scan_harddisk() {
 	loadmod ${m}
     done
 
-    # scan IDE harddisks
+
+
+    #######################
+    #### scan IDE harddisks
+    #######################
     for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
 	
         # skip if not an harddisk
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
+
+	HD_NUM=`expr $HD_NUM + 1`
 
 	MOUNT_OPTS=""
 	MOUNT_FS=""
@@ -237,27 +253,33 @@ scan_harddisk() {
 	fi
 
 	# IDE partitions
-	PARTITIONS=`fdisk -l /dev/${DEV} |  \
-                    grep -Evi 'swap|extended' | grep '^/dev'`
-	scan_partitions ${PARTITIONS}
+	scan_partitions ${DEV}
 
     done
 
-#    for DEV in `dmesg | grep 'Attached scsi disk' | cut -d' ' -f4`; do
+
+
+    ########################
+    #### scan SCSI harddisks
+    ########################
     if ! [ -e /dev/sda ]; then
-
-      act "no SCSI devices detected"
-
+	
+	act "no SCSI devices detected"
+	
     else
+	
+	# excude already scanned scsi devices
 
-      for DEV in `ls /dev/sd?`; do
-	# TODO: be sure to detect it's an harddisk
-	PARTITIONS=`fdisk -l ${DEV} | \
-                    grep -Evi 'swap|extended' | grep '^/dev'`
-	scan_partitions ${PARTITIONS}
-      done
-
+	for DEV in `ls /dev/sd?`; do
+	    # TODO: be sure to detect it's an harddisk
+	    HD_NUM=`expr $HD_NUM + 1`
+	    SCSIDX=`expr $SCSIDX + 1`
+	    scan_partitions ${DEV}
+	done
+	
     fi
+    
+
 
     # now remove all unused filesystem kernel modules
     act "cleanup unused filesystem modules"
@@ -267,58 +289,6 @@ scan_harddisk() {
 		rmmod ${fs}
 	fi
     done
-
-}
-
-
-scan_usbstorage() {
-
-    # if no usb controller is present then just skip
-    if [ -z "`cat /proc/pci | grep USB`" ]; then return; fi
-
-# usb controllers are now built into the kernel
-# in order to support usb keyboards attached from the very beginning
-#    loadmod usb-ohci
-#    loadmod usb-uhci
-# load usb 2.0 support (removed, now loaded by pcimodules)
-#    loadmod ehci-hcd
-
-
-  # load usb storage driver
-    loadmod usb-storage
-
-  # mount the usb device filesystem
-    mount -t usbfs none /proc/bus/usb
-    
-    sync
-
-    if [ -z "`cat /proc/bus/usb/devices | grep usb-storage`" ]; then
-	# finish here if there is no usb storage device connected
-	add_volume usb sda1 usb vfat
-	return
-
-    else
-
-        # load filesystems
-	loadmod fat
-	loadmod vfat
-    
-	USB_MNT=0
-	for DEV in /dev/sd?1 ; do
-	    
-	    if ! [ -x /rem/${USB_MNT} ]; then mkdir /rem/${USB_MNT}; fi
-	    
-        # make first a 'usb' so taschino can find a usb key
-	    USB_NUM=`expr $USB_NUM + 1`
-	    if [ $USB_NUM = 1 ]; then USB_MNT="usb"
-	    else USB_MNT="usb${USB_NUM}"; fi
-	    
-	    mount ${DEV} /rem/${USB_MNT} -t vfat
-	    
-	    add_volume usb `basename ${DEV}` ${USB_MNT} vfat
-	    
-	done
-    fi
 }
 
 

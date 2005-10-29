@@ -67,6 +67,8 @@ if [ $VOLATILE ]; then
 EOF
     
     exit 0
+else
+    rm /tmp/volatile
 fi
 
 
@@ -152,12 +154,13 @@ notice "activate runtime configurations"
 act "network loopback device"
 ifconfig lo 127.0.0.1
 
-echo -n "[*] "; /etc/init.d/rc.autofs start
+# deactivated automount
+# echo -n "[*] "; /etc/init.d/rc.autofs start
 
 # detect and mount swap partitions
 for gh in `fdisk -l | grep -iE "linux.*swap*" | awk '{print $1}'`; do
     act "activating swap partition $gh"
-    echo "$gh swap swap sw 0 0" >> /etc/fstab
+    append_line /etc/fstab "$gh\tswap\tswap\tsw\t0\t0"
     swapon $gh
 done
 
@@ -214,11 +217,20 @@ notice "activating additional dyne modules"
 mount_compressed_modules
 # see /lib/dyne/modules.sh
 
-notice "starting device filesystem daemon"
+
+
+##########################################
+## starting daemons here
+
+notice "launching device filesystem daemon"
 /sbin/udevd &
 
-notice "starting system logging daemon"
+notice "launching system logging daemon"
 /usr/sbin/syslogd
+
+notice "launching common unix printer daemon"
+/usr/sbin/cupsd
+
 
 
 

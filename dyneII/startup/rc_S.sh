@@ -87,39 +87,52 @@ rm -f /boot/volatile
 rm -f /etc/mtab
 if [ -x /var/run ]; then
   rm -rf /var/run/*
+  touch /var/run/utmp
 fi
 # create a /tmp directory in ramdisk
-mkdir     /tmp
+mkdir -p /tmp
 ####
 
 
 notice "dyne:bolic hardware device detection"
 mount /proc
+act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
+act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
+
 mount /dev/pts
 mount /sys
 
-act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
-act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
+# check if an usb controller is present
+if [ "`cat /proc/pci | grep USB`" ]; then
+
+   notice "USB controller detected"
+
+   # mount the usb device filesystem
+   mount /proc/bus/usb
+ 
+   # start loading the usb storage
+   loadmod usb-storage
+   
+   sync
+
+   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
+     act "waiting for the kernel to scan usb devices"
+     while [ -z "`dmesg | grep '^usb-storage: device scan complete'`" ]; do
+       sleep 1 # wait that the kernel scans before we scan
+     done
+   fi
+
+fi
 
 notice "initializing device filesystem"
 /sbin/udevstart
 
-sync
-
-notice "scan for harddisk volumes"
-
-scan_harddisk
-
-##
-
-notice "scan for usb storage volumes"
-
-scan_usbstorage
+notice "scan for storage volumes"
+scan_storage
 
 ##
 
 notice "scan for cdrom devices"
-
 scan_cdrom
 
 ##

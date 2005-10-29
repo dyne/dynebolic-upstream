@@ -5,7 +5,7 @@ source /lib/dyne/utils.sh
 
 
 # check if alsa drivers are loaded
-ISALSA=`lsmod | grep -i snd-`
+ISALSA=`lsmod | grep '^snd'`
 
 if [ ! -z "$ISALSA" ]; then
   notice "Advanced Linux Sound Architecture is active"
@@ -19,8 +19,8 @@ if [ ! -z "$ISALSA" ]; then
   loadmod snd-seq-oss
 fi
 
-act "initializing sound levels"
-if [ -e /dev/mixer ]; then
-    aumix -v 80 -w 80 -i 80
-fi
+#act "initializing sound levels"
+#if [ -e /dev/mixer ]; then
+#    aumix -v 80 -w 80 -i 80
+#fi
 
