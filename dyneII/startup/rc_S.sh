@@ -290,9 +290,6 @@ echo >> /boot/dynenv
 echo "export DYNE_SYS_DEV=${DYNE_SYS_DEV}"     >> /boot/dynenv
 echo "export DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}" >> /boot/dynenv
 echo "export DYNE_SYS_MNT=${DYNE_SYS_MNT}"     >> /boot/dynenv
-echo "export DYNE_NEST_VER=${DYNE_NEST_VER}"   >> /boot/dynenv
-echo "export DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
-
 
 
 
