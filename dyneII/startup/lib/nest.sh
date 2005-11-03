@@ -135,9 +135,6 @@ floating_nest() {
   mkdir /dev/shm/tmp
   mount -o bind /dev/shm/tmp /tmp
 		
-  export DYNE_NEST_VER="`cat /etc/DYNEBOLIC`"
-  export DYNE_NEST_PATH=${MNT}
-
 }
 
 
@@ -201,6 +198,9 @@ bind_nest() { # arg:   path_to_mounted_nest
 
   DYNE_NEST_PATH=${NST}
   DYNE_NEST_VER="`cat /etc/DYNEBOLIC`"
+  echo "export DYNE_NEST_VER=${DYNE_NEST_VER}"   >> /boot/dynenv
+  echo "export DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
+
 }
 
 

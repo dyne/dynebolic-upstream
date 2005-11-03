@@ -5,6 +5,9 @@
 # Two types of modules are supported:
 # 1) compressed (squashfs) filesystems with .dyne extension in dyne/modules
 # 2) directories containing a VERSION file (not compressed) in dyne/SDK/modules
+
+# security is a hot issue on modules: malicious modules could damage the system
+# possible flaws are highlighted in this file
  
 source /lib/dyne/utils.sh
 
@@ -30,7 +33,28 @@ add_module_path() {
       append_line /etc/zsh/modules \
         "export MANPATH=\$MANPATH:/opt/${mod}/share/man"
     fi
+
+    # configuration files in home directories
+    # DANGER! this is a possible security flaw
+    if [ -x /opt/${mod}/skel ]; then
+      for h in `ls /home`; do
+        cp -ura /opt/${mod}/skel/*  $h/
+        cp -ura /opt/${mod}/skel/.* $h/
+        cp -ura /opt/${mod}/skel/.* /etc/skel/
+      done
+    fi
+
+    # execute initialization scripts in etc/rc_*
+    # DANGER! this is also a possible security flaw
+    if [ -x /opt/${mod}/etc ]; then
+      for rc in `ls /opt/${mod}/etc/rc_*`; do
+        # call the rc script with module name as argument
+        /opt/${mod}/etc/$rc ${mod}
+      done
+    fi
 }
+
+
 
 mount_sdk_modules() {
 
