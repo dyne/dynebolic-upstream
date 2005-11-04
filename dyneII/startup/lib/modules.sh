@@ -34,6 +34,9 @@ add_module_path() {
         "export MANPATH=\$MANPATH:/opt/${mod}/share/man"
     fi
 
+    # now source all the new paths
+    source /etc/zsh/modules
+
     # configuration files in home directories
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then
@@ -47,9 +50,11 @@ add_module_path() {
     # execute initialization scripts in etc/rc_*
     # DANGER! this is also a possible security flaw
     if [ -x /opt/${mod}/etc ]; then
-      for rc in `ls /opt/${mod}/etc/rc_*`; do
-        # call the rc script with module name as argument
-        /opt/${mod}/etc/$rc ${mod}
+      for rc in `ls /opt/${mod}/etc | awk '/^rc.*/ {print $1}'`; do
+        if [ -x /opt/${mod}/etc/$rc ]; then
+          # call the rc script with module name as argument
+          /opt/${mod}/etc/$rc ${mod}
+        fi
       done
     fi
 }

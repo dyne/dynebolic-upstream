@@ -1,5 +1,8 @@
 #!/bin/ash
 
-/etc/rc_K.sh
+ash /lib/dyne/shutdown.sh
+
 /sbin/halt
+
+exit 0;
 

@@ -2,11 +2,10 @@
 # with the full multimedia environment
 # by jaromil http://rastasoft.org
 
-export PATH=$PATH:/usr/X11R6/bin
 export EDITOR="/usr/bin/edit"
 export LADSPA_PATH="/usr/lib/ladspa"
 export LIBIND_PATH="/usr/lib/libind"
-export XWINHOME="/usr/X11R6"
+export XWINHOME="/opt/Xorg"
 export X11HOME="$XWINHOME"
 
 # the terminal definition

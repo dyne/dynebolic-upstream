@@ -128,7 +128,7 @@ floating_nest() {
   mount -o bind /dev/shm/home /home
   mkdir -p /home/luther
   cp -ra /etc/skel/*    /home/luther/
-  cp -ra /etc/skel/.*    /home/luther/
+  cp -ra /etc/skel/.*   /home/luther/
   chown -R luther:users /home/luther
 
   act "initializing /tmp"

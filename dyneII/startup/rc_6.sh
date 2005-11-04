@@ -1,5 +1,9 @@
 #!/bin/ash
 
-/etc/rc_K.sh
+ash /lib/dyne/shutdown.sh
+
 echo "[*] Reboot."
 reboot
+
+exit 0;
+

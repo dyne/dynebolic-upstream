@@ -103,7 +103,9 @@ scan_cdrom() {
     
 
     # scan for ide devices
-    for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
+    for DEVPATH in `ls /proc/ide | awk '/^hd.*/ {print $1}'`; do
+
+        DEV=`basename ${DEVPATH}`
 
 	# if it's not a cdrom then skip it
 	# TODO: verify if DVD has a "dvd" entry for media type
@@ -194,8 +196,14 @@ scan_partitions() { #arg : devicename
 	MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
 	mkdir -p ${MNT}
 
-	# TODO: should mount the partition only if not already mounted
-	if [ -z "`mount | grep '${PART_DEV}'`" ]; then
+	# mount the partition only if not already mounted
+        grep ${PART_DEV} /etc/mtab > /dev/null
+	if [ $? = 0 ]; then
+
+          act "skipping partition ${PART_DEV}: already mounted"
+
+        else
+
           act "mounting ${PART_FS} partition ${PART_DEV}"
 	    
           mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
@@ -209,14 +217,14 @@ scan_partitions() { #arg : devicename
 	  PART_DEV=`basename $PART_DEV`
 	
 	  add_volume hdisk ${PART_DEV} hd${HD_NUM}/${PART_NUM} ${PART_FS}
-	fi
+
+        fi
 
     done
     
 }
 
 HD_NUM=0
-SCSIDX=0
 scan_storage() {
 # $1 = device, without partition number (es: hda)
 #  DEV=$1
@@ -237,8 +245,10 @@ scan_storage() {
     #######################
     #### scan IDE harddisks
     #######################
-    for DEV in `ls /proc/ide/hd* -d | cut -d/ -f4`; do
-	
+    for DEVPATH in `ls /proc/ide | awk '/^hd.*/ {print $1}'`; do
+
+        DEV=`basename ${DEVPATH}`
+
         # skip if not an harddisk
 	if  [ `cat /proc/ide/$DEV/media` != disk ]; then continue; fi
 
@@ -262,22 +272,12 @@ scan_storage() {
     ########################
     #### scan SCSI harddisks
     ########################
-    if ! [ -e /dev/sda ]; then
+    for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
+       # TODO: be sure to detect it's an harddisk
+       HD_NUM=`expr $HD_NUM + 1`
+       scan_partitions ${DEV}
+    done
 	
-	act "no SCSI devices detected"
-	
-    else
-	
-	# excude already scanned scsi devices
-
-	for DEV in `ls /dev/sd?`; do
-	    # TODO: be sure to detect it's an harddisk
-	    HD_NUM=`expr $HD_NUM + 1`
-	    SCSIDX=`expr $SCSIDX + 1`
-	    scan_partitions ${DEV}
-	done
-	
-    fi
     
 
 

@@ -81,12 +81,6 @@ for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE "$BOGUS_SOUND" 
   sync
 done
 
-# and finally load bogus sound modules
-#for i in `pcimodules | sort -r | uniq | grep -iE "$BOGUS_SOUND"`; do
-#  loadmod $i
-#  sync
-#done
-
 # creates a symlink on devfs /dev/video -> /dev/video0
 if [ -e /dev/v4l/video0 ]; then
   ln -s /dev/v4l/video0 /dev/video0

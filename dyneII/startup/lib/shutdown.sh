@@ -1,14 +1,11 @@
 #!/bin/ash
-#
-# generic shutdown script for dyne:bolic
+
+############################################
+### dyne:II SHUTDOWN
+### by Jaromil
+
 # this should be run at halt and reboot and whenever
 # the computer goes down, it also ejects the CD when present
-#
-# GNU GPL 2001-2005 by jaromil @ dyne.org
-#
-
-#source /lib/dyne/utils.sh
-#source /boot/dynenv
 
 PATH=/bin:/sbin
 
@@ -28,12 +25,6 @@ fi
 # This is to ensure all processes have completed on SMP machines:
 echo " .  wait to sync processes"
 wait
-
-# shutdown automounter
-if [ -x /etc/init.d/rc.autofs ]; then
-  echo -n " .  "
-  /etc/init.d/rc.autofs stop
-fi
 
 if [ -x /usr/sbin/swapoff ]; then
     echo " .  release swap"
@@ -59,5 +50,4 @@ fi
 # sleep 1 fixes problems with some hard drives that
 # don't finish syncing before reboot or poweroff
 sleep 1
-
 

@@ -228,7 +228,7 @@ iterate() {
 iterate_backwards() {
     echo "$1" | awk '
     BEGIN { FS = "," }
-          { for(c=NF; c>0; c--) print $c }';
+          { for(c=NF+1; c>0; c--) print $c }';
 }
 # I LOVE AWK \o/
 
