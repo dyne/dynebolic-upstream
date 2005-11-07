@@ -3,16 +3,16 @@
 # by jaromil http://rastasoft.org
 
 export HOSTTYPE="i586"
-export LANG="POSIX"
+export LANG="C"
 export MACHTYPE="i586-pc-linux-gnu"
 export OSTYPE="linux-gnu"
 export SHELL="/bin/zsh"
 
+
 # A lucky prompt:
 PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'
 
-
-if [ -x /usr/bin/dynesplash ]; then  # dock mounted
+if [ -x /usr/bin/dynesplash ]; then
 
   RPROMPT="%T"  # right hand prompt
 
@@ -35,9 +35,15 @@ if [ -x /usr/bin/dynesplash ]; then  # dock mounted
             -e 's/,[0-9]\{3\}\..*//' ~/.ssh/known_hosts`);
   }
 
-  export MANPATH="/usr/share/man:/usr/netpbm/man"
-  export PAGER="/usr/bin/less"
-  export PATH="/usr/bin:/usr/sbin:/bin:/sbin:."
+  if [ -z $MANPATH ]; then # setup minimum manpath if none is there
+    export MANPATH=/usr/share/man:/usr/netpbm/man
+  fi
+
+  if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
+    export PATH=.:/usr/bin:/usr/sbin:/bin:/sbin
+  fi
+
+  export PAGER="/usr/bin/most"
 
   # Set/unset  shell options
   setopt   notify globdots correct pushdtohome cdablevars autolist

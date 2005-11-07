@@ -44,7 +44,7 @@ add_volume() {
       
       "floppy")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}"
-	  append_line /boot/auto.removable "floppy -fstype=auto,sync :/dev/fd0"
+#	  append_line /boot/auto.removable "floppy -fstype=auto,sync :/dev/fd0"
 	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t0"
 	  ;;
      
@@ -58,7 +58,7 @@ add_volume() {
 	  fi
           if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /boot/auto.removable "${MNT} -fstype=${FS},sync :/dev/${DEV}"
+#	  append_line /boot/auto.removable "${MNT} -fstype=${FS},sync :/dev/${DEV}"
 	  append_line /etc/fstab \
           "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t${PASS}"
 	  ;;
@@ -66,7 +66,7 @@ add_volume() {
       
       "cdrom"|"dvd")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /boot/auto.removable "${MNT} -fstype=${FS},ro :/dev/${DEV}"
+#	  append_line /boot/auto.removable "${MNT} -fstype=${FS},ro :/dev/${DEV}"
 	  append_line /etc/fstab \
           "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group,ro\t0\t0"
 	  ;;
@@ -197,8 +197,7 @@ scan_partitions() { #arg : devicename
 	mkdir -p ${MNT}
 
 	# mount the partition only if not already mounted
-        grep ${PART_DEV} /etc/mtab > /dev/null
-	if [ $? = 0 ]; then
+	if [ `is_mounted ${PART_DEV}` = true ]; then
 
           act "skipping partition ${PART_DEV}: already mounted"
 

@@ -17,7 +17,7 @@ if [ -e /etc/NETWORK ]; then
   source /etc/NETWORK
 else
   notice "start scanning for dhcp network"
-  /sbin/dhcpcd &
+  /usr/sbin/dhcpcd &
 fi
 
 # setup hostname from /etc/HOSTNAME or randomize with the eth0 MAC address if needed

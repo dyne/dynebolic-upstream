@@ -1,8 +1,4 @@
-
-# tiny easy edit 
-export EDITOR="/bin/zile"
-# reduced path
-export PATH=".:/bin:/sbin"
+# tiny busybox editor
+export EDITOR="/bin/vi"
 # basic terminal
 export TERM=vt100
-

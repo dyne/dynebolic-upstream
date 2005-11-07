@@ -24,7 +24,7 @@ choose_nest() {
 
       notice "using nest in $NEST_VOL"
 
-      if [ "`mount | grep '/home'`" ]; then
+      if [ `is_mounted /home` = true ]; then
 	warning "nest already mounted, aborting operation"
 	return
       fi
@@ -71,7 +71,7 @@ choose_nest() {
 #	    ENCRYPT="AES128"
 	else unset NEST; fi
 
-        if [ "`mount | grep '/home'`" ]; then
+        if [ `is_mounted /home` = true ]; then
 	  warning "nest already mounted, aborting operation"
 	  return
         fi
@@ -81,7 +81,7 @@ choose_nest() {
     fi
     # bind directories in /mnt/nest to the filesystem
 
-    if [ "`mount | grep /mnt/nest`" ]; then
+    if [ `is_mounted /mnt/nest` = true ]; then
       act "nest succesfully mounted"
       # this script shoud now link the directories
       bind_nest /mnt/nest
@@ -90,7 +90,7 @@ choose_nest() {
 
       notice "creating virtual nest in floating memory"
 
-      if [ "`mount | grep '/home'`" ]; then
+      if [ `is_mounted /home` = true ]; then
         warning "nest already mounted, aborting operation"
         return
       fi
@@ -147,18 +147,18 @@ bind_nest() { # arg:   path_to_mounted_nest
   NST=$1
   if ! [ -x $NST ]; then
     error "can't bind nest $NST: doesn't seems a directory"
-    # switch to floating nest here?
+    floating_nest
     return
   fi
 
-  # zap old logs
-  if [ -r ${NST}/var/log/dyne.log ]; then
-    rm ${NST}/var/log/dyne.log
-  fi
+  # import logs
+  cp -ra /var/log/* ${NST}/var/log/*
+
   # wipe out /tmp
   if [ -x ${NST}/tmp ]; then
       rm -rf ${NST}/tmp/* 2>&1 >/dev/null
   fi
+
   # wipe out /var/run
   if [ -x ${NST}/var/run ]; then
       rm -rf ${NST}/var/run/* 2>&1 >/dev/null
@@ -172,6 +172,15 @@ bind_nest() { # arg:   path_to_mounted_nest
     warning "nest is missing home, skipping"
   else
     mount -o bind ${NST}/home /home
+  fi
+
+  # bind root
+  mkdir -p /root
+  chmod -R go-rwx /root
+  if ! [ -e ${NST}/root ]; then
+    warning "nest is missing root hideout, skipping"
+  else
+    mount -o bind ${NST}/root /root
   fi
 
   # bind etc

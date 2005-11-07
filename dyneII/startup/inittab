@@ -14,16 +14,16 @@
 su:S:wait:/sbin/sulogin
 
 # Runlevel 0 halts the system.
-l0:0:wait:/etc/rc_0.sh
+l0:0:wait:/etc/rc.0
 
 # Default runlevel. (Do not set to 0 or 6)
 id:3:initdefault:
 
 # System initialization (runs when system boots).
-si:S:sysinit:/etc/rc_S.sh
+si:S:sysinit:/etc/rc.S
 
 # Script to run when going multi user.
-rc:123:wait:/etc/rc_M.sh
+rc:123:wait:/etc/rc.M
 
 # TERMINALS
 c1:123:respawn:/sbin/agetty 9600 tty1 
@@ -34,10 +34,10 @@ c5:123:respawn:/sbin/agetty 9600 tty5
 c6:123:respawn:/sbin/agetty 9600 tty6
 
 # X11
-x1:3:wait:/etc/rc_X.sh
+x1:3:wait:/etc/rc.X
 
 # Runlevel 6 reboots the system.
-l6:6:wait:/etc/rc_6.sh
+l6:6:wait:/etc/rc.6
 
 # What to do at the "Three Finger Salute".
 ca::ctrlaltdel:/sbin/shutdown -t5 -rf now

@@ -33,6 +33,11 @@ add_module_path() {
       append_line /etc/zsh/modules \
         "export MANPATH=\$MANPATH:/opt/${mod}/share/man"
     fi
+    if [ -x /opt/${mod}/man ]; then
+      append_line /etc/zsh/modules \
+        "export MANPATH=\$MANPATH:/opt/${mod}/man"
+    fi
+
 
     # now source all the new paths
     source /etc/zsh/modules

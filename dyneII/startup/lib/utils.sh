@@ -26,10 +26,6 @@ if [ -z $DYNE_SHELL_UTILS ]; then
 DYNE_SHELL_UTILS=included
   
 
-# initialize logfile
-LOG="/boot/startup.log"
-if ! [ -r ${LOG} ]; then touch ${LOG}; fi
-
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
@@ -45,16 +41,16 @@ if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
 
 notice() {
-    echo "[*] ${1}" | tee -a $LOG 
+    logger -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
 }
 act() {
-    echo " .  ${1}" | tee -a $LOG
+    logger -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
 }
 error() {
-    echo "[!] ${1}" | tee -a $LOG
+    logger -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
 }
 warning() {
-    echo "[W] ${1}" | tee -a $LOG
+    logger -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
 }
 
 
@@ -108,7 +104,7 @@ loadmod() {
     # check if it is a denied module we skip
     MODULES_DENY="`get_config modules_deny`"
     for m in `iterate ${MODULES_DENY}`; do
-        if [ $MODULE = $m ]; then
+        if [ x$MODULE = x$m ]; then
            act "$MODULE denied ... SKIPPED"
         fi
     done
@@ -116,13 +112,13 @@ loadmod() {
     # in interactive mode we ask 
     INTERACTIVE="`get_config modules_prompt`"
     if [ $INTERACTIVE ]; then 
-	echo -n "[?] do you want to load kernel module $MODULE [y/N] ?" | tee -a $LOG
+	echo -n "[?] do you want to load kernel module $MODULE [y/N] ?"
 	ask_yesno 10
 	if [ $? = 1 ]; then
-	    echo " ... SKIPPED" | tee -a $LOG
+	    echo " ... SKIPPED"
 	    return
 	else
-	    echo " ... LOADED" | tee -a $LOG
+	    echo " ... LOADED"
 	fi
     fi
 
@@ -137,14 +133,14 @@ loadmod() {
 	fi
 
     # finally we do it
-	/usr/sbin/modprobe ${MODULE} 1>>$LOG 2>>$LOG
+	/usr/sbin/modprobe ${MODULE} 1>/dev/null 2>/dev/null
 	if [ $? = 0 ]; then
 	    act "loaded kernel module $MODULE"
 	    return
 	else
         # no error output to console
 	# "i panni sporchi si lavano in famiglia"
-	    echo "[!] ERROR loading kernel module $MODULE" >> $LOG
+	    error "loading kernel module $MODULE"
 	fi
     
     else # if we are in volatile mode (system not yet mounted)
@@ -172,22 +168,25 @@ loadmod() {
             insmod ${mod_name} ${MODARGS}
 	    if [ $? = 0 ]; then
 		act "loaded kernel module $TRYMOD $MODARGS"
+            else
+                error "error loading kernel module $MODULE"
 	    fi
 
             # remove the uncompressed module in /tmp
-            # this doesn't works, why? :/
             rm -f ${mod_name}
-
             cd -
 	    return 
 
           else # it's not a compressed module
 
-	    insmod ${TRYMOD} ${MODARGS} 1>>$LOG 2>>$LOG
+	    insmod ${TRYMOD} ${MODARGS}
 	    if [ $? = 0 ]; then
 		act "loaded kernel module $MODULE"
 		return 
-	    fi
+            else
+                error "error loading kernel module $MODULE"
+                return
+            fi
 
           fi
 
@@ -200,11 +199,16 @@ loadmod() {
 
 	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}.ko"`
             if [ -r ${TRYMOD} ]; then
-               insmod ${TRYMOD} 1>>$LOG 2>>$LOG
+
+               insmod ${TRYMOD} 1>/dev/null 2>/dev/null
 	       if [ $? = 0 ]; then
 	 	  act "loaded kernel module $MODULE"
 		  return 
-	       fi
+               else
+                  error "error loading kernel module $MODULE"
+                  return
+               fi
+
             fi
 
 	  done
@@ -273,6 +277,16 @@ alphabet() { # args: letter (next|prev)
 }
 
 
+# checks if a mountpoint is mounted
+is_mounted() { # arg: mountpoint or device
+  mnt=$1
+  grep ${mnt} /etc/mtab > /dev/null
+  if [ $? = 0 ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
 
 # checks if a file is writable
 # differs from -w coz returns true if does not exist but can be created
@@ -332,6 +346,8 @@ append_line() { # args:   file    new-line
      
     # and we are done
 }
+
+
 
 # $1 = timeout
 # $2 = (optional) yes key
