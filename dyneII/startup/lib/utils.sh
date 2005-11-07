@@ -41,16 +41,16 @@ if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
 
 notice() {
-    logger -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
+    /bin/logger -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
 }
 act() {
-    logger -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
+    /bin/logger -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
 }
 error() {
-    logger -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
+    /bin/logger -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
 }
 warning() {
-    logger -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
+    /bin/logger -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
 }
 
 

@@ -35,6 +35,7 @@ if [ -z $INIT_VERSION ]; then
   exit -1
 fi
 
+source /lib/dyne/services.sh
 source /lib/dyne/volumes.sh
 source /lib/dyne/modules.sh
 source /lib/dyne/wmaker.sh
@@ -381,9 +382,6 @@ fi
 # now the system is mounted expand our PATH
 export PATH=/usr/bin:/usr/sbin:$PATH
 
-# configure languages
-/etc/init.d/rc.language
-
 # create a /tmp directory
 chmod a+w /tmp # world writable tmp
 chmod +t /tmp  # sticky bit
@@ -392,7 +390,6 @@ chmod +t /tmp  # sticky bit
 chown root:root /root
 chmod go-rwx /root
 
-
 dmesg -n 1
 
 notice "activate runtime configurations"
@@ -400,8 +397,6 @@ notice "activate runtime configurations"
 act "network loopback device"
 ifconfig lo 127.0.0.1
 
-# deactivated automount
-# echo -n "[*] "; /etc/init.d/rc.autofs start
 
 # detect and mount swap partitions
 for gh in `fdisk -l | grep -iE "linux.*swap*" | awk '{print $1}'`; do
@@ -411,37 +406,28 @@ for gh in `fdisk -l | grep -iE "linux.*swap*" | awk '{print $1}'`; do
 done
 
 
-# detect xbox
-# in case we're on xbox then executes just the
-# script for it, avoiding modules detection and
-# pcmcia and power management etc...
-if [ ! -z "`uname -a | grep xbox`" ]; then
+# here we were detecting xbox for proper module loading
+# if [ ! -z "`uname -a | grep xbox`" ]; then
 
-  # this is a customized configure file for XBOX
-  # it loads the needed modules
-  /etc/init.d/rc.xbox
-
-else # not an xbox
     
 # load necessary kernel modules
-  /etc/init.d/rc.modules
-    
-fi
+init_modules
 
 
-# configure videocard
+# here we were configuring the videocard for X
 # this is now done in the Xorg module
 #/etc/init.d/rc.vga
 
 
 # configure your sound card
-/etc/init.d/rc.sound
+init_sound
 
 # configure firewire
-/etc/init.d/rc.firewire
+init_firewire
 
 # configure network
-/etc/init.d/rc.net
+init_network
+
 
 UNION_USR_RW="`get_config unionfs`"
 if [ ${UNION_USR_RW} ]; then
