@@ -93,7 +93,8 @@ on_network_button                   (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("nettante","nettante",NULL);
+    execlp("/usr/libexec/autopackage/autosu-gtk",
+	   "nettante","nettante",NULL);
     perror("can't launch network configurator");
     _exit(1);
   }
@@ -132,7 +133,8 @@ on_screen_button                   (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("xf86cfg","xf86cfg","-xf86config","/etc/XF86Config",NULL);               
+    execlp("/usr/libexec/autopackage/autosu-gtk","xf86cfg",
+	   "xf86cfg","-xf86config","/etc/X11/XF86Config",NULL);               
     perror("can't launch screen configurator");
     _exit(1);
   }
@@ -145,7 +147,7 @@ on_nest_button                   (GtkButton       *button,
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("taschino","taschino",NULL);            
+    execlp("/usr/libexec/autopackage/autosu-gtk","taschino","taschino",NULL);            
     perror("can't launch nest configurator");
     _exit(1);
   }

@@ -190,17 +190,20 @@ Press the Right mouse button on the Desktop for the Menu </property>
 		  <property name="right_margin">0</property>
 		  <property name="indent">0</property>
 		  <property name="text" translatable="yes">
-Dyne:bolic is a GNU/Linux operating system automatically recognizing your hardware.
+Dyne is a GNU/Linux operating system automatically recognizing your hardware.
 
-Your /home directory resides in your RAM memory and everything will disappear without the CD.
+Your /home directory resides in memory and everything will disappear at the next boot, unless you NEST.
 
-You can dock the system in your harddisk by copying the /dyne directory into it: no installation needed!
+You can save your environment by creating a NEST on your usb key or harddisk, just press the button below.
 
-You can save and retrieve your settings by creating a nest file on your usb key or harddisk.
+You can DOCK the system simply copying the /dyne directory from the CD inside one of your harddisks: it is like an installation but much easier and it will not damage any other system on your computer.
 
-You are root and have access to all your harddisks.
+If this is your first boot, you can become root with password 'luther'.
 
-Switch desktop alt+2,3... get menu with right click  ;^)</property>
+Switch desktop alt+2,3... get menu with right click!
+
+Happy hacking ;^)
+</property>
 		</widget>
 	      </child>
 	    </widget>
