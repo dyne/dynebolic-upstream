@@ -306,7 +306,7 @@ mkinitrd() {
     cp -ra /lib .
     cp -ra /bin .
     cp -ra /sbin .
-    mkdir -p boot dev proc rem root sys usr vol mnt home
+    mkdir -p boot dev proc rem root sys usr mnt home
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
     mknod dev/console c 5 1
@@ -315,20 +315,24 @@ mkinitrd() {
 
     act "cleaning up configs and logs"
     rm -f etc/X11/XF86Config
+    rm -f etc/X11/xorg.conf
     rm -f etc/HOSTNAME etc/NETWORK
     rm -f etc/auto.removable
     rm -f etc/blkid.tab*
-    rm -f etc/zsh/modules
+    rm -f etc/zsh/*
+    touch etc/zsh/modules
     rm -f etc/fstab
+    rm -f etc/mtab
     cat << EOF > etc/fstab
-# /etc/fstab: static file system information, see man fstab
+# /etc/fstab: file system information, see man fstab
+# on dyne this file is generated at runtime while booting
 #
 # <file system>	<mount point>   <type>  <options>       <dump>  <pass>
-/dev/ramdisk	/		ext2	defaults	1	1
+/dev/ramdisk	/		ext2	defaults	0	0
 devpts		/dev/pts	devpts	defaults	0	0
 proc            /proc           proc    defaults	0	0
 sysfs		/sys		sysfs	defaults	0	0
-
+usbfs		/proc/bus/usb	usbfs	defaults	0	0
 EOF
 
     act "packaging /var"
@@ -347,21 +351,28 @@ EOF
   
     if [ -x $PFX/startup/.svn ]; then
 	act "setup startup files from subversion repository"
-	cp -vf $PFX/startup/rc_*     etc/
+	cp -vf $PFX/startup/rc.*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
-	for f in `ls $PFX/startup/zsh/`; do
-		cp -avf ${PFX}/startup/zsh/${f} etc/zsh/
-	done
-        for f in `ls $PFX/startup/init.d/`; do
-		cp -avf ${PFX}/startup/init.d/${f} etc/init.d/
-	done
-	for f in `ls $PFX/startup/X11/`; do
-		cp -ravf ${PFX}/startup/X11/${f} etc/X11/
-	done
+        mkdir -p lib/dyne/zsh
+        mkdir -p lib/dyne/hotplug
 	for f in `ls $PFX/startup/lib/`; do
-		cp -ravf ${PFX}/startup/lib/${f} lib/dyne/
+	  cp -ravf ${PFX}/startup/lib/${f}      lib/dyne/
 	done
+	for f in `ls $PFX/startup/zsh/`; do
+	  cp -avf ${PFX}/startup/zsh/${f}       lib/dyne/zsh/
+	done
+        for dir in `ls $PFX/startup/hotplug/`; do
+          mkdir -p lib/dyne/hotplug/${dir}
+          for f in `ls $PFX/startup/hotplug/${dir}/`; do
+            cp -avf ${PFX}/startup/hotplug/${dir}/${f} lib/dyne/hotplug/${dir}/ 
+          done
+        done
+
+        # delete all backup files
+        for f in `find lib/dyne -name '*~'`; do
+          rm ${f}
+        done
     fi
 
     if [ -r /etc/rc.local ]; then
