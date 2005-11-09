@@ -39,6 +39,10 @@ int hd_selector(const struct dirent *dir) {
   if(strstr(dir->d_name,"hd")) return(1);
   return(0);
 }
+int part_selector(const struct dirent *dir) {
+  if(dir->d_name[0] == '.') return(0);
+  return(1);
+}
 int usb_selector(const struct dirent *dir) {
   if(strstr(dir->d_name,"usb")) return(1);
   return(0);
@@ -153,39 +157,58 @@ int scan_parts() {
     return parts_found;
   }
 
-  struct dirent **filelist;
-  int found, c;
+  struct dirent **hdlist;
+  struct dirent **partlist;  
+  int hdfound, c;
+  int partfound, cc;
+  int partnum;
+  char tmp[256];
   
   /* zeroes all the struct */
   memset(parts,0,sizeof(parts));
   parts_found = 0;
 
   /* scan for harddisk partitions */
-  found = scandir("/vol",&filelist,hd_selector,alphasort);
-  if(found<0) perror("can't scan /vol");  
-  for(c=0;c<found;c++) { /* now we cycle thru all the mounted harddisk in /vol */
-    snprintf(parts[c].path,255,"/vol/%s",filelist[c]->d_name);
-    parts[c].num = c;
-    parts[c].support = HD;
+  partnum = 0;
+  hdfound = scandir("/mnt",&hdlist,hd_selector,alphasort);
+  if(hdfound<0) perror("can't scan /mnt");  
 
-    analyze(c);
+  for(c=0;c<hdfound;c++) { /* now we cycle thru all the mounted harddisk in /mnt */
 
-    parts_found++;
-  } // for cycle thru partitions found by scandir
+    snprintf(tmp,255,"/mnt/%s",hdlist[c]->d_name);
+    partfound = scandir(tmp,&partlist,part_selector,alphasort);
 
-  found = chdir("/rem/usb");
-  if(found<0) perror("can't scan /rem/usb");
+    if(partfound<0) perror("error scanning partitions in /mnt");
+    
+    for(cc=0;cc<partfound;cc++) { // cycle thru partitions
+
+      snprintf(parts[parts_found].path,255,"/mnt/%s/%s",
+	       hdlist[c]->d_name,
+	       partlist[cc]->d_name);
+
+      parts[parts_found].num = parts_found;
+
+      parts[parts_found].support = HD;
+      
+      analyze(parts_found);
+      
+      parts_found++;
+    } // for cycle thru partitions found by scandir
+  } // for cycle thru harddisks
+  /*
+  found = chdir("/mnt/usb");
+  if(found<0) perror("can't scan /mnt/usb");
   else {
     sync();
     c++;
-    snprintf(parts[c].path,255,"/rem/usb");
+    snprintf(parts[c].path,255,"/mnt/usb");
     parts[c].num = c;
     parts[c].support = USB;
     
     analyze(c);
     
     parts_found++;
-  }
+    } */
 
   scanned = true;
   return parts_found;

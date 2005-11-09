@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
   ftmp = fopen(guipath,"r");
   if(!ftmp) {
     fprintf(stdout,"file missing: taschino.glade\n");
-    sprintf(guipath,"/usr/share/dynebolic/taschino/taschino.glade");
+    sprintf(guipath,"/usr/share/dyne/taschino/taschino.glade");
     ftmp = fopen(guipath,"r");
   }
   if(!ftmp) {
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
   } else fclose(ftmp);
 
   /* internationalization stuff */
-  bindtextdomain ("taschino", "/usr/share/dynebolic/taschino");
+  bindtextdomain ("taschino", "/usr/share/dyne/taschino");
   textdomain ("taschino");
   gtk_set_locale ();
 

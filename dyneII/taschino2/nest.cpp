@@ -1,5 +1,5 @@
 /* Taschino 2 - nest & dock application for dyne:bolic
- * (c) Copyright 2004 Denis Roio aka jaromil <jaromil@dyne.org>
+ * (c) Copyright 2004-2005 Denis "Jaromil" Roio <jaromil@dyne.org>
  *
  * This source code is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Public License as published 
@@ -135,7 +135,7 @@ void apply_nest(int sel) {
   GtkRange *sizebar;
   bool crypt = false;
   int size = 0;
-  char size_str[16];
+  char nestfile[256];
   char mesg[512];
   
   pid_t proc;
@@ -153,16 +153,19 @@ void apply_nest(int sel) {
   size = (unsigned int) sizebar->adjustment->value;
   fprintf(stderr,"size is %i\n",size);
 
-  snprintf(size_str,15,"%u",size);
-  snprintf(mesg,511,"creating%sdyne:bolic nest of %sMB in %s",
-	   (crypt) ? " encrypted " : " ", size_str, parts[sel].label);
+  // create the dyne directory
+  snprintf(nestfile,255,"%s/dyne",parts[sel].path);
+  mkdir(nestfile,S_IRWXU);
+
+  snprintf(nestfile,255,"%s/dyne/dyne.nst,%u",parts[sel].path,size);
+  snprintf(mesg,511,"creating dyne:bolic nest %sMB", nestfile);
   
   proc = fork();
   if(!proc) {
+    setenv("PATH","/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin",1);
     execlp("xterm","taschino","-tn","linux","-bg","lightgrey","-fg","black",
 	   "-T",mesg,"-geometry","118x20",
-	   "-e","nidifica", "-s",size_str, "-l", parts[sel].path,
-	   (crypt) ? "-e" : NULL, (crypt) ? "AES128" : NULL, NULL);
+	   "-e","nidifica", "-f",nestfile, NULL);
     perror("can't fork to launch docking command");
     _exit(1);
   }

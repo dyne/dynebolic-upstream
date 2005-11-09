@@ -3,7 +3,7 @@
 
 CC = gcc
 CPP = g++
-CFLAGS = -g -DDEBUG -pipe -Wall -O2 -ffast-math
+CFLAGS = -ggdb -DDEBUG -pipe -Wall -O2 -ffast-math
 INSTALL = install -c
 PREFIX = /usr
 DATADIR = $(PREFIX)/share/dynebolic/taschino
