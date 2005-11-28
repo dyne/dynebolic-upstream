@@ -1,0 +1,16 @@
+#!/bin/sh
+
+source /lib/dyne/utils.sh
+source /lib/dyne/services.sh
+
+if [ -z $1 ]; then
+  source /etc/NETWORK
+else
+  source ${1}
+fi
+
+# see /lib/dyne/services.sh
+apply_network
+
+
+
