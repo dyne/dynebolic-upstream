@@ -11,36 +11,41 @@
  
 source /lib/dyne/utils.sh
 
+
 add_module_path() {
     # takes a /opt/module path as argument
     mod=$1
 
     # binary files
     if [ -x /opt/${mod}/bin ]; then
-      append_line /etc/zsh/modules "export PATH=\$PATH:/opt/${mod}/bin"
+      append_line /boot/dynenv.modules "export PATH=\$PATH:/opt/${mod}/bin"
     fi
     
-    # library files
+    # library files and pkg-config
     if [ -x /opt/${mod}/lib ]; then
-#     append_line /etc/ld.so.conf "/opt/${mod}/lib"
-     append_line /etc/zsh/modules "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/${mod}/lib"
-     append_line /etc/zsh/modules \
+     append_line /etc/ld.so.conf "/opt/${mod}/lib"
+     if [ $APPEND_FILE_CHANGED = true ]; then # ld.so.conf gets modified
+       NEWLIBPATH=true
+#      we don't use LD_LIBRARY_PATH for modules anymore, takes too long loading
+#      append_line /boot/dynenv.modules "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/${mod}/lib"
+     fi
+     append_line /boot/dynenv.modules \
        "export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH:/opt/${mod}/lib/pkgconfig"
     fi
 
     # manual files
     if [ -x /opt/${mod}/share/man ]; then
-      append_line /etc/zsh/modules \
+      append_line /boot/dynenv.modules \
         "export MANPATH=\$MANPATH:/opt/${mod}/share/man"
     fi
     if [ -x /opt/${mod}/man ]; then
-      append_line /etc/zsh/modules \
+      append_line /boot/dynenv.modules \
         "export MANPATH=\$MANPATH:/opt/${mod}/man"
     fi
 
 
     # now source all the new paths
-    source /etc/zsh/modules
+    source /boot/dynenv.modules
 
     # configuration files in home directories
     # DANGER! this is a possible security flaw
@@ -73,6 +78,8 @@ mount_sdk_modules() {
     return
   fi
 
+  # flag to control whether to call ldconfig at the end
+  NEWLIBPATH=false
 
   # use uncompressed modules in SDK
   for mod in `ls --color=none ${DYNE_SYS_MNT}/dyne/SDK/modules`; do
@@ -102,16 +109,25 @@ mount_sdk_modules() {
 
   done
 
+  if [ x$NEWLIBPATH = xtrue ]; then
+    act "regenerating linkage cache"
+    ldconfig &
+  fi
+  
 }
 
 
-mount_compressed_modules() {
+mount_dyne_modules() {
 
     if ! [ -x ${DYNE_SYS_MNT}/dyne/modules ]; then
       act "no dyne modules found in ${DYNE_SYS_MNT}/dyne"
       return
     fi
 	
+  # flag to control whether to call ldconfig at the end
+  NEWLIBPATH=false
+
+
     for mod in `find ${DYNE_SYS_MNT}/dyne/modules/ -name '*.dyne'`; do
 	  # squashed .dyne module
 	    
@@ -136,5 +152,12 @@ mount_compressed_modules() {
 	  act "${mod_name} mounted in /opt"
 	    
      done
+
+  if [ x$NEWLIBPATH = xtrue ]; then
+    act "regenerating linkage cache"
+    ldconfig &
+  fi
+  
+
 }
 

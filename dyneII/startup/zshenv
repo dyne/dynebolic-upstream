@@ -1,20 +1,8 @@
 # dyne:bolic master environment
 # this file gets executed every time a zsh is opened
 
-# common environment
-source /lib/dyne/zsh/common
-
-# boot mode
-source /lib/dyne/zsh/`cat /boot/mode`
-
-# environment generated at boot
-source /boot/dynenv
-
-# dyne modules paths
-if [ -z $DYNE_MODULES_SOURCED ]; then
-  source /etc/zsh/modules
-  export DYNE_MODULES_SOURCED=yes
-fi
+# dyne environment
+source /lib/dyne/zsh/env
 
 # after this, /home/.zshrc gets sourced
 # edit your own there, don't touch this.

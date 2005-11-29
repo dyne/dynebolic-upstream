@@ -36,7 +36,7 @@ add_volume() {
           if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
 	  append_line /etc/fstab \
-	  "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t${PASS}"
+	  "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults\t0\t${PASS}"
 	  ;;
 
 
@@ -44,8 +44,7 @@ add_volume() {
       
       "floppy")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}"
-#	  append_line /boot/auto.removable "floppy -fstype=auto,sync :/dev/fd0"
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t0"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,user\t0\t0"
 	  ;;
      
  
@@ -58,17 +57,15 @@ add_volume() {
 	  fi
           if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-#	  append_line /boot/auto.removable "${MNT} -fstype=${FS},sync :/dev/${DEV}"
 	  append_line /etc/fstab \
-          "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group\t0\t${PASS}"
+          "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user\t0\t${PASS}"
 	  ;;
 
       
       "cdrom"|"dvd")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-#	  append_line /boot/auto.removable "${MNT} -fstype=${FS},ro :/dev/${DEV}"
 	  append_line /etc/fstab \
-          "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,group,ro\t0\t0"
+          "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,user,ro\t0\t0"
 	  ;;
       
 
@@ -125,7 +122,7 @@ scan_cdrom() {
 	
 	mkdir -p /mnt/dynecd
 
-	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynecd 1>/dev/null 2>/dev/null
+	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynecd 2>/dev/null 1>/dev/null
 
 	if [ $? != 0 ]; then # device was not mounted
 
@@ -170,7 +167,7 @@ scan_partitions() { #arg : devicename
     for PART in ${(f)PARTITIONS}; do
 	
 	# setup special flags needed for most common BSD fs
-	if [ "`echo $PARTITIONS|grep -iE 'BSD|ufs'`" ]; then
+	if [ "`echo $PART|grep -iE 'BSD|ufs'`" ]; then
 	    MOUNT_FS="-t ufs"
 	    MOUNT_OPTS="-o ufstype=44bsd"
 	else
@@ -204,6 +201,14 @@ scan_partitions() { #arg : devicename
         else
 
           act "mounting ${PART_FS} partition ${PART_DEV}"
+
+          # starts a check on linux ext* filesystems
+          if [ "`echo $PART|grep -iE 'linux'`" ]; then
+            notice "linux filesytem check"
+            # man fsck says this should safely work
+            fsck -TCp ${PART_DEV}
+          fi  
+
 	    
           mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
 	    
@@ -261,6 +266,10 @@ scan_storage() {
 	    MOUNT_OPTS="-o umask=777"
 	fi
 
+        notice "scanning harddisk ${DEV}"
+        act "activating DMA channel and 32bit IO"
+        hdparm -d1 -c1 /dev/${DEV}        
+
 	# IDE partitions
 	scan_partitions ${DEV}
 
@@ -290,7 +299,27 @@ scan_storage() {
     done
 }
 
+scan_removable() {
 
+  act "checking for a floppy driver"
+  if [ "`dmesg |grep ' fd0 '`" ]; then
+    add_volume floppy fd0 floppy auto
+  fi
+
+  act "checking for a usb plug"
+  if [ "`cat /proc/pci | grep USB`" ]; then
+    for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
+      # now find out the last sd? device
+    done
+    if [ -z $DEV ]; then # no scsi/sata fixed disc, pick the first
+      add_volume usb sda usb vfat
+    else
+      USB=`alphabet ${DEV[3]} next`
+      add_volume usb "sd${USB}1" usb vfat
+    fi
+  fi
+
+}
 
 # this function is called by the cdrom detection when a system is found on CD
 # it goes thru the harddisks detected and check if they have a system
@@ -391,7 +420,7 @@ choose_volumes() {
 		    act "please wait while transferring files..."
 		    echo; echo; echo;	    
 		    HD_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-		    cp -rfv ${MNT}/dyne ${HD_MNT}
+		    cp -rf ${MNT}/dyne ${HD_MNT}
 		    act "done!"
 		    echo; echo; echo; echo; echo;
 		else
@@ -478,5 +507,6 @@ choose_volumes() {
 
     fi
 }
+
 
 # TODO: sys_list che lista tutti i sistemi e fa scegliere con ask_choice

@@ -40,7 +40,7 @@ if [ -x /usr/bin/dynesplash ]; then
   fi
 
   if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
-    export PATH=.:/usr/bin:/usr/sbin:/bin:/sbin
+    export PATH=/usr/bin:/usr/sbin:/bin:/sbin:.
   fi
 
   export PAGER="/usr/bin/most"
@@ -99,6 +99,9 @@ if [ -x /usr/bin/dynesplash ]; then
   alias d='dirs -v'
   alias h=history
 
+  # to make it comfortable
+  alias su='su -'
+
   # List only directories and symbolic
   # links that point to directories
   alias lsd='ls -ld *(-/DN)'
@@ -116,7 +119,9 @@ if [ -x /usr/bin/dynesplash ]; then
   # Filename suffixes to ignore during completion
   fignore=(.o .c~ .old .pro)
 
-  export LESS=-cx3M
+# this makes most uncomfortable
+#  export LESS=-cx3M
+
   export HELPDIR=/usr/lib/zsh/help  # directory for run-help function to find docs
 
   MAILCHECK=300

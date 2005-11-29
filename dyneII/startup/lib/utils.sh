@@ -101,6 +101,12 @@ loadmod() {
 
     MODULE=${1}
 
+    if [ $2 ]; then  # there are arguments
+      MODARGS=`echo $@ | cut -d' ' -f 2-`
+    else
+      MODARGS=""
+    fi
+
     # check if it is a denied module we skip
     MODULES_DENY="`get_config modules_deny`"
     for m in `iterate ${MODULES_DENY}`; do
@@ -122,99 +128,130 @@ loadmod() {
 	fi
     fi
 
-    # if the system is mounted
-    if [ -x /usr/sbin/modprobe ]; then
-	if [ -r /etc/modules.deny ]; then
-	    if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
-	    # skip modules included in /etc/modules.deny
-		act "skipping kernel module $MODULE (match in /etc/modules.deny)"
-		return
-	    fi
-	fi
-
-    # finally we do it
-	/usr/sbin/modprobe ${MODULE} 1>/dev/null 2>/dev/null
-	if [ $? = 0 ]; then
-	    act "loaded kernel module $MODULE"
-	    return
-	else
-        # no error output to console
-	# "i panni sporchi si lavano in famiglia"
-	    error "loading kernel module $MODULE"
-	fi
+    KRN=`uname -r`
     
-    else # if we are in volatile mode (system not yet mounted)
-	
-	# look for the module in /boot/modules/$KRN
-	KRN=`uname -r`
-	TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}*"`
-        if [ $2 ]; then  # there are arguments
-          MODARGS=`echo $@ | cut -d' ' -f 2-`
-        else
-          MODARGS=""
-        fi
+    ##################################
+    # look for the module in the docks
+    if [ -r /boot/hdsyslist ]; then
 
-	if [ -r ${TRYMOD} ]; then
+      for HD in `cat /boot/hdsyslist | awk '{print $2}'`; do
 
-          mod_name=`basename ${TRYMOD}`
-          if [ `echo ${mod_name} | grep ko.bz2` ]; then
-            # it is a compressed module
-            cd /boot/modules/${KRN}
+        if [ -x ${HD}/dyne/kernel ]; then
 
-            mod_name=`basename ${TRYMOD} .bz2`
-            # uncompress it in /tmp
-            bunzip2 -c ${TRYMOD} > ${mod_name}
-            # load it
-            insmod ${mod_name} ${MODARGS}
-	    if [ $? = 0 ]; then
-		act "loaded kernel module $TRYMOD $MODARGS"
+          TRYMOD=`find ${HD}/dyne/kernel -name "${MODULE}"`
+
+          if [ ${TRYMOD} ]; then
+
+            insmod ${TRYMOD} ${MODARGS}
+            if [ $? = 0 ]; then
+              act "kernel module $MODULE loaded from docked dyne"
             else
-                error "error loading kernel module $MODULE"
-	    fi
-
-            # remove the uncompressed module in /tmp
-            rm -f ${mod_name}
-            cd -
-	    return 
-
-          else # it's not a compressed module
-
-	    insmod ${TRYMOD} ${MODARGS}
-	    if [ $? = 0 ]; then
-		act "loaded kernel module $MODULE"
-		return 
-            else
-                error "error loading kernel module $MODULE"
-                return
+              error "error loading kernel module $TRYMOD"
             fi
+            return
 
           fi
 
-	fi # the module it's not in the ramdisk
+        fi 
 
-	# look for the module in all harddisk docks
-        if [ -r /boot/hdsyslist ]; then
+      done
 
-	  for HD in `cat /boot/hdsyslist | awk '{print $2}'`; do
+    fi
 
-	    TRYMOD=`find /vol/${HD}/dyne -name "${MODULE}.ko"`
-            if [ -r ${TRYMOD} ]; then
 
-               insmod ${TRYMOD} 1>/dev/null 2>/dev/null
-	       if [ $? = 0 ]; then
-	 	  act "loaded kernel module $MODULE"
-		  return 
-               else
-                  error "error loading kernel module $MODULE"
-                  return
-               fi
 
-            fi
+    ################################
+    # look for the module in ramdisk
+    if [ -x /boot/modules/${KRN} ]; then
 
-	  done
+      TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}*"`
+      if [ ${TRYMOD} ]; then
+        # FOUND!
+        mod_name=`basename ${TRYMOD}`
+        if [ `echo ${mod_name} | grep ko.bz2` ]; then
+          # it is a COMPRESSED module
+          cd /boot/modules/${KRN}
+
+          mod_name=`basename ${TRYMOD} .bz2`
+          # uncompress it in /tmp
+          bunzip2 -c ${TRYMOD} > ${mod_name}
+          # load it
+          insmod ${mod_name} ${MODARGS}
+	  if [ $? = 0 ]; then
+	    act "kernel module $TRYMOD $MODARGS loaded from ramdisk"
+          else
+            error "error loading kernel module $TRYMOD"
+	  fi
+
+          # remove the uncompressed module in /tmp
+          rm -f ${mod_name}
+          cd -
+	  return 
+
+        else # it's non-compressed in ramdisk
+
+          insmod ${TRYMOD} ${MODARGS}
+          if [ $? = 0 ]; then
+            act "kernel module $MODULE loaded from ramdisk"
+          else
+            error "error loading kernel module $TRYMOD"
+          fi
+          return
 
         fi
 
+      fi
+
+    fi # the module it's not in the ramdisk
+
+    ###############################################
+    # look for the kerne module in the dyne modules
+    if [ -x /opt ]; then
+      for dynemod in `ls /opt`; do
+
+        if [ -x /opt/${dynemod}/kernel ]; then
+
+          TRYMOD=`find /opt/${dynemod}/kernel -name "${MODULE}"`
+        
+          if [ ${TRYMOD} ]; then
+
+            insmod ${TRYMOD} ${MODARGS}
+            if [ $? = 0 ]; then
+              act "kernel module $MODULE loaded from ${dynemod}.dyne"
+            else
+              error "error loading kernel module $TRYMOD"
+            fi
+            return
+
+          fi
+
+        fi
+
+      done
+
+    fi
+
+    ###############################################
+    # at last if the system is mounted try modprobe
+    if [ -x /usr/sbin/modprobe ]; then
+
+#	if [ -r /etc/modules.deny ]; then
+#	    if [ "`cat /etc/modules.deny | grep -E $1`" ]; then
+#	        # skip modules included in /etc/modules.deny
+#		act "skipping kernel module $MODULE (match in /etc/modules.deny)"
+#		return
+#	    fi
+#	fi
+
+        # finally we do it
+	/usr/sbin/modprobe ${MODULE} ${MODARGS}
+	if [ $? = 0 ]; then
+	    act "kernel module $MODULE loaded with modprobe"
+	else
+	    error "error loading kernel module $MODULE"
+	fi
+	return
+   
     fi
 
     error "kernel module $MODULE not found"
@@ -320,9 +357,11 @@ is_writable() { # arg: filename
 
 # appends a new line to a text file, if not duplicate
 # it sorts alphabetically the original order of line entries
+# defines the APPEND_FILE_CHANGED variable if file changes
 append_line() { # args:   file    new-line
 
     # first check if the file is writable
+    # this also creates the file if doesn't exists
     if [ `is_writable $1` = false ]; then
       error "file $1 is not writable"
       error "can't insert line: $2"
@@ -335,19 +374,34 @@ append_line() { # args:   file    new-line
     cp $1 /tmp/$tempfile
     echo "$2" >> /tmp/$tempfile
 
-    # delete the original
-    rm -f $1
+    # sort and uniq the temp file to temp.2
+    cat /tmp/$tempfile | sort | uniq > /tmp/${tempfile}.2
 
-    # sort and uniq the temp file back to the original
-    cat /tmp/$tempfile | sort | uniq > $1
+    SIZE1="`ls -l /tmp/$tempfile | awk '{print $5}'`"
+    SIZE2="`ls -l /tmp/${tempfile}.2 | awk '{print $5}'`"
+    if [ $SIZE != $SIZE ]; then
+      # delete the original
+      rm -f $1
+      # replace it
+      cp -f /tmp/${tempfile}.2 $1
+      # signal the change
+      APPEND_FILE_CHANGED=true
+    fi
 
-    # remove the temporary file
+    # remove the temporary files
     rm -f /tmp/$tempfile
+    rm -f /tmp/${tempfile}.2
      
     # and we are done
 }
 
-
+cleandir() {
+    DIR=${1}
+    act "cleaning all files in ${DIR}"
+    if [ "`ls -A ${DIR}/`" ]; then
+	rm -rf ${DIR}/*
+    fi
+}
 
 # $1 = timeout
 # $2 = (optional) yes key

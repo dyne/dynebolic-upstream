@@ -22,24 +22,32 @@ if [ "$1" != "fast" ]; then # shutdown did not already kill all processes
    killall5 -9
 fi
 
+
 # This is to ensure all processes have completed on SMP machines:
 echo " .  wait to sync processes"
 wait
+
 
 if [ -x /usr/sbin/swapoff ]; then
     echo " .  release swap"
     /usr/sbin/swapoff -a
 fi
 
+
 echo " .  unload all kernel modules"
-rmmod -a
+for m in `lsmod | awk '{print $1}'`; do
+  rmmod ${m}
+done
+
 
 echo " .  umount all volumes"
-umount /usr
 umount -a
+umount /usr
+
 
 echo " .  sync harddrives" # this never hurts
 sync
+
 
 if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
     echo "[*] ejecting dyne:bolic cd"
@@ -47,7 +55,16 @@ if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
 fi
 
 
+if [ -r /boot/debug_shutdown ]; then
+    /bin/ash
+fi
+
+
 # sleep 1 fixes problems with some hard drives that
 # don't finish syncing before reboot or poweroff
 sleep 1
+
+
+echo "[*] POWER OFF - KEEP BUTTON PRESSED 4 SECONDS"
+
 

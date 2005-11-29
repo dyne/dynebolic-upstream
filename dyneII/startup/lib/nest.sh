@@ -8,8 +8,10 @@ source /lib/dyne/utils.sh
 
 choose_nest() {
     
-    # first, if the "nest_partition" is set, then use partitions
 
+    # TODO: kernel append option to mount a nest on partition
+    # this is DEPRECATED for now
+    # if the "nest_partition" config is set, then should use that partition
     CFG_NEST="`get_config nest_partition`" # can be specified as /dev/hdXX or /vol/hdX
 
     if [ $CFG_NEST ]; then
@@ -38,6 +40,12 @@ choose_nest() {
 
     fi
 
+
+
+
+
+
+
     # count the nests found in volumes
     NESTS=`cat /boot/volumes|grep nst`
     NESTS_NUM=0
@@ -65,11 +73,12 @@ choose_nest() {
         if [ -r ${MNT}/dyne/dyne.nst ]; then
     	    NEST="${MNT}/dyne/dyne.nst"
 	    unset ENCRYPT
-# encryption is not yet supported: cryptoloop will be used
+# TODO: encryption is not yet supported: cryptoloop should be used
+#       please help here if you can ;)
 #	elif [ -r ${MNT}/dyne/dyne-aes.nst ]; then
 #	    NEST="${MNT}/dyne/dyne-aes.nst"
 #	    ENCRYPT="AES128"
-	else unset NEST; fi
+	fi
 
         if [ `is_mounted /home` = true ]; then
 	  warning "nest already mounted, aborting operation"
@@ -78,12 +87,20 @@ choose_nest() {
 
 	# mount nest in /mnt/nest
         mount_nest ${NEST}
+
+# TODO: choice between multiple nests on the same system
+#       here i plan a generic choice mechanism based on the format
+#       of the /boot/nestlist and /boot/hdsyslist files (using AWK)
+
     fi
+
     # bind directories in /mnt/nest to the filesystem
 
     if [ `is_mounted /mnt/nest` = true ]; then
+
       act "nest succesfully mounted"
       # this script shoud now link the directories
+      # here we kill the syslog and start a new one
       bind_nest /mnt/nest
 
     else # no nest found, create system default
@@ -107,8 +124,8 @@ floating_nest() {
   # setup a volatile nest environment
   # used when no nest is found
 
-  notice "home and settings will be lost at reboot"
-  notice "initializing virtual filesystem in memory"
+  notice "populating virtual filesystem in memory"
+  act    "home and settings will be lost at reboot"
   RAMSIZE=`cat /proc/meminfo | awk '/MemTotal/{print $2}'`
   SHMSIZE=`expr $RAMSIZE / 1024 / 4`
   act "RAM detected: `expr $RAMSIZE / 1024` Mb"
@@ -120,21 +137,34 @@ floating_nest() {
   # creating /var /tmp and /home
   act "loading /var"
   mv /var /dev/shm/var
-  mkdir /var
-  mount -o bind /dev/shm/var /var
+  mkdir -p /var
 		
+  act "populating /root"
+  mkdir -p /root /dev/shm/root
+  cp -ra /etc/skel/*    /dev/shm/root
+  cp -ra /etc/skel/.*   /dev/shm/root
+  chown -R root:root /dev/shm/root
+  chmod -R go-rwx /dev/shm/root
+
+
   act "populating /home"
-  mkdir -p /home /dev/shm/home
-  mount -o bind /dev/shm/home /home
-  mkdir -p /home/luther
-  cp -ra /etc/skel/*    /home/luther/
-  cp -ra /etc/skel/.*   /home/luther/
-  chown -R luther:users /home/luther
+  mkdir -p /home /dev/shm/home/luther
+  cp -ra /etc/skel/*    /dev/shm/home/luther/
+  cp -ra /etc/skel/.*   /dev/shm/home/luther/
+  chown -R luther:users /dev/shm/home/luther
 
   act "initializing /tmp"
-  mkdir /dev/shm/tmp
-  mount -o bind /dev/shm/tmp /tmp
-		
+  mkdir       /dev/shm/tmp
+  chmod a+rwx /dev/shm/tmp
+  chmod +t    /dev/shm/tmp
+
+
+  act "binding new paths"
+  mount -o bind /dev/shm/var  /var
+  mount -o bind /dev/shm/root /root
+  mount -o bind /dev/shm/home /home
+  mount -o bind /dev/shm/tmp  /tmp
+
 }
 
 
@@ -150,36 +180,22 @@ bind_nest() { # arg:   path_to_mounted_nest
     floating_nest
     return
   fi
-
-  # import logs
-  cp -ra /var/log/* ${NST}/var/log/*
-
-  # wipe out /tmp
-  if [ -x ${NST}/tmp ]; then
-      rm -rf ${NST}/tmp/* 2>&1 >/dev/null
-  fi
-
-  # wipe out /var/run
-  if [ -x ${NST}/var/run ]; then
-      rm -rf ${NST}/var/run/* 2>&1 >/dev/null
-  fi
   
   # bind home
-  if [ ! -e /home ]; then mkdir /home; fi
-  # we can also specify a single partition for home
-  # in order to share a /home with another system
+  # TODO: we can also specify a single partition for home
+  #       in order to share a /home with another system
   if ! [ -e ${NST}/home ]; then
     warning "nest is missing home, skipping"
   else
+    mkdir -p /home # redundant
     mount -o bind ${NST}/home /home
   fi
 
   # bind root
-  mkdir -p /root
-  chmod -R go-rwx /root
   if ! [ -e ${NST}/root ]; then
     warning "nest is missing root hideout, skipping"
   else
+    mkdir -p /root # redundant
     mount -o bind ${NST}/root /root
   fi
 
@@ -187,7 +203,8 @@ bind_nest() { # arg:   path_to_mounted_nest
   if [ ! -e ${NST}/etc ]; then
       warning "nest is missing etc, skipping"
   else
-      cp -f /etc/mtab ${NST}/etc/mtab
+      cp -f /etc/fstab ${NST}/etc/fstab
+      cp -f /etc/mtab  ${NST}/etc/mtab
       mount -o bind ${NST}/etc /etc
   fi
 
@@ -195,20 +212,31 @@ bind_nest() { # arg:   path_to_mounted_nest
   if [ ! -e ${NST}/var ]; then
       warning "nest is missing var, skipping"
   else
-      mount -o bind ${NST}/var /var
+      # import logs
+      mv -f /var/log/* ${NST}/var/log/
+      # wipe out /var/run
+      if [ "`ls ${NST}/var/run`" ]; then
+        cleandir ${NST}/var/run
+        # just in case we have anything running in the ramdisk
+        mv -f /var/run/* ${NST}/var/run/
+      fi
+      mount -o bind    ${NST}/var /var
   fi
 
   # bind tmp
   if [ ! -e ${NST}/tmp ]; then
       warning "nest is missing tmp, skipping"
   else
+      # we wipe out /tmp at every boot
+      cleandir ${NST}/tmp
+      # it's called temporary, you've been warned.
       mount -o bind ${NST}/tmp /tmp
+      chmod a+rwx /tmp
+      chmod +t    /tmp
   fi
 
   DYNE_NEST_PATH=${NST}
-  DYNE_NEST_VER="`cat /etc/DYNEBOLIC`"
-  echo "export DYNE_NEST_VER=${DYNE_NEST_VER}"   >> /boot/dynenv
-  echo "export DYNE_NEST_PATH=${DYNE_NEST_PATH}" >> /boot/dynenv
+  append_line /boot/dynenv "export DYNE_NEST_PATH=${DYNE_NEST_PATH}"
 
 }
 
@@ -232,12 +260,14 @@ mount_nest() {
 	    echo " ... OK"
 	    
 	    notice "activating dyne:bolic nest in ${NEST}"
+
+            act "nest filesystem check"
+            fsck -TCp ${NEST}
 	    
 	    act "mounting nest over loopback device"
 	    mount -o loop ${NEST} /mnt/nest
 	    if [ $? != 0 ]; then
 	       error "mount failed with exitcode $?"
-	       sleep 2
             fi
 	fi
     fi	
