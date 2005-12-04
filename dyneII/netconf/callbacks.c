@@ -166,7 +166,7 @@ on_combo_eth_realize                   (GtkWidget       *widget,
   char *p, *pp;
 
   /* gathers description from /proc/pci and fills the gtk combo box */
-  fd = fopen("/proc/pci","r");
+  fd = fopen("/boot/pcilist","r");
   while(fgets(tmp,256,fd)) {
     if(strstr(tmp,"Ethernet")) {
       eth_num++;
@@ -175,7 +175,7 @@ on_combo_eth_realize                   (GtkWidget       *widget,
       pp = p+1; while(*p != '(') p++;
       p--; *p = '\0'; 
       strncpy(eth[eth_num].desc,pp,256);
-      snprintf(label[eth_num],255,"eth%u: %s",eth_num, eth[eth_num].desc);
+      snprintf(label[eth_num],255,"eth%u: %s",eth_num, pp);
       fprintf(stderr,"%s\n",label[eth_num]);
       items = g_list_append(items, label[eth_num]);
       /* gathers current settings for the card
