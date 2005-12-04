@@ -382,10 +382,10 @@ dmesg -n 1
 killall syslogd
 /usr/sbin/syslogd
 
-notice "activating runtime configurations"
+notice "scan pci devices"
+lspci > /boot/pcilist
 
 # reset linker cache
-rm /etc/ld.so.conf
 append_line /etc/ld.so.conf /usr/lib
 
 # detect and mount nest

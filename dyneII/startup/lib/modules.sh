@@ -51,9 +51,9 @@ add_module_path() {
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then
       for h in `ls /home`; do
-        cp -ura /opt/${mod}/skel/*  $h/
-        cp -ura /opt/${mod}/skel/.* $h/
-        cp -ura /opt/${mod}/skel/.* /etc/skel/
+        for f in `ls -A /opt/${mod}/skel/`; do
+          cp -ua /opt/${mod}/skel/${f} /home/${h}
+        done
       done
     fi
 
@@ -110,6 +110,17 @@ mount_sdk_modules() {
   done
 
   if [ x$NEWLIBPATH = xtrue ]; then
+    # check that /usr/lib is on the first line
+    cat /etc/ld.so.conf | awk 'NR==1 { if ($0!="/usr/lib") {
+                                          print "/usr/lib"
+                                          print $0
+                                       }
+                                     }
+                                     { if ($0=="/usr/lib") next
+                                       else print $0
+                                     }' > /tmp/ld.so.conf
+    cp -f /tmp/ld.so.conf /etc/ld.so.conf
+    rm -f /tmp/ld.so.conf
     act "regenerating linkage cache"
     ldconfig &
   fi

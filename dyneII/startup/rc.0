@@ -2,7 +2,7 @@
 
 ash /lib/dyne/shutdown.sh
 
-/sbin/halt
+/sbin/halt -ihdp
 
 exit 0;
 

@@ -307,7 +307,7 @@ scan_removable() {
   fi
 
   act "checking for a usb plug"
-  if [ "`cat /proc/pci | grep USB`" ]; then
+  if [ "`dmesg | grep 'USB hub found'`" ]; then
     for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
       # now find out the last sd? device
     done
@@ -428,21 +428,38 @@ choose_volumes() {
 		fi
 	    fi
 
-	    # TODO: choice for harddisk or cdrom
-	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
-	    DYNE_SYS_MEDIA=hdisk
-	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
-	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-	    source ${DYNE_SYS_MNT}/dyne/VERSION
-	    return
+	    echo; echo; echo; echo; echo;
+            # prompt if boot from cdrom or harddisk
+            echo "[?] do you want to boot from the system on your harddisk? (Y/n)"
+	    echo; echo; echo; echo; echo;
+            ask_yesno 10
+            if [ $? != 0 ]; then
+
+	      DYNE_SYS_MEDIA=hdisk
+	      DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
+	      DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
+	      source ${DYNE_SYS_MNT}/dyne/VERSION
+	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
+	      return
+
+            else # boot from cd
+	    
+	      DYNE_SYS_MEDIA=cdrom
+	      DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
+	      DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`"
+              source ${DYNE_SYS_MNT}/dyne/VERSION
+              notice "mounting the cdrom system on $DYNE_SYS_MNT"
+	      return
+
+            fi
 
 	else # and there is no cdrom
 
-	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	    DYNE_SYS_MEDIA=hdisk
 	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
 	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
 	    source ${DYNE_SYS_MNT}/dyne/VERSION
+	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	    return
 	    
 	fi

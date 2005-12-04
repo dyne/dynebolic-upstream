@@ -128,13 +128,17 @@ EOF
 
     # first generate the harddisks
     HDISKS=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
+
     # panel
     echo $HDISKS | awk '{ print "  <icon label=\"HD " NR "\">/mnt/" $1 "</icon>" }' \
                        >> /boot/pan_Default
+
     # icons
     echo $HDISKS | awk '{ print "<rule match=\"/mnt/" $1 "\"> <icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-blockdev.png</icon> </rule>" }' >> /boot/globicons
+
     # partitions
     cat /boot/volumes | grep "^hdisk" | awk '{ print "<rule match=\"" $3 "\"> <icon>/usr/share/icons/graphite/48x48/apps/drawer.png</icon> </rule>" }' >> /boot/globicons
+
 
     # then all the rest
     # panel
@@ -152,6 +156,15 @@ EOF
         /^dvd/    { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/graphite/48x48/devices/gnome-dev-dvdr.png</icon></rule>" }
         /^usb/    { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/crystalsvg/48x48/devices/usbpendrive_unmount.png</icon></rule>" }
         ' >> /boot/globicons
+
+    # local area network, check IANA assigned private ips:
+    LAN=`ifconfig | awk '/inet addr.*192.168/ { print "true"; exit }
+                         /inet addr.*10./     { print "true"; exit }
+                         /inet addr.*172.16/  { print "true"; exit }'`
+    if [ "$LAN" = "true" ]; then
+      echo "<icon label=\"Lan\">/usr/bin/smb4k</icon>" >> /boot/pan_Default
+      echo "<rule match=\"/usr/bin/smb4k\"><icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png</icon></rule>" >> /boot/globicons
+    fi
     
     # close the panel
     echo "</start>" >> /boot/pan_Default

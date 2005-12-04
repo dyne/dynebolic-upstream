@@ -9,5 +9,4 @@
 source /lib/dyne/utils.sh
 
 notice "new storage device plugged"
-warning "TODO"
 
