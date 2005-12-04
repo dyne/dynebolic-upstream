@@ -306,23 +306,32 @@ mkinitrd() {
     cp -ra /lib .
     cp -ra /bin .
     cp -ra /sbin .
-    mkdir -p boot dev proc rem root sys usr mnt home
+    mkdir -p boot dev proc root sys usr mnt home tmp
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
     mknod dev/console c 5 1
     mkdir dev/pts
+    mkdir -p var/run
     echo "# Ramdisk version $DYNE_INITRD_VER" > boot/dynenv
 
     act "cleaning up configs and logs"
     rm -f etc/X11/XF86Config
     rm -f etc/X11/xorg.conf
-    rm -f etc/HOSTNAME etc/NETWORK
+    rm -f etc/HOSTNAME
+    rm -f etc/NETWORK
+    rm -f etc/LANGUAGE
+    rm -f etc/ld.so.conf
     rm -f etc/auto.removable
     rm -f etc/blkid.tab*
-    rm -f etc/zsh/*
-    touch etc/zsh/modules
     rm -f etc/fstab
     rm -f etc/mtab
+
+    cleandir etc/zsh
+
+    rm -f boot/dynenv*
+    touch boot/dynenv
+    touch boot/dynenv.modules
+ 
     cat << EOF > etc/fstab
 # /etc/fstab: file system information, see man fstab
 # on dyne this file is generated at runtime while booting
@@ -337,35 +346,44 @@ EOF
 
     act "packaging /var"
     cp -ra /var .
-    mkdir -p var/log/hotplug var/log/login var/log/setup
+    cleandir var/local
+    cleandir var/cache
+    cleandir var/lock
+    cleandir var/tmp
+    cleandir var/run
+    cleandir var/log
+    cleandir var/lib/rpm
+    mkdir -p var/log/hotplug var/log/login
+    mkdir -p var/log/setup var/log/cups
     mkdir -p var/cache/samba var/cache/union
-    mkdir -p var/local var/cache var/lock var/tmp
+    mkdir -p var/local var/lock var/tmp
     mkdir -p var/run var/log var/lib/rpm
-    rm -rf var/local/*
-    rm -rf var/cache/*
-    rm -rf var/lock/*
-    rm -rf var/tmp/*
-    rm -rf var/run/*
-    rm -rf var/log/*
-    rm -rf var/lib/rpm/*
+    mkdir -p var/spool/cups
   
     if [ -x $PFX/startup/.svn ]; then
 	act "setup startup files from subversion repository"
 	cp -vf $PFX/startup/rc.*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
-        mkdir -p lib/dyne/zsh
-        mkdir -p lib/dyne/hotplug
 	for f in `ls $PFX/startup/lib/`; do
-	  cp -ravf ${PFX}/startup/lib/${f}      lib/dyne/
+	  cp -raf ${PFX}/startup/lib/${f}      lib/dyne/
 	done
+        mkdir -p lib/dyne/zsh
 	for f in `ls $PFX/startup/zsh/`; do
-	  cp -avf ${PFX}/startup/zsh/${f}       lib/dyne/zsh/
+	  cp -af ${PFX}/startup/zsh/${f}       lib/dyne/zsh/
+	done
+        mkdir -p lib/dyne/xdg
+	for f in `ls $PFX/startup/xdg/`; do
+	  cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
+	done
+        mkdir -p lib/dyne/skel
+	for f in `ls -A $PFX/startup/skel/`; do
+	  cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
 	done
         for dir in `ls $PFX/startup/hotplug/`; do
           mkdir -p lib/dyne/hotplug/${dir}
           for f in `ls $PFX/startup/hotplug/${dir}/`; do
-            cp -avf ${PFX}/startup/hotplug/${dir}/${f} lib/dyne/hotplug/${dir}/ 
+            cp -af ${PFX}/startup/hotplug/${dir}/${f} lib/dyne/hotplug/${dir}/ 
           done
         done
 
@@ -377,7 +395,7 @@ EOF
 
     if [ -r /etc/rc.local ]; then
 	act "including /etc/rc.local startup settings"
-	cp -vf /etc/rc.local etc/
+	cp -f /etc/rc.local etc/
     fi
 
     ######## KERNEL MODULES
@@ -389,24 +407,30 @@ EOF
     else MODDIR=/usr/lib/modules; fi
 
     act "setup boot kernel modules for ${KRN}"
+    echo -n ":: "
     mkdir -p boot/modules/${KRN}
     for m in `iterate $SUPPORTED_FS`; do
 	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
         if [ ${M} ]; then
-	  cp -v ${M} boot/modules/${KRN}/
+	  cp ${M} boot/modules/${KRN}/
+          echo -n "${m} "
           bzip2 -9 boot/modules/${KRN}/${m}.ko
         else
+          echo
           error "module ${m} not found in ${MODDIR}/${KRN}/"
         fi
     done
     # also the samba and usb-storage modules
-    cp -v `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+    cp `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
     bzip2 -9 boot/modules/${KRN}/smbfs.ko
-    cp -v `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
+    echo -n "smbfs "
+    cp `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
     bzip2 -9 boot/modules/${KRN}/usb-storage.ko
+    echo -n "usb-storage "
     
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
+      echo
       act "adding extra modules selected on commandline"
       for m in `iterate $ADD_RAMDISK_MODULES`; do
     	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
@@ -417,6 +441,7 @@ EOF
           fi
       done
     fi
+    echo
 
     cd - > /dev/null
     cd $PFX
