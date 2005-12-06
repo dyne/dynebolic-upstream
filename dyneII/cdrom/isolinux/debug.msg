@@ -4,7 +4,7 @@ option by sending this parameter to the kernel.
 
 At the "boot:" prompt below, type:
 
- boot: linux interactive
+ boot: linux interactive=true
 
 In case your mouse and/or keyboard don't work, try:
 
