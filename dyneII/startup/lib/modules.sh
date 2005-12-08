@@ -73,7 +73,7 @@ add_module_path() {
 
 mount_sdk_modules() {
 
-  if ! [ -x ${DYNE_SYS_MNT}/dyne/SDK/modules ]; then
+  if ! [ -x ${DYNE_SYS_MNT}/SDK/modules ]; then
     act "no modules found in the current SDK"
     return
   fi
@@ -82,11 +82,11 @@ mount_sdk_modules() {
   NEWLIBPATH=false
 
   # use uncompressed modules in SDK
-  for mod in `ls --color=none ${DYNE_SYS_MNT}/dyne/SDK/modules`; do
+  for mod in `ls --color=none ${DYNE_SYS_MNT}/SDK/modules`; do
 
   #  mounted="`mount |grep ${mod} | uniq | awk '{ print $1 }'`"
 
-    if ! [ -r ${DYNE_SYS_MNT}/dyne/SDK/modules/${mod}/VERSION ]; then
+    if ! [ -r ${DYNE_SYS_MNT}/SDK/modules/${mod}/VERSION ]; then
       error "SDK/module/${mod} is missing VERSION information, skipping.."
       continue
     fi 
@@ -101,7 +101,7 @@ mount_sdk_modules() {
     # uncompressed module
     mkdir -p /opt/${mod}
 
-    mount -o bind ${DYNE_SYS_MNT}/dyne/SDK/modules/${mod} /opt/${mod}
+    mount -o bind ${DYNE_SYS_MNT}/SDK/modules/${mod} /opt/${mod}
 
     add_module_path ${mod}
 
@@ -110,28 +110,16 @@ mount_sdk_modules() {
   done
 
   if [ x$NEWLIBPATH = xtrue ]; then
-    # check that /usr/lib is on the first line
-    cat /etc/ld.so.conf | awk 'NR==1 { if ($0!="/usr/lib") {
-                                          print "/usr/lib"
-                                          print $0
-                                       }
-                                     }
-                                     { if ($0=="/usr/lib") next
-                                       else print $0
-                                     }' > /tmp/ld.so.conf
-    cp -f /tmp/ld.so.conf /etc/ld.so.conf
-    rm -f /tmp/ld.so.conf
-    act "regenerating linkage cache"
-    ldconfig &
+    ld_regenerate_cache
   fi
-  
+
 }
 
 
 mount_dyne_modules() {
 
-    if ! [ -x ${DYNE_SYS_MNT}/dyne/modules ]; then
-      act "no dyne modules found in ${DYNE_SYS_MNT}/dyne"
+    if ! [ -x ${DYNE_SYS_MNT}/modules ]; then
+      act "no dyne modules found in ${DYNE_SYS_MNT}"
       return
     fi
 	
@@ -139,7 +127,7 @@ mount_dyne_modules() {
   NEWLIBPATH=false
 
 
-    for mod in `find ${DYNE_SYS_MNT}/dyne/modules/ -name '*.dyne'`; do
+    for mod in `find ${DYNE_SYS_MNT}/modules/ -name '*.dyne'`; do
 	  # squashed .dyne module
 	    
 	  # get the name without path nor .dyne suffix
@@ -152,7 +140,7 @@ mount_dyne_modules() {
 	    
 	  mkdir -p /opt/${mod_name}
 
-	  mount -t squashfs -o loop ${mod} /opt/${mod_name}
+	  mount -t squashfs -o loop,ro,suid ${mod} /opt/${mod_name}
           if [ $? != 0 ]; then #mount failed
             error "failed mounting ${mod_name}"
             continue
@@ -165,10 +153,26 @@ mount_dyne_modules() {
      done
 
   if [ x$NEWLIBPATH = xtrue ]; then
-    act "regenerating linkage cache"
-    ldconfig &
+    ld_regenerate_cache
   fi
   
 
 }
+
+
+ld_regenerate_cache() {
+  # check that /usr/lib is on the first line
+  cat /etc/ld.so.conf | awk 'NR==1 { if ($0!="/usr/lib") {
+                                        print "/usr/lib"
+                                        print $0
+                                     } else print $0
+                                   }
+                             NR!=1 { if ($0=="/usr/lib") next
+                                     else print $0
+                                   }' > /tmp/ld.so.conf
+  cp -f /tmp/ld.so.conf /etc/ld.so.conf
+  rm -f /tmp/ld.so.conf
+  act "regenerating linkage cache"
+  ldconfig &
+} 
 

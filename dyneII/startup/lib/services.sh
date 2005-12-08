@@ -183,6 +183,12 @@ init_network() {
   
     if [ $d = "samba" ]; then
       act "activating Samba filesharing"
+      if [ -r /boot/dynenv.samba ]; then     rm -f /boot/dynenv.samba; fi
+      echo "[dyne.dock]"                         > /boot/dynenv.samba
+      echo "comment = `cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv.samba
+      echo "path = ${DYNE_SYS_MNT}"             >> /boot/dynenv.samba
+      echo "public = yes"                       >> /boot/dynenv.samba
+      echo "read only = yes"                    >> /boot/dynenv.samba
       loadmod smbfs
       smbd
       nmbd
@@ -220,3 +226,4 @@ init_sound() {
   fi
 
 }
+

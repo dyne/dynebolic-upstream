@@ -1,0 +1,11 @@
+fbpager.alpha: 64
+fbpager.workspace.width: 32
+fbpager.workspace.height: 32
+fbpager.workspacesPerRow: 2
+fbpager.changeWorkspaceButton: 1
+fbpager.dragToWorkspaceButton: 3
+fbpager.windowColor: black
+fbpager.focusedWindowColor: lightgrey
+fbpager.windowBorderColor: darkgrey
+fbpager.backgroundColor: black
+fbpager.currentBackgroundColor: darkgrey 

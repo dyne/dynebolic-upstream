@@ -1,0 +1,2 @@
+#! /bin/sh
+exec db-xterm "playing $@" mikmod "$@"

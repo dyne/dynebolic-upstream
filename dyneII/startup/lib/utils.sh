@@ -40,17 +40,23 @@ if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
 
+if [ -r /usr/bin/logger ]; then
+  LOGGER=/usr/bin/logger
+else
+  LOGGER=/bin/logger
+fi
+
 notice() {
-    /bin/logger -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
+    $LOGGER -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
 }
 act() {
-    /bin/logger -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
+    $LOGGER -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
 }
 error() {
-    /bin/logger -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
+    $LOGGER -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
 }
 warning() {
-    /bin/logger -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
+    $LOGGER -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
 }
 
 

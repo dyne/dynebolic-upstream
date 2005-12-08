@@ -387,7 +387,7 @@ choose_volumes() {
 	    
 	    DYNE_SYS_MEDIA=cdrom
 	    DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-	    DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`"
+	    DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
 	    return
 
 	fi
@@ -437,8 +437,8 @@ choose_volumes() {
 
 	      DYNE_SYS_MEDIA=hdisk
 	      DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
-	      DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-	      source ${DYNE_SYS_MNT}/dyne/VERSION
+	      DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`/dyne"
+	      source ${DYNE_SYS_MNT}/VERSION
 	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	      return
 
@@ -446,8 +446,8 @@ choose_volumes() {
 	    
 	      DYNE_SYS_MEDIA=cdrom
 	      DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-	      DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`"
-              source ${DYNE_SYS_MNT}/dyne/VERSION
+	      DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
+              source ${DYNE_SYS_MNT}/VERSION
               notice "mounting the cdrom system on $DYNE_SYS_MNT"
 	      return
 
@@ -457,8 +457,8 @@ choose_volumes() {
 
 	    DYNE_SYS_MEDIA=hdisk
 	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
-	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-	    source ${DYNE_SYS_MNT}/dyne/VERSION
+	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`/dyne"
+	    source ${DYNE_SYS_MNT}/VERSION
 	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
 	    return
 	    

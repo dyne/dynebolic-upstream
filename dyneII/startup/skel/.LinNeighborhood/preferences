@@ -1,0 +1,7 @@
+
+ workgroup = WORKGROUP
+ root_mnt_directory = /mnt/
+ run_file_manager = yes
+ file_manager = rox -d $MOUNTPOINT
+ delete_mountpoints = yes
+ replace_space_mount = yes

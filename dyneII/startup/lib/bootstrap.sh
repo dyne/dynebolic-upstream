@@ -80,7 +80,7 @@ mount /dev/pts
 mount /sys
 
 # check if an usb controller is present
-if [ "`cat /proc/pci | grep USB`" ]; then
+if [ "`dmesg | grep 'USB hub found'`" ]; then
 
    notice "USB controller detected"
 
@@ -153,18 +153,20 @@ if [ $BOOT_NETWORK ]; then
 	if [ "`echo $BOOT_NETWORK | grep -iE 'pump|dhcp|auto'`" ]; then
 
 	    act "autodetect dhcp network address"
-	    udhcp
+	    udhcpc
 
 	else
 
-	    IFACE=`echo $BOOT_NETWORK   |awk '{print $1}'`
-	    IP=`echo $BOOT_NETWORK      |awk '{print $2}'`
-	    NETMASK=`echo $BOOT_NETWORK |awk '{print $3}'`
-	    GW=`echo $BOOT_NETWORK      |awk '{print $4}'`
-	    DNS=`echo $BOOT_NETWORK     |awk '{print $5}'`
-	    ifconfig ${IFACE} ${IP} netmask ${NETMASK}
-	    route add default gw ${GW}
-	    echo "nameserver $DNS" > /etc/resolv.conf
+#	    IFACE=`echo $BOOT_NETWORK   |awk '{print $1}'`
+#	    IP=`echo $BOOT_NETWORK      |awk '{print $2}'`
+#	    NETMASK=`echo $BOOT_NETWORK |awk '{print $3}'`
+#	    GW=`echo $BOOT_NETWORK      |awk '{print $4}'`
+#	    DNS=`echo $BOOT_NETWORK     |awk '{print $5}'`
+	    IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
+	    IP=`echo $BOOT_NETWORK      | cut -d, -f2`
+	    ifconfig ${IFACE} ${IP}
+#	    route add default gw ${GW}
+#	    echo "nameserver $DNS" > /etc/resolv.conf
 
 	fi
 
@@ -202,21 +204,22 @@ if [ $BOOT_NETWORK ]; then
 #### SAMBA REMOTE DOCKING
 
 
-	DOCK_SAMBA=`get_config dock_mount_samba` # //network_address/mount (public access)
+	DOCK_SAMBA=`get_config dock_mount_samba` # network_address (public access)
 	if [ $DOCK_SAMBA ]; then
-	    notice "Configured to mount samba dock ${DOCK_SAMBA}"
+	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
+	    mkdir -p /mnt/smbdock
 	    loadmod smbfs
-	    mount -t smbfs "${DOCK_SAMBA}" "${MNT}"
+	    mount -t smbfs -o guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock >/dev/null
 	    if [ $? != 0 ]; then # mount failed
 		error "mount failed, remote dock aborted"
 	    else
-		if ! [ -r "${MNT}/dyne" ]; then
+		if ! [ -r "/mnt/smbdock/dyne.sys" ]; then
 		    error "no dyne system found on ${DOCK_SAMBA}"
-		    unmount ${MNT}
+		    umount /mnt/smbdock
 		else
-		    DYNE_SYS_MEDIA="samba"
-		    DYNE_SYS_MNT="${MNT}"
-		    DYNE_SYS_DEV="${DOCK_REMOTE}"
+		    DYNE_SYS_MEDIA=samba
+		    DYNE_SYS_MNT=/mnt/smbdock
+		    DYNE_SYS_DEV=${DOCK_SAMBA}
 		fi
 	    fi
 	fi
@@ -242,7 +245,7 @@ if [ ! -x /usr/bin/dynesplash ]; then
 else
 
   DYNE_SYS_DEV=`get_config root`
-  DYNE_SYS_MNT=/SDK/cdrom
+  DYNE_SYS_MNT=/
   DYNE_SYS_MEDIA=pre_mounted
 
 fi
@@ -315,29 +318,38 @@ if [ "$DYNE_SYS_MEDIA" = "pre_mounted" ]; then
     notice "dyne system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
 else
 
-    if [ -x ${DYNE_SYS_MNT}/dyne/SDK/sys/bin/dynesplash ]; then
+    if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin/dynesplash ]; then
         # we have an uncompressed dock in the SDK
 
 	notice "Mounting SDK filesystem from dock in ${DYNE_SYS_MNT}"
-	mount -o bind ${DYNE_SYS_MNT}/dyne/SDK/sys /usr
+	mount -o bind ${DYNE_SYS_MNT}/SDK/sys /usr
 
-    elif [ -r ${DYNE_SYS_MNT}/dyne/dyne.sys ]; then
+
+    elif [ "$DYNE_SYS_MEDIA" = "samba" ]; then
+        # we are mounting the system over the network
+
+        notice "Mounting dock over samba network from ${DYNE_SYS_DEV}"
+        mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+
+
+
+    elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
         # we have a compressed dock
 
-        notice "Mounting dock in ${DYNE_SYS_MNT}/dyne"
+        notice "Mounting dock in ${DYNE_SYS_MNT}"
         UNIONFS="`get_config unionfs`"
         if [ "$UNIONFS" = "false" ]; then 
 
            # just mount the /usr as read-only
 
            mkdir -p /usr
-           mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dyne.sys /usr
+           mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
 
 	else
 
 	   act "making the /usr writable with unionfs"
            mkdir -p /mnt/usr
-	   mount -o loop -t squashfs ${DYNE_SYS_MNT}/dyne/dyne.sys /mnt/usr
+	   mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
 	   # load union filesystem module from inside the squash
 	   insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
            # mount read-only /usr into /mnt/usr
@@ -572,7 +584,12 @@ EOF
 
   if [ -z $DYNE_NEST_PATH ]; then
     # start X
-    su luther -c xinit &
+    XREMOTE="`get_config x_remote`"
+    if [ $XREMOTE ]; then
+      su luther -c X -indirect -query ${XREMOTE}
+    else
+      su luther -c xinit &
+    fi
   else
     Login.app &
   fi

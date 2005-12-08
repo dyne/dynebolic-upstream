@@ -1,0 +1,67 @@
+[Authentication]
+Use Wallet=false
+
+[General Options]
+Main:Geometry=3,0,404,442
+Main:dock=ShareView
+Main:view=NetworkView,ShareView,TabsView
+Main:visible=false
+NameList=ShareView,NetworkView,TabsView,ShareView\\,TabsView,NetworkView\\,ShareView\\,TabsView
+NetworkView,ShareView,TabsView:first_name=NetworkView
+NetworkView,ShareView,TabsView:last_name=ShareView,TabsView
+NetworkView,ShareView,TabsView:orientation=1
+NetworkView,ShareView,TabsView:parent=yes
+NetworkView,ShareView,TabsView:sepPos=30
+NetworkView,ShareView,TabsView:stayButton=false
+NetworkView,ShareView,TabsView:type=GROUP
+NetworkView:stayButton=false
+NetworkView:tabCaption=Network Browser
+NetworkView:tabToolTip=
+NetworkView:type=DOCK
+ShareView,TabsView:first_name=ShareView
+ShareView,TabsView:last_name=TabsView
+ShareView,TabsView:orientation=0
+ShareView,TabsView:parent=yes
+ShareView,TabsView:sepPos=80
+ShareView,TabsView:stayButton=false
+ShareView,TabsView:type=GROUP
+ShareView:stayButton=false
+ShareView:tabCaption=ShareView
+ShareView:tabToolTip=
+ShareView:type=DOCK
+Show Statusbar=false
+Show Toolbar=false
+TabsView:stayButton=false
+TabsView:tabCaption=Tab Widget
+TabsView:tabToolTip=
+TabsView:type=DOCK
+Toolbar Icon Size=22
+Toolbar Position=2
+Toolbar Text Position=0
+Version=0.0.5
+
+[Programs]
+awk=/usr/bin/awk
+grep=/usr/bin/grep
+ls=/usr/bin/ls
+mount=/usr/bin/mount
+net=/usr/bin/net
+nmblookup=/usr/bin/nmblookup
+rmdir=/usr/bin/rmdir
+sed=/usr/bin/sed
+smb4k_kill=/usr/bin/smb4k_kill
+smb4k_mount=/usr/bin/smb4k_mount
+smb4k_umount=/usr/bin/smb4k_umount
+smbclient=/usr/bin/smbclient
+smbmount=/usr/bin/smbmount
+smbspool=/usr/bin/smbspool
+smbumount=/usr/bin/smbumount
+sudo=/usr/bin/sudo
+umount=/usr/bin/umount
+xargs=/usr/bin/xargs
+
+[Samba]
+Version=3.0.14a
+
+[Settings]
+StartDocked=false

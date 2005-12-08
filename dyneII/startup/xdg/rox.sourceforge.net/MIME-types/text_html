@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for app in firefox mozilla-firefox firebird mozilla-firebird galeon mozilla netscape skipstone dillo konqueror amaya; do
+  if [ -x "`which $app`" ]; then exec "$app" "$@"; fi
+done
+
+links -g $@
+
