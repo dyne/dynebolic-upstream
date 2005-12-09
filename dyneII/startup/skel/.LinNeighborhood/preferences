@@ -1,6 +1,6 @@
 
  workgroup = WORKGROUP
- root_mnt_directory = /mnt/
+ root_mnt_directory = /mnt/shares
  run_file_manager = yes
  file_manager = rox -d $MOUNTPOINT
  delete_mountpoints = yes

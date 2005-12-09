@@ -165,8 +165,8 @@ EOF
                          /inet addr.*10./     { print "true"; exit }
                          /inet addr.*172.16/  { print "true"; exit }'`
     if [ "$LAN" = "true" ]; then
-      echo "<icon label=\"Lan\">/usr/bin/smb4k</icon>" >> /boot/pan_Default
-      echo "<rule match=\"/usr/bin/smb4k\"><icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png</icon></rule>" >> /boot/globicons
+      echo "<icon label=\"Lan\">/usr/bin/LinNeighborhood</icon>" >> /boot/pan_Default
+      echo "<rule match=\"/usr/bin/LinNeighborhood\"><icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png</icon></rule>" >> /boot/globicons
     fi
     
     # close the panel

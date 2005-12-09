@@ -1,0 +1,320 @@
+# formato :
+# nome | descrizione | comando | flags | web url | autore
+
+# flags:
+# runonce | multi = if there should be only one instance running, or not
+# terminal        = if it should run in a terminal
+# manual          = if it's a manual entry
+# superuser       = if it must be run as root
+
+
+Begin | VIDEO
+
+	Begin | VEEJAY
+
+FreeJ | free the veejay! | freej | terminal | freej.dyne.org | Jaromil
+Bomb | visual plasma music | bomb | | bomb WEB | Scott Draves
+Xaos | fractal zoomer/morpher | xaos -driver x11 | | xaos WEB | Jan Hubicka
+Gephex | modular video jockey | gephex | | gephex.sf.net | Gephex team
+Veejay | remote control OSC/PD | veejay | | veejay.sf.net | Niels Elburg
+
+	End | VEEJAY
+
+	Begin | PLAY
+
+Xine | multimedia player | xine | runonce | xinehq.de | Xine team
+XawTV | television viewer | xawtv | | bytesex.org | ???
+MPlayer | versatile video player | mplayer | multi,manual | mplayerhq.hu | Arpad
+Mp4Player | mpeg4 darwin player	| gmp4player | multi | mpeg4ip.sf.net | Cisco
+
+	End | PLAY
+
+	Begin | RECORD
+
+Kino | DV recorder and editor | kino | runonce | kino.sf.net | Kino author | Kino WEB
+xVidCap | desktop movie capture | xvidcap | | xvidcap WEB | xvidcap author
+MEncoder | versatile encoder | mencoder | manual | mplayerhq.hu | Arpad
+Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
+FFMpeg | video converter | ffmpeg | manual | ffmpeg.sf.net | FFMpeg Team
+NuppleRec | efficient video recorder | nuvrec | man | nuv WEB | Roman Hochleitner
+
+	End | RECORD
+
+	Begin | EDIT
+
+Avidemux | simple video cutter | avidemux2 | runonce | avidemux.sf.net | avidemux WEB | author
+LiVES | linux video editing system | lives | runonce | lives.sf.net | Gabriel "Salsaman" Finch
+JahShaka | video effect integrator | jahshaka | runonce | jahshaka.org | JahShaka
+Cinelerra | multitrack non-linear editor | cinelerra | | heroinevirtual.com | Heroine Warrior
+
+	End | EDIT
+
+	Begin | STREAM
+
+Mp4Live | mpeg4 darwin source | mp4live | terminal | mpeg4ip.sf.net | Cisco
+Palantir | multipart jpeg | palantir | man | palantir WEB | David Santinoli
+HasciiCam | (h)ascii 4 the masses! | hasciicam | terminal | ascii.dyne.org | Jaromil
+
+	End | STREAM
+
+End | VIDEO
+
+Begin | AUDIO
+
+	Begin | DEEJAY
+
+Hydrogen | drum machine	| hydrogen | | hydrogen.sf.net | Comix
+Jamin | audio mastering	| jamin | | jamin.sf.net | Jamin author
+FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
+Jack Rack | ladspa effects rack | jack-rack | | jack-rack.sf.net | Jack auth
+SpiralSynthModular | audio in wonderland | spiralsynthmodular | | pawn?? | ?
+SoundTracker | fast tracker | soundtracker | | soundtracker.cx? | A. Koenig
+Seq24 | midi sequencer | seq24 | | seq24.sf.net | seq24 auth
+ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
+TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A.  Koenig
+GDam | remote multiple DJ | gdam | gdam WEB | gdam auth
+PD | pure data signal processing | pd | terminal | pure-data.org | Miller Puckette
+
+	End | DEEJAY
+
+	Begin | PLAY
+
+Xine | multimedia player | xine | | xinehq.de | Xine team
+Xmms | hifi audio player | xmms | | www.xmms.org | Xmms team
+Timidity | midi player | timidity -ig | | timidity WEB | Timidity auth
+MikMod | track player | mikmod | terminal | mikmod.raphnet.net | MikMod team
+# madplay | another mp3 player | madplay | man | madlib WEB | madlib auth
+
+	End | PLAY
+
+
+	Begin | RECORD
+
+Ardour | multitrack studio | ardour | | www.ardour.org | ardour auth
+TimeMachine | audio notes | timemachine | | timemachine WEB | timemachine auth
+Grip | cd ripper | grip | | grip.sf.net | grip auth
+Rami | commandline recorder | rami | terminal | rastasoft.org | Jaromil
+cdparanoia | audio cd digitizer	| cdparanoia | manual | xiph.org | Monty
+oggenc | ogg/vorbis encoder | oggenc | manual | xiph.org | Monty
+lame | mp3 encoder | lame | manual | xiph.org | Mark Taylor
+
+	End | RECORD
+
+	Begin | EDIT
+
+Audacity | audio editor	| audacity | | audacity.sf.net | Dominique Mazzoni
+ReZound | sound editor | rezound | | rezound.sf.net | rezound auth
+
+	End | EDIT
+
+	Begin | STREAM
+
+MuSE | radio streaming | muse | | muse.dyne.org | Jaromil
+# Icecast2 | start streaming server | icecast -c /etc/icecast.xml | terminal | icecast.org | xiph.org
+# Icecast2 | administration interface | links -g http://admin:hackme@localhost:8000/admin | browser | icecast.org | xiph.org
+# Icecast2 | edit configuration | nedit /etc/icecast.xml | | icecast.org | xiph.org
+
+	End | STREAM
+
+Volume | | alsamixer | terminal | www.alsa-project.org | Alsa Project 
+Midi | | alsa-patch-bay | | alsa-project.org | Alsa Project
+Jack it | | qjackctl | | jackit.sf.net | Jack author
+
+End | AUDIO
+
+Begin | IMAGE
+
+Gimp | image manipulator | gimp | | gimp.org | Gimp team
+InkScape | vectorial graphics | inkscape | | inkscape.sf.net | Inkscape auth
+Blender | 3d editor and game engine | blender | | blender3d.org | Blender found
+GQview | image file browser | gqview | | gqview.sf.net | GQView auth
+ImageMagick | image conversion | display | | www.imagemagick.org | ImageMagick Studio LLC 
+xSG | desktop screen grab | xsg | | xsg.sf.net | xSG auth
+
+End | IMAGE
+
+
+
+Begin | TEXT
+
+AbiWord | word processor | abiword | | abiword.org | abiword auth
+Scribus | desktop publisher | scribus | | scribus WEB | scribus auth
+Ted | rich text editor | Ted | | Ted WEB | Ted auth
+Bluefish | html editor | bluefish -s | | bluefish.org | bluefish auth
+Nedit | plain text editor | nedit | | nedit WEB | nedit auth
+Nano | console text editor | nano | terminal | www.nano-editor.org | Nano developers
+
+End | TEXT
+
+
+
+Begin | NET
+
+	Begin | WWW
+
+Firefox | Web browser | firefox http://dyne.org | | mozilla.org/firefox | Mozilla foundation
+Mozilla | Web Suite | mozilla -splash -height 500 -width 700 | | mozilla.org | Mozilla foundation
+Links 2 | slick web browser | links -g | | links WEB | Twibright Labs
+Links | console web browser | links | terminal | links WEB | Twibright Labs
+Lynx | console web browser | lynx | terminal | lynx WEB | lynx auth
+
+	End | WWW
+
+	Begin | EMAIL
+
+Thunderbird | e-mail client | thunderbird | | mozilla.org | Mozilla foundation
+Sylpheed | simple e-mail client| sylpheed | | sylpheed WEB | sylpheed auth
+Gpa | encryption privacy assistant | gpa | | gnupg.org | gpa auth
+Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins & Jeremy Blosser
+
+	End | EMAIL
+
+	Begin | SHARE
+
+Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
+MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
+The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
+
+	End | SHARE
+
+	Begin | CHAT
+
+XChat | irc chat | xchat | | xchat WEB | xchat auth
+Gaim | instant messaging | gaim | | gaim WEB | gaim auth
+OpenMash | audio/video conferenceu | mash-start | | openmash.org | mash auth
+KPhone | SIP web phone | kphone | | kphone WEB | kphone auth
+Nsdr | multicast session directory | nsdr | | openmash.org | mash auth
+Irssi | console irc chat | irssi | terminal | irssi WEB | irssi auth
+Silc | encrypted irc chat | silc | terminal | silc WEB | silc auth
+
+	End | CHAT
+
+	Begin | FTP
+
+GFtp | graphical ftp client | gftp | | gftp WEB | gftp auth
+NCFtp | console ftp client | ncftp | terminal | ncftp WEB | ncftp author
+LFtp | advanced ftp client | lftp | terminal | lcftp WEB | lftp auth
+
+	End | FTP
+
+	Begin | VNC
+
+VncServer | start vnc server | vncserver | man | vnc WEB | vnc auth
+VncViewer | watch a vnc server | vncconnect | man | vnc WEB | vnc auth
+VncPasswd | vnc server password | vncpasswd | man | vnc WEB | vnc auth
+RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
+
+	End | VNC
+
+	Begin | TOOLS
+
+Nmap | network scanner | xnmap | | www.insecure.org/nmap | Insecure.org
+FWBuilder | firewall builder | fwbuilder | | fwbuilder WEB | AUTH
+Ethereal | network analyzer | ethereal | | ethereal WEB | AUTH
+Ettercap | multipurpose sniffer | ettercap | | ettercap WEB | AUTH
+IPTraf | network traffic monitor | xiptraf | | iptraf WEB | AUTH
+HPing | packet forger | hping | | hping WEB | Antirez
+Minicom | serial terminal | minicom | terminal | minicom WEB | AUTH
+
+	End | TOOLS
+
+Modem | | chestnut-dialer | | chestnut WEB | AUTH
+Network | | netconf | | dynebolic.org | Jaromil
+
+End | NET
+
+Begin | OFFICE
+
+Open Office | office suite | soffice | | openoffice.org | Sun
+Spreadsheet | calculator | scalc | | openoffice.org | Sun
+Writer | word writer | swriter | | openoffice.org | Sun
+Impress | presentation | simpress | | openoffice.org | Sun
+Draw | image drawer | sdraw | | openoffice.org | Sun
+Math | mathematics | smath | | openoffice.org | Sun
+Print | printer admin | spadmin | | openoffice.org | Sun
+
+End | OFFICE
+
+Begin | FILES
+
+Rox | our file browser | rox | | rox.sf.net | Thomas Leonard
+Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
+xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
+MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
+xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
+Gringotts | encrypted data storage | gringotts -s | | WEB | AUTH
+gCombust | cd burner | gcombust | | WEB | AUTH
+
+End | FILES
+
+
+
+Begin | GAMES
+
+Anatolia | online multi user dungeon | gmudix | | WEB | AUTH
+Armagetron | tron lightspeed cycles | armagetron | | WEB | AUTH
+FreeCiv | free civilization | civclient | | WEB | AUTH
+CannonSmash | 3d multiplayer tabletennis | csmash | | WEB | AUTH
+Eat the whistle | sensible soccer | eat-the-whistle | | WEB | AUTH
+eBoard | GNU Chess & online board | eboard | | WEB | AUTH
+Foobillard | 3d carambola billard | foobillard | | WEB | AUTH
+FrozenBubble | puzzle bubble like | frozen-bubble | | WEB | AUTH
+RetroVolley | gnu arcade volleyball | gav | | WEB | AUTH
+glhack | graphical nethack dungeon | glhack | | WEB | AUTH
+lBreakout2 | arkanoid & breakout | lbreakout2 | | WEB | AUTH
+lTris | rich tetris clone | ltris | | WEB | AUTH
+Liquidwar | addictive multiplayer | liquidwar | | WEB | AUTH
+Matanza | ascii multiplayer asteroids | matanza | terminal | WEB | AUTH
+Netris | multiplayer ascii tetris| netris | terminal | AUTH | WEB
+PowerManga | galactic shot'em up | powermanga | | AUTH | WEB
+Racer | car racing from above | racer | | AUTH | WEB
+Starfighter | arcade space quest | starfighter | | AUTH | WEB
+tkSol | snappy solitaire | tksol | | AUTH | WEB
+Wesnoth | turn based strategy fantasy | wesnoth | | AUTH | WEB
+xMahjongg | chinese social game | xmahjongg | | AUTH | WEB
+xWellTris | 2.5 dimensional warped tetris | xwelltris | | AUTH | WEB
+
+End | GAMES
+
+Begin | XUTILS
+
+xvKbd | virtual keyboard | xvkbd | | AUTH | WEB
+xKill | a killer | xkill | | X.org | http://x.org
+xrMap | a world atlas | xrmap | | AUTH | WEB
+ical | calendar organizer | ical | | AUTH | WEB
+FoxCalc | a calculator | calculator | | AUTH | WEB
+xClock | a clock | xclock | | AUTH | WEB
+xFig | a figure editor | xfig | | AUTH | WEB
+xMan | a manual browser| xman | | X.org | x.org
+xFontsel | a font selector | xfontsel | | X.org | x.org
+xVidtune | vidtun (danger) | xvidtune | | X.org | x.org
+xEyes | someone's watching | xeyes | | X.org | x.org
+
+End | XUTILS
+
+
+Begin | DEVEL
+
+Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
+Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
+Vim | versatile text editor | vim | | vim.org | Braam Moolenaar et al.
+Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
+
+End | DEVEL
+
+
+Begin | SYSTEM
+
+Nest | store user settings | taschino | superuser | Jaromil | dynebolic.org
+Language | set system language | langconf | superuser | Jaromil | dynebolic.org
+Soundcard | detect soundcards | alsaconf | terminal,superuser | alsaproject.org | Alsa Project
+Videocard | detect videocards | xorgcfg | superuser | www.X.org | X.org
+Network | set system network | netconf | superuser | Jaromil | dynebolic.org
+Modem | set modem connections | chestnut-dialer | superuser | AUTH | WEB
+Printer | set printers | links -g http://localhost:631/ | | AUTH | WEB
+Terminal | XTerm Console | xterm -bg black -fg white | | X.org | x.org
+View logs | read system logs | nedit /var/log/messages | superuser | Jaromil | dynebolic.org
+
+
+End | SYSTEM
+
