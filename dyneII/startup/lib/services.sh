@@ -191,7 +191,8 @@ init_network() {
       echo "read only = yes"                    >> /boot/dynenv.samba
       loadmod smbfs
       smbd
-      nmbd
+      # we are mostly clients, so we don't start our own name resolution
+      # nmbd
     fi
   
     if [ $d = "firewall" ]; then
@@ -201,7 +202,7 @@ init_network() {
       loadmod iptable_mangle
       if [ -x /etc/FIREWALL ]; then
         act "executing firewall script in /etc/FIREWALL"
-        source /etc/FIREWALL
+        alsactl /etc/FIREWALL
       fi
     fi
   
@@ -223,6 +224,10 @@ init_sound() {
     loadmod snd-pcm-oss
     loadmod snd-mixer-oss
     loadmod snd-seq-oss
+
+    act "restoring volumes"
+    asoundctl restore
+
   fi
 
 }

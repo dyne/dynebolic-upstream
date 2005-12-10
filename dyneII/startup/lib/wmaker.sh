@@ -19,7 +19,7 @@ dyne_startx() {
 
   # set the keyboard mapping
   if [ $KEYB ]; then
-    (sleep 2; /usr/X11R6/bin/setxkbmap $KEYB &)&
+    (sleep 1; /usr/X11R6/bin/setxkbmap $KEYB &)&
   fi
 
   # start the system resource monitor
@@ -30,10 +30,10 @@ dyne_startx() {
 
   # start our ROX filer with pinboard and panel
   mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
-  (sleep 3; rox -p Default -r Default &)&
+  (sleep 2; rox -p Default -r Default &)&
 
   # the multiple desktop pager
-  (sleep 4; fbpager -w &)&
+  (sleep 10; fbpager -w &)&
 
   # and the window manager
   fluxbox

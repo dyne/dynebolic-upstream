@@ -26,7 +26,7 @@ session.screen0.slit.layer:	Desktop
 session.screen0.slit.onhead:	0
 session.screen0.slit.maxOver:	false
 session.screen0.slit.onTop:	False
-session.screen0.slit.placement: TopLeft	
+session.screen0.slit.placement: TopLeft
 session.screen0.overlay.lineWidth:	1
 session.screen0.overlay.lineStyle:	LineSolid
 session.screen0.overlay.joinStyle:	JoinMiter

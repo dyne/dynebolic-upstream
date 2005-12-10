@@ -63,11 +63,11 @@ Begin | AUDIO
 
 	Begin | DEEJAY
 
-Hydrogen | drum machine	| hydrogen | | hydrogen.sf.net | Comix
-Jamin | audio mastering	| jamin | | jamin.sf.net | Jamin author
+Hydrogen | drum machine | hydrogen | | hydrogen.sf.net | Comix
+Jamin | equalizer | jamin | | jamin.sf.net | Jamin author
 FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
 Jack Rack | ladspa effects rack | jack-rack | | jack-rack.sf.net | Jack auth
-SpiralSynthModular | audio in wonderland | spiralsynthmodular | | pawn?? | ?
+FreeWheeling | live sampling | fweelin | | freewheeling.sf.net | JP Mercury
 SoundTracker | fast tracker | soundtracker | | soundtracker.cx? | A. Koenig
 Seq24 | midi sequencer | seq24 | | seq24.sf.net | seq24 auth
 ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
@@ -102,7 +102,7 @@ lame | mp3 encoder | lame | manual | xiph.org | Mark Taylor
 
 	Begin | EDIT
 
-Audacity | audio editor	| audacity | | audacity.sf.net | Dominique Mazzoni
+Audacity | audio editor | audacity | | audacity.sf.net | Dominique Mazzoni
 ReZound | sound editor | rezound | | rezound.sf.net | rezound auth
 
 	End | EDIT

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <pinboard>
-  <backdrop style="Scaled">/usr/share/backgrounds/baobabconnections.jpg</backdrop>
+  <backdrop style="Tile">/usr/share/backgrounds/baobabconnections.jpg</backdrop>
   <icon x="32" y="736" label="Configure">/usr/apps/Configure</icon>
 </pinboard>

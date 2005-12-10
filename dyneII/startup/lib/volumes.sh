@@ -23,20 +23,37 @@ add_volume() {
   PFX=/mnt
   mkdir -p ${PFX}/${MNT}
 
+  PASS=2
+  # check for a dock
+  if [ -x ${PFX}/${MNT}/${DOCK} ]; then
+      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
+      if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
+  fi
+  if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
+
   case ${MEDIA} in
 
       "hdisk")
-	  PASS=2
-	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
-              if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
+
+          # here check if FS ~= NTFS then use umask=0222
+	  if [ "`echo '${FS}' | grep -i 'NTFS'`" ]; then
+	    OPTIONS="defaults,umask=0222"
+	    FILESYS="ntfs"
+
+          # and here check if FS ~= bsd44
+	  elif [ "`echo '${FS}'|grep -iE 'BSD|ufs'`" ]; then
+	    OPTIONS="ufstype=44bsd"
+	    FILESYS="ufs"
+
+	  else
+	    OPTIONS="defaults"
+	    FILESYS="auto"
 	  fi
-          if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
-	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /etc/fstab \
-	  "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults\t0\t${PASS}"
+            
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FILESYS} ${FLAGS}"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FILESYS}\t${OPTIONS}\t0\t${PASS}"
 	  ;;
 
 
@@ -49,16 +66,8 @@ add_volume() {
      
  
       "usb")
-	  PASS=2
-	  if [ -x ${PFX}/${MNT}/dyne ]; then
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
-	      if [ -r ${PFX}/${MNT}/dyne/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
-	  fi
-          if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /etc/fstab \
-          "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user\t0\t${PASS}"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user\t0\t${PASS}"
 	  ;;
 
       
@@ -160,20 +169,28 @@ scan_partitions() { #arg : devicename
     # scans a list of fdisk format partitions
     PART_NUM=0
     DEV=`basename $1`
-    PARTITIONS=`fdisk -l /dev/${DEV} | grep -Evi 'swap|extended' | grep '^/dev'`
+
+    # check which fdisk to use
+    FDISK=fdisk
+    if [ "`${FDISK} -l /dev/${DEV} 2>&1| \
+           grep -i 'doesn.t contain a valid partition table'`" ]; then
+      # try mac
+      FDISK=fdisk-pmac
+      if [ "`${FDISK} -l /dev/${DEV} 2>&1| \
+             grep -i 'doesn.t contain a valid partition table'`" ]; then
+        error "can't parse partition table of drive ${DEV}"
+        return
+      fi
+    fi
+
+    PARTITIONS=`${FDISK} -l /dev/${DEV}            \
+              | sed -e 's/ \* / /'              \
+              | awk '/^\/dev\/*/ { if(NF!=1) print $0 }' \
+              | grep -Evi 'extended|swap|partition.map|free.space'`
     
         # cycle thru partitions
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn
     for PART in ${(f)PARTITIONS}; do
-	
-	# setup special flags needed for most common BSD fs
-	if [ "`echo $PART|grep -iE 'BSD|ufs'`" ]; then
-	    MOUNT_FS="-t ufs"
-	    MOUNT_OPTS="-o ufstype=44bsd"
-	else
-	    MOUNT_FS=""
-	    MOUNT_OPTS=""
-	fi
 	
 	
 	PART_FS="`echo $PART|awk '{print $6}'`"

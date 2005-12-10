@@ -29,7 +29,7 @@ DYNE_SHELL_UTILS=included
 # list of supported filesystems, used by:
 # dynesdk - to copy the needed kernel modules in the initrd
 # volumes.sh - to load the modules at startup, for mount autodetection
-SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,xfs,reiserfs"
+SUPPORTED_FS="fat,vfat,msdos,ntfs,ufs,befs,xfs,reiserfs,hfsplus"
 
 # load dyne environmental variable
 if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
