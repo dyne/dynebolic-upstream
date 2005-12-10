@@ -61,7 +61,17 @@ End | VIDEO
 
 Begin | AUDIO
 
-	Begin | DEEJAY
+	Begin | PLAY
+
+Amarok | music player | amarok | | amarok.kde.org | Amarok dev team
+Xine | multimedia player | xine | | xinehq.de | Xine team
+Xmms | hifi audio player | xmms | | www.xmms.org | Xmms team
+Timidity | midi player | timidity -ig | | timidity WEB | Timidity auth
+MikMod | track player | mikmod | terminal | mikmod.raphnet.net | MikMod team
+
+	End | PLAY
+
+	Begin | PERFORM
 
 Hydrogen | drum machine | hydrogen | | hydrogen.sf.net | Comix
 Jamin | equalizer | jamin | | jamin.sf.net | Jamin author
@@ -71,50 +81,29 @@ FreeWheeling | live sampling | fweelin | | freewheeling.sf.net | JP Mercury
 SoundTracker | fast tracker | soundtracker | | soundtracker.cx? | A. Koenig
 Seq24 | midi sequencer | seq24 | | seq24.sf.net | seq24 auth
 ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
-TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A.  Koenig
+TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A. Koenig
 GDam | remote multiple DJ | gdam | gdam WEB | gdam auth
 PD | pure data signal processing | pd | terminal | pure-data.org | Miller Puckette
 
-	End | DEEJAY
-
-	Begin | PLAY
-
-Xine | multimedia player | xine | | xinehq.de | Xine team
-Xmms | hifi audio player | xmms | | www.xmms.org | Xmms team
-Timidity | midi player | timidity -ig | | timidity WEB | Timidity auth
-MikMod | track player | mikmod | terminal | mikmod.raphnet.net | MikMod team
-# madplay | another mp3 player | madplay | man | madlib WEB | madlib auth
-
-	End | PLAY
-
-
-	Begin | RECORD
-
-Ardour | multitrack studio | ardour | | www.ardour.org | ardour auth
-TimeMachine | audio notes | timemachine | | timemachine WEB | timemachine auth
-Grip | cd ripper | grip | | grip.sf.net | grip auth
-Rami | commandline recorder | rami | terminal | rastasoft.org | Jaromil
-cdparanoia | audio cd digitizer	| cdparanoia | manual | xiph.org | Monty
-oggenc | ogg/vorbis encoder | oggenc | manual | xiph.org | Monty
-lame | mp3 encoder | lame | manual | xiph.org | Mark Taylor
-
-	End | RECORD
+	End | PERFORM
 
 	Begin | EDIT
 
+Ardour | multitrack studio | ardour | | www.ardour.org | Paul Davis
 Audacity | audio editor | audacity | | audacity.sf.net | Dominique Mazzoni
-ReZound | sound editor | rezound | | rezound.sf.net | rezound auth
+ReZound | sample editor | rezound | | rezound.sf.net | rezound auth
 
 	End | EDIT
 
-	Begin | STREAM
+	Begin | PUBLISH
 
-MuSE | radio streaming | muse | | muse.dyne.org | Jaromil
+MuSE | online radio streaming | muse | | muse.dyne.org | Jaromil
+SimpleCDRX | audio cd mastering | simplecdrx | | ogre.rocky-road.net/cdr.shtml | Ogre
 # Icecast2 | start streaming server | icecast -c /etc/icecast.xml | terminal | icecast.org | xiph.org
 # Icecast2 | administration interface | links -g http://admin:hackme@localhost:8000/admin | browser | icecast.org | xiph.org
 # Icecast2 | edit configuration | nedit /etc/icecast.xml | | icecast.org | xiph.org
 
-	End | STREAM
+	End | PUBLISH
 
 Volume | | alsamixer | terminal | www.alsa-project.org | Alsa Project 
 Midi | | alsa-patch-bay | | alsa-project.org | Alsa Project
@@ -299,6 +288,7 @@ Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chapli
 Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
 Vim | versatile text editor | vim | | vim.org | Braam Moolenaar et al.
 Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
+Adie | advanced interactive editor | adie | | fox-toolkit.org | Jeroen van der Zijp
 
 End | DEVEL
 

@@ -453,7 +453,6 @@ check_apps_present
 
 
 
-UNION_USR_RW="`get_config unionfs`"
 if [ ${UNION_USR_RW} ]; then
   notice "making /usr writable with unionfs"
   # create directory where to store unionfs changes
