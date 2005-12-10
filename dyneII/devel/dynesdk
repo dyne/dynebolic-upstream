@@ -38,7 +38,7 @@ PACKAGE="dyne:bolic SDK"
 VERSION="2.0"
 ISO="dyneII-dev.iso"
 if [ -z $DYNESDK ]; then
-  PFX="$DYNE_SYS_MNT/dyne/SDK" # you can change it to static path where dynesdk resides
+  PFX="$DYNE_SYS_MNT/SDK" # you can change it to static path where dynesdk resides
 else
   PFX=${DYNESDK}
 fi
@@ -116,8 +116,8 @@ if [ $DYNE_SYS_MEDIA = cdrom ]; then
     exit 0
 fi
 
-if ! [ -x $DYNE_SYS_MNT/dyne ]; then
-    error "no dyne/ system directory found in ${DYNE_SYS_MNT}"
+if ! [ -x $DYNE_SYS_MNT ]; then
+    error "no dock found in ${DYNE_SYS_MNT}"
     error "please correct your DYNE environmental variables"
     error "this doesn't seems an usual dock, uh?"
     exit 0
@@ -312,6 +312,9 @@ mkinitrd() {
     mknod dev/console c 5 1
     mkdir dev/pts
     mkdir -p var/run
+    # create a link for smbmnt so that it is found by mount
+    mkdir -p usr/bin
+    ln -s /sbin/smbmnt usr/bin/smbmnt
     echo "# Ramdisk version $DYNE_INITRD_VER" > boot/dynenv
 
     act "cleaning up configs and logs"
@@ -325,8 +328,6 @@ mkinitrd() {
     rm -f etc/blkid.tab*
     rm -f etc/fstab
     rm -f etc/mtab
-
-    cleandir etc/zsh
 
     rm -f boot/dynenv*
     touch boot/dynenv
@@ -354,7 +355,7 @@ EOF
     cleandir var/log
     cleandir var/lib/rpm
     mkdir -p var/log/hotplug var/log/login
-    mkdir -p var/log/setup var/log/cups
+    mkdir -p var/log/setup var/log/cups var/log/samba
     mkdir -p var/cache/samba var/cache/union
     mkdir -p var/local var/lock var/tmp
     mkdir -p var/run var/log var/lib/rpm
