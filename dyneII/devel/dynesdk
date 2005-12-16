@@ -148,24 +148,26 @@ fi
 
 mksdk() {
   
-  source $DYNE_SYS_MNT/dyne/VERSION
+  source $DYNE_SYS_MNT/VERSION
   notice "creating SDK inside $DYNE_SYS_MNT/dyne"
   act "version: sys $DYNE_SYS_VER - initrd $DYNE_INITRD_VER"
       
   mkdir -p ${PFX}
   cd ${PFX}
 
-  act "downloading dyne:II liveCD skeleton files from online repository"
-  if ! [ -x startup ]; then
-    svn co svn://code.dyne.org/dynebolic/dyneII/startup
+  echo "[?] download dyne:II liveCD skeleton files from online repository (y/N) ?"
+  ask_yesno 10
+  if [ $? = 1 ]; then
+    if ! [ -x startup ]; then
+      svn co svn://code.dyne.org/dynebolic/dyneII/startup
+    fi
+    if ! [ -x cdrom ]; then
+      svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
+    fi
+    if ! [ -x devel ]; then
+      svn co svn://code.dyne.org/dynebolic/dyneII/devel
+    fi
   fi
-  if ! [ -x cdrom ]; then
-    svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
-  fi
-  if ! [ -x devel ]; then
-    svn co svn://code.dyne.org/dynebolic/dyneII/devel
-  fi
-
 
   act "I can uncompress dyne.sys, it will occupy approx 2Gb"
   act "this way your /usr will become writable."
@@ -179,7 +181,7 @@ mksdk() {
     mkdir sys
     act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne/dyne.sys"
     act "please wait, this operation requires long time..."
-    mount -o loop ${DYNE_SYS_MNT}/dyne/dyne.sys tmp
+    mount -o loop ${DYNE_SYS_MNT}/dyne.sys tmp
     cp -rau tmp/* sys/
     umount tmp
     rm -r tmp
@@ -366,12 +368,15 @@ EOF
 	cp -vf $PFX/startup/rc.*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
+        for f in `ls -A $PFX/startup/bin/`; do
+          cp -raf ${PFX}/startup/bin/${f}       bin
+        done
 	for f in `ls $PFX/startup/lib/`; do
-	  cp -raf ${PFX}/startup/lib/${f}      lib/dyne/
+	  cp -raf ${PFX}/startup/lib/${f}       lib/dyne/
 	done
         mkdir -p lib/dyne/zsh
 	for f in `ls $PFX/startup/zsh/`; do
-	  cp -af ${PFX}/startup/zsh/${f}       lib/dyne/zsh/
+	  cp -af ${PFX}/startup/zsh/${f}        lib/dyne/zsh/
 	done
         mkdir -p lib/dyne/xdg
 	for f in `ls $PFX/startup/xdg/`; do
