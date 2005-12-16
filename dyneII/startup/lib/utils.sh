@@ -58,7 +58,10 @@ error() {
 warning() {
     $LOGGER -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
 }
-
+xosd() {
+    echo "${1}" | osd_cat -c lightblue -p middle -A center -s 3 \
+      -f "-*-lucidatypewriter-*-*-*-sans-*-190-*-*-*-*-*-*" &
+}
 
 # configuration handling
 # returns the value of a configuration variable

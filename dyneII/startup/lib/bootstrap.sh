@@ -389,10 +389,11 @@ fi
 # now the system is mounted expand our PATH
 export PATH=/usr/bin:/usr/sbin:$PATH
 
-notice "start multiuser system log monitor"
 dmesg -n 1
-killall syslogd
-/usr/sbin/syslogd
+
+# notice "start multiuser system log monitor"
+# killall syslogd
+# /usr/sbin/syslogd
 
 notice "scan pci devices"
 lspci > /boot/pcilist
@@ -423,7 +424,6 @@ done
     
 # load necessary kernel modules
 init_modules
-
 
 # here we were configuring the videocard for X
 # this is now done in the Xorg module
@@ -521,7 +521,7 @@ if [ `cat /boot/mode` = volatile ]; then exit 0; fi
 
 
 #################################
-######## ASCII MODe
+######## ASCII MODE
 ASCII="`get_config ascii`"
 if [ $ASCII ]; then
     rm -f /boot/mode

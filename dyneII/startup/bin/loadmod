@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+source /lib/dyne/utils.sh
+
+if [ -z $1 ]; then
+  echo "loadmod loads kernel modules"
+  echo "usage: loadmod kernel_module(.ko) [module arguments]"
+  exit 0
+fi
+
+loadmod $@
+
+exit 0
+

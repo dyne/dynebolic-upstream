@@ -72,6 +72,12 @@ check_apps_present() {
        continue
      fi
 
+     # pass special entries
+     if [ "$l" = "DESKTOP" ]; then
+       echo "$l" >> /boot/dyne.apps
+       continue
+     fi
+
      # and now check the applications
      APP="`echo $l | cut -f3 -d'|' | awk '{print $1}'`"  
      which $APP    1>/dev/null     2>/dev/null

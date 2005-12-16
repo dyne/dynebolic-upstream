@@ -1,0 +1,128 @@
+### GKrellM user config.  Auto written, do not edit (usually) ###
+### Version 2.2.7 ###
+enable_hostname 0
+hostname_short 0
+enable_sysname 0
+mbmon_port 0
+sticky_state 1
+dock_type 0
+decorated 0
+skip_taskbar 0
+skip_pager 0
+above 0
+below 0
+track_gtk_theme_name 0
+default_track_theme "Clearlooks"
+save_position 0
+chart_width 60
+update_HZ 5
+allow_multiple_instances 0
+float_factor 1000
+hostname sysname_mode 1
+clock_cal clock_launch xclock
+clock_cal clock_tooltip see analog clock
+clock_cal cal_launch ical
+clock_cal cal_tooltip see full calendar
+clock_cal hour_chime_command 
+clock_cal quarter_chime_command 
+clock_cal loop_chime_enable 0
+clock_cal clock_options 0 1 1 1
+clock_cal cal_options 0
+cpu launch cpu qps
+cpu tooltip_comment cpu see current processes statistics
+cpu extra_info cpu 0
+cpu chart_config cpu 30 20 0 0 0 0 : 0 0 0 0 500 : 0 0 0 0 500 : 0 0 0 0 500
+cpu enable 1
+cpu smp_mode 0
+cpu omit_nice_mode 0
+cpu config_tracking 0
+cpu sensor_mode 0
+cpu text_format $T
+proc enable 0 1
+proc launch (null)
+proc tooltip_comment (null)
+proc sensor_mode 0
+proc text_format \w88\a$p\f procs\n\e$u\f users
+proc chart_config 40 100 0 0 0 0 : 1 0 0 0 500 : 0 0 0 0 500
+disk assign_method 2
+disk device Disk 0 0 0 1 1 0 0
+disk launch Disk db-xterm "Current disk usage" "df|most"
+disk tooltip_comment Disk see detailed disk usage
+disk chart_config Disk 30 30000 0 1 0 0 : 0 1 0 0 500 : 0 0 0 0 500
+disk device hda 0 0 1 0 1 -1 0
+disk device hda1 0 0 1 0 1 1 0
+disk device hda2 0 0 1 0 1 2 0
+disk device hda3 0 0 1 0 1 3 0
+disk device hda4 0 0 1 0 1 4 0
+disk device hda5 0 0 1 0 1 5 0
+disk device hda6 0 0 1 0 1 6 0
+disk device hda7 0 0 1 0 1 7 0
+disk device hdc 0 0 2 0 1 -1 0
+disk device fd0 0 0 40 0 1 -1 0
+disk text_format $T
+inet text_format all \t$a\f $l\N$A\f $L
+inet update_interval 1
+net enables eth0 1 1 0
+net chart_config eth0 30 500 0 1 0 0 : 0 1 0 0 500 : 0 0 0 0 500
+net launch eth0 db-xterm "Current network configuration" "ifconfig|most"
+net tooltip eth0 see network configuration
+net enables eth1 1 1 0
+net chart_config eth1 30 700 0 1 0 0 : 0 0 0 0 500 : 0 0 0 0 500
+net enables lo 0 1 0
+net enables ppp0 0 1 0
+net chart_config ppp0 40 2000 0 1 0 0 : 0 0 0 0 500 : 0 0 0 0 500
+net enables vmnet1 1 1 0
+net chart_config vmnet1 40 10000 0 1 0 0 : 0 0 0 0 500 : 0 0 0 0 500
+net enables vmnet8 1 1 0
+net chart_config vmnet8 40 10000 0 1 0 0 : 0 0 0 0 500 : 0 0 0 0 500
+net timer_enabled 1
+net timer_seconds 1
+net timer_iface none
+net timer_on 
+net timer_off 
+net text_format $T\b\c\f$L
+net reset_mday 1
+net net_stats_window_height 200
+meminfo mem_meter 1 1 0
+meminfo swap_meter 0 1
+meminfo swap_chart 0 1
+meminfo mem_launch qps
+meminfo mem_tooltip see detailed memory usage
+meminfo mem_data_format $t - $U
+meminfo swap_launch 
+meminfo swap_tooltip 
+meminfo swap_data_format $t - $f free
+meminfo text_format $T
+fs fs_check_timeout 2
+fs nfs_check_timeout 16
+fs auto_eject 0
+fs binary_units 0
+fs data_format $t - $f free
+mail mailbox-local mbox /home/INBOX
+mail mua 
+mail notify 
+mail fetch_command 
+mail remote_check_timeout 5
+mail local_check_timeout 4
+mail fetch_check_is_local 0
+mail msg_count_mode 0
+mail animation_select_mode 3
+mail fetch_check_only_mode 0
+mail reset_remote_mode 0
+mail unseen_is_new 0
+mail enable 0 0 0 0
+mail animation_continuous 0
+mail show_tooltip 1
+mail mh_seq_ignore 0
+battery enable 0
+battery enable_composite 0
+battery estimate_time 0
+battery estimate_time_discharge 1500
+battery estimate_time_charge 3000
+battery estimate_time_charge_model 0
+battery full_cap_fallback 5000
+battery poll_interval 5
+battery alert_units_percent 0
+uptime enable 0
+uptime launch 
+uptime tooltip 

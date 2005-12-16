@@ -207,8 +207,8 @@ Minicom | serial terminal | minicom | terminal | minicom WEB | AUTH
 
 	End | TOOLS
 
-Modem | | chestnut-dialer | | chestnut WEB | AUTH
-Network | | netconf | | dynebolic.org | Jaromil
+Modem | | chestnut-dialer | superuser | chestnut WEB | AUTH
+Network | | netconf | superuser | dynebolic.org | Jaromil
 
 End | NET
 
@@ -286,7 +286,7 @@ Begin | DEVEL
 
 Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
 Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
-Vim | versatile text editor | vim | | vim.org | Braam Moolenaar et al.
+Vim | versatile text editor | vim | terminal | vim.org | Braam Moolenaar et al.
 Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
 Adie | advanced interactive editor | adie | | fox-toolkit.org | Jeroen van der Zijp
 
@@ -307,4 +307,17 @@ View logs | read system logs | nedit /var/log/messages | superuser | Jaromil | d
 
 
 End | SYSTEM
+
+
+DESKTOP
+
+
+Begin | EXIT
+
+Logout | back to the login | xquit "logout" | Jaromil | dynebolic.org
+Power OFF | shutdown the computer | xquit "halt" | Jaromil | dynebolic.org
+Reboot | restart the computer | xquit "reboot" | Jaromil | dynebolic.org
+KillX | kill the X desktop | xquit "killx" | Jaromil | dynebolic.org
+
+End | EXIT
 

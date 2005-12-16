@@ -74,6 +74,9 @@ init_modules() {
      loadmod $i 
    done
 
+   # load ACPI button module for button-driven power down
+   loadmod button
+
 }
 
 apply_network() {
@@ -208,6 +211,12 @@ init_network() {
   
   done
   
+
+  # create the directory where to mount samba shares
+  mkdir -p         /mnt/shares
+  chown root:users /mnt/shares
+  chmod ug+rwx     /mnt/shares
+  
 }
 
 init_sound() {
@@ -226,7 +235,7 @@ init_sound() {
     loadmod snd-seq-oss
 
     act "restoring volumes"
-    asoundctl restore
+    alsactl restore
 
   fi
 

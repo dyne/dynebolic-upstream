@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  TITLE="XTerm"
+else 
+  TITLE="$1"
+  shift
+fi
+
+if [ -z "$1" ]; then
+  PROG="`which zsh`"
+else
+  PROG=$@
+fi
+
+if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
+
+xterm -tn xterm-color -bg black -fg white -T "$TITLE" \
+      -e "TERM=xterm-color $PROG" &
+

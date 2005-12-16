@@ -457,6 +457,7 @@ choose_volumes() {
 	      DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`/dyne"
 	      source ${DYNE_SYS_MNT}/VERSION
 	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
+              eject `echo ${CD} | awk '{print $2}'`
 	      return
 
             else # boot from cd

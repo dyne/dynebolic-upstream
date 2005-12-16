@@ -1,0 +1,119 @@
+#!/bin/sh
+
+# dyne:II graphical quit script
+# (C) 2005-2006 Denis "jaromil" Rojo
+
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+
+
+
+source /lib/dyne/utils.sh
+
+if   [ "$1" = "halt" ];   then
+
+  MSG="shutdown the computer"
+  ACTION="halt"
+
+elif [ "$1" = "reboot" ]; then
+
+  MSG="restart the computer"
+  ACTION="reboot"
+
+elif [ "$1" = "killx" ]; then
+
+  MSG="close the graphical desktop"
+  ACTION="killx"
+
+elif [ "$1" = "logout" ]; then
+
+  MSG="log out with your user"
+  ACTION="logout"
+
+else
+  echo "usage: $0 [ logout | halt | reboot | killx ]"
+  exit 0
+fi
+
+export MAIN_DIALOG="
+<vbox>
+
+<frame Quit dyne:bolic>
+
+<hbox>
+
+<pixmap>
+  <input file>/usr/share/icons/graphite/48x48/apps/boot.png</input>
+</pixmap>
+
+<text>
+  <label>Are you sure you want to ${MSG}?</label>
+</text>
+
+</hbox>
+
+</frame>
+
+<hbox>
+
+ <button ok></button>
+
+ <button cancel></button>
+
+</hbox>
+
+</vbox>
+"
+
+if     [ "$ACTION" = "logout" ]; then
+  EXEC="exec"
+elif   [ "`id -nu`" = "root" ]; then
+  EXEC="exec"
+elif   [ "`id -nG | grep wheel`" ]; then
+  EXEC="sudo"
+else
+  EXEC="/usr/libexec/autopackage/autosu-gtk"
+fi
+
+export `gtkdialog --program=MAIN_DIALOG`
+
+ # | awk ' BEGIN { FS="=" } { if($2 == "\"true\"") print $1 }'`
+
+if   [ "$EXIT" = "\"OK\"" ]; then
+
+  notice "$MSG"
+
+  if   [ "$ACTION" = "halt" ]; then
+
+    $EXEC /sbin/shutdown -h now
+
+  elif [ "$ACTION" = "reboot" ]; then
+
+    $EXEC /sbin/shutdown -r now
+
+  elif [ "$ACTION" = "killx" ]; then
+
+    $EXEC /usr/bin/killall X
+
+  elif [ "$ACTION" = "logout" ]; then
+
+    $EXEC /usr/bin/killall fluxbox
+
+  fi
+
+fi
+
+ 
+

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# this wrapper is necessary to set the language variable on each command
+# which is launched by the window manager
+# /etc/LANGUAGE
+
+if [ -e /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
+
+# if there is no display set
+if [ -z $DISPLAY ]; then
+  export DISPLAY=:0.0
+fi
+
+# be sure we know about all the modules
+source /boot/dynenv.modules
+
+$@ &
+

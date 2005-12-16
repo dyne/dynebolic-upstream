@@ -7,7 +7,7 @@ session.screen0.iconbar.deiconifyMode:	Follow
 session.screen0.iconbar.mode:	Workspace
 session.screen0.window.focus.alpha:	255
 session.screen0.window.unfocus.alpha:	255
-session.screen0.menu.alpha:	255
+session.screen0.menu.alpha:	225
 session.screen0.toolbar.autoHide:	false
 session.screen0.toolbar.maxOver:	false
 session.screen0.toolbar.onhead:	0
