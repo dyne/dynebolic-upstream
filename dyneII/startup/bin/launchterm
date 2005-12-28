@@ -13,8 +13,6 @@ else
   PROG=$@
 fi
 
-if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
-
-xterm -tn xterm-color -bg black -fg white -T "$TITLE" \
-      -e "TERM=xterm-color $PROG" &
+mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
+      -tabfg lightgrey -itabfg darkgrey -tr -trm -trt -ss rxvt -sr -bgfade 80 -fade 50 -ts black -bc -vb
 

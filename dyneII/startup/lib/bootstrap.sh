@@ -233,20 +233,25 @@ fi
 
 #### if /usr is not already mounted then let's go looking for a system
 #### this control lets have dyne:bolic run from a partition
-if [ ! -x /usr/bin/dynesplash ]; then
+
+if ! [ $DYNE_SYS_MEDIA ]; then
+
+  if ! [ -x /usr/bin/dynesplash ]; then
     
 
-##### NOW HERE THE SYSTEM SELECTION
+  ##### NOW HERE THE SYSTEM SELECTION
 
-  # call the procedure to select and upgrade detected systems
-  choose_volumes
-  # see /lib/dyne/volumes.sh
+    # call the procedure to select and upgrade detected systems
+    choose_volumes
+    # see /lib/dyne/volumes.sh
 
-else
+  else
 
-  DYNE_SYS_DEV=`get_config root`
-  DYNE_SYS_MNT=/
-  DYNE_SYS_MEDIA=pre_mounted
+    DYNE_SYS_DEV=`get_config root`
+    DYNE_SYS_MNT=/
+    DYNE_SYS_MEDIA=pre_mounted
+
+  fi
 
 fi
 
@@ -437,7 +442,10 @@ init_sound
 init_firewire
 
 # configure network
-init_network
+BOOT_NETWORK="`get_config network_boot`"
+if ! [ $BOOT_NETWORK ]; then # avoid reconfiguration
+  init_network
+fi
 
 ##########################################
 ## activate all dyne modules

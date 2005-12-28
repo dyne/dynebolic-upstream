@@ -302,7 +302,7 @@ Videocard | detect videocards | xorgcfg | superuser | www.X.org | X.org
 Network | set system network | netconf | superuser | Jaromil | dynebolic.org
 Modem | set modem connections | chestnut-dialer | superuser | AUTH | WEB
 Printer | set printers | links -g http://localhost:631/ | | AUTH | WEB
-Terminal | XTerm Console | xterm -bg black -fg white | | X.org | x.org
+Terminal | XTerm Console | launchterm | | X.org | x.org
 View logs | read system logs | nedit /var/log/messages | superuser | Jaromil | dynebolic.org
 
 

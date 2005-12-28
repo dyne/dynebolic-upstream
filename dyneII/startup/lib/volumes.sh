@@ -44,7 +44,7 @@ add_volume() {
 
           # and here check if FS ~= bsd44
 	  elif [ "`echo '${FS}'|grep -iE 'BSD|ufs'`" ]; then
-	    OPTIONS="ufstype=44bsd"
+	    OPTIONS="ro,ufstype=44bsd"
 	    FILESYS="ufs"
 
 	  else

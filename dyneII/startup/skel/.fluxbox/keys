@@ -17,5 +17,5 @@ Mod1 F4  :Close
 Mod1 F10 :MaximizeHorizontal
 Mod1 F11 :MaximizeVertical
 Mod1 F12 :Maximize
-Mod1 x :Exec db-xterm
+Mod1 x :Exec launchterm
 Mod1 n :Exec links -g

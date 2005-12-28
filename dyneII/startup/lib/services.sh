@@ -205,7 +205,7 @@ init_network() {
       loadmod iptable_mangle
       if [ -x /etc/FIREWALL ]; then
         act "executing firewall script in /etc/FIREWALL"
-        alsactl /etc/FIREWALL
+        sh /etc/FIREWALL
       fi
     fi
   

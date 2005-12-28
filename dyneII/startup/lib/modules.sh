@@ -62,8 +62,10 @@ add_module_path() {
     if [ -x /opt/${mod}/etc ]; then
       for rc in `ls /opt/${mod}/etc | awk '/^rc.*/ {print $1}'`; do
         if [ -x /opt/${mod}/etc/$rc ]; then
-          # call the rc script with module name as argument
-          /opt/${mod}/etc/$rc ${mod}
+          if ! [ -d /opt/${mod}/etc/$rc ]; then
+            # call the rc script with module name as argument
+            /opt/${mod}/etc/$rc ${mod}
+          fi
         fi
       done
     fi
