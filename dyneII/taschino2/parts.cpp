@@ -162,6 +162,7 @@ int scan_parts() {
   int hdfound, c;
   int partfound, cc;
   int partnum;
+  int usbfound;
   char tmp[256];
   
   /* zeroes all the struct */
@@ -195,9 +196,9 @@ int scan_parts() {
       parts_found++;
     } // for cycle thru partitions found by scandir
   } // for cycle thru harddisks
-  /*
-  found = chdir("/mnt/usb");
-  if(found<0) perror("can't scan /mnt/usb");
+
+  usbfound = chdir("/mnt/usb");
+  if(usbfound<0) perror("can't scan /mnt/usb");
   else {
     sync();
     c++;
@@ -208,7 +209,7 @@ int scan_parts() {
     analyze(c);
     
     parts_found++;
-    } */
+  }
 
   scanned = true;
   return parts_found;

@@ -2,7 +2,7 @@
 #
 # nidifica - script to NEST dyne:bolic in various forms
 #
-#  * Copyright (C) 2003-2005 Denis "jaromil" Rojo - RASTASOFT.org
+#  * Copyright (C) 2003-2006 Denis "jaromil" Rojo - RASTASOFT.org
 #
 #  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
 #
@@ -26,7 +26,7 @@
 
 source /lib/dyne/utils.sh
 
-LODEV=/dev/loop30 # always choose a free one! there are 0-7
+LODEV=/dev/loop30 # always choose a free one!
 NESTNAME="dynebol.nst" # that's the default name, dynebolE.nst is encrypted
 
 mkdir -p /var/log/setup
@@ -67,7 +67,7 @@ report_error() {
 ###
 
 notice "nidifica  - create dyne:II nest"
-act "(c)2003-2005 by Jaromil - RASTASOFT.org"
+act "(c)2003-2006 by Jaromil - RASTASOFT.org"
 act "invoked with args \"$*\" "
 act "running on `date`"
 
@@ -209,6 +209,9 @@ if [ $LOOPBACK ]; then
     cp -ra /etc/skel/.*    /tmp/nest/root
     chmod -R go-rwx        /tmp/nest/root
     
+    mkdir -p /tmp/nest/local
+    cp -ra /usr/local/*    /tmp/nest/local
+
     cp -ra /etc /tmp/nest
     cp -ra /var /tmp/nest
     mkdir       /tmp/nest/tmp
@@ -225,7 +228,8 @@ if [ $LOOPBACK ]; then
     act "here is your new dyne:bolic nest:"
     stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
     
-    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: CLOSE ALL APPLICATIONS AND REBOOT TO ACTIVATE YOUR NEST!"
+    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: Once you reboot, you will be prompted for a login: user root has password luther :: you can activate multiple user accounts, refer to the manual for more informations."
+
     notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
 
 fi # end nest in loopback

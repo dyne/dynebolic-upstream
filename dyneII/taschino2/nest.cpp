@@ -129,9 +129,9 @@ void scan_nest_hd() {
 } /* end of HARDDISK DETECTION */
 
 static char nest_size[256];
-static char nest_crypt[256];
+// static char nest_crypt[256];
 void apply_nest(int sel) {
-  GtkToggleButton *cryptoggle;
+//  GtkToggleButton *cryptoggle;
   GtkRange *sizebar;
   bool crypt = false;
   int size = 0;
@@ -144,10 +144,11 @@ void apply_nest(int sel) {
   debug_parts(sel);
 
   /* gather user input settings */
-  
+ 
+  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
   cryptoggle = (GtkToggleButton*)glade_xml_get_widget(gui,nest_crypt);
   crypt = gtk_toggle_button_get_active( cryptoggle );
-  fprintf(stderr,"encryption is %i\n",crypt);
+  fprintf(stderr,"encryption is %i\n",crypt); */
 
   sizebar = (GtkRange*)glade_xml_get_widget(gui,nest_size);
   size = (unsigned int) sizebar->adjustment->value;
@@ -184,7 +185,8 @@ void apply_nest_usb(GtkWidget *widget, gpointer *data) {
     error("%s",gtk_label_get_text(label_usb));
   else {
     sprintf(nest_size,"hscale_nest_usb_size");
-    sprintf(nest_crypt,"toggle_nest_usb_crypt");
+  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
+    sprintf(nest_crypt,"toggle_nest_usb_crypt"); */
     apply_nest(selection_usb);
   }
 }
@@ -206,7 +208,8 @@ void apply_nest_usb(GtkWidget *widget, gpointer *data) {
     return;
   } else {
     sprintf(nest_size,"hscale_nest_hd_size");
-    sprintf(nest_crypt,"toggle_nest_hd_crypt");
+  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
+    sprintf(nest_crypt,"toggle_nest_hd_crypt"); */
     apply_nest(selection);
   }
 }
