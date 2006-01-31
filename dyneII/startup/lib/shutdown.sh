@@ -7,7 +7,7 @@
 # this should be run at halt and reboot and whenever
 # the computer goes down, it also ejects the CD when present
 
-PATH=/bin:/sbin
+PATH=/usr/bin:/usr/sbin:/bin:/sbin
 
 echo "[*] closing dyne:bolic session"
 
@@ -35,15 +35,22 @@ fi
 
 
 echo " .  unload all kernel modules"
-for m in `lsmod | awk '{print $1}'`; do
-  rmmod ${m}
+for m in `lsmod | awk '!/Module/ {print $1}'`; do
+  rmmod --force ${m}
 done
 
 
 echo " .  umount all volumes"
-umount -a
-umount /usr
+for vol in `unionctl /usr --list 2>&1 | awk '!/not.a.valid.union/ { print $1 }'`; do
+  unionctl /usr --remove ${vol}
+done
+umount -a -d -f
+umount -d -f /usr
+if [ -x /mnt/usr ]; then
+  umount -d -f /mnt/usr
+fi
 
+PATH=/bin:/sbin
 
 echo " .  sync harddrives" # this never hurts
 sync
@@ -65,6 +72,6 @@ fi
 sleep 1
 
 
-echo "[*] POWER OFF - KEEP BUTTON PRESSED 4 SECONDS"
+echo "[*] POWER OFF"
 
 

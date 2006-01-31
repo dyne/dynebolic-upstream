@@ -1,0 +1,24 @@
+  };
+  Workspace = "DESK 1";
+  Workspaces = (
+    {
+      Name = "DESK 1";
+    },
+    {
+      Name = "DESK 2";
+    },
+    {
+      Name = "DESK 3";
+    },
+    {
+      Name = "DESK 4";
+    },
+    {
+      Name = "DESK 5";
+    },
+    {
+      Name = "DESK 6";
+    }
+  );
+  Applications = ();
+}

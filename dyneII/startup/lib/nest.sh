@@ -235,6 +235,14 @@ bind_nest() { # arg:   path_to_mounted_nest
       chmod +t    /tmp
   fi
 
+  # bind /usr/local
+  if ! [ -e ${NST}/local ]; then
+      warning "nest is missing /usr/local, skipping"
+  else
+      mkdir -p /usr/local # redundant
+      mount -o bind ${NST}/local /usr/local
+  fi
+
   DYNE_NEST_PATH=${NST}
   append_line /boot/dynenv "export DYNE_NEST_PATH=${DYNE_NEST_PATH}"
 

@@ -37,7 +37,7 @@ if [ -r /boot/dynenv ]; then source /boot/dynenv; fi
 # load dyne language settings
 if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
 
-
+# load dyne network settings
 if [ -r /etc/NETWORK ]; then source /etc/NETWORK; fi
 
 if [ -r /usr/bin/logger ]; then

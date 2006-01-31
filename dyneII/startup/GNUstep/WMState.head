@@ -1,0 +1,23 @@
+{
+  Dock = {
+    Lowered = No;
+    Position = "-32,0";
+    Applications = (
+      {
+        Name = .ynebolic;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = .ome;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "rox /home";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      }

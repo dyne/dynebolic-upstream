@@ -36,23 +36,8 @@ add_volume() {
   case ${MEDIA} in
 
       "hdisk")
-
-          # here check if FS ~= NTFS then use umask=0222
-	  if [ "`echo '${FS}' | grep -i 'NTFS'`" ]; then
-	    OPTIONS="defaults,umask=0222"
-	    FILESYS="ntfs"
-
-          # and here check if FS ~= bsd44
-	  elif [ "`echo '${FS}'|grep -iE 'BSD|ufs'`" ]; then
-	    OPTIONS="ro,ufstype=44bsd"
-	    FILESYS="ufs"
-
-	  else
-	    OPTIONS="defaults"
-	    FILESYS="auto"
-	  fi
-            
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FILESYS} ${FLAGS}"
+          # $FILESYS and $OPTIONS were set in scan_partitions()
 	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FILESYS}\t${OPTIONS}\t0\t${PASS}"
 	  ;;
 
@@ -129,32 +114,32 @@ scan_cdrom() {
 	
 	act "scanning ${DEV} -> ${MNT} (${CDFS})"
 	
-	mkdir -p /mnt/dynecd
+	mkdir -p /mnt/${MNT}
 
-	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/dynecd 2>/dev/null 1>/dev/null
+	mount -t ${CDFS} -o ro /dev/${DEV} /mnt/${MNT} 2>/dev/null 1>/dev/null
 
 	if [ $? != 0 ]; then # device was not mounted
 
-	# media is not found inside, delete dir
-	# and add the CD as automount device
-	    rm -r /mnt/dynecd
+	    # media is not found inside, delete dir
+	    # and add the CD as automount device
 	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
 
-	elif [ -r /mnt/dynecd/dyne/dyne.sys ]; then # device contains dyne sys
+	elif [ -r /mnt/${MNT}/dyne/dyne.sys ]; then # device contains dyne sys
 	    
 	    FLAGS=sys # check if it has also a config file
-	    if [ -r /mnt/dynecd/dyne/dyne.cfg ]; then
+	    if [ -r /mnt/${MNT}/dyne/dyne.cfg ]; then
 		FLAGS="$FLAGS cfg"
 	    fi
 	    
             # leave it mounted and add it to the list of volumes
-	    append_line /boot/volumes "${MEDIA} /dev/${DEV} /mnt/dynecd ${CDFS} ${FLAGS}"
+	    append_line /boot/volumes "${MEDIA} /dev/${DEV} /mnt/${MNT} ${CDFS} ${FLAGS}"
+            # create a symlink to easy lookup of the system cd
+            ln -sf /mnt/${MNT} /mnt/dynecd
 	    
 	else # device has a CD inside, not the dyne one
 
 	    # unmount it and add it to automount devices
-	    umount /mnt/dynecd
-	    rm -r /mnt/dynecd
+	    umount /mnt/${MNT}
 	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
 
 	fi
@@ -226,8 +211,34 @@ scan_partitions() { #arg : devicename
             fsck -TCp ${PART_DEV}
           fi  
 
-	    
-          mount ${MOUNT_FS} ${MOUNT_OPTS} ${PART_DEV} ${MNT}
+	   
+          # here check if FS ~= NTFS then use umask=0222
+	  if [ "`echo ${PART_FS}   | grep -i 'NTFS'`" ]; then
+	    OPTIONS="ro,noexec,uid=0,gid=8,umask=0222"
+	    FILESYS="ntfs"
+
+          # and here check if FS ~= bsd44
+	  elif [ "`echo ${PART_FS} | grep -iE 'BSD|ufs'`" ]; then
+	    OPTIONS="ro,ufstype=44bsd"
+	    FILESYS="ufs"
+
+          # FAT
+          elif [ "`echo ${PART_FS} | grep -i 'FAT'`" ]; then
+            OPTIONS="rw,noexec,uid=0,gid=8,umask=0002"
+            FILESYS="vfat"
+
+          # linux filesystems have granular permissions
+          elif [ "`echo ${PART_FS} | grep -iE 'linux|reiser|xfs'`" ]; then
+            OPTIONS="defaults"
+            FILESYS="auto"
+
+          # all the others
+	  else
+	    OPTIONS="defaults,uid=0,gid=8,umask=0002"
+	    FILESYS="auto"
+	  fi
+  
+          mount -t ${FILESYS} -o ${OPTIONS} ${PART_DEV} ${MNT}
 	    
           if [ $? != 0 ]; then
 	    error "can't mount ${PART_DEV} : not a valid filesystem"
@@ -325,13 +336,13 @@ scan_removable() {
 
   act "checking for a usb plug"
   if [ "`dmesg | grep 'USB hub found'`" ]; then
-    for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
+    for SCSIDEV in `ls /dev | awk '/^sd./ {print $1}'`; do
       # now find out the last sd? device
     done
-    if [ -z $DEV ]; then # no scsi/sata fixed disc, pick the first
-      add_volume usb sda usb vfat
+    if [ -z $SCSIDEV ]; then # no scsi/sata fixed disc, pick the first
+      add_volume usb sda1 usb vfat
     else
-      USB=`alphabet ${DEV[3]} next`
+      USB=`alphabet ${SCSIDEV[3]} next`
       add_volume usb "sd${USB}1" usb vfat
     fi
   fi

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if   [ "`id -nu`" = "root" ]; then
+  EXEC="exec"
+elif [ "`id -nG | grep wheel`" ]; then
+  EXEC="sudo -H"
+else
+  EXEC="/usr/libexec/autopackage/autosu-gtk"
+fi
+
+launch $EXEC $@
+

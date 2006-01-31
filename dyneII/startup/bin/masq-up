@@ -1,0 +1,38 @@
+#!/bin/sh
+# simple masquerading script
+# (C) 2005 Denis Rojo <jaromil@dyne.org>
+# GNU GPL License
+
+modprobe -k iptable_filter iptable_nat 1>/dev/null 2>/dev/null
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Simple script to setup a Masquerading Firewall (NAT)"
+  echo "what's left of ipfwadm, ipchains and iptables in my hands -jaromil"
+  echo "usage: masq-up [modem interface] [local network interface]"
+  echo "example: masq-up ppp0 eth0"
+  echo "         to route your local network over the modem connection"
+  echo "/!\ this script is simple but not secure, be warned! it is just"
+  echo "/!\ a quick dirty hack, otherwise why the documentation would be so silly?"
+  exit 1
+fi
+
+if [ -z "`ifconfig $1`" ]; then
+  echo "error: interface $1 is not present"
+  exit 0
+fi
+
+if [ -z "`ifconfig $2`" ]; then
+  echo "error: interface $2 is not present"
+  exit 0
+fi
+
+
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+# Set up IP FORWARDing and Masquerading
+iptables --table nat --append POSTROUTING --out-interface $1 -j MASQUERADE
+iptables --append FORWARD --in-interface $2 -j ACCEPT
+echo 1 > /proc/sys/net/ipv4/ip_forward
+

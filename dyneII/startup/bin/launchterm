@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-  TITLE="XTerm"
+  TITLE="Terminal"
 else 
   TITLE="$1"
   shift
@@ -13,6 +13,8 @@ else
   PROG=$@
 fi
 
+launch \
 mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
-      -tabfg lightgrey -itabfg darkgrey -tr -trm -trt -ss rxvt -sr -bgfade 80 -fade 50 -ts black -bc -vb
+      -tabfg lightgrey -itabfg darkgrey -tr -trm -trt -ss rxvt \
+      -sr -bgfade 80 -fade 50 -bc -vb -e $PROG
 

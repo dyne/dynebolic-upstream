@@ -209,7 +209,7 @@ if [ $BOOT_NETWORK ]; then
 	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
 	    mkdir -p /mnt/smbdock
 	    loadmod smbfs
-	    mount -t smbfs -o guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock >/dev/null
+	    mount -t smbfs -o ro,guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock >/dev/null
 	    if [ $? != 0 ]; then # mount failed
 		error "mount failed, remote dock aborted"
 	    else
@@ -327,16 +327,13 @@ else
         # we have an uncompressed dock in the SDK
 
 	notice "Mounting SDK filesystem from dock in ${DYNE_SYS_MNT}"
-	mount -o bind ${DYNE_SYS_MNT}/SDK/sys /usr
-
+	mount -o bind,suid ${DYNE_SYS_MNT}/SDK/sys /usr
 
     elif [ "$DYNE_SYS_MEDIA" = "samba" ]; then
         # we are mounting the system over the network
 
         notice "Mounting dock over samba network from ${DYNE_SYS_DEV}"
         mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
-
-
 
     elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
         # we have a compressed dock
@@ -353,15 +350,21 @@ else
 	else
 
 	   act "making the /usr writable with unionfs"
-           mkdir -p /mnt/usr
-	   mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
 	   # load union filesystem module from inside the squash
 	   insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
-           # mount read-only /usr into /mnt/usr
-	   mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
-	   # writable union will be mounted later on...
-	   UNION_USR_RW=/var/cache/union/usr_rw
-
+           if [ $? = 0 ]; then
+             # mount read-only /usr into /mnt/usr
+             mkdir -p /mnt/usr
+	     mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
+	     mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
+	     # writable union will be mounted later on...
+	     UNION_USR_RW=/var/cache/union/usr_rw
+           else
+             error "failed to load unionfs kernel module, reverting /usr to read-only mode"
+             mkdir -p /usr
+             mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+           fi
+            
         fi
 
     fi
@@ -399,9 +402,6 @@ dmesg -n 1
 # notice "start multiuser system log monitor"
 # killall syslogd
 # /usr/sbin/syslogd
-
-notice "scan pci devices"
-lspci > /boot/pcilist
 
 # reset linker cache
 append_line /etc/ld.so.conf /usr/lib
@@ -481,10 +481,6 @@ notice "launching device filesystem daemon"
 
 notice "launching power management daemon"
 /usr/sbin/acpid
-
-notice "launching common unix printer daemon"
-/usr/sbin/cupsd &
-
 
 
 
@@ -593,9 +589,9 @@ EOF
     # start X
     XREMOTE="`get_config x_remote`"
     if [ $XREMOTE ]; then
-      su luther -c X -indirect -query ${XREMOTE}
+      su -c X -indirect -query ${XREMOTE} &
     else
-      su luther -c xinit &
+      su -c xinit &
     fi
   else
     Login.app &

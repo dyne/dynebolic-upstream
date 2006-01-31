@@ -50,10 +50,15 @@ add_module_path() {
     # configuration files in home directories
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then
+      # copy the skel files in each user directory
       for h in `ls /home`; do
         for f in `ls -A /opt/${mod}/skel/`; do
           cp -ua /opt/${mod}/skel/${f} /home/${h}
         done
+      done
+      # copy the skel files in the /root directory
+      for f in `ls -A /opt/${mod}/skel/`; do
+        cp -ua /opt/${mod}/skel/${f} /home/${h}
       done
     fi
 

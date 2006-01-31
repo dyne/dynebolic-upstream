@@ -31,7 +31,7 @@ Mp4Player | mpeg4 darwin player	| gmp4player | multi | mpeg4ip.sf.net | Cisco
 
 	Begin | RECORD
 
-Kino | DV recorder and editor | kino | runonce | kino.sf.net | Kino author | Kino WEB
+Kino | DV recorder and editor | kino | runonce | kino.sf.net | Kino author
 xVidCap | desktop movie capture | xvidcap | | xvidcap WEB | xvidcap author
 MEncoder | versatile encoder | mencoder | manual | mplayerhq.hu | Arpad
 Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
@@ -42,10 +42,11 @@ NuppleRec | efficient video recorder | nuvrec | man | nuv WEB | Roman Hochleitne
 
 	Begin | EDIT
 
-Avidemux | simple video cutter | avidemux2 | runonce | avidemux.sf.net | avidemux WEB | author
+Avidemux | simple video cutter | avidemux2 | runonce | fixounet.free.fr/avidemux | Mean 'fixounet'
 LiVES | linux video editing system | lives | runonce | lives.sf.net | Gabriel "Salsaman" Finch
 JahShaka | video effect integrator | jahshaka | runonce | jahshaka.org | JahShaka
 Cinelerra | multitrack non-linear editor | cinelerra | | heroinevirtual.com | Heroine Warrior
+Seven Gnomes | video file indexer | seven-gnomes | | www.roxton.kiev.ua/sevengnomes.html | Peter 'Roxton' Semiletov
 
 	End | EDIT
 
@@ -105,7 +106,7 @@ SimpleCDRX | audio cd mastering | simplecdrx | | ogre.rocky-road.net/cdr.shtml |
 
 	End | PUBLISH
 
-Volume | | alsamixer | terminal | www.alsa-project.org | Alsa Project 
+Volume | | alsamixer | terminal | www.alsa-project.org | Alsa Project
 Midi | | alsa-patch-bay | | alsa-project.org | Alsa Project
 Jack it | | qjackctl | | jackit.sf.net | Jack author
 
@@ -115,9 +116,10 @@ Begin | IMAGE
 
 Gimp | image manipulator | gimp | | gimp.org | Gimp team
 InkScape | vectorial graphics | inkscape | | inkscape.sf.net | Inkscape auth
-Blender | 3d editor and game engine | blender | | blender3d.org | Blender found
-GQview | image file browser | gqview | | gqview.sf.net | GQView auth
-ImageMagick | image conversion | display | | www.imagemagick.org | ImageMagick Studio LLC 
+Blender | 3d editor and game engine | blender | | blender3d.org | Blender foundation
+Glito | fractal generator IFS | glito | | emmanuel.debanne.free.fr/glito | Emmanuel Debanne
+GQview | image file browser | gqview | | gqview.sf.net | GQView author
+ImageMagick | image conversion | display | | www.imagemagick.org | ImageMagick Studio LLC
 xSG | desktop screen grab | xsg | | xsg.sf.net | xSG auth
 
 End | IMAGE
@@ -142,7 +144,7 @@ Begin | NET
 	Begin | WWW
 
 Firefox | Web browser | firefox http://dyne.org | | mozilla.org/firefox | Mozilla foundation
-Mozilla | Web Suite | mozilla -splash -height 500 -width 700 | | mozilla.org | Mozilla foundation
+Mozilla | Web Suite | mozilla http://dyne.org | | mozilla.org | Mozilla foundation
 Links 2 | slick web browser | links -g | | links WEB | Twibright Labs
 Links | console web browser | links | terminal | links WEB | Twibright Labs
 Lynx | console web browser | lynx | terminal | lynx WEB | lynx auth
@@ -160,6 +162,7 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins &
 
 	Begin | SHARE
 
+Nicotine | p2p soulseek fileshare | nicotine | | nicotine.thegraveyard.org | Hyriand
 Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
 MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
 The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
@@ -198,6 +201,7 @@ RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
 	Begin | TOOLS
 
 Nmap | network scanner | xnmap | | www.insecure.org/nmap | Insecure.org
+Traceroute | net path finder | mtr | | http://www.bitwizard.nl/mtr | BitWizard
 FWBuilder | firewall builder | fwbuilder | | fwbuilder WEB | AUTH
 Ethereal | network analyzer | ethereal | | ethereal WEB | AUTH
 Ettercap | multipurpose sniffer | ettercap | | ettercap WEB | AUTH
@@ -265,14 +269,32 @@ xWellTris | 2.5 dimensional warped tetris | xwelltris | | AUTH | WEB
 
 End | GAMES
 
+
+
+Begin | DEVEL
+
+Gambas | Visual application builder | gambas | | gambas.sf.net | Gambas developers
+Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
+Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
+Nvu | Web html editor | nvu | | www.mozilla.org | Mozilla foundation
+Scite | development text editor | SciTE | www.scintilla.org | Neil Hodgson
+Vim | versatile text editor | vim | terminal | vim.org | Braam Moolenaar et al.
+Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
+Adie | advanced interactive editor | adie | | fox-toolkit.org | Jeroen van der Zijp
+
+End | DEVEL
+
+
 Begin | XUTILS
 
-xvKbd | virtual keyboard | xvkbd | | AUTH | WEB
-xKill | a killer | xkill | | X.org | http://x.org
+mrXVT | X Terminal | launchterm | | Jimmy Terminator Zhou | mrxvt.sf.net
+xvKbd | touchscreen keyboard | xvkbd | | AUTH | WEB
+xKill | kill application | xkill | | X.org | http://x.org
 xrMap | a world atlas | xrmap | | AUTH | WEB
-ical | calendar organizer | ical | | AUTH | WEB
+ical | a calendar organizer | ical | | AUTH | WEB
 FoxCalc | a calculator | calculator | | AUTH | WEB
 xClock | a clock | xclock | | AUTH | WEB
+wMagn | a magnifying lens | wmagnify | | AUTH | WEB
 xFig | a figure editor | xfig | | AUTH | WEB
 xMan | a manual browser| xman | | X.org | x.org
 xFontsel | a font selector | xfontsel | | X.org | x.org
@@ -281,43 +303,28 @@ xEyes | someone's watching | xeyes | | X.org | x.org
 
 End | XUTILS
 
+CONFIGURE | | rox /usr/apps/Configure | | Jaromil | afrolinux.org
 
-Begin | DEVEL
+# last entries: DESKTOP and EXIT
+# they are included into windowmanager-dependent static files
+# see /lib/dyne/menu.wmaker and menu.fluxbox
 
-Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
-Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
-Vim | versatile text editor | vim | terminal | vim.org | Braam Moolenaar et al.
-Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
-Adie | advanced interactive editor | adie | | fox-toolkit.org | Jeroen van der Zijp
+#Nest | store user settings | taschino | superuser | Jaromil | dynebolic.org
+#Language | set system language | langconf | superuser | Jaromil | dynebolic.org
+#Soundcard | detect soundcards | alsaconf | terminal,superuser | alsaproject.org | Alsa Project
+#Videocard | detect videocards | xorgcfg | superuser | www.X.org | X.org
+#Network | set system network | netconf | superuser | Jaromil | dynebolic.org
+#Modem | set modem connections | chestnut-dialer | superuser | AUTH | WEB
+#Printer | set printers | links -g http://localhost:631/ | | AUTH | WEB
+#Terminal | XTerm Console | launchterm | | X.org | x.org
+#View logs | read system logs | nedit /var/log/messages | superuser | Jaromil | dynebolic.org
 
-End | DEVEL
-
-
-Begin | SYSTEM
-
-Nest | store user settings | taschino | superuser | Jaromil | dynebolic.org
-Language | set system language | langconf | superuser | Jaromil | dynebolic.org
-Soundcard | detect soundcards | alsaconf | terminal,superuser | alsaproject.org | Alsa Project
-Videocard | detect videocards | xorgcfg | superuser | www.X.org | X.org
-Network | set system network | netconf | superuser | Jaromil | dynebolic.org
-Modem | set modem connections | chestnut-dialer | superuser | AUTH | WEB
-Printer | set printers | links -g http://localhost:631/ | | AUTH | WEB
-Terminal | XTerm Console | launchterm | | X.org | x.org
-View logs | read system logs | nedit /var/log/messages | superuser | Jaromil | dynebolic.org
-
-
-End | SYSTEM
-
-
-DESKTOP
-
-
-Begin | EXIT
-
-Logout | back to the login | xquit "logout" | Jaromil | dynebolic.org
-Power OFF | shutdown the computer | xquit "halt" | Jaromil | dynebolic.org
-Reboot | restart the computer | xquit "reboot" | Jaromil | dynebolic.org
-KillX | kill the X desktop | xquit "killx" | Jaromil | dynebolic.org
-
-End | EXIT
+#Begin | EXIT
+#
+#Logout | back to the login | xquit logout | Jaromil | dynebolic.org
+#Power OFF | shutdown the computer | xquit halt | Jaromil | dynebolic.org
+#Reboot | restart the computer | xquit reboot | Jaromil | dynebolic.org
+#KillX | kill the X desktop | xquit killx | Jaromil | dynebolic.org
+#
+#End | EXIT
 

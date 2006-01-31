@@ -1,0 +1,22 @@
+[submenu] ( DESKTOP)
+	[config] (Configure)
+	[submenu] (Appearance)
+		[stylesdir] (/usr/share/fluxbox/styles)
+	[end]
+	[exec] (Restore) {rox-desktop}
+	[workspaces] (Workspace list)
+	[exec] (Create Icon) {/usr/apps/Rox/AppFactory/AppRun}
+	[submenu] (Tools)
+		[exec] (Window info) {xprop WM_CLASS|cut -d \" -f 2|xmessage -file - -center}
+		[exec] (Screenshot - JPG) {import screenshot.jpg && display screenshot.jpg}
+		[exec] (Screenshot - PNG) {import screenshot.png && display screenshot.png}
+	[end]
+	[exec] (Hotkeys) {launch nedit ~/.fluxbox/keys}
+[end]
+
+[submenu] ( EXIT)
+	[exec] (Power OFF :: shutdown the computer) { xquit halt }
+	[exec] (Reboot :: restart the computer) { xquit reboot }
+	[exec] (Logout :: leave for another user) { xquit logout}
+	[exec] (KillX :: kill the X desktop) { xquit killx }
+[end]

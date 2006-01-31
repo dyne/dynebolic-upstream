@@ -167,9 +167,13 @@ init_network() {
  
   # kernel configuration: daemons
   # comma separated list of network services to activate at startup
-  # ssh,ppp,samba,firewall
+  # supported values: ssh,ppp,samba,firewall,cups
   DAEMONS="`get_config daemons`"
-  
+  if ! [ $DAEMONS ]; then
+    # set defaults
+    DAEMONS="ppp,samba,cups"
+  fi  
+
   for d in `iterate $DAEMONS`; do
   
     if [ $d = "ssh" ]; then 
@@ -183,6 +187,12 @@ init_network() {
       loadmod ppp_async
       loadmod ppp_deflate
     fi
+
+    if [ $d = "cups" ]; then
+      act "activating the Common Unix Printer Service"
+      loadmod parport
+      /usr/sbin/cupsd
+    fi
   
     if [ $d = "samba" ]; then
       act "activating Samba filesharing"
@@ -192,6 +202,9 @@ init_network() {
       echo "path = ${DYNE_SYS_MNT}"             >> /boot/dynenv.samba
       echo "public = yes"                       >> /boot/dynenv.samba
       echo "read only = yes"                    >> /boot/dynenv.samba
+      echo "encrypt password = yes"             >> /boot/dynenv.samba
+      echo "smb passwd file = /etc/samba/passwd" >> /boot/dynenv.samba
+
       loadmod smbfs
       smbd
       # we are mostly clients, so we don't start our own name resolution
