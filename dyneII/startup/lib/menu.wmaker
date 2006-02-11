@@ -1,6 +1,6 @@
 ,
  ("DESKTOP",
- ("Preferences", EXEC, "/usr/GNUstep/Applications/WPrefs.app/WPrefs"),
+ ("Preferences", EXEC, "wmakerconf"),
  ("Appearance",
   ("Background",
    ("Solid",

@@ -1,10 +1,10 @@
 {
   Dock = {
-    Lowered = No;
-    Position = "-32,0";
+    Lowered = Yes;
+    Position = "-64,0";
     Applications = (
       {
-        Name = .ynebolic;
+        Name = Dyne;
         Lock = Yes;
         AutoLaunch = Yes;
         Command = dynesplash;
@@ -13,10 +13,10 @@
         BuggyApplication = No;
       },
       {
-        Name = .ome;
+        Name = Home;
         Lock = Yes;
         AutoLaunch = No;
-        Command = "rox /home";
+        Command = "rox";
         Position = "0,1";
         Forced = No;
         BuggyApplication = No;

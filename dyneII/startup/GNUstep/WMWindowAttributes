@@ -1,4 +1,11 @@
 {
+  .Dyne = {Icon = "logo-sm.png";};
+  dynesplash = {Icon = "logo-sm.png";};
+  .Home = {Icon = "gnome-fs-home.png";};
+  HardDisk = {Icon = "gnome-fs-blockdev.png";};
+  CdRom = {Icon = "gnome-dev-cdrom.png";};
+  FloppyDisk = {Icon = "gnome-dev-floppy.png";};
+  UsbStorage = {Icon = "usbpendrive_unmount.png";};
   Logo.WMDock = {Icon = GNUstepGlow.tiff;};
   Logo.WMPanel = {Icon = GNUstep.tiff;};
   Logo.WMClip = {Icon = clip.tiff;};

@@ -46,7 +46,7 @@ add_volume() {
       
       "floppy")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}"
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,user\t0\t0"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tmsdos\tdefaults,noauto,user\t0\t0"
 	  ;;
      
  

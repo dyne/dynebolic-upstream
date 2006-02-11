@@ -350,21 +350,25 @@ else
 	else
 
 	   act "making the /usr writable with unionfs"
-	   # load union filesystem module from inside the squash
-	   insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
+           # mount read-only /usr into /mnt/usr
+           mkdir -p /mnt/usr
+           mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
            if [ $? = 0 ]; then
-             # mount read-only /usr into /mnt/usr
-             mkdir -p /mnt/usr
-	     mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
-	     mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
-	     # writable union will be mounted later on...
-	     UNION_USR_RW=/var/cache/union/usr_rw
+	     # load union filesystem module from inside the squash
+	     insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
+             if [ $? = 0 ]; then
+	       mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
+	       # writable union will be mounted later on...
+	       UNION_USR_RW=/var/cache/union/usr_rw
+             else
+               error "failed to load unionfs kernel module, reverting /usr to read-only mode"
+               mkdir -p /usr
+               mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+             fi
            else
-             error "failed to load unionfs kernel module, reverting /usr to read-only mode"
-             mkdir -p /usr
-             mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+             # mount of dyne.sys squashfs failed - fatal :(
+             error "fatal error occurred: can't mount dyne.sys filesystem"
            fi
-            
         fi
 
     fi
@@ -499,6 +503,7 @@ logger -p syslog.info   "CPU:`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
 logger -p syslog.info   "flags:`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
 logger -p syslog.notice "=== devices detected on pci bus:"
 lspci | logger -p syslog.info
+lspci > /boot/pcilist
 logger -p syslog.notice "=== kernel modules loaded:"
 lsmod | logger -p syslog.info
 logger -p syslog.notice "=== mounted filesystems:"
@@ -565,13 +570,16 @@ fi
 
   source /lib/dyne/zsh/env
 
+  notice "initializing window manager"
   # generate window manager menu entries
   fluxbox_gen_menu
+  wmaker_gen_menu
+
 
   # generate window manager volumes entries
   #wmaker_gen_volumes
   rox_gen_volumes
-
+  wmaker_gen_volumes
 
   ## setup the interactive shell prompt for X
   if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi

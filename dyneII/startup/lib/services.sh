@@ -167,7 +167,7 @@ init_network() {
  
   # kernel configuration: daemons
   # comma separated list of network services to activate at startup
-  # supported values: ssh,ppp,samba,firewall,cups
+  # supported values: ssh,ppp,samba,firewall,cups,rsync
   DAEMONS="`get_config daemons`"
   if ! [ $DAEMONS ]; then
     # set defaults
@@ -197,14 +197,15 @@ init_network() {
     if [ $d = "samba" ]; then
       act "activating Samba filesharing"
       if [ -r /boot/dynenv.samba ]; then     rm -f /boot/dynenv.samba; fi
-      echo "[dyne.dock]"                         > /boot/dynenv.samba
-      echo "comment = `cat /usr/etc/DYNEBOLIC`" >> /boot/dynenv.samba
-      echo "path = ${DYNE_SYS_MNT}"             >> /boot/dynenv.samba
-      echo "public = yes"                       >> /boot/dynenv.samba
-      echo "read only = yes"                    >> /boot/dynenv.samba
-      echo "encrypt password = yes"             >> /boot/dynenv.samba
-      echo "smb passwd file = /etc/samba/passwd" >> /boot/dynenv.samba
-
+      cat <<EOF > /boot/dynenv.samba
+[dyne.dock]
+comment = `cat /usr/etc/DYNEBOLIC`
+path = ${DYNE_SYS_MNT}
+public = yes
+read only = yes
+encrypt password = yes
+smb passwd file = /etc/samba/passwd
+EOF
       loadmod smbfs
       smbd
       # we are mostly clients, so we don't start our own name resolution
@@ -221,7 +222,25 @@ init_network() {
         sh /etc/FIREWALL
       fi
     fi
-  
+
+    if [ $d = "rsync" ]; then
+      act "launching rsync daemon for network install"
+      cat <<EOF > /boot/dynenv.rsync
+use chroot = true
+log file = /var/log/rsync.dyne.log
+motd file = /etc/motd
+pid file = /var/run/rsync.dyne.pid
+
+[dyne.dock]
+comment = `cat /usr/etc/DYNEBOLIC`
+uid = 65534
+gid = 6
+path = ${DYNE_SYS_MNT}
+read only = true
+EOF
+      rsync --daemon --config /boot/dynenv.rsync
+    fi
+
   done
   
 
@@ -229,6 +248,7 @@ init_network() {
   mkdir -p         /mnt/shares
   chown root:users /mnt/shares
   chmod ug+rwx     /mnt/shares
+  ln -s /usr/apps/Network/LinNeighborhood /mnt/shares/Add_Shares
   
 }
 

@@ -20,11 +20,10 @@ ROXPD=/etc/xdg/rox.sourceforge.net/ROX-Filer/pan_Default
 ROXICONS=/etc/xdg/rox.sourceforge.net/ROX-Filer/globicons
 
 # Window Maker paths
-WMSTATETMP=/var/run/WMState
-WMSTATEHEAD=/lib/dyne/GNUstep/WMState.head
-WMSTATEFOOT=/lib/dyne/GNUstep/WMState.foot
-WMSTATE=/lib/dyne/GNUstep/WMState
-WMMENU=/lib/dyne/GNUstep/WMRootMenu
+WMSTATETMP=/tmp/WMState
+WMSTATEDOCK=/var/run/WMState.dock
+WMSTATE=/etc/WindowMaker/WMState
+WMMENU=/etc/WindowMaker/WMRootMenu
 
 # Fluxbox paths
 FLXMENU=/etc/fluxbox/menu
@@ -165,10 +164,10 @@ wmaker_gen_menu() {
     > $WMMENU
 
 
-	# now append the static entries: xutils, desktop, exit
-	cat /lib/dyne/menu.wmaker >> $WMMENU
-	# and close up the menu
-	echo ")" >> $WMMENU
+    # now append the static entries: xutils, desktop, exit
+    cat /lib/dyne/menu.wmaker >> $WMMENU
+    # and close up the menu
+    echo ")" >> $WMMENU
 }
 
 
@@ -179,6 +178,10 @@ rox_gen_volumes() {
 
     if [ -r $ROXPDTMP    ]; then rm $ROXPDTMP; fi
     if [ -r $ROXICONSTMP ]; then rm $ROXICONSTMP;   fi
+
+    # generate the list of harddisks
+    HDISKS=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
+
 
     # the panel
     cat <<EOF > $ROXPDTMP
@@ -237,8 +240,30 @@ EOF
     if [ $LAN ]; then
       echo "<icon label=\"Lan\">/usr/bin/LinNeighborhood</icon>" >> $ROXPDTMP
       echo "<rule match=\"/usr/bin/LinNeighborhood\"><icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png</icon></rule>" >> $ROXICONSTMP
+      echo "<rule match=\"/mnt/shares\"><icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png</icon></rule>" >> $ROXICONSTMP
     fi
 
+    # add some more icons for the filesystem
+    cat <<EOF >> $ROXICONSTMP
+<rule match="/home"><icon>/usr/share/icons/graphite/48x48/stock/generic/stock_home.png</icon></rule>
+<rule match="/root"><icon>/usr/share/icons/graphite/48x48/stock/generic/stock_home.png</icon></rule>
+<rule match="/bin"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/sbin"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/lib"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/usr"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/opt"><icon>/usr/share/dyne/logo.png</icon></rule>
+<rule match="/usr/share"><icon>/usr/share/icons/graphite/48x48/apps/gnome-other.png</icon></rule>
+<rule match="/usr/sbin"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/usr/bin"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/usr/lib"><icon>/usr/share/icons/graphite/48x48/apps/gnome-run.png</icon></rule>
+<rule match="/usr/doc"><icon>/usr/share/icons/graphite/48x48/stock/generic/stock_example.png</icon></rule>
+<rule match="/etc"><icon>/usr/share/icons/graphite/48x48/apps/gnome-settings.png</icon></rule>
+<rule match="/dev"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+<rule match="/sys"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+<rule match="/proc"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+<rule match="/boot"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+<rule match="/var"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+EOF
     # close the panel
     echo "</start>" >> $ROXPDTMP
     echo "<end/>" >> $ROXPDTMP
@@ -253,37 +278,87 @@ EOF
 
 # Window Maker
 wmaker_gen_volumes() {
-    mkdir -p /etc/GNUstep/
+# this functions generates the right hand dock for wmaker
+
+# i don't remember why this?     mkdir -p /etc/GNUstep/
+
+    if [ -r $WMSTATEDOCK ]; then rm $WMSTATEDOCK; fi
+
+    # generate the list of harddisks
+    HDISKS=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
 
 
-    cp $WMSTATEHEAD $WMSTATE
-
-#    if [ -r $WMSTATETMP ]; then rm $WMSTATETMP; fi
+    # put the header
+    cat <<EOF > $WMSTATEDOCK
+  Dock = {
+    Lowered = Yes;
+    Position = "-64,0";
+    Applications = (
+      {
+        Name = Dyne;
+        Lock = Yes;
+        AutoLaunch = Yes;
+        Command = dynesplash;
+        Position = "0,0";
+        Forced = No;
+        BuggyApplication = No;
+      },
+      {
+        Name = Home;
+        Lock = Yes;
+        AutoLaunch = No;
+        Command = "rox";
+        Position = "0,1";
+        Forced = No;
+        BuggyApplication = No;
+      }
+EOF
 
     echo $HDISKS | awk '
 {
 print ","
 print "{"
-print "Name = \"Hd" NR+1 ".HardDisk\";"
+print "Name = \"Hd" NR ".HardDisk\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
-print "Command = \"rox " $3 "\";"
+print "Command = \"rox /mnt/" $1 "\";"
 print "Position = \"0," NR+1 "\";"
 print "Forced = no;";
 print "BuggyApplication = no;"
 print "}"
 }
-' >> $WMSTATE
+' >> $WMSTATEDOCK
 
-cat /boot/volumes | awk '
+    POS=`echo $HDISKS | wc -l` # how many harddisks are up there?
+    POS=`expr $POS + 2` # get on the next position in dock
+
+    LAN=`lspci | grep -i 'ethernet'`
+    if [ $LAN ]; then
+       cat <<EOF >>$WMSTATEDOCK
+,
+{
+Name = "Samba.Network";
+Lock = yes;
+Autolaunch = no;
+Command = "rox /mnt/shares";
+Position = "0,$POS";
+Forced = no;
+BuggyApplication = no;
+}
+EOF
+#      POS=`expr $POS + 1` # advance a position in dock
+    fi
+
+
+cat /boot/volumes | grep -v '^hdisk' | awk -v pos=$POS '
 /^floppy/ {
 print ","
 print "{"
-print "Name = \"Floppy" NR+2 ".FloppyDisk\";"
+print "Name = \"Floppy" NR ".FloppyDisk\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
 print "Command = \"rox " $3 "\";"
-print "Position = \"0," NR+2 "\";"
+print "Position = \"0," NR+pos "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
 print "}"
@@ -292,11 +367,11 @@ print "}"
 /^usb/ {
 print ","
 print "{"
-print "Name = \"Usb" NR+2 ".UsbStorage\";"
+print "Name = \"Usb" NR ".UsbStorage\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
 print "Command = \"rox " $3 "\";"
-print "Position = \"0," NR+2 "\";"
+print "Position = \"0," NR+pos "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
 print "}"
@@ -305,19 +380,71 @@ print "}"
 /^cdrom/ {
 print ","
 print "{"
-print "Name = \"Cd" NR+2 ".CdRom\";"
+print "Name = \"Cd" NR ".CdRom\";"
 print "Lock = yes;"
 print "Autolaunch = no;"
 print "Command = \"rox " $3 "\";"
-print "Position = \"0," NR+2 "\";"
+print "Position = \"0," NR+pos "\";"
 print "Forced = no;"
 print "BuggyApplication = no;"
 print "}"
 }
-' >> $WMSTATE
+' >> $WMSTATEDOCK
 
-cat $WMSTATEFOOT >> $WMSTATE
+    echo "    );" >> $WMSTATEDOCK # close Applications = (
+    echo "  };"   >> $WMSTATEDOCK # close Dock = {
 
+    if [ -r $WMSTATE ]; then # WMState is already present
+      # we are in a nest, so here we need to substitute only the Dock = { }; section
+      # and leave all the rest intact (Clip, Workspaces)
+
+      # Warning: this currently assumes that the Dock block is at beginning of WMState
+      cat $WMSTATE | awk '
+           /Dock = {/ { dockstart=NR }
+                      { if(!dockstart) print $0 }' > $WMSTATETMP
+
+      cat $WMSTATEDOCK                            >> $WMSTATETMP
+
+      cat $WMSTATE | awk '
+           /};/       { dockend=NR; next }
+                      { if(dockend) print $0 }'   >> $WMSTATETMP
+
+      cp -f $WMSTATETMP $WMSTATE
+      rm -f $WMSTATETMP
+
+    else
+
+      # this is a freshly generated WMState, add other default sections
+
+      echo "{" > $WMSTATE
+      cat $WMSTATEDOCK >> $WMSTATE
+      cat <<EOF >> $WMSTATE
+  Workspace = "DESK 1";
+  Workspaces = (
+    {
+      Name = "DESK 1";
+    },
+    {
+      Name = "DESK 2";
+    },
+    {
+      Name = "DESK 3";
+    },
+    {
+      Name = "DESK 4";
+    },
+    {
+      Name = "DESK 5";
+    },
+    {
+      Name = "DESK 6";
+    }
+  );
+  Applications = ();
+}
+EOF
+
+    fi
 }
 
 
@@ -326,11 +453,6 @@ cat $WMSTATEFOOT >> $WMSTATE
 # this function is called in .xinitrc by default
 dyne_startx() {
   # source /etc/LANGUAGE
-
-  # our beloved splashscreen
-  if ! [ -r $HOME/.nosplash ]; then
-     dynesplash &
-  fi
 
   # this honours configuration directives
   # sent thru kernel parameters and dyne.cfg
@@ -342,26 +464,28 @@ dyne_startx() {
     fi
   fi
 
-  # generate the list of harddisks
-  HDISKS=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
-
   # setup the windowmanager
   if [ $WINDOWMANAGER = wmaker ]; then
-
-    wmaker_gen_menu
-    wmaker_gen_volumes
 
     # prepare ROX filer for its first start
     mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
 
+
   elif [ $WINDOWMANAGER = fluxbox ]; then
 
-    fluxbox_gen_menu
-    rox_gen_volumes
+  # start the system resource monitor
+  # gkrellm -w -t /usr/share/gkrellm2/Egan &
+  # the multiple desktop pager
+  (sleep 10; fbpager -w &)&
+
+    # our beloved splashscreen
+    if ! [ -r $HOME/.nosplash ]; then
+       dynesplash &
+    fi
 
     # start our ROX filer with pinboard and panel
     mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
-    (sleep 3; rox -p Default -r Default &)&
+    (sleep 3; rox-desktop &)&
 
   fi
 
@@ -375,10 +499,6 @@ dyne_startx() {
     (sleep 2; /usr/X11R6/bin/setxkbmap $KEYB &)&
   fi
 
-  # start the system resource monitor
-  # gkrellm -w -t /usr/share/gkrellm2/Egan &
-  # the multiple desktop pager
-  (sleep 10; fbpager -w &)&
 
   # and the window manager
   exec $WINDOWMANAGER

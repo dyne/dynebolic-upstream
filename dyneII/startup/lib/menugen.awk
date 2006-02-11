@@ -96,14 +96,22 @@ function render_wmaker() {
 	# in any case print a comma before the new entry
 	print ","
 
-	print "(\"" $1 " :: " $2 "\", EXEC,"
+	print "(\"" $1 " :: " $2 "\","
 
-	command = ""
+        # shortcut hack
+        if ( $1 ~ "XVT" ) print " SHORTCUT, \"Mod1+x\", "
 
-	if ( $4 ~ "term" ) # prefix the terminal launcher
-		command = "launchterm '" $1 " :: " $2 "'" command
+        print "EXEC,"
 
-	command = command " launch " $3
+	command = "launch "
+        title = $1 "_::_" $2
+
+	if ( $4 ~ "term" ) { # prefix the terminal launcher
+                gsub(/\ /, "_", title)
+		command = command "launchterm " title
+        }
+
+	command = command $3
 
 	print " \"" command "\")"
 

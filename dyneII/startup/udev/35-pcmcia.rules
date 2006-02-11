@@ -1,0 +1,23 @@
+# PCMCIA devices:
+#
+# modprobe $modalias loads all possibly appropriate modules
+ACTION=="add", SUBSYSTEM=="pcmcia", MODALIAS=="?*", \
+		RUN+="/sbin/modprobe $modalias"
+
+# Very few CIS firmware entries (which we use for matching)
+# are so broken that we need to read out random bytes of it
+# instead of the manufactor, card or product ID. Then the
+# matching is done in userspace.
+ACTION=="add", SUBSYSTEM=="pcmcia", MODALIAS=="?*", \
+		RUN+="/sbin/pcmcia-check-broken-cis"
+
+# However, the "weak" matching by func_id is only allowed _after_ modprobe
+# returns, so that "strong" matches have a higher priority.
+ACTION=="add", SUBSYSTEM=="pcmcia", MODALIAS=="?*", \
+		RUN+="/bin/sh -c 'echo 1 > /sys/$devpath/allow_func_id_match'"
+
+# PCMCIA sockets:
+#
+# modprobe the pcmcia bus module so that 16-bit PCMCIA devices work
+ACTION=="add", SUBSYSTEM=="pcmcia_socket", \
+		RUN+="/sbin/modprobe pcmcia"

@@ -64,9 +64,8 @@ Begin | AUDIO
 
 	Begin | PLAY
 
-Amarok | music player | amarok | | amarok.kde.org | Amarok dev team
-Xine | multimedia player | xine | | xinehq.de | Xine team
 Xmms | hifi audio player | xmms | | www.xmms.org | Xmms team
+Amarok | music jukebox | amarok | | amarok.kde.org | Amarok dev team
 Timidity | midi player | timidity -ig | | timidity WEB | Timidity auth
 MikMod | track player | mikmod | terminal | mikmod.raphnet.net | MikMod team
 
@@ -162,6 +161,7 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins &
 
 	Begin | SHARE
 
+Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 Nicotine | p2p soulseek fileshare | nicotine | | nicotine.thegraveyard.org | Hyriand
 Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
 MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
@@ -290,6 +290,7 @@ Begin | XUTILS
 mrXVT | X Terminal | launchterm | | Jimmy Terminator Zhou | mrxvt.sf.net
 xvKbd | touchscreen keyboard | xvkbd | | AUTH | WEB
 xKill | kill application | xkill | | X.org | http://x.org
+GkRellm | system monitors | gkrellm | | Gkrellm | http://gkrellm.sf.net
 xrMap | a world atlas | xrmap | | AUTH | WEB
 ical | a calendar organizer | ical | | AUTH | WEB
 FoxCalc | a calculator | calculator | | AUTH | WEB

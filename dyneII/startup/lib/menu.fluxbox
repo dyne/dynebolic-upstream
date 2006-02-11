@@ -12,6 +12,7 @@
 		[exec] (Screenshot - PNG) {import screenshot.png && display screenshot.png}
 	[end]
 	[exec] (Hotkeys) {launch nedit ~/.fluxbox/keys}
+        [restart] (Switch to WindowMaker) {wmaker}
 [end]
 
 [submenu] ( EXIT)
