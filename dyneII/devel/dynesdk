@@ -2,7 +2,8 @@
 #
 # dyne:bolic software development kit - the commandline tool
 #
-# Copyright (C) 2003-2005 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# Copyright (C) 2003-2006 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# with contributions and testing by:
 #                    Alex "Smilzo" Gnoli    <smilzo@sfrajone.org>
 #                    Pierluigi "Newmark" Maori <newmark@dyne.org>
 #
@@ -34,17 +35,16 @@ func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
 source /lib/dyne/modules.sh
 
-PACKAGE="dyne:bolic SDK"
+PACKAGE="dyne:OS SDK"
 VERSION="2.0"
-ISO="dyneII-dev.iso"
 if [ -z $DYNESDK ]; then
   PFX="$DYNE_SYS_MNT/SDK" # you can change it to static path where dynesdk resides
 else
   PFX=${DYNESDK}
 fi
 
-notice "$PACKAGE version $VERSION - software development kit"
-act "Copyleft 2003-2005 by jaromil - RASTASOFT"
+notice "$PACKAGE version $VERSION   Software Development Kit"
+act "by RASTASOFT AFRO LINUX   for the Freedom of Creation"
 
 if ! [ -x /lib/dyne ]; then
   error "dyne shell libraries are not present on this system"
@@ -52,24 +52,28 @@ if ! [ -x /lib/dyne ]; then
   exit 0
 fi
 
-OPTS=`getopt -o hvp:u:r:i:s:m:q -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o hvp:u:r:i:s:m:nq -n 'dynesdk' -- "$@"`
 
 #eval set -- "$OPTS"
 
 while true; do
     case "$1" in
 	-h)
-	    notice "SYNOPSIS: dynesdk [-hv] [-p prefix] [-u user -h host] COMMAND"
+	    notice "SYNOPSIS: dynesdk [options] COMMAND"
+            notice "OPTIONS:"
 	    act "-h     print this help"
 	    act "-v     print out the version of this tool"
-	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/dyne/SDK)"
+	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/SDK)"
             act "-m     additional modules to add in ramdisk"
+            act "-n     include current net modules in ramdisk (for netboot)"
             act "-q     be quick and skip checksums and crypto sigs"
+            act "-s     sign generated iso with gpg ID"
 
             notice "MODULE DEVELOPMENT COMMANDS:"
 	    act "mksdk      create an SDK environment inside the harddisk dock"
-            act "mount      re/mount all SDK/modules in /opt"
-	    act "squash     packs all the add-on modules into the SDK/cdrom"
+            act "mount      mount all unmounted SDK/modules in /opt"
+            act "devel      extracts a module in SDK/modules and mount it RW"
+	    act "squash     packs one or all the mounted modules in SDK/cdrom"
 	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
             
 	    notice "CORE DEVELOPMENT COMMANDS:"
@@ -80,7 +84,9 @@ while true; do
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
+        -n) ADD_NETWORK_MODULES="yes"; shift 1 ;;
         -q) QUICK="yes"; shift 1 ;;
+        -s) SIGN=$2; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
     esac
@@ -155,16 +161,23 @@ mksdk() {
   mkdir -p ${PFX}
   cd ${PFX}
 
-  echo "[?] download dyne:II liveCD skeleton files from online repository (y/N) ?"
+  echo "[?] sync dyne:II ramdisk skeleton files from online repository (y/N) ?"
   ask_yesno 10
   if [ $? = 1 ]; then
-    if ! [ -x startup ]; then
+    act "checking out skeleton, please wait while downloading"
+    if [ -x startup ]; then
+      svn update startup
+    else
       svn co svn://code.dyne.org/dynebolic/dyneII/startup
     fi
-    if ! [ -x cdrom ]; then
+    if [ -x cdrom ]; then
+      svn update cdrom
+    else
       svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
     fi
-    if ! [ -x devel ]; then
+    if [ -x devel ]; then
+      svn update devel
+    else
       svn co svn://code.dyne.org/dynebolic/dyneII/devel
     fi
   fi
@@ -179,7 +192,7 @@ mksdk() {
   if [ $? = 1 ]; then
     mkdir tmp
     mkdir sys
-    act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne/dyne.sys"
+    act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne.sys"
     act "please wait, this operation requires long time..."
     mount -o loop ${DYNE_SYS_MNT}/dyne.sys tmp
     cp -rau tmp/* sys/
@@ -199,6 +212,10 @@ mksdk() {
     rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
   fi
 
+  if ! [ -x cdrom ]; then
+    mkdir cdrom
+  fi
+
   cd - > /dev/null
 
   notice "the SDK has been succesfully created!"
@@ -214,13 +231,49 @@ mountmods() {
     mount_sdk_modules
 }
 
-squash() {
-    notice "compressing the modules in the cdrom"
-    if ! [ -x ${PFX}/modules ]; then
-	error "nothing in SDK/modules - are you really developing a module?"
+develmod() {
+
+    if ! [ $1 ]; then
+        error "no module specified: select a module in $DYNE_SYS_MNT/modules"
 	exit -1
     fi
 
+    MOD=$1
+
+    if ! [ -x /opt/${MOD} ]; then
+        error "module $MOD is not mounted in /opt"
+        exit -1
+    fi
+
+    # check if module is in use
+    lsof /opt/${MOD} > /dev/null
+    if [ $? = 0 ]; then
+        error "module is currently in use, operation aborted."
+        exit -1
+    fi
+
+    notice "extracting module $MOD in $PFX/modules"
+
+    MODSIZE=`du -hs /opt/$MOD | awk '{print $1}'`
+
+    echo "[?] it will require $MODSIZE of space, do you want to proceed? (y/N)"
+    ask_yesno 10
+    if [ $? = 1 ]; then
+      act "please wait while extracting files..."
+      mkdir -p $PFX/modules/$MOD
+      cp -ra /opt/$MOD $PFX/modules/
+      umount /opt/$MOD
+      mount -o bind $PFX/modules/$MOD /opt/$MOD
+      add_module_path $MOD
+      act "module $MOD succesfully converted to development mode"
+    else
+      act "operation aborted."
+    fi
+}
+
+
+squash() {
+    notice "compressing the modules in the cdrom"
     if [ $1 ]; then
         MOD=$1
 
@@ -250,7 +303,7 @@ squash() {
 
 	act "done with ${MOD}"
         act "copy the module into your current dock to activate it:"
-        act "cp ${PFX}/cdrom/dyne/modules/${MOD}.dyne $DYNE_SYS_MNT/dyne/modules"
+        act "cp ${PFX}/cdrom/dyne/modules/${MOD}.dyne $DYNE_SYS_MNT/modules"
 
         return
     fi
@@ -309,6 +362,8 @@ mkinitrd() {
     cp -ra /bin .
     cp -ra /sbin .
     mkdir -p boot dev proc root sys usr mnt home tmp
+    # here copy the icon for the Volumes
+    ln -s /usr/share/icons/graphite/48x48/apps/disks.png mnt/.DirIcon
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
     mknod dev/console c 5 1
@@ -330,10 +385,21 @@ mkinitrd() {
     rm -f etc/blkid.tab*
     rm -f etc/fstab
     rm -f etc/mtab
+    rm -f etc/resolv.conf*
+cat << EOF > etc/resolv.conf
+nameserver 216.254.95.2
+nameserver 216.231.41.2
+nameserver 62.108.1.65
+nameserver 62.108.1.66
+EOF
 
     rm -f boot/dynenv*
     touch boot/dynenv
     touch boot/dynenv.modules
+    # here windowmaker dock and menu is reset
+    rm -f /etc/WindowMaker/WMRootMenu
+    rm -f /etc/WindowMaker/WMState
+    echo "volatile" > boot/mode
  
     cat << EOF > etc/fstab
 # /etc/fstab: file system information, see man fstab
@@ -356,6 +422,7 @@ EOF
     cleandir var/run
     cleandir var/log
     cleandir var/lib/rpm
+    cleandir var/lib/locate
     mkdir -p var/log/hotplug var/log/login
     mkdir -p var/log/setup var/log/cups var/log/samba
     mkdir -p var/cache/samba var/cache/union
@@ -368,7 +435,7 @@ EOF
 	cp -vf $PFX/startup/rc.*     etc/
 	cp -vf $PFX/startup/zshenv   etc/
 	cp -vf $PFX/startup/inittab  etc/
-        for f in `ls -A $PFX/startup/bin/`; do
+        for f in `ls -A $PFX/startup/bin/ | grep -v .svn`; do
           cp -raf ${PFX}/startup/bin/${f}       bin
         done
 	for f in `ls $PFX/startup/lib/`; do
@@ -383,14 +450,16 @@ EOF
 	  cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
 	done
         mkdir -p lib/dyne/skel
-	for f in `ls -A $PFX/startup/skel/`; do
+	for f in `ls -A $PFX/startup/skel/ | grep -v .svn`; do
 	  cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
 	done
-        for dir in `ls $PFX/startup/hotplug/`; do
-          mkdir -p lib/dyne/hotplug/${dir}
-          for f in `ls $PFX/startup/hotplug/${dir}/`; do
-            cp -af ${PFX}/startup/hotplug/${dir}/${f} lib/dyne/hotplug/${dir}/ 
-          done
+        for f in `ls $PFX/startup/hotplug/`; do
+          cp -raf ${PFX}/startup/hotplug/${f} lib/dyne/hotplug/
+          rm lib/dyne/hotplug/debug # no debug by default
+        done
+        mkdir -p lib/dyne/udev
+        for f in `ls $PFX/startup/udev/`; do
+          cp -raf ${PFX}/startup/udev/${f}	lib/dyne/udev/
         done
 
         # delete all backup files
@@ -436,7 +505,6 @@ EOF
     
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
-      echo
       act "adding extra modules selected on commandline"
       for m in `iterate $ADD_RAMDISK_MODULES`; do
     	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
@@ -448,6 +516,21 @@ EOF
       done
     fi
     echo
+
+    if [ $ADD_NETWORK_MODULES ]; then
+      act "adding extra network modules for online boot"
+      for m in `lsmod | awk '{print $1}' | grep -v '^Module\|^ppp_\|^slhc'`; do
+        if [ -r ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko ]; then
+          cp -v ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko boot/modules/${KRN}/
+          bzip2 -9 boot/modules/${KRN}/${m}.ko
+        fi
+      done
+    fi
+
+    act "cleaning up from .svn directories"
+    for svn in `find . -name '.svn'`; do
+      rm -rf ${svn}
+    done
 
     cd - > /dev/null
     cd $PFX
@@ -533,8 +616,8 @@ mkiso() {
       md5sum $PFX/cdrom/dyne/dyne.sys > $PFX/cdrom/dyne/dyne.sys.md5
       md5sum $PFX/cdrom/dyne/initrd.gz > $PFX/cdrom/dyne/initrd.gz.md5
       echo "cryptographically signing the md5 sums"
-      gpg $SIGN -b -a $PFX/cdrom/dyne/dyne.sys.md5
-      gpg $SIGN -b -a $PFX/cdrom/dyne/initrd.gz.md5
+      gpg -u $SIGN -b -a $PFX/cdrom/dyne/dyne.sys.md5
+      gpg -u $SIGN -b -a $PFX/cdrom/dyne/initrd.gz.md5
     fi
 
     act "checking if the CDROM is complete"
@@ -584,10 +667,11 @@ mkiso() {
 
 case "$CMD" in
     # execute commands
-    mksdk)    mksdk      ;;
-    mount)    mountmods  ;;
-    squash)   squash $@  ;;
-    mkiso)    mkiso      ;;
+    mksdk)    mksdk        ;;
+    mount)    mountmods    ;;
+    devel)    develmod $@  ;;
+    squash)   squash   $@  ;;
+    mkiso)    mkiso        ;;
 
     mkinitrd) mkinitrd ;;
     mkusr)    mkusr    ;;
@@ -597,3 +681,4 @@ esac
 
 notice "bye."
 exit 1
+
