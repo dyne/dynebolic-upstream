@@ -1,4 +1,4 @@
 # tiny busybox editor
 export EDITOR="/bin/vi"
 # basic terminal
-export TERM=vt100
+export TERM=linux

@@ -1,7 +1,8 @@
 # dyne:II startup scripts
-# (C) 2005 Denis "jaromil" Rojo
+# (C) 2005-2006 Denis "jaromil" Rojo
 # GNU GPL License
 
+source /lib/dyne/dock.sh
 source /lib/dyne/utils.sh
 
 add_volume() {
@@ -308,6 +309,14 @@ scan_storage() {
     ########################
     #### scan SCSI harddisks
     ########################
+
+    if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
+      act "waiting for the kernel to scan usb devices"
+      while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
+	  sleep 1 # wait that the kernel scans before we scan
+      done
+    fi
+
     for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
        # TODO: be sure to detect it's an harddisk
        HD_NUM=`expr $HD_NUM + 1`
@@ -349,6 +358,9 @@ scan_removable() {
 
 }
 
+
+
+
 # this function is called by the cdrom detection when a system is found on CD
 # it goes thru the harddisks detected and check if they have a system
 # match versions and ask user what to do if they are different
@@ -368,6 +380,8 @@ choose_volumes() {
     # count the harddisk
     HDSYS=`cat /boot/volumes|grep -E 'hdisk.*(sys|sdk)'`
     HDSYS_NUM=0
+    rm -f /boot/hdsyslist
+    touch /boot/hdsyslist
 
     for v in ${(f)HDSYS}; do
 	# volumes syntax: media device mount filesystem
@@ -383,7 +397,6 @@ choose_volumes() {
 	    source ${MNT}/dyne/VERSION
 	fi
 
-	if [ ! -r /boot/hdsyslist ]; then touch /boot/hdsyslist; fi
 	# dev mnt sys_ver init_ver
 	echo "$DEV $MNT $DYNE_SYS_VER $DYNE_INITRD_VER" >> /boot/hdsyslist
 	HDSYS_NUM=`expr $HDSYS_NUM + 1`
@@ -431,41 +444,39 @@ choose_volumes() {
 	    # hdsyslist format: dev mnt sys_ver init_ver
 	    HD_SYS_VER="`cat /boot/hdsyslist|awk '{print $3}'`"
 	    HD_INIT_VER="`cat /boot/hdsyslist| awk '{print $4}'`"
+            ask_update=false;
 	    if [ "$DYNE_SYS_VER" != "$HD_SYS_VER" ]; then ask_update=true; fi
 	    if [ "$DYNE_INITRD_VER" != "$HD_INIT_VER" ]; then ask_update=true; fi
 
-	    echo; echo; echo; echo; echo;
 	    # prompt if upgrading from cd is desired
 	    if [ x$ask_update = xtrue ]; then
-		notice "the dyne:bolic system on your harddisk is different from the CDROM"
-		act "CDROM\t:: sys $DYNE_SYS_VER\t:: init $DYNE_INITRD_VER"
-		act "HDISK\t:: sys $HD_SYS_VER\t:: init $HD_INITRD_VER"
-		echo "[?] do you want to upgrade the system on your harddisk? (y/n)"
-		echo; echo; echo; echo; echo;
-		ask_yesno 10 y n
+
+		ask_yesno 10 \
+"the Dock on your harddisk is different from the CDROM:\n\n
+CDROM :: sys $DYNE_SYS_VER :: init $DYNE_INITRD_VER\n
+HDISK :: sys $HD_SYS_VER :: init $HD_INITRD_VER\n\n
+Do you want to upgrade the system on your harddisk?"
+
 		if [ $? = 1 ]; then
 		    notice "upgrading harddisk system version to $DYNE_SYS_VER"
 		    act "please wait while transferring files..."
-		    echo; echo; echo;	    
 		    HD_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
 		    cp -rf ${MNT}/dyne ${HD_MNT}
 		    act "done!"
-		    echo; echo; echo; echo; echo;
 		else
-		    act "Nothing to upgrade."
+		    act "Not upgrading from CD."
 		fi
+
 	    fi
 
-	    echo; echo; echo; echo; echo;
             # prompt if boot from cdrom or harddisk
-            echo "[?] do you want to boot from the system on your harddisk? (Y/n)"
-	    echo; echo; echo; echo; echo;
-            ask_yesno 10
+            ask_yesno 10 "Do you want to boot from the system on your harddisk?"
+
             if [ $? != 0 ]; then
 
 	      DYNE_SYS_MEDIA=hdisk
-	      DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
-	      DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`/dyne"
+	      DYNE_SYS_DEV="`cat /boot/hdsyslist| uniq | awk '{print $1}'`"
+	      DYNE_SYS_MNT="`cat /boot/hdsyslist| uniq | awk '{print $2}'`/dyne"
 	      source ${DYNE_SYS_MNT}/VERSION
 	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
               eject `echo ${CD} | awk '{print $2}'`
@@ -497,62 +508,30 @@ choose_volumes() {
 
 	if [ $CD ]; then # and there is a cdrom
 
-	    
-	    MNT="`echo $CD|awk '{print $3}'`"
-	    source ${MNT}/dyne/VERSION
-
-	    notice "booting from CDROM system version $DYNE_SYS_VER"
-	    act "multiple systems have been detected, choose one to upgrade"
-	    C=0
-	    for i in `cat /boot/hdsyslist`; do
-		C=`expr $C + 1`
-		DEV=`echo $i| awk '{print $1}'`
-		MNT=`echo $i| awk '{print $2}'`
-		SYS_VER=`echo $i| awk '{print $3}'`
-		echo "$C - $DEV mounted on $MNT\t:: sys $VER"
-	    done
-	    echo "[?] choose one or wait 10 seconds"
-	    ask_choice 10 ${C}
-	    if [ $? != -1 ]; then
-		HD_MNT="`cat /boot/hdsyslist | awk -v line=$? 'NR==line {print $2}'`"
-		act "TODO: here should cp -rfv ${MNT}/dyne ${HD_MNT}"
-	    fi
-	    
-	# dev mnt sys_ver init_ver
-	    if [ "$DYNE_SYS_VER" != "`cat /boot/hdsyslist|awk '{print $3}'`" ]; then
-		ask_update=true; fi
-	    if [ "$DYNE_INITRD_VER" != "`cat /boot/hdsyslist|awk '{print $4}'`" ]; then
-		ask_update=true; fi
-	    
 	    # prompt if upgrading from cd is desired
-	    if [ x$ask_update = xtrue ]; then
-		# QUAAAA
-		ask_yesno
-	    fi
-	
-
-	else # there is not a cdrom
-
-	    # offer a multiple choice of the boot from /boot/hdsyslist
-	    notice "multiple dyne:bolic systems have been detected on your harddisks"
-	    act "choose the one you want to run (first is default after 10 seconds):"
-	    C=0
-            HDSYSLIST=`cat /boot/hdsyslist`
-	    for i in ${(f)HDSYSLIST}; do
-		C=`expr $C + 1`
-		DEV=`echo $i| awk '{print $1}'`
-		MNT=`echo $i| awk '{print $2}'`
-		SYS_VER=`echo $i| awk '{print $3}'`
-		echo "$C - $DEV mounted on $MNT\t:: sys $VER"
-	    done
-
-	    echo "TODO"
-
+            update_multiple_docks $CD
 
 	fi
+	
+        # prompt which dock has to be mounted
+	choose_multiple_docks
+
+        # fetch the selection
+        sel=`cat /tmp/choice`
+	    
+	syslist=`cat /boot/volumes | grep sys`
+
+	dock_sel=`echo $syslist | awk -v l=$sel 'NR == l { print $0 }'`
+
+	act "dock selected: $dock_sel"
+
+	DYNE_SYS_MEDIA=`echo $dock_sel | awk '{print $1}'`
+	DYNE_SYS_DEV="`echo $dock_sel  | awk '{print $2}'`"
+	DYNE_SYS_MNT="`echo $dock_sel  | awk '{print $3}'`/dyne"
+	source ${DYNE_SYS_MNT}/VERSION
+	notice "mounting the $DYNE_SYS_MEDIA docked system on $DYNE_SYS_MNT"
 
     fi
 }
 
 
-# TODO: sys_list che lista tutti i sistemi e fa scegliere con ask_choice

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+for app in firefox mozilla-firefox firebird mozilla-firebird galeon mozilla netscape skipstone dillo konqueror amaya; do
+  if [ -x "`which $app`" ]; then
+    exec "$app" "http://dyne.org/donate.php" &
+    exit 0
+  fi
+done
+
+links -g http://dyne.org/donate.php
+

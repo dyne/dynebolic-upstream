@@ -36,18 +36,18 @@ fi
 
 echo " .  unload all kernel modules"
 for m in `lsmod | awk '!/Module/ {print $1}'`; do
-  rmmod --force ${m}
+  rmmod ${m}
 done
 
 
 echo " .  umount all volumes"
-for vol in `unionctl /usr --list 2>&1 | awk '!/not.a.valid.union/ { print $1 }'`; do
-  unionctl /usr --remove ${vol}
-done
-umount -a -d -f
-umount -d -f /usr
-if [ -x /mnt/usr ]; then
-  umount -d -f /mnt/usr
+
+sync
+
+/bin/umount -a
+
+if [ -x /mnt/usr/bin ]; then
+  /bin/umount -d -f /mnt/usr
 fi
 
 PATH=/bin:/sbin
@@ -66,12 +66,10 @@ if [ -r /boot/debug_shutdown ]; then
     /bin/ash
 fi
 
-
 # sleep 1 fixes problems with some hard drives that
 # don't finish syncing before reboot or poweroff
 sleep 1
 
 
-echo "[*] POWER OFF"
 
 

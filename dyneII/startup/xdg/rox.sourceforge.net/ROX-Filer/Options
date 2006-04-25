@@ -6,7 +6,7 @@
   <Option name="action_move">1</Option>
   <Option name="pinboard_bg_colour">#888</Option>
   <Option name="dnd_middle_menu">1</Option>
-  <Option name="bind_single_pinboard">1</Option>
+  <Option name="bind_single_pinboard">0</Option>
   <Option name="menu_xterm">launchterm</Option>
   <Option name="display_show_hidden">0</Option>
   <Option name="display_colour_types">1</Option>
@@ -62,7 +62,7 @@
   <Option name="display_file_colour">#000000</Option>
   <Option name="action_mount">1</Option>
   <Option name="pinboard_tasklist">1</Option>
-  <Option name="bind_single_click">1</Option>
+  <Option name="bind_single_click">0</Option>
   <Option name="display_show_full_type">0</Option>
   <Option name="pinboard_shadow_colour">#000</Option>
   <Option name="toolbar_min_width">1</Option>

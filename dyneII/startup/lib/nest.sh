@@ -6,111 +6,195 @@
 
 source /lib/dyne/utils.sh
 
+
+#### PUBLIC INTERFACE:
+## this is the only function to be called outside of this script
+## it will handle everything :) and at the end leave you with a /home and /etc
+## either in RAM or from a nest
+
 choose_nest() {
-    
 
-    # TODO: kernel append option to mount a nest on partition
-    # this is DEPRECATED for now
-    # if the "nest_partition" config is set, then should use that partition
-    CFG_NEST="`get_config nest_partition`" # can be specified as /dev/hdXX or /vol/hdX
-
-    if [ $CFG_NEST ]; then
-
-      NEST_VOL=`cat /boot/volumes | grep $CFG_NEST`
-      NEST_MNT=`echo $NEST_VOL | awk '{print $3}'`
-
-      if ! [ -x $NEST_MNT ]; then
-        error "nest partition $CFG_NEST is not mounted"
-        return
-      fi
-
-      notice "using nest in $NEST_VOL"
-
-      if [ `is_mounted /home` = true ]; then
-	warning "nest already mounted, aborting operation"
-	return
-      fi
-
-      bind_nest ${NEST_MNT}
-
-      if [ $DYNE_NEST_PATH ]; then
-        act "nest succesfully mounted from partition"
-	return
-      fi
-
-    fi
-
-
-
-
-
-
-
-    # count the nests found in volumes
-    NESTS=`cat /boot/volumes|grep nst`
-    NESTS_NUM=0
-
-    # extract the interesting array in /boot/nestlist
-    for n in ${(f)NESTS}; do
-	# volumes syntax: media device mount filesystem
-	#        we want: ^^^^^        ^^^^^ ^^^^^^^^^^
-	MEDIA="`echo $n|awk '{print $1}'`"
-	MNT="`echo $n|awk '{print $3}'`"
-	FSYS="`echo $n|awk '{print $4}'`"
-	# media mnt fsys
-	echo "$MEDIA $MNT $FSYS" >> /boot/nestlist
-	NESTS_NUM=`expr $NESTS_NUM + 1`
-    done
-
-    if [ $NESTS_NUM = 0 ]; then
-	notice "no nests were found on devices connected"
-    else # NESTS_NUM > 0
-
-        ### we found nests, they are listed in /boot/nestlist
-	# media mnt fsys
-        MNT=`cat /boot/nestlist|awk 'NR=1{print $2}'` 
-
-        if [ -r ${MNT}/dyne/dyne.nst ]; then
-    	    NEST="${MNT}/dyne/dyne.nst"
-	    unset ENCRYPT
 # TODO: encryption is not yet supported: cryptoloop should be used
 #       please help here if you can ;)
-#	elif [ -r ${MNT}/dyne/dyne-aes.nst ]; then
-#	    NEST="${MNT}/dyne/dyne-aes.nst"
-#	    ENCRYPT="AES128"
-	fi
 
-        if [ `is_mounted /home` = true ]; then
-	  warning "nest already mounted, aborting operation"
+    
+    if [ `is_mounted /home` = true ]; then
+	warning "script error"
+	warning "choose_nest was called but a nest is already mounted in /home"
+	return
+    fi
+    
+
+    ###### CONFIG
+    
+    # if the "nest=/dev/hd*" config is set, then should use that partition
+
+    cfg_nest="`get_config nest`" # can be specified as /dev/hd* or /mnt/hd*
+
+    if [ $cfg_nest ]; then
+
+      nest_vol=`cat /boot/volumes | grep $cfg_nest`
+      notice "configured nest: $nest_vol"
+
+      nest_mnt=`echo $nest_vol | awk '{print $3}'`
+
+      if ! [ -x $nest_mnt ]; then
+
+        error "nest partition $CFG_NEST is not mounted"
+
+      elif ! [ -r $nest_mnt/dyne/dyne.nst ]; then
+
+	error "no nest present in $NEST_MNT/dyne"
+
+      else
+
+	# loop-mount the nest in /mnt/nest
+	mount_nest ${nest_mnt}/dyne/dyne.nst
+
+      fi
+	
+      # nest was succesfully mounted from the 'nest' kernel/config option
+      if [ `is_mounted /mnt/nest` = true ]; then
+
+        bind_nest
+
+        if [ $DYNE_NEST_PATH ]; then
+
+          act "nest succesfully mounted from partition"
+
 	  return
+
         fi
 
-	# mount nest in /mnt/nest
-        mount_nest ${NEST}
-
-# TODO: choice between multiple nests on the same system
-#       here i plan a generic choice mechanism based on the format
-#       of the /boot/nestlist and /boot/hdsyslist files (using AWK)
+      fi
 
     fi
+
+
+    ###### AUTODETECT
+
+    notice "autodetecting nests on mounted devices"
+
+    # count the nests found in volumes
+    nests=`cat /boot/volumes|grep nst`
+    nests_num=0
+
+    # extract the interesting array in /boot/nestlist
+    for n in ${(f)nests}; do
+	# volumes syntax: media device mount filesystem
+	#        we want: ^^^^^        ^^^^^ ^^^^^^^^^^
+	media="`echo $n|awk '{print $1}'`"
+	mnt="`echo $n|awk '{print $3}'`"
+	fsys="`echo $n|awk '{print $4}'`"
+	# nestlist format: media mnt fsys
+	echo "$media $mnt $fsys" >> /boot/nestlist
+	# nests_num++
+	nests_num=`expr $nests_num + 1`
+    done
+
+
+    ##### see what we have
+
+    if [ $nests_num = 0 ]; then
+
+	notice "no nests were found on devices connected"
+
+    elif [ $nests_num = 1 ]; then # **** ... there is one nest
+
+	# media [mnt] fsys
+        nest_mnt=`cat /boot/nestlist|awk 'NR=1{print $2}'`
+
+	mount_nest ${nest_mnt}/dyne/dyne.nst
+	
+	
+    else    
+
+	###########################
+	##### choose multiple nests
+
+	c=0
+        ### nests are listed in /boot/nestlist
+	nestlist=`cat /boot/nestlist`
+
+	### generate DIALOG for interactive selection
+	rm -f /tmp/dialog /tmp/choice
+
+	cat <<EOF > /tmp/dialog
+"Multiple nests have been detected on your harddisks,\
+ which one do you want to use?\
+ (default is first after 10 seconds)" 20 51 4
+EOF
+
+	for i in ${(f)nestlist}; do
+	    
+	    # cycle thru nests and generate entries for the dialog
+	    c=`expr $c + 1`
+	    # nestlist format: media mnt fsys
+	    media=`echo $i| awk '{print $1}'`
+	    mnt=`echo $i| awk '{print $2}'`
+
+            comment="last time modified: "
+            comment+=`stat ${mnt}/dyne/dyne.nst | awk '/Modify/ { print $2 }'`
+            if [ -r ${mnt}/dyne/VERSION ]; then
+
+                source ${mnt}/dyne/VERSION
+		comment+="  system ver. $DYNE_SYS_VER"
+
+            fi
+
+	    # calculate nest size / KB / MB
+	    size=`stat $mnt/dyne/dyne.nst | awk '/Size/ {print $2}'`
+	    size=`expr $size / 1024`
+	    size=`expr $size / 1024`
+
+	    echo \
+"\"$c\" \"nest in $media $mnt (${size}MB)\" \"$comment\"" >> /tmp/dialog
+
+	done
+
+            # now render the dialog
+	dynedialog --clear --item-help --title \
+	    "\Zr\Z0 Multiple nest selection " \
+	    --menu --file /tmp/dialog 2> /tmp/choice
+
+	case $? in
+	    0)
+            # fetch the selection
+	    sel=`cat /tmp/choice`
+            nest_mnt=`echo $nestlist | awk -v l=$sel 'NR == l { print $2 }'`
+            notice "selected nest in $nest_mnt"
+            stat ${nest_mnt}/dyne/dyne.nst
+	    mount_nest ${nest_mnt}/dyne/dyne.nst
+		;;
+	    1)
+		act "Cancel pressed: using virtual nest in RAM"
+		;;
+	    255)
+		act "ESC pressed: using virtual nest in RAM"
+		;;
+	esac
+	
+    fi # END of multiple nest selection
+
+
+
+
 
     # bind directories in /mnt/nest to the filesystem
 
     if [ `is_mounted /mnt/nest` = true ]; then
 
       act "nest succesfully mounted"
-      # this script shoud now link the directories
-      # here we kill the syslog and start a new one
-      bind_nest /mnt/nest
+
+      bind_nest
+
+      if [ $DYNE_NEST_PATH ]; then
+	  notice "nest succesfully activated"
+      fi
 
     else # no nest found, create system default
 
-      notice "creating virtual nest in floating memory"
-
-      if [ `is_mounted /home` = true ]; then
-        warning "nest already mounted, aborting operation"
-        return
-      fi
+      notice "no nest found, creating virtual nest in volatile memory"
 
       floating_nest
 
@@ -125,11 +209,11 @@ floating_nest() {
   # used when no nest is found
 
   notice "populating virtual filesystem in memory"
-  act    "home and settings will be lost at reboot"
+  act    "home and settings will be lost after reboot"
   RAMSIZE=`cat /proc/meminfo | awk '/MemTotal/{print $2}'`
   SHMSIZE=`expr $RAMSIZE / 1024 / 4`
   act "RAM detected: `expr $RAMSIZE / 1024` Mb"
-  act "VFS size: $SHMSIZE Mb"
+  act "max VFS size: $SHMSIZE Mb"
   append_line /etc/fstab "tmpfs\t/dev/shm\ttmpfs\tdefaults,size=${SHMSIZE}m\t0\t0"
   mkdir -p /dev/shm # since 2.6.13 we need to create this dir by hand
   mount /dev/shm
@@ -159,7 +243,7 @@ floating_nest() {
   chmod +t    /dev/shm/tmp
 
 
-  act "binding new paths"
+  act "binding paths"
   mount -o bind /dev/shm/var  /var
   mount -o bind /dev/shm/root /root
   mount -o bind /dev/shm/home /home
@@ -169,12 +253,12 @@ floating_nest() {
 
 
 
-bind_nest() { # arg:   path_to_mounted_nest
-  # when a nest is already mounted somewhere
-  # it binds it to the root filesystem
-  # so this function shoud now link the directories
+bind_nest() { # bind directories in /mnt/nest
+  # before calling this function,
+  # nest should be already mounted in /mnt/nest
+  # this function binds the directories on the filesystem
 
-  NST=$1
+  NST=/mnt/nest
   if ! [ -x $NST ]; then
     error "can't bind nest $NST: doesn't seems a directory"
     floating_nest
@@ -213,7 +297,8 @@ bind_nest() { # arg:   path_to_mounted_nest
       warning "nest is missing var, skipping"
   else
       # import logs
-      mv -f /var/log/* ${NST}/var/log/
+      cp -ra /var/log/* ${NST}/var/log/
+      cleandir /var/log
       # wipe out /var/run
       if [ "`ls ${NST}/var/run`" ]; then
         cleandir ${NST}/var/run
@@ -251,33 +336,24 @@ bind_nest() { # arg:   path_to_mounted_nest
 
 
 mount_nest() {
-    NEST=${1}
+    nst=${1}
 
-    mkdir -p /mnt/nest
+    if [ -r $nst ]; then
 
-    if [ -r $NEST ]; then
-	echo
-	echo
-	echo
-	echo	
-	echo -n "[?] use the dyne:bolic nest in ${NEST} (Y/n)"
-	ask_yesno 10
-	if [ $? = 0 ]; then
-	    echo " ... SKIPPED"
-	else
-	    echo " ... OK"
-	    
-	    notice "activating dyne:bolic nest in ${NEST}"
+	    notice "activating dyne:bolic nest in ${nst}"
 
             act "nest filesystem check"
-            fsck -TCp ${NEST}
+            fsck -TCp ${nst}
 	    
 	    act "mounting nest over loopback device"
-	    mount -o loop ${NEST} /mnt/nest
+	    mkdir -p /mnt/nest
+	    mount -o loop ${nst} /mnt/nest
 	    if [ $? != 0 ]; then
 	       error "mount failed with exitcode $?"
             fi
-	fi
-    fi	
+
+    else
+	error "no nest present in $NEST"
+    fi
 }
 

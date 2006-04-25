@@ -3,7 +3,6 @@
 # by jaromil http://rastasoft.org
 
 export EDITOR="/usr/bin/edit"
-export LADSPA_PATH="/usr/lib/ladspa"
 export LIBIND_PATH="/usr/lib/libind"
 export XWINHOME="/opt/Xorg"
 export X11HOME="$XWINHOME"

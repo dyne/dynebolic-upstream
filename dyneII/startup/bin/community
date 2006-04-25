@@ -1,0 +1,13 @@
+#!/bin/sh
+
+URL="http://dyne.org"
+
+for app in firefox mozilla-firefox firebird mozilla-firebird galeon mozilla netscape skipstone dillo konqueror amaya opera ; do
+  if [ -x "`which $app`" ]; then
+    exec "$app" "$URL" &
+    exit 0
+  fi
+done
+
+links -g $URL
+

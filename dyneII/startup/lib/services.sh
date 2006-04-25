@@ -17,6 +17,13 @@ init_firewire() {
 
 }
 
+init_pcmcia() {
+  if [ "`lspci | grep CardBus`" ]; then
+    notice "enabling pcmcia cardbus support"
+    loadmod pcmcia
+  fi
+}
+
 init_modules() {
 
    notice "loading kernel modules"
@@ -75,7 +82,16 @@ init_modules() {
    done
 
    # load ACPI button module for button-driven power down
-   loadmod button
+   if [ -x /proc/acpi ]; then
+      act "activating ACPI modules"
+      loadmod ac
+      loadmod battery
+      loadmod button
+      loadmod fan
+      loadmod processor
+      loadmod thermal
+      loadmod video
+   fi
 
 }
 
@@ -241,6 +257,14 @@ EOF
       rsync --daemon --config /boot/dynenv.rsync
     fi
 
+    if [ $d = "tor" ]; then
+      act "starting anonymous proxy (tor+privoxy) on localhost:8118"
+      tor -f /etc/tor/torrc
+      cd /etc/privoxy
+      privoxy
+      cd -
+    fi
+
   done
   
 
@@ -267,8 +291,10 @@ init_sound() {
     loadmod snd-mixer-oss
     loadmod snd-seq-oss
 
-    act "restoring volumes"
-    alsactl restore
+    if [ -r /etc/asound.state ]; then
+      act "restoring volumes from previous session"
+      alsactl restore
+    fi
 
   fi
 

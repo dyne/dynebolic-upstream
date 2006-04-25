@@ -163,6 +163,7 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins &
 
 Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 Nicotine | p2p soulseek fileshare | nicotine | | nicotine.thegraveyard.org | Hyriand
+Gnutella | p2p gnutella filesharing | gtk-gnutella | user | gtk-gnutella.sf.net | gnutella auth
 Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
 MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
 The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
@@ -254,6 +255,8 @@ Foobillard | 3d carambola billard | foobillard | | WEB | AUTH
 FrozenBubble | puzzle bubble like | frozen-bubble | | WEB | AUTH
 RetroVolley | gnu arcade volleyball | gav | | WEB | AUTH
 glhack | graphical nethack dungeon | glhack | | WEB | AUTH
+VultureEyes | RPG nethack dungeon | vultureseye | | WEB | AUTH
+SuperMarioWars | jump on platforms | supermariowars | | WEB | AUTH
 lBreakout2 | arkanoid & breakout | lbreakout2 | | WEB | AUTH
 lTris | rich tetris clone | ltris | | WEB | AUTH
 Liquidwar | addictive multiplayer | liquidwar | | WEB | AUTH

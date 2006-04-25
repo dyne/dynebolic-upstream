@@ -280,8 +280,6 @@ EOF
 wmaker_gen_volumes() {
 # this functions generates the right hand dock for wmaker
 
-# i don't remember why this?     mkdir -p /etc/GNUstep/
-
     if [ -r $WMSTATEDOCK ]; then rm $WMSTATEDOCK; fi
 
     # generate the list of harddisks
@@ -415,9 +413,11 @@ print "}"
     else
 
       # this is a freshly generated WMState, add other default sections
-
+      act "generating a fresh windowmaker dock"
       echo "{" > $WMSTATE
+
       cat $WMSTATEDOCK >> $WMSTATE
+
       cat <<EOF >> $WMSTATE
   Workspace = "DESK 1";
   Workspaces = (

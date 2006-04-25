@@ -43,10 +43,6 @@ add_module_path() {
         "export MANPATH=\$MANPATH:/opt/${mod}/man"
     fi
 
-
-    # now source all the new paths
-    source /boot/dynenv.modules
-
     # configuration files in home directories
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then
@@ -58,13 +54,15 @@ add_module_path() {
       done
       # copy the skel files in the /root directory
       for f in `ls -A /opt/${mod}/skel/`; do
-        cp -ua /opt/${mod}/skel/${f} /home/${h}
+        cp -ua /opt/${mod}/skel/${f} /root
       done
     fi
 
+    # do we have also an etc/ directory in the module?
+    if [ -x /opt/${mod}/etc ]; then
+
     # execute initialization scripts in etc/rc_*
     # DANGER! this is also a possible security flaw
-    if [ -x /opt/${mod}/etc ]; then
       for rc in `ls /opt/${mod}/etc | awk '/^rc.*/ {print $1}'`; do
         if [ -x /opt/${mod}/etc/$rc ]; then
           if ! [ -d /opt/${mod}/etc/$rc ]; then
@@ -73,7 +71,17 @@ add_module_path() {
           fi
         fi
       done
-    fi
+
+    # add environment variables in /etc/env
+    # DANGER! this is also a possible security flaw
+      if [ -r /opt/${mod}/etc/env ]; then
+        for env in `cat /opt/${mod}/etc/env | awk '!/^PATH=|LD_LIBRARY_PATH/ { print $0 }'`; do
+          append_line /boot/dynenv.modules \
+                      "export `echo $env | sed 's/export //'`"
+        done
+      fi
+
+    fi # ... etc/
 }
 
 
@@ -158,6 +166,10 @@ mount_dyne_modules() {
 	  act "${mod_name} mounted in /opt"
 	    
      done
+
+  # now source all the new paths
+  source /boot/dynenv.modules
+
 
   if [ x$NEWLIBPATH = xtrue ]; then
     ld_regenerate_cache

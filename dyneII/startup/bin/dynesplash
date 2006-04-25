@@ -1,0 +1,7 @@
+#!/bin/sh
+
+
+cd /usr/share/dyne/splash
+./dynesplash
+cd -
+

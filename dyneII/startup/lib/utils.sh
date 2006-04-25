@@ -47,16 +47,16 @@ else
 fi
 
 notice() {
-    $LOGGER -t`cat /boot/mode` -s -p syslog.notice "[*] ${1}"
+    $LOGGER -s -p syslog.notice "[*] ${1}"
 }
 act() {
-    $LOGGER -t`cat /boot/mode` -s -p syslog.info   " .  ${1}"
+    $LOGGER -s -p syslog.info   " .  ${1}"
 }
 error() {
-    $LOGGER -t`cat /boot/mode` -s -p syslog.err    "[!] ${1}"
+    $LOGGER -s -p syslog.err    "[!] ${1}"
 }
 warning() {
-    $LOGGER -t`cat /boot/mode` -s -p syslog.warn   "[W] ${1}"
+    $LOGGER -s -p syslog.warn   "[W] ${1}"
 }
 xosd() {
     echo "${1}" | osd_cat -c lightblue -p middle -A center -s 3 \
@@ -127,13 +127,12 @@ loadmod() {
     # in interactive mode we ask 
     INTERACTIVE="`get_config modules_prompt`"
     if [ $INTERACTIVE ]; then 
-	echo -n "[?] do you want to load kernel module $MODULE [y/N] ?"
-	ask_yesno 10
+	ask_yesno 10 "Load kernel module $MODULE ?"
 	if [ $? = 1 ]; then
-	    echo " ... SKIPPED"
-	    return
+	    act "Loading kernel module $MODULE"
 	else
-	    echo " ... LOADED"
+	    act "Skipped kernel module $MODULE"
+            return
 	fi
     fi
 
@@ -347,7 +346,7 @@ is_writable() { # arg: filename
 
   else # file does not exist
 
-    touch $file 2>/dev/null
+    touch $file 1>/dev/null 2>/dev/null
     if [ $? = 0 ]; then
       writable=true
       rm $file
@@ -413,24 +412,22 @@ cleandir() {
 }
 
 # $1 = timeout
-# $2 = (optional) yes key
-# $3 = (optional) no key
+# $2 = text for message box
 # return: -1 on timeout, 1 on yes, 0 on no
 ask_yesno() {
    TTL=${1}
+   dialog --timeout ${TTL} --colors --backtitle \
+   "        dyne:II .:.:.:. `uname -ormp` .:.:.:. RASTASOFT AFRO LINUX" \
+   --yesno "$2" 0 0
 
-   if [ -z ${2} ]; then YES=y
-   else YES=${2}; fi
-
-   if [ -z ${3} ]; then NO=n
-   else NO=${3}; fi
-   
-   while [ true ]; do
-       CHOICE="`getkey ${TTL}`"
-       if [ "$CHOICE" = "~" ]; then return -1; fi
-       if [ "$CHOICE" = "$YES" ]; then return 1; fi
-       if [ "$CHOICE" = "$NO" ]; then return 0; fi
-   done
+   case $? in
+     0) # yes
+       return 1  ;;
+     1) # no
+       return 0  ;;
+     *) # timeout or killed
+       return -1 ;;
+   esac
 }
 
 # $1 = timeout

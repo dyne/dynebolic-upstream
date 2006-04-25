@@ -42,6 +42,7 @@ source /lib/dyne/wmaker.sh
 source /lib/dyne/nest.sh
 
 source /boot/dynenv
+echo "booting" > /boot/mode
 
 ##########################################
 
@@ -61,7 +62,6 @@ boot_single_user_mode() {
 
 export PATH=/bin:/sbin
 
-echo volatile > /boot/mode
 touch /var/run/utmp
 touch /var/log/wtmp
 
@@ -79,6 +79,9 @@ act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
 mount /dev/pts
 mount /sys
 
+notice "initializing device filesystem"
+/sbin/udevstart
+
 # check if an usb controller is present
 if [ "`dmesg | grep 'USB hub found'`" ]; then
 
@@ -90,19 +93,9 @@ if [ "`dmesg | grep 'USB hub found'`" ]; then
    # start loading the usb storage
    loadmod usb-storage
    
-   sync
-
-   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
-     act "waiting for the kernel to scan usb devices"
-     while [ -z "`dmesg | grep '^usb-storage: device scan complete'`" ]; do
-       sleep 1 # wait that the kernel scans before we scan
-     done
-   fi
-
 fi
 
-notice "initializing device filesystem"
-/sbin/udevstart
+##
 
 notice "scan for fixed storage volumes"
 scan_storage
@@ -127,15 +120,21 @@ if [ $CFG_MODULES ]; then
 
     act "configured kernel modules: ${CFG_MODULES}"
 
-    if [ "`echo $CFG_MODULES |grep -i 'autodetect'`" ]; then
-	act "modules autodetection invoked"
-	for m in `pcimodules`; do
-	    loadmod ${m}
-	done
-    fi
-
     for m in `iterate ${CFG_MODULES}`; do
+
+      if [ "$m" = "autodetect" ]; then
+
+	act "modules autodetection invoked"
+	for am in `pcimodules`; do
+	    loadmod ${am}
+	done
+
+      else
+
 	loadmod ${m}
+
+      fi
+
     done
 
 fi
@@ -150,30 +149,33 @@ if [ $BOOT_NETWORK ]; then
 
 	notice "Network booting is configured"
 	# go for the DHCP auto config
-	if [ "`echo $BOOT_NETWORK | grep -iE 'pump|dhcp|auto'`" ]; then
+#	if [ "`echo $BOOT_NETWORK | grep -iE 'pump|dhcp|auto'`" ]; then
 
-	    act "autodetect dhcp network address"
-	    udhcpc
+#           TODO: configure udhcpc properly for this function
 
-	else
+#	    act "autodetect dhcp network address"
+#	    udhcpc
+
+#	else
 
 #	    IFACE=`echo $BOOT_NETWORK   |awk '{print $1}'`
 #	    IP=`echo $BOOT_NETWORK      |awk '{print $2}'`
 #	    NETMASK=`echo $BOOT_NETWORK |awk '{print $3}'`
 #	    GW=`echo $BOOT_NETWORK      |awk '{print $4}'`
 #	    DNS=`echo $BOOT_NETWORK     |awk '{print $5}'`
+
 	    IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
 	    IP=`echo $BOOT_NETWORK      | cut -d, -f2`
 	    ifconfig ${IFACE} ${IP}
+
 #	    route add default gw ${GW}
 #	    echo "nameserver $DNS" > /etc/resolv.conf
 
-	fi
+#	fi
 
 
 
 #### FTP DOWNLOAD
-
 
 	DOCK_FTP=`get_config dock_download_ftp` # remote_host remote_dyne_dir local_destination_dir
 	if [ $DOCK_FTP ]; then
@@ -203,7 +205,6 @@ if [ $BOOT_NETWORK ]; then
 
 #### SAMBA REMOTE DOCKING
 
-
 	DOCK_SAMBA=`get_config dock_mount_samba` # network_address (public access)
 	if [ $DOCK_SAMBA ]; then
 	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
@@ -227,7 +228,7 @@ if [ $BOOT_NETWORK ]; then
 
 
     else
-	error "Can't activate network device: network boot is aborted"
+	error "Can't find any network device: network boot is aborted"
     fi
 fi
 
@@ -281,9 +282,29 @@ boot_multi_user_mode() {
 
 ######## HOME IS MOUNTER HERE
 ############ ALL MEDIA MOUNTED, now MOUNT dyne.sys
-##### UNLESS VOLATILE MODE :
+
+########################################
+## check if a dock was really found
+## or volatile mode was choosen
+SYSTEM_FOUND="`cat /boot/volumes | grep -E '(sys|sdk)'`"
 VOLATILE="`get_config volatile`"
-if [ $VOLATILE ]; then
+
+if ! [ $SYSTEM_FOUND ]; then
+
+  # no system found on any harddisk or cdrom
+  error "No dyne system has been found on any storage device"
+  error "this is a fatal error, dyne:bolic cannot run."
+  umount -a
+  error "You can safely reboot now, or wait to enter a mantainance shell."
+  bootmode=volatile
+
+elif [ $VOLATILE ]; then
+
+  bootmode=volatile
+
+fi
+
+if [ "$bootmode" = "volatile" ]; then
     # stay into the ramdisk shell
     # for the volatile mode activable at boot prompt
     notice "VOLATILE MODE :: opening a shell in dyne:bolic ramdisk"
@@ -291,6 +312,9 @@ if [ $VOLATILE ]; then
 
     ## setup the interactive shell prompt
     if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi
+
+    rm -f /boot/mode
+    echo "volatile" > /boot/mode
 
     cat > /etc/zshrc <<EOF
     echo "dyne:bolic volatile shell environment"
@@ -309,90 +333,117 @@ if [ $VOLATILE ]; then
     echo "smbmount - samba filesystem"
     echo "happy hacking ;)"
 EOF
-    
+
     exit 0
-else
-    rm -f /boot/mode
-    echo ascii > /boot/mode
 fi
 
 
+########################################
 
-# if the system has been allready mounted you can go on
-if [ "$DYNE_SYS_MEDIA" = "pre_mounted" ]; then
-    notice "dyne system on ${DYNE_SYS_DEV} mounted in ${DYNE_SYS_MNT}"
-else
 
-    if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin/dynesplash ]; then
-        # we have an uncompressed dock in the SDK
 
-	notice "Mounting SDK filesystem from dock in ${DYNE_SYS_MNT}"
-	mount -o bind,suid ${DYNE_SYS_MNT}/SDK/sys /usr
 
-    elif [ "$DYNE_SYS_MEDIA" = "samba" ]; then
-        # we are mounting the system over the network
 
-        notice "Mounting dock over samba network from ${DYNE_SYS_DEV}"
+########################################
+## DETECT AND MOUNT NEST (or RAM VFS)
+# see /lib/dyne/nest.sh
+choose_nest
+###########
+
+
+
+
+mkdir -p /usr
+
+if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin ]; then
+  # we have an uncompressed dock in the SDK
+
+  notice "Mounting SDK filesystem from dock in ${DYNE_SYS_MNT}"
+  mount -o bind,suid ${DYNE_SYS_MNT}/SDK/sys /usr
+
+elif [ "$DYNE_SYS_MEDIA" = "samba" ]; then
+  # we are mounting the system over the network
+
+  notice "Mounting dock over samba network from ${DYNE_SYS_DEV}"
+  mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+
+elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
+  # we have a compressed dock
+
+  notice "Mounting dock in ${DYNE_SYS_MNT}"
+  UNIONFS="`get_config unionfs`"
+  if [ "$UNIONFS" = "false" ]; then 
+
+    # just mount the /usr as read-only
+    mkdir -p /usr
+    mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+
+  else
+
+    act "making the /usr writable with unionfs"
+
+    # mount read-only /usr into /mnt/usr
+    mkdir -p /mnt/usr
+    mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
+
+    if [ $? = 0 ]; then
+
+      # load union filesystem module from inside the squash
+      insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs/unionfs.ko
+
+      if [ $? = 0 ]; then
+
+        # create directory where to store unionfs changes
+        mkdir -p /var/cache/union/usr_rw
+        # mount the unionfs layers
+        # /var/cache/union/usr_rw <- read/write, stores modifications
+        # /mnt/usr <- read only, core system
+        mount -t unionfs \
+              -o dirs=/var/cache/union/usr_rw=rw:/mnt/usr=ro unionfs /usr
+        sync
+
+      else
+
+        error "failed to load unionfs kernel module, reverting /usr to read-only mode"
         mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
 
-    elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
-        # we have a compressed dock
+      fi
 
-        notice "Mounting dock in ${DYNE_SYS_MNT}"
-        UNIONFS="`get_config unionfs`"
-        if [ "$UNIONFS" = "false" ]; then 
+    else
 
-           # just mount the /usr as read-only
-
-           mkdir -p /usr
-           mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
-
-	else
-
-	   act "making the /usr writable with unionfs"
-           # mount read-only /usr into /mnt/usr
-           mkdir -p /mnt/usr
-           mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /mnt/usr
-           if [ $? = 0 ]; then
-	     # load union filesystem module from inside the squash
-	     insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs.ko
-             if [ $? = 0 ]; then
-	       mount -t unionfs -o dirs=/mnt/usr=ro unionfs /usr
-	       # writable union will be mounted later on...
-	       UNION_USR_RW=/var/cache/union/usr_rw
-             else
-               error "failed to load unionfs kernel module, reverting /usr to read-only mode"
-               mkdir -p /usr
-               mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
-             fi
-           else
-             # mount of dyne.sys squashfs failed - fatal :(
-             error "fatal error occurred: can't mount dyne.sys filesystem"
-           fi
-        fi
+      # mount of dyne.sys squashfs failed - fatal :(
+      error "fatal error occurred: can't mount dyne.sys filesystem"
 
     fi
 
-    if ! [ -x /usr/bin ]; then # if we cannot mount
-	echo
-	error "A problem occurred while mounting the dyne.sys"
-	error "corrupted dyne.sys on ${DYNE_SYS_DEV}"
-	if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
-	    error "it looks like your CDROM is corrupted!"
-	fi
-	if [ "$DYNE_SYS_MEDIA" = "dvd" ]; then
-	    error "it looks like your DVD is corrupted!"
-	fi
-	error "burn your dyne:bolic more carefully"
-	error "refer to the USER UPDATED FAQ"
-	error "on the wiki pages on lab.dyne.org/DyneBolicFAQ for some tips"
-	error "may the source be with you :^)"
-	echo; echo;
-	# no system found on any harddisk or cdrom
-	error "No dyne:bolic system has been found on any cdrom or harddisk"
-	error "check your harddisk dock or CD: no /dyne directory is present."
-	exit 0;
-    fi
+  fi
+
+fi
+
+if ! [ -x /usr/bin ]; then # if we couldn't mount
+  echo
+  error "A problem occurred while mounting the dyne.sys"
+  error "corrupted dyne.sys on ${DYNE_SYS_DEV}"
+  if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
+    error "it looks like your CDROM is corrupted!"
+  fi
+  if [ "$DYNE_SYS_MEDIA" = "dvd" ]; then
+    error "it looks like your DVD is corrupted!"
+  fi
+  error "burn your dyne:bolic more carefully"
+  error "refer to the DOCUMENTATION online"
+  error "wiki on lab.dyne.org/DyneBolicFAQ"
+  error "may the source be with you :^)"
+  echo; echo;
+
+  # no system found on any harddisk or cdrom
+  error "No dyne system has been found on any storage device"
+  error "this is a fatal error, dyne:bolic cannot run."
+  error "You can safely reboot."
+
+  rm -f /boot/mode
+  echo "volatile" > /boot/mode
+  exit 0;
 fi
 
 ##########################################
@@ -409,11 +460,6 @@ dmesg -n 1
 
 # reset linker cache
 append_line /etc/ld.so.conf /usr/lib
-
-# detect and mount nest
-choose_nest
-# see /lib/dyne/nest.sh
-
 
 act "network loopback device"
 ifconfig lo 127.0.0.1
@@ -438,6 +484,8 @@ init_modules
 # this is now done in the Xorg module
 #/etc/init.d/rc.vga
 
+# configure your pcmcia
+init_pcmcia
 
 # configure your sound card
 init_sound
@@ -465,15 +513,6 @@ check_apps_present
 
 
 
-if [ ${UNION_USR_RW} ]; then
-  notice "making /usr writable with unionfs"
-  # create directory where to store unionfs changes
-  mkdir -p /var/cache/union/usr_rw
-  # assign /usr writable union to /var/cache/union/usr_rw
-  /usr/sbin/unionctl /usr --add --before /mnt/usr \
-                     --mode rw /var/cache/union/usr_rw
-fi
-
 
 
 
@@ -482,6 +521,7 @@ fi
 
 notice "launching device filesystem daemon"
 /sbin/udevd --daemon
+/sbin/udevstart
 
 notice "launching power management daemon"
 /usr/sbin/acpid
@@ -525,7 +565,7 @@ sync
 boot_graphical_user_mode() {
 
 # skip if we're in volatile mode
-if [ `cat /boot/mode` = volatile ]; then exit 0; fi
+# if [ `cat /boot/mode` = volatile ]; then exit 0; fi
 
 
 
@@ -593,16 +633,39 @@ fortune -s
 echo
 EOF
 
-  if [ -z $DYNE_NEST_PATH ]; then
-    # start X
-    XREMOTE="`get_config x_remote`"
-    if [ $XREMOTE ]; then
-      su -c X -indirect -query ${XREMOTE} &
-    else
-      su -c xinit &
-    fi
-  else
+
+#### FINAL PART
+## spawn graphical interface accordingly
+  source /etc/zshenv
+
+  XREMOTE="`get_config x_remote`"
+  if [ $XREMOTE ]; then
+    su -c X -indirect -query ${XREMOTE} &
+    return
+  fi
+
+  USERLOGIN="`get_config user`"
+
+  if ! [ $USERLOGIN ]; then
+
+    # login directly into the desktop as root
+    su - root -c xinit &
+
+  elif [ $USERLOGIN = multi ]; then
+
+    # popup a login prompt
     Login.app &
+
+  elif [ `grep $USERLOGIN /etc/passwd` ]; then
+
+    # login directly selected user
+    su - $USERLOGIN -c xinit &
+    
+  else
+
+    # login directly into the desktop as root
+    su - root -c xinit &
+
   fi
 
   exit 0
