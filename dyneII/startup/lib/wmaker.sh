@@ -395,11 +395,12 @@ print "}"
     if [ -r $WMSTATE ]; then # WMState is already present
       # we are in a nest, so here we need to substitute only the Dock = { }; section
       # and leave all the rest intact (Clip, Workspaces)
+      echo "{" > $WMSTATETMP
 
       # Warning: this currently assumes that the Dock block is at beginning of WMState
       cat $WMSTATE | awk '
            /Dock = {/ { dockstart=NR }
-                      { if(!dockstart) print $0 }' > $WMSTATETMP
+                      { if(!dockstart) print $0 }'>> $WMSTATETMP
 
       cat $WMSTATEDOCK                            >> $WMSTATETMP
 
