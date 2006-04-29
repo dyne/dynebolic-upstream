@@ -161,8 +161,7 @@ mksdk() {
   mkdir -p ${PFX}
   cd ${PFX}
 
-  echo "[?] sync dyne:II ramdisk skeleton files from online repository (y/N) ?"
-  ask_yesno 10
+  ask_yesno 10 "Download dyne:II ramdisk skeleton files from online repository?"
   if [ $? = 1 ]; then
     act "checking out skeleton, please wait while downloading"
     if [ -x startup ]; then
@@ -181,14 +180,14 @@ mksdk() {
       svn co svn://code.dyne.org/dynebolic/dyneII/devel
     fi
   fi
+  ask_yesno 10 \
+"I can uncompress dyne.sys, it will occupy approx 2Gb
+ this way your /usr will become writable.\n
+ You should do it only if you really need: it will make
+ it harder to merge your modifications with upgrades to
+ the main dyne core.\n\n
+ Do you want to uncompress the dyne.sys ?"
 
-  act "I can uncompress dyne.sys, it will occupy approx 2Gb"
-  act "this way your /usr will become writable."
-  act "You should do it only if you really need: it will make"
-  act "it harder to merge your modifications with upgrades to"
-  act "the main dyne core."
-  echo "[?] do you want to uncompress the dyne.sys (y/N) ?"
-  ask_yesno 10
   if [ $? = 1 ]; then
     mkdir tmp
     mkdir sys
@@ -200,13 +199,13 @@ mksdk() {
     rm -r tmp
   fi
 
-  act "I can download the kernel sources, it will occupy approx 100MB"
-  act "this way you will be able to recompile the dyne:II kernel."
-  act "You should do it only if you really need: compiling a kernel"
-  act "requires deep knowledge of Linux and in case you do anything"
-  act "wrong it might break your system."
-  echo "[?] do you want to download the dyne:II kernel sources (y/N) ?"
-  ask_yesno 10
+  ask_yesno 10 \
+"I can download the kernel sources, it will occupy approx 100MB
+ this way you will be able to recompile the dyne:II kernel.\n
+ You should do it only if you really need: compiling a kernel
+ requires deep knowledge of Linux and in case you do anything
+ wrong it might break your system.\n\n
+ Do you want to download the dyne:II kernel sources ?"
   if [ $? = 1 ]; then
     act "downloading dyne:II kernel source and modules"
     rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
@@ -252,12 +251,12 @@ develmod() {
         exit -1
     fi
 
-    notice "extracting module $MOD in $PFX/modules"
 
     MODSIZE=`du -hs /opt/$MOD | awk '{print $1}'`
 
-    echo "[?] it will require $MODSIZE of space, do you want to proceed? (y/N)"
-    ask_yesno 10
+    ask_yesno 10 \
+"To extract the module $MOD in $PFX/modules will require $MODSIZE of space.\n\n
+ Do you really want to proceed?" 
     if [ $? = 1 ]; then
       act "please wait while extracting files..."
       mkdir -p $PFX/modules/$MOD
@@ -399,7 +398,6 @@ EOF
     # here windowmaker dock and menu is reset
     rm -f /etc/WindowMaker/WMRootMenu
     rm -f /etc/WindowMaker/WMState
-    echo "volatile" > boot/mode
  
     cat << EOF > etc/fstab
 # /etc/fstab: file system information, see man fstab
@@ -453,9 +451,9 @@ EOF
 	for f in `ls -A $PFX/startup/skel/ | grep -v .svn`; do
 	  cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
 	done
+        rm -f lib/dyne/hotplug/debug # no debug by default
         for f in `ls $PFX/startup/hotplug/`; do
           cp -raf ${PFX}/startup/hotplug/${f} lib/dyne/hotplug/
-          rm lib/dyne/hotplug/debug # no debug by default
         done
         mkdir -p lib/dyne/udev
         for f in `ls $PFX/startup/udev/`; do
@@ -536,7 +534,7 @@ EOF
     cd $PFX
 	     
     act "generate device file"
-    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=9000
+    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=12000
     act "formatting ramdisk filesystem"
     mke2fs -m 0 -i 1024 cdrom/dyne/initrd
     act "populating ramdisk static file"
@@ -569,8 +567,8 @@ mkusr() {
     # copy the current dynesdk inside the new system
     cp -v $PFX/devel/dynesdk /usr/sbin/dynesdk
 
-    echo "[?] would you like to update the PCI database (y/N) ?"
-    ask_yesno 10
+    ask_yesno 10 \
+"Would you like to download an up-to-date PCI-ID database from online?"
     if [ $? = 1 ]; then
       mv /usr/share/pci.ids /usr/share/pci.ids.old
       wget -O - http://pci-ids.ucw.cz/pci.ids.bz2 | bunzip2 > /usr/share/pci.ids
@@ -624,12 +622,12 @@ mkiso() {
     # the RAMDISK
     if ! [ -r $PFX/cdrom/dyne/initrd.gz ]; then
       act "ramdisk is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/dyne/initrd.gz ${PFX}/cdrom/dyne/
+      cp -v ${DYNE_SYS_MNT}/initrd.gz ${PFX}/cdrom/dyne/
     fi
     # the USR SQUASHED SYSTEM
     if ! [ -r $PFX/cdrom/dyne/dyne.sys ]; then
       act "dyne.sys usr system is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/dyne/dyne.sys ${PFX}/cdrom/dyne/
+      cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
     fi
     # the KERNEL
     if ! [ -r $PFX/cdrom/dyne/linux ]; then
@@ -638,9 +636,9 @@ mkiso() {
       if [ -r $SDK_KERNEL/arch/`uname -i`/boot/bzImage ]; then
         act "using the kernel in SDK: $SDK_KERNEL"
         cp -v $SDK_KERNEL/arch/`uname -i`/boot/bzImage cdrom/dyne/linux
-      elif [ -r ${DYNE_SYS_MNT}/dyne/linux ]; then
+      elif [ -r ${DYNE_SYS_MNT}/linux ]; then
         act "using the kernel found in current dock"
-        cp -v ${DYNE_SYS_MNT}/dyne/linux cdrom/dyne/linux
+        cp -v ${DYNE_SYS_MNT}/linux cdrom/dyne/linux
       else
         error "you're missing the kernel, provide one from a dyne CD"
         error "or compile one yourself, if you dare ;>"
@@ -677,6 +675,8 @@ case "$CMD" in
     mkusr)    mkusr    ;;
     
     *) error "command \"$CMD\" not recognized"
+       act "try -h for help"
+       ;;
 esac
 
 notice "bye."
