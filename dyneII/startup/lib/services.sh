@@ -194,6 +194,7 @@ init_network() {
   
     if [ $d = "ssh" ]; then 
       act "starting Secure Shell daemon"
+      touch /var/log/lastlog
       /usr/sbin/sshd
     fi
   
@@ -290,13 +291,37 @@ init_sound() {
     loadmod snd-pcm-oss
     loadmod snd-mixer-oss
     loadmod snd-seq-oss
-
-    if [ -r /etc/asound.state ]; then
-      act "restoring volumes from previous session"
-      alsactl restore
-    fi
-
   fi
 
+  # for volumes setup see below...
+  # it should be called later, after device filesystem is settled.
+}
+
+raise_soundcard_volumes() {
+
+    if [ -r /etc/asound.state ]; then
+
+      act "restoring volumes from previous session"
+      alsactl restore
+
+    else
+
+      act "setting up default volumes (see 'alsactl' to change them)"
+      # here we gotta do yet some more awk shamanism to parse amixer
+      controls=`amixer scontrols | awk 'function printctl()
+                                        { out=""; for(i=4;i<=NF;i++) {
+                                                    if(i>4) out = out " "
+                                                    out = out $i
+                                                  }
+                                          print out }
+                                        $4 ~ "Master"    { printctl() }
+                                        $4 ~ "PCM"       { printctl() }
+                                        $4 ~ "Headphone" { printctl() }
+                                        $4 ~ "Capture"   { printctl() }'`
+      for ctl in ${(f)controls}; do
+        amixer -q sset ${ctl} "77%" unmute
+      done
+
+    fi
 }
 

@@ -12,7 +12,7 @@ export SHELL="/bin/zsh"
 # A lucky prompt:
 PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'
 
-if [ -x /usr/bin/dynesplash ]; then
+if [ -x /usr/bin/ls ]; then
 
   RPROMPT="%T"  # right hand prompt
 
@@ -98,9 +98,6 @@ if [ -x /usr/bin/dynesplash ]; then
   alias po=popd
   alias d='dirs -v'
   alias h=history
-
-  # to make it comfortable
-  alias su='su -'
 
   # List only directories and symbolic
   # links that point to directories

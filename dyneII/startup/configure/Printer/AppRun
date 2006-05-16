@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+source /lib/dyne/utils.sh
+
+APP_DIR=`dirname "$0"` export APP_DIR
+
+if [ "`is_running cupsd`" = "false" ]; then
+  cupsd
+fi
+
+exec links -g http://localhost:631/ "$@"

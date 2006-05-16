@@ -96,21 +96,21 @@ mount_sdk_modules() {
   # flag to control whether to call ldconfig at the end
   NEWLIBPATH=false
 
-  # use uncompressed modules in SDK
-  for mod in `ls --color=none ${DYNE_SYS_MNT}/SDK/modules`; do
-
-  #  mounted="`mount |grep ${mod} | uniq | awk '{ print $1 }'`"
+  # mount only the single module specified in argument
+  if [ $1 ]; then
+    mod="$1"
 
     if ! [ -r ${DYNE_SYS_MNT}/SDK/modules/${mod}/VERSION ]; then
-      error "SDK/module/${mod} is missing VERSION information, skipping.."
-      continue
-    fi 
-    
+      error "SDK/module/${mod} is missing VERSION information"
+      return
+    fi
+  
     if [ -r /opt/${mod}/VERSION ]; then
       act "module ${mod} is already mounted in /opt"
-#      act "close all it's applications in use and do:"
-#      act "umount /opt/${mod}"
-      continue
+      act "close all it's applications in use and do:"
+      act "umount /opt/${mod}"
+      act "then run again \"dynesdk mount $mod\""
+      return
     fi
 
     # uncompressed module
@@ -122,7 +122,38 @@ mount_sdk_modules() {
 
     act "sdk module ${mod} mounted in /opt"
 
-  done
+  # mount all available modules in SDK
+  else
+
+    # use uncompressed modules in SDK
+    for mod in `ls --color=none ${DYNE_SYS_MNT}/SDK/modules`; do
+
+    #  mounted="`mount |grep ${mod} | uniq | awk '{ print $1 }'`"
+
+      if ! [ -r ${DYNE_SYS_MNT}/SDK/modules/${mod}/VERSION ]; then
+        error "SDK/module/${mod} is missing VERSION information, skipping.."
+        continue
+      fi 
+    
+      if [ -r /opt/${mod}/VERSION ]; then
+        act "module ${mod} is already mounted in /opt"
+  #      act "close all it's applications in use and do:"
+  #      act "umount /opt/${mod}"
+        continue
+      fi
+
+      # uncompressed module
+      mkdir -p /opt/${mod}
+  
+      mount -o bind ${DYNE_SYS_MNT}/SDK/modules/${mod} /opt/${mod}
+
+      add_module_path ${mod}
+
+      act "sdk module ${mod} mounted in /opt"
+
+    done
+
+  fi
 
   if [ x$NEWLIBPATH = xtrue ]; then
     ld_regenerate_cache

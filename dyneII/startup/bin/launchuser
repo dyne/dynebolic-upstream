@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# execution wrapper that makes sure a program is started as user
+
+if ! [ "`id -nu`" = "root" ]; then
+  EXEC="su - luther -c"
+else
+  EXEC="exec"
+fi
+
+launch $EXEC $@
+

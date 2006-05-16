@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Setup your language</Summary>
+  <About>
+    <Purpose>Choose the language for applications, works only when supported</Purpose>
+    <Version>2.0 dyne:II 2006</Version>
+    <Authors>Jaromil</Authors>
+    <License>GNU General Public License</License>
+    <Homepage></Homepage>
+  </About>
+</AppInfo>

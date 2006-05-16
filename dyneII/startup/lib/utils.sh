@@ -361,7 +361,14 @@ is_writable() { # arg: filename
   fi
 }
 
-
+# checks if a process is running
+# returns "true" or "false"
+# arg 1: process name
+is_running() {
+  result="`ps ax | awk -v proc=$1 '$5 == proc { print "true"; found="yes" }
+                                   END        { if(found!="yes") print "false" }'`"
+  echo $result
+}
 
 # appends a new line to a text file, if not duplicate
 # it sorts alphabetically the original order of line entries

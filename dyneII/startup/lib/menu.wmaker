@@ -44,7 +44,7 @@
 ("EXIT",
 	("Power OFF :: shutdown the computer", 	EXEC, 	"xquit halt"),
 	("Reboot :: restart the computer", 	EXEC, 	"xquit reboot"),
-	("Logout :: leave for another user", 	EXEC, 	"xquit logout"),
+	("Logout :: leave for another user", 	EXIT),
 	("KillX :: kill the visual desktop",	EXEC,	"xquit killx")
 )
 

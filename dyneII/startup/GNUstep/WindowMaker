@@ -38,10 +38,10 @@
   AppIconBalloons = YES;
   FTitleColor = white;
   NextWorkspaceLayerKey = None;
-  WorkspaceBack = (solid, "rgb:50/50/75");
+  WorkspaceBack = (spixmap, baobabconnections.jpg, black);
   IconTitleFont = "Arial,Luxi Sans:pixelsize=9";
   DisableWSMouseActions = NO;
-  SmoothWorkspaceBack = NO;
+  SmoothWorkspaceBack = YES;
   UTitleColor = black;
   PTitleColor = white;
   Attraction = YES;
@@ -67,11 +67,12 @@
   MiniwindowTitleBalloons = YES;
   WindowTitleFont = "Trebuchet MS,Luxi Sans:bold:pixelsize=12";
   ClipTitleFont = "Verdana:bold:pixelsize=10";
+  CloseKey = "Mod1+F4";
   FocusNextKey = "Mod1+Tab";
   DisplayFont = "Trebuchet MS,Luxi Sans:pixelsize=12";
   MouseRightButtonAction = OpenApplicationsMenu;
   ScrollableMenus = YES;
-  DisableClip = YES;
+  DisableClip = NO;
   MoveDisplay = floating;
   AlignSubmenus = NO;
   MenuTitleFont = "Trebuchet MS,Luxi Sans:bold:pixelsize=12";
@@ -90,7 +91,7 @@
   Workspace3Key = "Mod1+3";
   Workspace2Key = "Mod1+2";
   FocusPrevKey = "Mod1+Shift+Tab";
-  SaveSessionOnExit = NO;
+  SaveSessionOnExit = YES;
   Workspace1Key = "Mod1+1";
   ColormapMode = auto;
   ConstrainWindowSize = NO;

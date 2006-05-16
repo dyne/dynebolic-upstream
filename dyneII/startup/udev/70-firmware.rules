@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="firmware", RUN+="/sbin/udev_run_hotplugd"

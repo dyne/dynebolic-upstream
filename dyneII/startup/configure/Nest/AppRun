@@ -1,0 +1,4 @@
+#!/bin/sh
+
+APP_DIR=`dirname "$0"` export APP_DIR
+exec launchroot taschino "$@"

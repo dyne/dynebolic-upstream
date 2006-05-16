@@ -2,6 +2,7 @@
   .Dyne = {Icon = "logo-sm.png";};
   dynesplash = {Icon = "logo-sm.png";};
   .Home = {Icon = "gnome-fs-home.png";};
+  Network = {Icon = "gnome-fs-network.png";};
   HardDisk = {Icon = "gnome-fs-blockdev.png";};
   CdRom = {Icon = "gnome-dev-cdrom.png";};
   FloppyDisk = {Icon = "gnome-dev-floppy.png";};

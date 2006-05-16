@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<AppInfo>
+	<Summary xml:lang="en">Change screen resolution</Summary>
+	<Summary xml:lang="de">Bildschirmauflösung wechseln</Summary>
+	<About xml:lang="en">
+		<Purpose>Change screen resolution</Purpose>
+		<Version>0.2</Version>
+		<Authors>Guido Schimmels &lt;__guido__@web.de&gt; and Thomas Leonard</Authors>
+		<License>GPL</License>
+		<Homepage>http://roxos.sunsite.dk/dev-contrib/guido/Configure/</Homepage>
+	</About>
+	<About xml:lang="de">
+		<Purpose  label="Funktion">Bildschirmauflösung wechseln</Purpose>
+		<Authors  label="Autoren"></Authors>
+		<License  label="Lizenz"></License>
+	</About>
+	<About xml:lang="es">
+		<Purpose  label="Prop&#xF3;sito"></Purpose>
+		<Authors  label="Autores"></Authors>
+		<License  label="Licencia"></License>
+		<Homepage label="P&#xE1;gina web"/>
+	</About>
+	<About xml:lang="fr">
+		<Purpose  label="Fonction"></Purpose>
+		<Authors  label="Auteurs"></Authors>
+		<License  label="Licence"></License>
+		<Homepage label="Page web"/>
+	</About>
+	<About xml:lang="it">
+		<Purpose  label="Scopo"></Purpose>
+		<Version  label="Versione"/>
+		<Authors  label="Autori"></Authors>
+		<License  label="Licenza"></License>
+		<Homepage label="Sito web"/>
+	</About>
+</AppInfo>

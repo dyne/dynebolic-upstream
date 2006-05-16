@@ -36,6 +36,7 @@ if [ -z $INIT_VERSION ]; then
 fi
 
 source /lib/dyne/services.sh
+source /lib/dyne/language.sh
 source /lib/dyne/volumes.sh
 source /lib/dyne/modules.sh
 source /lib/dyne/wmaker.sh
@@ -355,6 +356,52 @@ choose_nest
 
 mkdir -p /usr
 
+# check if we have an update
+if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
+  source ${DYNE_SYS_MNT}/update/VERSION
+
+  ask_yesno 10 \
+"the Dock on your harddisk contains an update:\n\n
+ dyne.sys version ${DYNE_SYS_VER}\n
+ initrd.gz version ${DYNE_INITRD_VER}\n
+ Do you want to apply it to the current system?"
+
+  if [ $? = 1 ]; then
+    src=${DYNE_SYS_MNT}/update
+    dst=${DYNE_SYS_MNT}
+
+    notice "updating docked system, please wait while copying files..."
+    act "when complete, this computer will be rebooted."
+    if [ -r $src/initrd.gz ]; then
+      act "updating ramdisk"
+      mv $src/initrd.gz $dst/initrd.gz
+    fi
+    if [ -r $src/linux ]; then
+      act "updating kernel"
+      mv $src/linux     $dst/linux
+    fi
+    if [ -r $src/dyne.sys ]; then
+      act "updating core binary system"
+      mv $src/dyne.sys  $dst/dyne.sys
+    fi
+    if [ -x $src/modules ]; then
+      act "updating modules"
+      ls $src/modules
+      mv $src/modules/* $dst/modules/
+    fi
+
+    # avoid to update next time
+    rm $src/VERSION
+
+    notice "system is now rebooting..."
+    sync
+    umount $DYNE_SYS_MNT
+    sleep 3
+    reboot
+  fi 
+
+fi
+
 if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin ]; then
   # we have an uncompressed dock in the SDK
 
@@ -375,7 +422,6 @@ elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
   if [ "$UNIONFS" = "false" ]; then 
 
     # just mount the /usr as read-only
-    mkdir -p /usr
     mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
 
   else
@@ -499,6 +545,9 @@ if ! [ $BOOT_NETWORK ]; then # avoid reconfiguration
   init_network
 fi
 
+# configure language
+init_language
+
 ##########################################
 ## activate all dyne modules
 ## looks into dyne/modules
@@ -525,6 +574,31 @@ notice "launching device filesystem daemon"
 
 notice "launching power management daemon"
 /usr/sbin/acpid
+
+# from services.sh - setup volumes to 77% unmuted
+raise_soundcard_volumes
+
+notice "mounting static filesystem table"
+if [ -r /etc/fstab.static ]; then
+  # process static fstab rules
+  fstab.static=`cat /etc/fstab.static`
+  for i in ${(f)fstab.static}; do
+
+    # skip comments
+    if [ $i[0] = "#" ]; then continue; fi
+
+    mnt=`echo $i | awk '{ print $2 }'`
+
+    # append the line to the existent fstab
+    append_line /etc/fstab "$i"
+
+    # mount it
+    mkdir -p ${mnt}
+    mount ${mnt}
+
+  done
+
+fi
 
 
 
@@ -636,6 +710,10 @@ EOF
 
 #### FINAL PART
 ## spawn graphical interface accordingly
+## we use xinit to startup X
+## which executes the .xinitrc in each user's home
+## which calls dyne_startx() from wmaker.sh
+
   source /etc/zshenv
 
   XREMOTE="`get_config x_remote`"
@@ -654,7 +732,7 @@ EOF
   elif [ $USERLOGIN = multi ]; then
 
     # popup a login prompt
-    Login.app &
+    xdm
 
   elif [ `grep $USERLOGIN /etc/passwd` ]; then
 

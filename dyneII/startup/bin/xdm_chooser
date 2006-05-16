@@ -1,0 +1,6 @@
+#!/bin/sh
+
+wmsetbg /usr/share/backgrounds/lambru2.jpg
+/etc/xdm/chooser $@
+
+

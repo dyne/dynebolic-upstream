@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Configure and connect your modem</Summary>
+  <About>
+    <Purpose>Modem connection</Purpose>
+    <Version>chestnut-dialer 0.3.1 on dyne:II</Version>
+    <Authors>Copyright (C) 2003, 2004, 2005 Konstantin Korikov</Authors>
+    <License>GNU General Public License</License>
+    <Homepage>http://dynebolic.org</Homepage>
+  </About>
+</AppInfo>

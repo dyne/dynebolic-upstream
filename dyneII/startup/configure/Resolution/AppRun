@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+import findrox; findrox.version(1, 9, 13)
+
+import os
+import rox
+g = rox.g
+
+__builtins__._ = rox.i18n.translation(os.path.join(rox.app_dir, 'Messages'))
+
+class Field(g.HBox):
+	def __init__(self, name, sg):
+		g.HBox.__init__(self, False, 4)
+		label = g.Label(name)
+		label.set_alignment(1, 0.5)
+		sg.add_widget(label)
+		self.pack_start(label, False, True, 0)
+		frame = g.Frame()
+		frame.set_shadow_type(g.SHADOW_IN)
+		self.pack_start(frame, True, True, 0)
+		self.value = g.Label('')
+		frame.add(self.value)
+		self.value.set_padding(2, 2)
+
+class ResBox(rox.Dialog):
+	def __init__(self):
+		rox.Dialog.__init__(self, _("Screen Resolution"))
+		self.add_button(g.STOCK_HELP, g.RESPONSE_HELP)
+		self.add_button(g.STOCK_CLOSE, g.RESPONSE_CANCEL)
+		self.add_button(g.STOCK_APPLY, g.RESPONSE_OK)
+		self.set_default_response(g.RESPONSE_OK)
+		self.set_has_separator(False)
+		def resp(d, r):
+			if r == g.RESPONSE_HELP:
+				from rox import filer
+				filer.open_dir(os.path.join(rox.app_dir, 'Help'))
+			elif r == g.RESPONSE_OK:
+				current = self.settings[self.resolutions.get_history()]
+				xrandr.set_mode(current)
+				self.hide()
+				self.present()
+			else:
+				d.destroy()
+		self.connect('response', resp)
+
+		sg = g.SizeGroup(g.SIZE_GROUP_BOTH)
+
+		vbox = g.VBox(False, 4)
+		self.vbox.pack_start(vbox, True, True, 0)
+		vbox.set_border_width(5)
+
+		hbox = g.HBox(False, 4)
+		vbox.pack_start(hbox, False, True, 0)
+		label = g.Label(_('Resolution: '))
+		sg.add_widget(label)
+		label.set_alignment(1, 0.5)
+		hbox.pack_start(label, False, True, 0)
+		self.resolutions = g.OptionMenu()
+		hbox.pack_start(self.resolutions, True, True, 0)
+
+		menu = g.Menu()
+		self.resolutions.set_menu(menu)
+		current, self.settings = xrandr.get_settings()
+		for s in self.settings:
+			item = g.MenuItem(str(s))
+			menu.append(item)
+			item.show()
+		self.resolutions.connect('changed', self.show_details)
+
+		self.refresh_rates = Field(_('Refresh rates: '), sg)
+		vbox.pack_start(self.refresh_rates, False, True, 0)
+
+		self.physical_size = Field(_('Physical size: '), sg)
+		vbox.pack_start(self.physical_size, False, True, 0)
+
+		if current is not None:
+			i = self.settings.index(current)
+		else:
+			i = 0
+		self.resolutions.set_history(i)
+
+		self.vbox.show_all()
+
+	def show_details(self, resolutions):
+		current = self.settings[resolutions.get_history()]
+		rates = ', '.join(['%d Hz' % r for r in current.res])
+		phy_size = '%s x %s' % (current.phy_width, current.phy_height)
+		self.physical_size.value.set_text(phy_size)
+		self.refresh_rates.value.set_text(rates)
+	
+
+try:
+	import xrandr
+	ResBox().show()
+except:
+	rox.report_exception()
+
+rox.mainloop()

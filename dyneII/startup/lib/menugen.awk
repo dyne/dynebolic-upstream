@@ -37,7 +37,8 @@ function debug(msg) {
 #   manual    = don't start the application, but show it's manpage
 #   terminal  = launch the application in a terminal
 #   literal   = include the entry as is, without parsing fields
-#   superuser = run the executable as root (will ask for password)
+#   root      = run the executable as root (will ask for password)
+#   user      = executable cannot be run as root (use luther instead)
 
 function render_fluxbox() {
 
@@ -61,8 +62,11 @@ function render_fluxbox() {
 
 	command = "launch "
 
-	if ($4 ~ "superuser" ) # run as root
+	if ($4 ~ "root" ) # run as root
 	   command = command "launchroot "
+
+        if ($4 ~ "user" ) # run as user
+           command = command "launchuser "
 
 	if ($4 ~ "terminal" ) # run into a terminal
 	   command = "launchterm '" $1 " :: " $2 "' "
@@ -84,8 +88,9 @@ function render_wmaker() {
 		line = "( \"" qsubmenu[c+1] "\""
 
 		# termination issue
-		if ( menustart == 1 ) print ","
-		else menustart = 1
+		# if ( menustart == 1 ) print ","
+		# else menustart = 1
+		print ","
 
 		print line
 
@@ -126,7 +131,7 @@ BEGIN {
 	if ( render == "wmaker" ) {
 
 		windowmanager = "WindowMaker"
-                print "(\"dyne:II\","
+                print "(\"dyne:II\""
 
         } else if ( render == "icewm" ) {
 

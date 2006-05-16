@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Configure your network</Summary>
+  <About>
+    <Purpose>Setup network cards for local and remote connection</Purpose>
+    <Version>2.0 dyne:II 2005</Version>
+    <Authors>Jaromil</Authors>
+    <License>GNU General Public License</License>
+    <Homepage></Homepage>
+  </About>
+</AppInfo>

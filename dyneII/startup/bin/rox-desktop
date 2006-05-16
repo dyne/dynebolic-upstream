@@ -1,0 +1,5 @@
+#!/bin/sh
+# start rox desktop with default rightbar
+
+rox -p Default -r Default
+

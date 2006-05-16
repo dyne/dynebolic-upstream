@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>WindowMaker configuration tool</Summary>
+  <About>
+    <Purpose>Configure your desktop behaviour and look</Purpose>
+    <Version>done with AppFactory and a bit of vim ;)</Version>
+    <Authors>wrapper by Jaromil</Authors>
+    <License>GNU General Public License</License>
+    <Homepage></Homepage>
+  </About>
+</AppInfo>

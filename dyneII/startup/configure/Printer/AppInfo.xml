@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Configure your printer</Summary>
+  <About>
+    <Purpose>Launch CUPS Printer configuration</Purpose>
+    <Version>CUPS 1.1.23 on dyne:II</Version>
+    <Authors>CUPS authors</Authors>
+    <License>GNU General Public License</License>
+    <Homepage>http://dynebolic.org</Homepage>
+  </About>
+</AppInfo>

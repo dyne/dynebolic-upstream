@@ -136,10 +136,11 @@ fluxbox_gen_menu() {
     | awk -f /lib/dyne/menugen.awk -v render=fluxbox \
     > $FLXMENU
 
-	# now append the static entries: xutils, desktop, exit
-	cat /lib/dyne/menu.fluxbox >> $FLXMENU
-	# and close up the menu
-	echo "[end]" >> $FLXMENU
+    # now append the static entries: xutils, desktop, exit
+    cat /lib/dyne/menu.fluxbox >> $FLXMENU
+    # and close up the menu
+    echo "[end]" >> $FLXMENU
+
 }
 
 wmaker_gen_menu() {
@@ -188,19 +189,15 @@ rox_gen_volumes() {
 <?xml version="1.0"?>
 <panel side="Right">
 <start>
-<icon label="dyne:II">/usr/bin/dynesplash</icon>
+<icon label="dyne:II">/bin/dynesplash</icon>
 EOF
 
     # the icons
     cat <<EOF > $ROXICONSTMP
 <?xml version="1.0"?>
 <special-files>
-<rule match="/usr/bin/dynesplash">
-<icon>/usr/share/dyne/splash/logo-sm.png</icon>
-</rule>
-<rule match="/usr/bin/gohome">
-<icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-home.png</icon>
-</rule>
+<rule match="/bin/dynesplash"> <icon>/usr/share/dyne/splash/logo-sm.png</icon> </rule>
+<rule match="/bin/gohome"> <icon>/usr/share/icons/graphite/48x48/filesystems/gnome-fs-home.png</icon> </rule>
 EOF
 
 
@@ -395,12 +392,12 @@ print "}"
     if [ -r $WMSTATE ]; then # WMState is already present
       # we are in a nest, so here we need to substitute only the Dock = { }; section
       # and leave all the rest intact (Clip, Workspaces)
-      echo "{" > $WMSTATETMP
+      act "updating existing windowmaker dock"
 
       # Warning: this currently assumes that the Dock block is at beginning of WMState
       cat $WMSTATE | awk '
            /Dock = {/ { dockstart=NR }
-                      { if(!dockstart) print $0 }'>> $WMSTATETMP
+                      { if(!dockstart) print $0 }' > $WMSTATETMP
 
       cat $WMSTATEDOCK                            >> $WMSTATETMP
 
@@ -455,8 +452,17 @@ EOF
 dyne_startx() {
   # source /etc/LANGUAGE
 
-  # this honours configuration directives
+  # honour configuration directives
   # sent thru kernel parameters and dyne.cfg
+
+  startx=`get_config startx`
+  if [ $startx ]; then
+    exec $startx
+    return
+  fi
+
+
+
   if ! [ $WINDOWMANAGER ]; then # no .xinitrc user setting
     WINDOWMANAGER=`get_config window_manager`
     if ! [ $WINDOWMANAGER ]; then # and no dyne.cfg
@@ -465,19 +471,16 @@ dyne_startx() {
     fi
   fi
 
-  # setup the windowmanager
-  if [ $WINDOWMANAGER = wmaker ]; then
+  # prepare ROX filer for its first start
+  mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
 
-    # prepare ROX filer for its first start
-    mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
+  if [ $WINDOWMANAGER = fluxbox ]; then
 
+    # start the system resource monitor
+    # gkrellm -w -t /usr/share/gkrellm2/Egan &
 
-  elif [ $WINDOWMANAGER = fluxbox ]; then
-
-  # start the system resource monitor
-  # gkrellm -w -t /usr/share/gkrellm2/Egan &
-  # the multiple desktop pager
-  (sleep 10; fbpager -w &)&
+    # the multiple desktop pager
+    (sleep 10; fbpager -w &)&
 
     # our beloved splashscreen
     if ! [ -r $HOME/.nosplash ]; then
@@ -485,16 +488,14 @@ dyne_startx() {
     fi
 
     # start our ROX filer with pinboard and panel
-    mkdir -p $HOME/.config/rox.sourceforge.net/ROX-Filer
-    (sleep 3; rox-desktop &)&
+    (sleep 3; rox -p Default -r Default &)&
 
   fi
 
   # turn off the screensaver
   (sleep 1; xset s off -dpms &)&
 
-  # here set the language settings and keyboard mapping
-  if [ -r /etc/LANGUAGE ]; then source /etc/LANGUAGE; fi
+  source /etc/LANGUAGE
 
   if [ $KEYB ]; then
     (sleep 2; /usr/X11R6/bin/setxkbmap $KEYB &)&

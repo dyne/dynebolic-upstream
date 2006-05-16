@@ -322,9 +322,6 @@ scan_storage() {
        HD_NUM=`expr $HD_NUM + 1`
        scan_partitions ${DEV}
     done
-	
-    
-
 
     # now remove all unused filesystem kernel modules
     act "cleanup unused filesystem modules"

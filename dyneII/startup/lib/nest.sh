@@ -73,7 +73,7 @@ choose_nest() {
 
     ###### AUTODETECT
 
-    notice "autodetecting nests on mounted devices"
+    notice "autodetecting nest on mounted devices"
 
     # count the nests found in volumes
     nests=`cat /boot/volumes|grep nst`
@@ -104,8 +104,15 @@ choose_nest() {
 	# media [mnt] fsys
         nest_mnt=`cat /boot/nestlist|awk 'NR=1{print $2}'`
 
-	mount_nest ${nest_mnt}/dyne/dyne.nst
-	
+	rm -f /tmp/dialog /tmp/choice
+
+        ask_yesno 10 \
+"A nest has been found on this computer:\n\n
+`cat /boot/nestlist`\n\n
+Do you want to activate it?"
+        if [ $? != 0 ]; then
+	  mount_nest ${nest_mnt}/dyne/dyne.nst
+        fi
 	
     else    
 
@@ -152,6 +159,10 @@ EOF
 
 	done
 
+        # add no-nest choice
+        c=`expr $c + 1`
+        echo "\"$c\" \"don't use any nest\" \"run the system in volatile memory\"" >> /tmp/dialog
+
             # now render the dialog
 	dynedialog --clear --item-help --title \
 	    "\Zr\Z0 Multiple nest selection " \
@@ -162,9 +173,13 @@ EOF
             # fetch the selection
 	    sel=`cat /tmp/choice`
             nest_mnt=`echo $nestlist | awk -v l=$sel 'NR == l { print $2 }'`
-            notice "selected nest in $nest_mnt"
-            stat ${nest_mnt}/dyne/dyne.nst
-	    mount_nest ${nest_mnt}/dyne/dyne.nst
+            if [ $nest_mnt ]; then
+              notice "selected nest in $nest_mnt"
+              stat ${nest_mnt}/dyne/dyne.nst
+	      mount_nest ${nest_mnt}/dyne/dyne.nst
+            else
+              notice "not using any nest, running the system in RAM"
+            fi
 		;;
 	    1)
 		act "Cancel pressed: using virtual nest in RAM"
@@ -225,10 +240,15 @@ floating_nest() {
 		
   act "populating /root"
   mkdir -p /root /dev/shm/root
+  # default skel files
   cp -ra /etc/skel/*    /dev/shm/root
   cp -ra /etc/skel/.*   /dev/shm/root
+  # permissions
   chown -R root:root /dev/shm/root
   chmod -R go-rwx /dev/shm/root
+  # symlinks to utilities
+  ln -s /lib/dyne/configure /dev/shm/root/Configure
+  ln -s /mnt /dev/shm/root/Volumes
 
 
   act "populating /home"
@@ -236,6 +256,8 @@ floating_nest() {
   cp -ra /etc/skel/*    /dev/shm/home/luther/
   cp -ra /etc/skel/.*   /dev/shm/home/luther/
   chown -R luther:users /dev/shm/home/luther
+  ln -s /lib/dyne/configure /dev/shm/home/luther/Configure
+  ln -s /mnt /dev/shm/home/luther/Volumes
 
   act "initializing /tmp"
   mkdir       /dev/shm/tmp

@@ -1,0 +1,42 @@
+		Resolution
+		Change the screen resolution
+		by Guido Schimmels and Thomas Leonard
+
+This program allows you to change the screen resolution at any time.
+The change is not permanent. This is useful when connecting a laptop to
+an external monitor or a projector, for example, which may require a different
+screen resolution.
+
+Resolution is simply a graphical front-end to the xrandr (X Rotate And Resize)
+command-line utility, which you will also need. Modern X servers (such as
+XFree86 and X.org) come with this program. If you don't have it, try upgrading
+your X server.
+
+Note that there is another, older, mechanism for changing resolution, often
+activated by pressing <Ctrl>+<Shirt>+<Keypad Plus>. This still changes the
+resolution, but your desktop remains the same logical size (i.e. you 'zoom in'
+to the screen and must pan around to see your panel, etc).
+
+If you want to change your computer's default resolution, or the list of
+resolutions available, you will need to consult your X server documentation.
+
+
+Conditions
+~~~~~~~~~~
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Please report any bugs to the mailing list:
+
+	http://rox.sourceforge.net/phpwiki/index.php/MailingLists
