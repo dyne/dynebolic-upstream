@@ -180,6 +180,7 @@ mksdk() {
       svn co svn://code.dyne.org/dynebolic/dyneII/devel
     fi
   fi
+
   ask_yesno 10 \
 "I can uncompress dyne.sys, it will occupy approx 2Gb
  this way your /usr will become writable.\n
@@ -211,8 +212,10 @@ mksdk() {
     rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
   fi
 
-  if ! [ -x cdrom ]; then
-    mkdir cdrom
+  if ! [ -x cdrom/isolinux/boot.cat ]; then
+    act "using iso skeleton from /usr/share/dyne/cdrom"
+    # build a SDK without online repository
+    cp -ra /usr/share/dyne/cdrom .
   fi
 
   cd - > /dev/null
@@ -227,7 +230,11 @@ mksdk() {
 }
 
 mountmods() {
-    mount_sdk_modules
+    if ! [ $1 ]; then
+        mount_sdk_modules
+    else
+        mount_sdk_modules $1
+    fi
 }
 
 develmod() {
@@ -295,10 +302,16 @@ squash() {
 	  rm ${PFX}/cdrom/dyne/modules/${MOD}.dyne
 	fi
 
+        # make the list of files to exclude
+	find ${PFX}/modules/${MOD} -name ".svn" > ${PFX}/squash_module_excludelist.tmp 
+
 	$MKSQUASHFS ${PFX}/modules/${MOD} \
-                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne \
+                -ef ${PFX}/squash_module_excludelist.tmp
 	chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
         chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+
+        rm ${PFX}/squash_module_excludelist.tmp
 
 	act "done with ${MOD}"
         act "copy the module into your current dock to activate it:"
@@ -324,11 +337,16 @@ squash() {
 	  rm ${PFX}/cdrom/dyne/modules/${mod}.dyne
 	fi
 
+        # make the list of files to exclude
+	find ${PFX}/modules/${mod} -name ".svn" > ${PFX}/squash_module_excludelist.tmp 
+
 	$MKSQUASHFS ${PFX}/modules/${mod} \
-                    ${PFX}/cdrom/dyne/modules/${mod}.dyne
+                    ${PFX}/cdrom/dyne/modules/${mod}.dyne \
+                -ef ${PFX}/squash_module_excludelist.tmp
 	chmod a+r   ${PFX}/cdrom/dyne/modules/${mod}.dyne
         chmod -x    ${PFX}/cdrom/dyne/modules/${mod}.dyne
 
+        rm ${PFX}/squash_module_excludelist.tmp
 
 	act "done with ${mod}"
 	echo
@@ -362,7 +380,7 @@ mkinitrd() {
     cp -ra /sbin .
     mkdir -p boot dev proc root sys usr mnt home tmp
     # here copy the icon for the Volumes
-    ln -s /usr/share/icons/graphite/48x48/apps/disks.png mnt/.DirIcon
+    cp -f /usr/share/icons/graphite/48x48/apps/disks.png mnt/.DirIcon
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
     mknod dev/console c 5 1
@@ -385,6 +403,7 @@ mkinitrd() {
     rm -f etc/fstab
     rm -f etc/mtab
     rm -f etc/resolv.conf*
+    rm -f etc/asound.state
 cat << EOF > etc/resolv.conf
 nameserver 216.254.95.2
 nameserver 216.231.41.2
@@ -396,9 +415,84 @@ EOF
     touch boot/dynenv
     touch boot/dynenv.modules
     # here windowmaker dock and menu is reset
-    rm -f /etc/WindowMaker/WMRootMenu
-    rm -f /etc/WindowMaker/WMState
+    rm -f etc/WindowMaker/WMRootMenu
+    rm -f etc/WindowMaker/WMState
  
+    act "generating a fresh password file"
+    rm -f etc/passwd
+    cat <<EOF  > etc/passwd
+root:x:0:0:root:/root:/bin/zsh
+daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+nobody:x:65534:65534:nobody:/nonexistent:/bin/sh
+bin:x:2:2:bin:/bin:/bin/sh
+sys:x:3:3:sys:/dev:/bin/sh
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/bin/sh
+man:x:6:12:man:/var/cache/man:/bin/sh
+lp:x:7:7:lp:/var/spool/lpd:/bin/sh
+mail:x:8:8:mail:/var/mail:/bin/sh
+news:x:9:9:news:/var/spool/news:/bin/sh
+haldaemon:x:11:11:hal:/var/run:/bin/false
+privoxy:x:13:13:proxy:/bin:/bin/sh
+irc:x:39:39:ircd:/var/run/ircd:/bin/sh
+sshd:x:100:65534::/var/run/sshd:/bin/false
+luther:x:1000:1000:Luther Blissett guest account:/home/luther:/bin/zsh
+EOF
+
+    rm -f etc/shadow etc/shadow-
+    cat <<EOF  > etc/shadow
+root:\$1\$o9O/uypL\$T2M2X.zkz9KHL4sPgS9Oa.:13276:0:99999:7:::
+distcc:x:12939:0:99999:7:::
+nobody:x:12939:0:99999:7:::
+sshd:!:12941:0:99999:7:::
+exim:!:12941:0:99999:7:::
+lp:!:12941:0:99999:7:::
+luther:\$1\$Nmg1Xksd\$wXr2gr1vIeV0EizoIkb0Y1:12942:0:99999:7:::
+EOF
+    chmod go-rw etc/shadow
+    chmod u-w etc/shadow
+
+    rm -f etc/group
+    cat <<EOF  > etc/group
+root:x:0:
+daemon:x:1:
+nogroup:x:65534:
+bin:x:2:
+sys:x:3:
+adm:x:4:
+tty:x:5:
+disk:x:6:
+lp:x:7:
+mail:x:8:
+news:x:9:
+uucp:x:10:
+haldaemon:x:11:
+man:x:12:
+proxy:x:13:
+kmem:x:15:
+dialout:x:20:
+fax:x:21:luther
+voice:x:22:luther
+cdrom:x:24:luther
+floppy:x:25:luther
+tape:x:26:luther
+sudo:x:27:
+audio:x:29:luther
+operator:x:37:
+list:x:38:
+irc:x:39:
+src:x:40:
+shadow:x:42:
+utmp:x:43:
+video:x:44:luther
+staff:x:50:
+games:x:60:
+users:x:100:luther
+crontab:x:101:
+ssh:x:103:
+EOF
+   
+    act "generating a fresh filesystem table"
     cat << EOF > etc/fstab
 # /etc/fstab: file system information, see man fstab
 # on dyne this file is generated at runtime while booting
@@ -459,6 +553,14 @@ EOF
         for f in `ls $PFX/startup/udev/`; do
           cp -raf ${PFX}/startup/udev/${f}	lib/dyne/udev/
         done
+	mkdir -p etc/WindowMaker
+	for f in `ls $PFX/startup/GNUstep/`; do
+	  cp -af  ${PFX}/startup/GNUstep/${f}   etc/WindowMaker/
+        done
+        mkdir -p lib/dyne/configure
+	for f in `ls $PFX/startup/configure/`; do
+	  cp -af ${PFX}/startup/configure/${f}  lib/dyne/configure/
+	done
 
         # delete all backup files
         for f in `find lib/dyne -name '*~'`; do
@@ -646,7 +748,8 @@ mkiso() {
       fi
     fi
 
-    # purge subversion files in the cdrom
+    
+    act "purging development files in the cdrom"
     for svn in `find $PFX/cdrom -name '.svn'`; do
       rm -rf ${svn}
     done
@@ -666,9 +769,9 @@ mkiso() {
 case "$CMD" in
     # execute commands
     mksdk)    mksdk        ;;
-    mount)    mountmods    ;;
-    devel)    develmod $@  ;;
-    squash)   squash   $@  ;;
+    mount)    mountmods $@ ;;
+    devel)    develmod  $@ ;;
+    squash)   squash    $@ ;;
     mkiso)    mkiso        ;;
 
     mkinitrd) mkinitrd ;;
