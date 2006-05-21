@@ -723,13 +723,27 @@ mkiso() {
     act "checking if the CDROM is complete"
     # the RAMDISK
     if ! [ -r $PFX/cdrom/dyne/initrd.gz ]; then
-      act "ramdisk is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/initrd.gz ${PFX}/cdrom/dyne/
+      ask_yesno 360 \
+        "ramdisk is missing, should i create a new one from the running system?
+if you say NO we'll just use the current ramdisk in your dock (recommended if you don't know what this is all about)"
+      if [ $? = 1 ]; then
+        mkinitrd
+      else  
+        act "using current ramdisk"
+        cp -v ${DYNE_SYS_MNT}/initrd.gz ${PFX}/cdrom/dyne/
+      fi
     fi
     # the USR SQUASHED SYSTEM
     if ! [ -r $PFX/cdrom/dyne/dyne.sys ]; then
-      act "dyne.sys usr system is missing, using the current one"
-      cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
+      ask_yesno 360 \
+        "dyne.sys (/usr filesystem) is missing, should i create a new one from the running system?
+if you say NO we'll just use the current dyne.sys in your dock (recommended if you don't know what this is all about)"
+      if [ $? = 1 ]; then
+        mkusr
+      else
+        act "using current dyne.sys"
+        cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
+      fi
     fi
     # the KERNEL
     if ! [ -r $PFX/cdrom/dyne/linux ]; then
@@ -747,7 +761,16 @@ mkiso() {
         exit 0
       fi
     fi
-
+    # the MODULES
+    if ! [ -r $PFX/cdrom/dyne/modules ]; then
+      act "copying dyne modules from current dock..."
+      cp -rav ${DYNE_SYS_MNT}/modules ${PFX}/cdrom/dyne/
+    fi 
+    # the CONFIG
+    if ! [ -r $PFX/cdrom/dyne/dyne.cfg ]; then
+      act "copying dyne configuration from current dock"
+      cp -a ${DYNE_SYS_MNT}/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
+    fi
     
     act "purging development files in the cdrom"
     for svn in `find $PFX/cdrom -name '.svn'`; do
