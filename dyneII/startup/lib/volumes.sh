@@ -134,8 +134,6 @@ scan_cdrom() {
 	    
             # leave it mounted and add it to the list of volumes
 	    append_line /boot/volumes "${MEDIA} /dev/${DEV} /mnt/${MNT} ${CDFS} ${FLAGS}"
-            # create a symlink to easy lookup of the system cd
-            ln -sf /mnt/${MNT} /mnt/dynecd
 	    
 	else # device has a CD inside, not the dyne one
 
@@ -476,7 +474,12 @@ Do you want to upgrade the system on your harddisk?"
 	      DYNE_SYS_MNT="`cat /boot/hdsyslist| uniq | awk '{print $2}'`/dyne"
 	      source ${DYNE_SYS_MNT}/VERSION
 	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
-              eject `echo ${CD} | awk '{print $2}'`
+              cd_dev=`echo ${CD} | awk '{print $2}'`
+              cd_mnt=`echo ${CD} | awk '{print $3}'`
+              eject ${cd_dev}
+              # device is already in the list of volumes
+              # now add it to the fstab so that it will automount
+              append_line /etc/fstab "${cd_dev}\t${cd_mnt}\tauto\tdefaults,user,ro\t0\t0"
 	      return
 
             else # boot from cd

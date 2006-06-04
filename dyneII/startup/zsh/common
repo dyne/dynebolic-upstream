@@ -40,7 +40,7 @@ if [ -x /usr/bin/ls ]; then
   fi
 
   if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
-    export PATH=/usr/bin:/usr/sbin:/bin:/sbin:.
+    export PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin:.
   fi
 
   export PAGER="/usr/bin/most"

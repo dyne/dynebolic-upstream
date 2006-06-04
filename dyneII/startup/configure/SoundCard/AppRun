@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+source /boot/dynenv
+source /etc/zshenv
+
+APP_DIR=`dirname "$0"` export APP_DIR
+launchroot launchterm Sound_card_configuration alsaconf

@@ -33,6 +33,7 @@ if [ -x /usr/sbin/swapoff ]; then
     /usr/sbin/swapoff -a
 fi
 
+cd /
 
 echo " .  unload all kernel modules"
 for m in `lsmod | awk '!/Module/ {print $1}'`; do
@@ -46,9 +47,11 @@ sync
 
 /bin/umount -a
 
-if [ -x /mnt/usr/bin ]; then
-  /bin/umount -d -f /mnt/usr
-fi
+sync
+
+if [ -x /mnt/usr/bin ]; then  /bin/umount -d -f /mnt/usr;  fi
+if [ -x /usr/bin ]; then      /bin/umount -d -f /usr;      fi
+if [ -x /mnt/nest/etc ]; then /bin/umount -d -f /mnt/nest; fi
 
 PATH=/bin:/sbin
 

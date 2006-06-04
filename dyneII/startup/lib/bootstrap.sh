@@ -41,9 +41,14 @@ source /lib/dyne/volumes.sh
 source /lib/dyne/modules.sh
 source /lib/dyne/wmaker.sh
 source /lib/dyne/nest.sh
+source /lib/dyne/xvga.sh
 
 source /boot/dynenv
-echo "booting" > /boot/mode
+
+# notice we're booting
+if ! [ -r /boot/mode ]; then
+  echo "booting" > /boot/mode
+fi
 
 ##########################################
 
@@ -384,6 +389,7 @@ if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
       act "updating core binary system"
       mv $src/dyne.sys  $dst/dyne.sys
     fi
+
     if [ -x $src/modules ]; then
       act "updating modules"
       ls $src/modules
@@ -504,8 +510,10 @@ dmesg -n 1
 # killall syslogd
 # /usr/sbin/syslogd
 
-# reset linker cache
+# start linker cache
+touch /etc/ld.so.conf
 append_line /etc/ld.so.conf /usr/lib
+append_line /etc/ld.so.conf /usr/X11R6/lib
 
 act "network loopback device"
 ifconfig lo 127.0.0.1
@@ -684,6 +692,11 @@ fi
 
   source /lib/dyne/zsh/env
 
+  # autodetect the video driver for X
+  # and load necessary kernel modules
+  # see xvga.sh
+  detect_x_driver 
+
   notice "initializing window manager"
   # generate window manager menu entries
   fluxbox_gen_menu
@@ -710,46 +723,42 @@ EOF
 
 #### FINAL PART
 ## spawn graphical interface accordingly
-## we use xinit to startup X
+## we use xinit to startup X as root,
 ## which executes the .xinitrc in each user's home
-## which calls dyne_startx() from wmaker.sh
+## or we use xdm to startup multiuser login
+## which executes the .xsession in each user's home
+##
+## both .xinitrc and .xsession will execute dyne_startx() in wmaker.sh
+## to make your own startup x use the dyne.cfg configuration "startx"
 
-  source /etc/zshenv
+  touch /tmp/.booting_x
+  chmod a+w /tmp/.booting_x
+  # we delete it in startx, if X works
 
-  XREMOTE="`get_config x_remote`"
-  if [ $XREMOTE ]; then
-    su -c X -indirect -query ${XREMOTE} &
-    return
+
+  bootstrap_x
+  sleep 10
+  # X didn't started, let's try with framebuffer
+  if [ -r /tmp/.booting_x ]; then
+    warning "X graphical environment can't use acceleration on your video card"
+    warning "we're going to use normal framebuffer video drivers"
+    cp -f /etc/X11/xorg.conf.dist /etc/X11/xorg.conf
+    bootstrap_x
+    sleep 10
   fi
 
-  USERLOGIN="`get_config user`"
-
-  if ! [ $USERLOGIN ]; then
-
-    # login directly into the desktop as root
-    su - root -c xinit &
-
-  elif [ $USERLOGIN = multi ]; then
-
-    # popup a login prompt
-    xdm
-
-  elif [ `grep $USERLOGIN /etc/passwd` ]; then
-
-    # login directly selected user
-    su - $USERLOGIN -c xinit &
-    
-  else
-
-    # login directly into the desktop as root
-    su - root -c xinit &
-
+  # not even framebuffer works! we're left in ASCII mode
+  if [ -r /tmp/.booting_x ]; then
+    error "X graphical environment doesn't work on your computer, sorry."
+    error "you are left with this text only ASCII console."
+    rm -f /boot/mode
+    echo ascii > /boot/mode
+    # startup gpm
+    gpm -m /dev/psaux -t ps2 &
   fi
 
   exit 0
 
-
-#fi
 
 }
 

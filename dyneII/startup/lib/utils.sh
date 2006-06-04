@@ -1,6 +1,6 @@
 # miscellaneous procedures called by dyne:bolic initialization scripts
 #
-# Copyleft 2003-2005 by Denis Rojo aka jaromil <jaromil@dyne.org>
+# Copyleft 2003-2006 by Denis Rojo aka jaromil <jaromil@dyne.org>
 # with contributions by Alex Gnoli aka smilzo <smilzo@sfrajone.org>
 # (this was started in one night hacking together in Metro Olografix)
 #
@@ -50,7 +50,7 @@ notice() {
     $LOGGER -s -p syslog.notice "[*] ${1}"
 }
 act() {
-    $LOGGER -s -p syslog.info   " .  ${1}"
+    $LOGGER -s -p syslog.notice " .  ${1}"
 }
 error() {
     $LOGGER -s -p syslog.err    "[!] ${1}"
@@ -104,8 +104,10 @@ $1 == variable { print $2; }
     return 1
 }
 
-
-# module loading wrapper
+# dyne:II kernel module loading wrapper
+# supports .gz and .bz2 compressed modules
+# searches for modules in ramdisk and dock
+# and at last in the usual /lib/modules
 loadmod() {
 
     MODULE=${1}
@@ -370,6 +372,11 @@ is_running() {
   echo $result
 }
 
+# returns the file extension: all chars after the last dot
+file_ext() {
+  echo $1 | awk -F. '{print $NF}'
+}
+
 # appends a new line to a text file, if not duplicate
 # it sorts alphabetically the original order of line entries
 # defines the APPEND_FILE_CHANGED variable if file changes
@@ -461,5 +468,51 @@ ask_choice() {
     done
 }
 
+error_dialog() {
+# popup an error dialog to notice the user
+# args: message [icon]
+
+  msg=$1
+  icon=$2
+
+  if [ -z $msg ]; then
+    # quit if no argument
+    return
+  fi
+
+  if [ -z $DISPLAY ]; then
+    # if no display, just write on console
+    error "$msg"
+    return
+  fi
+
+  if [ -z $icon ]; then
+    # if none specified use default icon
+    icon="/usr/share/icons/graphite/48x48/gtk/gtk-dialog-error.png"
+  fi
+
+  export MAIN_DIALOG="
+<vbox>
+  <frame Error>
+    <hbox>
+      <pixmap>
+        <input file>${icon}</input>
+      </pixmap>
+      <text>
+        <label>${msg}</label>
+      </text>
+    </hbox>
+  </frame>
+  <button>
+    <input file stock=\"gtk-close\"></input>
+    <label>Abort operation</label>
+  </button>
+
+</vbox>
+"
+
+  gtkdialog --program=MAIN_DIALOG >/dev/null
+
+}
 
 fi # DYNE_SHELL_UTILS=included

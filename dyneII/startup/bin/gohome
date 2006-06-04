@@ -1,4 +1,4 @@
 #!/bin/zsh
 
-rox ${HOME} &
+rox ${HOME}
 

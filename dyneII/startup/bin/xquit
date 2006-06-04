@@ -77,17 +77,8 @@ export MAIN_DIALOG="
 </vbox>
 "
 
-if     [ "$ACTION" = "logout" ]; then
-  EXEC="exec"
-elif   [ "`id -nu`" = "root" ]; then
-  EXEC="exec"
-elif   [ "`id -nG | grep wheel`" ]; then
-  EXEC="sudo"
-else
-  EXEC="/usr/libexec/autopackage/autosu-gtk"
-fi
 
-export `gtkdialog --program=MAIN_DIALOG`
+export "`gtkdialog --program=MAIN_DIALOG`"
 
  # | awk ' BEGIN { FS="=" } { if($2 == "\"true\"") print $1 }'`
 
@@ -97,19 +88,19 @@ if   [ "$EXIT" = "\"OK\"" ]; then
 
   if   [ "$ACTION" = "halt" ]; then
 
-    $EXEC /sbin/shutdown -h now
+    launchroot /sbin/shutdown -h now
 
   elif [ "$ACTION" = "reboot" ]; then
 
-    $EXEC /sbin/shutdown -r now
+    launchroot /sbin/shutdown -r now
 
   elif [ "$ACTION" = "killx" ]; then
 
-    $EXEC /usr/bin/killall X
+    launchroot /usr/bin/killall X
 
   elif [ "$ACTION" = "logout" ]; then
 
-    $EXEC /usr/bin/killall fluxbox
+    launchroot /usr/bin/killall fluxbox
 
   fi
 

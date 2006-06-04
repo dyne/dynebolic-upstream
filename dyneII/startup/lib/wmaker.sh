@@ -73,6 +73,11 @@ check_apps_present() {
 # the order is given by the configuration directive: menu_sections
 # it can contain a list of module names
 
+  # load common environment
+  source /lib/dyne/zsh/common
+  # load dyne modules paths
+  source /boot/dynenv.modules
+
   if [ $1 ]; then
     APPS=$1
   else
@@ -88,23 +93,17 @@ check_apps_present() {
   echo "# automatically generated at boot" >> /boot/dyne.apps
   echo >> $APPS
 
-  MENU=`get_config menu_sections`
-  if [ $MENU ]; then
-  for section in `iterate $MENU`; do
-
-    if ! [ -r /opt/$section/applist ]; then
-      error "menu section $section requested, but nothing is found in /opt/$section/applist"
-      continue
+  # if modules contain etc/applist then process it first
+  # this way modules can provide their own description for applications
+  # and have a separated menu entry for them.
+  for mod in `ls /opt`; do
+    if [ -r /opt/$mod/etc/applist ]; then
+      LINE=`cat /opt/$mod/etc/applist`
+      for l in ${(f)LINE}; do
+        check_app_entry $l $APPS
+      done
     fi
-
-    LINE=`cat /opt/$section/applist`
-
-    for l in ${(f)LINE}; do
-      check_app_entry $l $APPS
-    done
-
   done
-  fi
 
   LINE=`cat /lib/dyne/dyne.applist`
   for l in ${(f)LINE}; do
@@ -446,7 +445,56 @@ EOF
 }
 
 
+# this function is called at the end of bootstrap.sh
+# it starts up X with the current configuration
+bootstrap_x() {
 
+  source /etc/zshenv
+
+  # remote X client-server
+  XREMOTE="`get_config x_remote`"
+  if [ $XREMOTE ]; then
+    su -c X -indirect -query ${XREMOTE} &
+    sleep 5
+    xpid=`pidof X`
+    if [ $xpid ]; then
+      rm -f /tmp/.booting_x
+    fi
+    return
+  fi
+
+  USERLOGIN="`get_config user`"
+
+  if ! [ $USERLOGIN ]; then
+
+    # login directly into the desktop as root
+    su - root -c xinit &
+
+  elif [ $USERLOGIN = multi ]; then
+
+    # popup a login prompt
+    xdm
+    # delete booting_x now:
+    # dyne_startx is executed after login
+    sleep 5
+    xpid=`pidof xdm`
+    if [ $xpid ]; then
+      rm -f /tmp/.booting_x
+    fi
+
+  elif [ `grep $USERLOGIN /etc/passwd` ]; then
+
+    # login directly selected user
+    su - $USERLOGIN -c xinit &
+    
+  else
+
+    # login directly into the desktop as root
+    su - root -c xinit &
+
+  fi
+
+}
 
 # this function is called in .xinitrc by default
 dyne_startx() {
@@ -454,6 +502,10 @@ dyne_startx() {
 
   # honour configuration directives
   # sent thru kernel parameters and dyne.cfg
+
+  # success booting x with current drivers:
+  rm -f /tmp/.booting_x
+
 
   startx=`get_config startx`
   if [ $startx ]; then

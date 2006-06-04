@@ -17,6 +17,9 @@
   gmc.Gmc = {NoAppIcon = YES;};
   XTerm = {Icon = Terminal.tiff;};
   NXTerm = {Icon = Terminal.tiff;};
+  "ROX-Filer.ROX-Filer" = {NoAppIcon = Yes;};
+  "gtkdialog.Gtkdialog" = {NoAppIcon = Yes;};
+  "Firefox-bin.firefox-bin" = {Icon = "mozilla-firefox.png";};
   ScilabGraphic0.Xscilab = {KeepInsideScreen=YES;};
   ScilabGraphic1.Xscilab = {KeepInsideScreen=YES;};
   ScilabGraphic2.Xscilab = {KeepInsideScreen=YES;};
@@ -56,7 +59,7 @@
   bookmarks.Netscape = {NoAppIcon = YES;};
   xcalc = {AlwaysUserIcon = Yes;Icon = "HP-16C-48.xpm";};
   Netscape = {Icon = Netscape.xpm;};
-  Emacs = {Icon = ColorGNU.xpm;};
+  Emacs = {Icon = "emacs.png";};
   Ghostview = {Icon = Ghost.xpm;};
   AcroRead = {AlwaysUserIcon = Yes;Icon = pdf.tiff;};
   Gimp = {AlwaysUserIcon = Yes;Icon = wilber.tiff;};

@@ -1,3 +1,4 @@
 #!/bin/sh
 
-rox /usr/apps/Configure
+rox /lib/dyne/configure
+

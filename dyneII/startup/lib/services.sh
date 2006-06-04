@@ -187,7 +187,7 @@ init_network() {
   DAEMONS="`get_config daemons`"
   if ! [ $DAEMONS ]; then
     # set defaults
-    DAEMONS="ppp,samba,cups"
+    DAEMONS="samba,cups,tor"
   fi  
 
   for d in `iterate $DAEMONS`; do
@@ -269,11 +269,12 @@ EOF
   done
   
 
-  # create the directory where to mount samba shares
+  # create the directory for network mounted volumes
   mkdir -p         /mnt/shares
   chown root:users /mnt/shares
   chmod ug+rwx     /mnt/shares
   ln -s /usr/apps/Network/LinNeighborhood /mnt/shares/Add_Shares
+  ln -s /usr/apps/Network/DyneSsh /mnt/shares/Add_SSH
   
 }
 

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Setup your sound card</Summary>
+  <About>
+    <Purpose>Configure Alsa modules to be loaded for the current soundcard</Purpose>
+    <Version>2.0 dyne:II 2006</Version>
+    <Authors>Alsa Project</Authors>
+    <License>GNU General Public License</License>
+    <Homepage></Homepage>
+  </About>
+</AppInfo>

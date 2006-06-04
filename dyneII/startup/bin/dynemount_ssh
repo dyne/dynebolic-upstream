@@ -1,0 +1,149 @@
+#!/bin/zsh
+
+# dyne:II graphical mount for ssh volumes
+# (C) 2006 Denis "jaromil" Rojo
+
+# requirements: gtkdialog, fuse, sshfs and an xterm
+
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+source /lib/dyne/utils.sh
+
+if [ -z $DISPLAY ]; then
+  error "no DISPLAY found"
+fi
+
+if [ $1 ]; then
+  # called with arguments: don't prompt dialog but make the mount!
+  username=`echo $1|cut -d@ -f1`
+  server=`echo $1|cut -d@ -f2`
+  mountpoint="/mnt/shares/$username@$server"
+
+  echo "connecting to: $server"
+  /bin/ping $server
+  if [ $? = 1 ]; then
+    echo "host is unreachable, operation aborted."
+    sleep 5
+    exit 0
+  fi
+
+  modprobe fuse
+
+  sync
+
+  mkdir -p $mountpoint
+  echo "login as user ${username}"
+  sshfs ${username}@${server}: $mountpoint
+
+  if [ "`is_mounted $mountpoint`" = "true" ]; then
+    echo "ssh account mounted succesfully!"
+    echo "by closing this window you will deactivate the connection."
+    rox $mountpoint
+  else
+    echo "error mounting ssh account, operation aborted"
+    sleep 5
+    exit 0
+  fi
+
+  while true; do sleep 1; done
+  exit 1 
+
+fi
+
+
+MAIN_DIALOG="
+<vbox>
+
+<frame Mount Secure Shell accounts>
+
+<vbox>
+
+<text>
+  <label>Your username:</label>
+</text>
+
+<entry>
+  <default>${USER}</default>
+  <variable>username</variable>
+</entry>
+
+<text>
+  <label>server address:</label>
+</text>
+
+<entry>
+  <variable>new_host</variable>
+</entry>
+</vbox>
+"
+
+if [ -r $HOME/.ssh/known_hosts ]; then
+MAIN_DIALOG="$MAIN_DIALOG
+<text>
+<label>or choose a known host:</label>
+</text>
+"
+
+  MAIN_DIALOG="$MAIN_DIALOG
+<combobox>
+  <variable>known_host</variable>
+"
+  known_hosts=`cat $HOME/.ssh/known_hosts | cut -d, -f1 | awk '{print $1}'`
+  for h in ${(f)known_hosts}; do
+    MAIN_DIALOG="$MAIN_DIALOG
+  <item>${h}</item>"
+  done
+  MAIN_DIALOG="$MAIN_DIALOG
+</combobox>
+"
+fi
+
+
+
+MAIN_DIALOG="$MAIN_DIALOG
+<hbox>
+  <button ok></button>
+  <button cancel></button>
+</hbox>
+
+</frame>
+</vbox>
+"
+
+export MAIN_DIALOG
+
+export `gtkdialog --program=MAIN_DIALOG`
+
+if [ $EXIT = "\"Cancel\"" ]; then
+  echo "operation aborted."
+  exit 0
+fi
+
+if [ $new_host != "\"\"" ]; then
+  server=$new_host
+else
+  server=$known_host
+fi
+
+# strip the quotes
+server=`echo $server | sed s/\"//g`
+username=`echo $username | sed s/\"//g`
+# mountpoint="/mnt/shares/$username@$server"
+
+xterm -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 \
+      -bg black -fg green -e "$0 ${username}@${server}" &
+
+exit 1
+

@@ -1,0 +1,35 @@
+#!/bin/zsh
+#
+# this script processes .net files (network resources)
+# and opens the necessary application to connect the hosts
+# (part of dyne:II mechanism for local network browsing)
+#
+# (C)2006 Denis "Jaromil" Roio // GNU GPL
+
+source /lib/dyne/utils.sh
+source /lib/dyne/network.sh
+
+if ! [ $1 -a -r $1 ]; then
+  echo "missing argument."
+  echo "usage: $0 resource.net"
+  exit 1
+fi
+
+if ! [ "`file_ext $1`" = "net" ]; then
+  echo "invalid resource: $1 is not a .net file"
+  exit 1
+fi
+
+resources=`cat $1`
+
+for res in ${(f)resources}; do
+
+  open_network_resource ${res}
+
+  if [ $? = 0 ]; then
+    error_message "Cannot access network resource ${res}" \
+      /usr/share/icons/graphite/48x48/apps/gnome-netstatus-error.png
+  fi
+
+done
+

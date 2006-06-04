@@ -2,6 +2,11 @@
 # simple masquerading script
 # (C) 2005 Denis Rojo <jaromil@dyne.org>
 # GNU GPL License
+#
+# this script is *not secure* and can expose your internal network to
+# security breaches. be warned! to make a secure firewall you need to
+# document yourself on iptables and use a better script.
+
 
 modprobe -k iptable_filter iptable_nat 1>/dev/null 2>/dev/null
 

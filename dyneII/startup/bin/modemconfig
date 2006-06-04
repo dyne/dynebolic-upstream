@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+source /lib/dyne/utils.sh
+
+
+act "activating Point to Point protocol"
+loadmod ppp_generic
+loadmod ppp_async
+loadmod ppp_deflate
+
+chestnut-dialer
+

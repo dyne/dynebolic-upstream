@@ -233,16 +233,14 @@ floating_nest() {
   mkdir -p /dev/shm # since 2.6.13 we need to create this dir by hand
   mount /dev/shm
 		
+  ##############################
   # creating /var /tmp and /home
-  act "loading /var"
-  mv /var /dev/shm/var
-  mkdir -p /var
-		
+	
   act "populating /root"
   mkdir -p /root /dev/shm/root
   # default skel files
-  cp -ra /etc/skel/*    /dev/shm/root
-  cp -ra /etc/skel/.*   /dev/shm/root
+  cp -ra /lib/dyne/skel/*    /dev/shm/root
+  cp -ra /lib/dyne/skel/.*   /dev/shm/root
   # permissions
   chown -R root:root /dev/shm/root
   chmod -R go-rwx /dev/shm/root
@@ -250,12 +248,14 @@ floating_nest() {
   ln -s /lib/dyne/configure /dev/shm/root/Configure
   ln -s /mnt /dev/shm/root/Volumes
 
-
   act "populating /home"
   mkdir -p /home /dev/shm/home/luther
-  cp -ra /etc/skel/*    /dev/shm/home/luther/
-  cp -ra /etc/skel/.*   /dev/shm/home/luther/
+  # default skel files
+  cp -ra /lib/dyne/skel/*    /dev/shm/home/luther/
+  cp -ra /lib/dyne/skel/.*   /dev/shm/home/luther/
+  # permissions
   chown -R luther:users /dev/shm/home/luther
+  # symlinks to utilities
   ln -s /lib/dyne/configure /dev/shm/home/luther/Configure
   ln -s /mnt /dev/shm/home/luther/Volumes
 
@@ -264,6 +264,10 @@ floating_nest() {
   chmod a+rwx /dev/shm/tmp
   chmod +t    /dev/shm/tmp
 
+  act "loading /var"
+  mv /var /dev/shm/var
+  mkdir -p /var
+	
 
   act "binding paths"
   mount -o bind /dev/shm/var  /var

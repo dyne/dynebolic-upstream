@@ -18,6 +18,7 @@ Bomb | visual plasma music | bomb | | bomb WEB | Scott Draves
 Xaos | fractal zoomer/morpher | xaos -driver x11 | | xaos WEB | Jan Hubicka
 Gephex | modular video jockey | gephex | | gephex.sf.net | Gephex team
 Veejay | remote control OSC/PD | veejay | | veejay.sf.net | Niels Elburg
+EffecTV | realtime video effects | effectv | | effectv.sf.net | Fukuchi Kentaro
 
 	End | VEEJAY
 
@@ -26,7 +27,7 @@ Veejay | remote control OSC/PD | veejay | | veejay.sf.net | Niels Elburg
 Xine | multimedia player | xine | runonce | xinehq.de | Xine team
 XawTV | television viewer | xawtv | | bytesex.org | ???
 MPlayer | versatile video player | mplayer | multi,manual | mplayerhq.hu | Arpad
-Mp4Player | mpeg4 darwin player	| gmp4player | multi | mpeg4ip.sf.net | Cisco
+Mp4Player | mpeg4 darwin player | gmp4player | multi | mpeg4ip.sf.net | Cisco
 
 	End | PLAY
 
@@ -34,10 +35,6 @@ Mp4Player | mpeg4 darwin player	| gmp4player | multi | mpeg4ip.sf.net | Cisco
 
 Kino | DV recorder and editor | kino | runonce | kino.sf.net | Kino author
 xVidCap | desktop movie capture | xvidcap | | xvidcap WEB | xvidcap author
-MEncoder | versatile encoder | mencoder | manual | mplayerhq.hu | Arpad
-Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
-FFMpeg | video converter | ffmpeg | manual | ffmpeg.sf.net | FFMpeg Team
-NuppleRec | efficient video recorder | nuvrec | man | nuv WEB | Roman Hochleitner
 
 	End | RECORD
 
@@ -46,6 +43,7 @@ NuppleRec | efficient video recorder | nuvrec | man | nuv WEB | Roman Hochleitne
 Avidemux | simple video cutter | avidemux2 | runonce | fixounet.free.fr/avidemux | Mean 'fixounet'
 LiVES | linux video editing system | lives | runonce | lives.sf.net | Gabriel "Salsaman" Finch
 JahShaka | video effect integrator | jahshaka | runonce | jahshaka.org | JahShaka
+Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
 Cinelerra | multitrack non-linear editor | cinelerra | | heroinevirtual.com | Heroine Warrior
 Seven Gnomes | video file indexer | seven-gnomes | | www.roxton.kiev.ua/sevengnomes.html | Peter 'Roxton' Semiletov
 
@@ -79,6 +77,7 @@ MikMod | track player | mikmod | terminal | mikmod.raphnet.net | MikMod team
 	Begin | PERFORM
 
 Hydrogen | drum machine | hydrogen | | hydrogen.sf.net | Comix
+Mixxx | Live audio mixer | mixxx | | mixxx.sf.net | Mixxx
 Jamin | equalizer | jamin | | jamin.sf.net | Jamin author
 FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
 Jack Rack | ladspa effects rack | jack-rack | | jack-rack.sf.net | Jack auth
@@ -92,13 +91,14 @@ PD | pure data signal processing | pd | terminal | pure-data.org | Miller Pucket
 
 	End | PERFORM
 
-	Begin | EDIT
+	Begin | REC & EDIT
 
 Ardour | multitrack studio | ardour | | www.ardour.org | Paul Davis
 Audacity | audio editor | audacity | | audacity.sf.net | Dominique Mazzoni
 ReZound | sample editor | rezound | | rezound.sf.net | rezound auth
+TimeMachine | realtime recorder | timemachine | | plugin.org.uk | plugin.org.uk
 
-	End | EDIT
+	End | REC & EDIT
 
 	Begin | STREAM
 
@@ -130,6 +130,7 @@ Begin | TEXT
 
 AbiWord | word processor | abiword | | abiword.org | abiword auth
 Scribus | desktop publisher | scribus | | scribus WEB | scribus auth
+Lyx | document processor | lyx | | www.lyx.org | lyx developers
 Ted | rich text editor | Ted | | Ted WEB | Ted auth
 Bluefish | html editor | bluefish -s | | bluefish.org | bluefish auth
 Nedit | plain text editor | nedit | | nedit WEB | nedit auth
@@ -143,11 +144,11 @@ Begin | NET
 
 	Begin | WWW
 
-Firefox | Web browser | firefox http://dyne.org | | mozilla.org/firefox | Mozilla foundation
-Mozilla | Web Suite | mozilla http://dyne.org | | mozilla.org | Mozilla foundation
-Links 2 | slick web browser | links -g | | links WEB | Twibright Labs
-Links | console web browser | links | terminal | links WEB | Twibright Labs
-Lynx | console web browser | lynx | terminal | lynx WEB | lynx auth
+Firefox | Web browser | firefox /lib/dyne/welcome.html | | mozilla.org/firefox | Mozilla foundation
+Links 2 | slick web browser | links -g /lib/dyne/welcome.html | | links WEB | Twibright Labs
+Links | console web browser | links /lib/dyne/welcome.html | terminal | links WEB | Twibright Labs
+Lynx | console web browser | lynx /lib/dyne/welcome.html | terminal | lynx WEB | lynx auth
+Nvu | Web page creator | nvu | | www.mozilla.org | Mozilla foundation
 
 	End | WWW
 
@@ -238,7 +239,7 @@ Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
 xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
 MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
 xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
-Gringotts | encrypted data storage | gringotts -s | | WEB | AUTH
+Gringotts | encrypted data storage | gringotts -s | user | WEB | AUTH
 gCombust | cd burner | gcombust | | WEB | AUTH
 
 End | FILES
@@ -281,7 +282,6 @@ Begin | DEVEL
 Gambas | Visual application builder | gambas | | gambas.sf.net | Gambas developers
 Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
 Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
-Nvu | Web html editor | nvu | | www.mozilla.org | Mozilla foundation
 Scite | development text editor | SciTE | www.scintilla.org | Neil Hodgson
 Vim | versatile text editor | vim | terminal | vim.org | Braam Moolenaar et al.
 Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
@@ -296,6 +296,7 @@ mrXVT | X Terminal | launchterm | | Jimmy Terminator Zhou | mrxvt.sf.net
 xvKbd | touchscreen keyboard | xvkbd | | AUTH | WEB
 xKill | kill application | xkill | | X.org | http://x.org
 GkRellm | system monitors | gkrellm | | Gkrellm | http://gkrellm.sf.net
+QPs | process manager | qps | | Mattias Engdegård | http://qps.kldp.net
 xrMap | a world atlas | xrmap | | AUTH | WEB
 ical | a calendar organizer | ical | | AUTH | WEB
 FoxCalc | a calculator | calculator | | AUTH | WEB
@@ -309,7 +310,7 @@ xEyes | someone's watching | xeyes | | X.org | x.org
 
 End | XUTILS
 
-CONFIGURE | | rox /usr/apps/Configure | | Jaromil | afrolinux.org
+CONFIGURE | | rox /lib/dyne/configure | | Jaromil | afrolinux.org
 
 # last entries: DESKTOP and EXIT
 # they are included into windowmanager-dependent static files

@@ -1,0 +1,111 @@
+#!/bin/zsh
+
+# script to show a webpage with the best available browser possible
+# in case it's an online resource, check if we have connection
+# (C)2006 Denis "Jaromil" Roio // GNU GPL
+
+network_error_dialog() {
+# popup an error dialog to notice the user
+# args: message [icon]
+
+  msg=$1
+  icon="/usr/share/icons/graphite/48x48/apps/gnome-netstatus-error.png"
+
+  if [ -z $msg ]; then
+    # quit if no argument
+    return
+  fi
+
+  if [ -z $DISPLAY ]; then
+    # if no display, just write on console
+    error "$msg"
+    return
+  fi
+
+  MAIN_DIALOG="
+<vbox>
+  <frame Error>
+    <hbox>
+      <pixmap>
+        <input file>${icon}</input>
+      </pixmap>
+      <text>
+        <label>${msg}</label>
+      </text>
+    </hbox>
+  </frame>
+  <hbox>
+    <button>
+      <input file stock=\"gtk-close\"></input>
+      <label> Abort </label>
+    </button>
+    <button>
+      <input file stock=\"gtk-network\"></input>
+      <label>Configure</label>
+    </button>
+  </hbox>
+</vbox>
+"
+  export MAIN_DIALOG
+
+  export "`gtkdialog --program=MAIN_DIALOG`"
+
+  if [ $EXIT = "\"Configure\"" ]; then
+    rox /lib/dyne/configure
+  fi
+}
+
+
+if [ -z $1 ]; then
+  echo "usage: $0 url or local html file [browser]"
+  exit 0
+fi
+
+
+page=$1
+
+
+if [ $2 ]; then
+  browser=$2
+elif [ $DISPLAY ]; then
+  for app in firefox mozilla opera; do
+    if [ -x "`which $app`" ]; then
+      browser=$app
+      break
+    fi
+  done
+fi
+
+if [ -z $browser ]; then
+  # fallback on links
+  browser="links"
+fi
+
+# adjust browser options
+if [ $browser = links ]; then
+  args="-g" # open in graphical mode
+fi
+
+if [ ${page[0,7]} = "http://" ]; then
+  # it's a remote page
+  if [ "`ifconfig | grep eth`" ]; then
+    # we have a network interface configured
+    host=`echo $page | cut -d/ -f3`
+    /bin/ping $host
+    if [ $? = 0 ]; then
+      # the host is reachable
+      exec ${browser} ${args} ${page} &
+      exit 0
+    fi
+    network_error_dialog "Cannot open web page ${page} : the host is unreachable." ${error_icon}
+    exit -1
+  fi
+  network_error_dialog "Cannot open web page ${page} : network is not connected." ${error_icon}
+  exit -1
+fi
+
+# it's a local page
+exec ${browser} ${args} ${page} &
+
+exit 0
+
