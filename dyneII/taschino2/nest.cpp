@@ -166,7 +166,7 @@ void apply_nest(int sel) {
     setenv("PATH","/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin",1);
     execlp("xterm","taschino","-tn","linux","-bg","lightgrey","-fg","black",
 	   "-T",mesg,"-geometry","118x20",
-	   "-e","nidifica", "-f",nestfile, NULL);
+	   "-e","mknest", "-f",nestfile, NULL);
     perror("can't fork to launch docking command");
     _exit(1);
   }
