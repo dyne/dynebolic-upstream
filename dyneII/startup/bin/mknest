@@ -1,0 +1,250 @@
+#!/bin/zsh
+#
+# mknest - script to NEST dyne:II in various forms
+#
+#  * Copyright (C) 2003-2006 Denis "jaromil" Rojo - RASTASOFT.org
+#
+#  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
+#
+#  * This source code is free software; you can redistribute it and/or
+#  * modify it under the terms of the GNU Public License as published 
+#  * by the Free Software Foundation; either version 2 of the License,
+#  * or (at your option) any later version.
+#  *
+#  * This source code is distributed in the hope that it will be useful,
+#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  * Please refer to the GNU Public License for more details.
+#  *
+#  * You should have received a copy of the GNU Public License along with
+#  * this source code; if not, write to:
+#  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# dynebol.cfg is allways in the root of the filesystem
+# DYNEBOL_CRYPT=encryption algorithm (if there is one, only AES128 supported)
+
+
+source /lib/dyne/utils.sh
+
+LODEV=/dev/loop30 # always choose a free one!
+NESTNAME="dynebol.nst" # that's the default name, dynebolE.nst is encrypted
+
+mkdir -p /var/log/setup
+
+report_success() {
+# $1 success string
+    SUCCESS_FILE=/var/log/setup/success
+    MSG=$1
+    if [ -z "$MSG" ]; then
+	return 0
+    fi
+    notice "$MSG"
+    if [ -e $SUCCESS_FILE ]; then
+	rm -f $SUCCESS_FILE
+    fi
+    echo "$MSG" > $SUCCESS_FILE
+    return 1
+}
+
+report_error() {
+    # $1 error string
+    ERROR_FILE=/var/log/setup/error
+    MSG=$1
+    if [ -z "$MSG" ]; then
+	return 0
+    fi
+    error "$MSG"
+    if [ -e $ERROR_FILE ]; then
+	rm -f $ERROR_FILE
+    fi
+    echo "$MSG" > $ERROR_FILE
+    return 1
+}
+
+
+############################
+### main()
+###
+
+notice "nidifica  - create dyne:II nest"
+act "(c)2003-2006 by Jaromil - RASTASOFT.org"
+act "invoked with args \"$*\" "
+act "running on `date`"
+
+OPTS=`getopt -o hvp:f: --long help,version,partition:,file: -n 'nidifica' -- "$@"`
+
+eval set -- "$OPTS"
+
+while true; do
+    case "$1" in
+	-h)
+	    echo " .  nidifica [-hv] [-p part ] [-f file,mbytes]"
+	    echo " .  -v, --version   print out application info"
+	    echo " .  -h, --help      print this small usage guide"
+            echo " .  -p, --partition use specified partition as nest"
+	    echo " .  -f, --file      create specified file,size as nest"
+	    exit 2
+	    ;;
+	-v)
+	    exit 2
+	    ;;
+	-p)
+	    PARTITION=$2
+	    shift 2
+	    ;;
+	-f)
+	    LOOPBACK=$2
+	    shift 2
+	    ;;
+	--) shift; break ;;
+	*) error "error in given options"; exit 1 ;;
+    esac
+done
+
+#########################################
+# check presence of all needed parameters
+FATAL=0
+
+if [ $PARTITION ]; then
+  PART_VOL="`cat /boot/volumes | grep $PARTITION`"
+  if ! [ $PART_VOL ]; then
+     error "partition $PARTITION has not been detected"
+     FATAL=1
+  else
+     notice "nesting on partition $PART_VOL"
+  fi
+fi
+
+if [ $LOOPBACK ]; then
+  NSTFILE="`echo $LOOPBACK|cut -d, -f1`"
+  NSTSIZE="`echo $LOOPBACK|cut -d, -f2`"
+  if ! [ $NSTSIZE ]; then
+     error "argument of -f missing size specification"
+     error "usage: -f filename,size (in bytes)"
+     FATAL=1
+  elif [ `is_writable $NSTFILE` = false ]; then
+     error "file $NSTFILE is not writable"
+     error "cannot create nest"
+     FATAL=1
+  elif [ -e $NSTFILE ]; then
+     notice "file $NSTFILE already exists"
+     ask_yesno 10 "A nest is already present on this partition. Do you want to overwrite the existing nest?"
+     if [ $? = 1 ]; then echo " yes"
+     else
+       echo " no"
+       report_error "User aborted operation: should not overwrite existing nest"
+       exit 1
+     fi
+  fi
+fi
+
+if [ $FATAL = 1 ]; then
+    report_error "nidifica called with wrong arguments, operation aborted."
+    exit 1
+fi
+
+## parameters ok here
+####################################################################
+    
+
+#### nest in a loopback file to be created
+if [ $LOOPBACK ]; then
+
+    SIZE_4k=`expr \( $NSTSIZE \* 1000 \) / 4`
+    notice "generating file of ${NSTSIZE}Mb (${SIZE_4k} blocks of 4Kb)"
+    act "dd if=/dev/zero of=${NSTFILE} bs=4k count=$SIZE_4k"
+#    dd if=/dev/zero of=${NSTFILE} bs=4k count=${SIZE_4k}
+#   now with progress bar!
+    dd if=/dev/zero bs=4k count=${SIZE_4k} | cbar -s ${SIZE_4k} -bl 4k -of ${NSTFILE} -de -nb -np
+    
+    if [ $? = 0 -a -e ${NSTFILE} ]; then
+	act "OK: `ls -l ${NSTFILE}`"
+    else
+	report_error "Error creating the nest file ${NSTFILE} : (dd if=/dev/zero of=${NSTFILE} bs=4k count=$SIZE_4k)"
+	sleep 4
+	exit 1
+    fi
+    
+    notice "mounting loopback device"
+    
+    losetup ${LODEV} ${NSTFILE}
+    
+    if [ $? != 0 ]; then
+	report_error "Error in mounting nest loopback device : (losetup ${LODEV} ${NSTFILE})"
+	rm ${NSTFILE}
+	sleep 4
+	exit 1
+    fi
+    
+    notice "Creating the EXT2 internal filesystem"
+
+    # format the nest with journaled ext3
+    mkfs.ext3 -j -L "dyne:nest" ${LODEV}
+
+    if [ $? = 0 ]; then
+	act "OK, loopback device succesfully formatted"
+    else
+	losetup -d ${LODEV}
+	report_error "Error formatting the nest (mkfs $LODEV)"
+	rm ${NSTFILE}
+	sleep 4
+	exit 1
+    fi
+    
+    notice "Mount the nest and populate it"
+    mkdir -p /tmp/nest
+    mount -t ext3  ${LODEV} /tmp/nest
+    if [ $? != 0 ]; then
+       error "cannot mount the nest"
+       report_error "Error mounting the nest (mount -t ext2 ${LODEV} /tmp/nest)"
+       rm $NSTFILE
+       sleep 4
+       exit 1
+    fi
+    
+    mkdir -p /tmp/nest/home/luther
+    cp -ra /etc/skel/*     /tmp/nest/home/luther
+    cp -ra /etc/skel/.*    /tmp/nest/home/luther
+    ln -s /lib/dyne/configure /tmp/nest/home/luther/Configure
+    ln -s /mnt /tmp/nest/home/luther/Volumes
+    chown -R luther:users  /tmp/nest/home/luther
+
+    mkdir -p /tmp/nest/root
+    cp -ra /etc/skel/*     /tmp/nest/root
+    cp -ra /etc/skel/.*    /tmp/nest/root
+    ln -s /lib/dyne/configure /tmp/nest/root/Configure
+    ln -s /mnt /tmp/nest/root/Volumes
+    chmod -R go-rwx        /tmp/nest/root
+    
+    mkdir -p /tmp/nest/local
+    cp -ra /usr/local/*    /tmp/nest/local
+
+    cp -ra /etc /tmp/nest
+    cp -ra /var /tmp/nest
+    mkdir       /tmp/nest/tmp
+    chmod a+rwt /tmp/nest/tmp
+
+    umount /tmp/nest
+    
+    notice "done!"
+    
+    losetup -d ${LODEV}
+    
+    sync
+    
+    act "here is your new dyne:bolic nest:"
+    stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
+    
+    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: Once you reboot, you will be prompted for a login: user root has password luther :: you can activate multiple user accounts, refer to the manual for more informations."
+
+    notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
+
+fi # end nest in loopback
+
+if [ $PARTITION ]; then
+
+  notice "nesting in partition yet to be implemented"
+
+fi
+
+exit 0

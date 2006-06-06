@@ -369,11 +369,11 @@ mount_nest() {
 	    notice "activating dyne:bolic nest in ${nst}"
 
             act "nest filesystem check"
-            fsck -TCp ${nst}
+            fsck.ext3 -p -C0 ${nst}
 	    
 	    act "mounting nest over loopback device"
 	    mkdir -p /mnt/nest
-	    mount -o loop ${nst} /mnt/nest
+	    mount -t ext3 -o loop ${nst} /mnt/nest
 	    if [ $? != 0 ]; then
 	       error "mount failed with exitcode $?"
             fi
