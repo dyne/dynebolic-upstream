@@ -1,6 +1,7 @@
 /* Nettante - net configuration software for dyne:bolic GNU/Linux distribution
  * http://dynebolic.org
- * Copyright (C) 2003 Denis Rojo aka jaromil <jaromil@dyne.org>
+ *
+ * Copyright (C) 2003-2006 Denis Rojo aka jaromil <jaromil@dyne.org>
  * 
  * This source code is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Public License as published 
@@ -167,6 +168,11 @@ on_combo_eth_realize                   (GtkWidget       *widget,
 
   /* gathers description from /proc/pci and fills the gtk combo box */
   fd = fopen("/boot/pcilist","r");
+  if(!fd) {
+    fprintf(stderr,"can't run netconf: /boot/pcilist not found\n");
+    fprintf(stderr,"run 'lspci > /boot/pcilist'\n");
+    exit(-1);
+  }
   while(fgets(tmp,256,fd)) {
     if(strstr(tmp,"Ethernet")) {
       eth_num++;
