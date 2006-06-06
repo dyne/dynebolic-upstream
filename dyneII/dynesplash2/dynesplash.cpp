@@ -61,8 +61,8 @@ void goto_url(GtkWidget *widget, gpointer *data) {
 	}
 	proc = fork();
 	if(!proc) {
-		execlp("links","links","-g",(char*)data,NULL);
-		perror("can't fork to launch mozilla");
+		execlp("www","www",(char*)data,NULL);
+		perror("can't fork to launch web browser");
 		_exit(1);
 	}
 	wait(&res);
@@ -74,98 +74,46 @@ void quit(GtkWidget *widget, gpointer *data) {
 }
 
 void
-on_language_button                  (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("lost-in-babylon","lost-in-babylon",NULL);
-    perror("can't launch language configurator");
-    _exit(1);
-  }
-}                                        
-
-void
-on_network_button                   (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("/usr/libexec/autopackage/autosu-gtk",
-	   "nettante","nettante",NULL);
-    perror("can't launch network configurator");
-    _exit(1);
-  }
-}                                        
-
-void
-on_modem_button                   (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("pppconfig","pppconfig",NULL);
-    perror("can't launch modem configurator");
-    _exit(1);
-  }
-}                                        
-
-void
-on_printer_button                   (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-   execlp("links","printconfig","-g","http://localhost:631",NULL);
-   perror("can't launch print configurator");
-    _exit(1);
-  }
-}                                        
-
-void
-on_screen_button                   (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("/usr/libexec/autopackage/autosu-gtk","xf86cfg",
-	   "xf86cfg","-xf86config","/etc/X11/XF86Config",NULL);               
-    perror("can't launch screen configurator");
-    _exit(1);
-  }
-}                                        
-
-void
-on_nest_button                   (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  pid_t proc;
-  proc = fork();
-  if(proc==0) {
-    execlp("/usr/libexec/autopackage/autosu-gtk","taschino","taschino",NULL);            
-    perror("can't launch nest configurator");
-    _exit(1);
-  }
-}                                        
-
-void
 on_donate_button                   (GtkButton       *button,
                                         gpointer         user_data)
 {
   pid_t proc;
   proc = fork();
   if(proc==0) {
-    execlp("/usr/bin/donate","donate",NULL);            
+    execlp("/bin/donate","donate",NULL);
     perror("can't launch donator");
     _exit(1);
   }
 }                                        
 
+void
+on_community_button                   (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("/bin/community","community",NULL);
+    perror("can't launch community gatherer");
+    _exit(1);
+  }
+}                                        
+
+void
+on_configure_button                   (GtkButton       *button,
+                                        gpointer         user_data)
+{
+  pid_t proc;
+  proc = fork();
+  if(proc==0) {
+    execlp("/bin/sysconf","sysconf",NULL);
+    perror("can't launch system configurator");
+    _exit(1);
+  }
+}
+
+
+/*
 void
 on_radio_tunein(GtkButton *button, gpointer user_data) {
   pid_t proc;
@@ -182,7 +130,6 @@ on_radio_tunein(GtkButton *button, gpointer user_data) {
   }
 }
 
-/*
 void show_win(GtkWidget *widget, gpointer *data) {
   if(!data) {
     fprintf(stderr,"missing widget in GUI descrption\n");
@@ -239,12 +186,7 @@ int main(int argc, char **argv) {
   /* ====== connect callbacks manually */
 
 // config
-  CONNECT("network_button","clicked",on_network_button);
-  CONNECT("modem_button","clicked",on_modem_button);
-  CONNECT("language_button","clicked",on_language_button);
-  CONNECT("printer_button","clicked",on_printer_button);
-  CONNECT("screen_button","clicked",on_screen_button);
-  CONNECT("nest_button","clicked",on_nest_button);
+  CONNECT("configure_button", "clicked", on_configure_button);
 
 // credits
   CONNECT_ARG("rastasoft_button","clicked",goto_url,www_rastasoft);
@@ -252,11 +194,14 @@ int main(int argc, char **argv) {
   CONNECT_ARG("freaknet_button","clicked",goto_url,www_freaknet);
   CONNECT_ARG("morecredits_button","clicked",goto_url,www_morecredits);
 
+// community and donations
+  CONNECT("community_button","clicked", on_community_button);
   CONNECT("donate_button","clicked",on_donate_button);
 
-// radio
+/* radio
   CONNECT_ARG("radio_www_button","clicked",goto_url,www_radio);
   CONNECT("radio_tunein_button","clicked",on_radio_tunein);
+*/
 
 //  chdir(cwd);
 
