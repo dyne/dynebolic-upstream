@@ -1,6 +1,0 @@
-#!/bin/sh
-
-source /boot/dynenv
-
-APP_DIR=`dirname "$0"` export APP_DIR
-launchroot nedit $DYNE_SYS_MNT/dyne.cfg
