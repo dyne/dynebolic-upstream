@@ -33,7 +33,7 @@ init_modules() {
    # FIX es1988 driver (found on a hp omnibook xe3
    # uses the kernel oss maestro3 driver
    # jaromil 26 07 2002
-   if [ ! -z "`cat /proc/pci | grep 'ESS Technology ES1988 Allegro-1'`" ]; then
+   if [ ! -z "`lspci| grep 'ESS Technology ES1988 Allegro-1'`" ]; then
      loadmod maestro3
    fi
 
@@ -55,7 +55,7 @@ init_modules() {
    #  notice "NForce audio controller found"
    #  loadmod nvaudio
    #fi
-   if [ ! -z "`lspci | grep -i 'ethernet' | grep -i ' nvidia'`" ]; then
+   if [ ! -z "`lspci| grep -i 'ethernet' | grep -i ' nvidia'`" ]; then
      notice "NForce ethernet device found"
      loadmod nvnet
    fi
@@ -69,7 +69,7 @@ init_modules() {
    BOGUS_SOUND="btaudio|8x0m|modem"
 
    # we exclude the modules that crash some machines
-   BAD_MODULES="i810_rng"
+   BAD_MODULES="i810_rng|hw_random"
 
    # load alsa modules first
    for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do

@@ -2,6 +2,16 @@
 # (C) 2005-2006 Denis "jaromil" Rojo
 # GNU GPL License
 
+
+# TODO: automatic LVM support
+# by now dm-mod kernel module is inside the ramdisk
+# /sbin/lvm is present
+# the following commands are necessary to activate the support:
+# (from the lvm howto)
+#   dmsetup mknodes
+#   vgscan --ignorelockingfailure
+#   vgchange -ay --ignorelockingfailure
+
 source /lib/dyne/dock.sh
 source /lib/dyne/utils.sh
 
@@ -167,6 +177,7 @@ scan_partitions() { #arg : devicename
       fi
     fi
 
+
     PARTITIONS=`${FDISK} -l /dev/${DEV}            \
               | sed -e 's/ \* / /'              \
               | awk '/^\/dev\/*/ { if(NF!=1) print $0 }' \
@@ -177,7 +188,7 @@ scan_partitions() { #arg : devicename
     for PART in ${(f)PARTITIONS}; do
 	
 	
-	PART_FS="`echo $PART|awk '{print $6}'`"
+	PART_FS="`echo $PART|awk '{print $6 " " $7 " " $8}'`"
         PART_DEV="`echo $PART|cut -d' ' -f1`"
 	
 	PART_NUM=`expr $PART_NUM + 1`
@@ -211,8 +222,40 @@ scan_partitions() { #arg : devicename
           fi  
 
 	   
+          # here check if FS ~= LVM then use LVM-tools
+          if [ "`echo ${PART_FS}   | grep 'LVM'`" ]; then
+            # it's a LVM, see LVM-Howto online..
+            dmsetup mknodes
+            /sbin/lvm.apps/vgscan --ignorelockingfailure
+            /sbin/lvm.apps/vgchange -ay --ignorelockingfailure
+
+            volumes=`/sbin/lvm.apps/lvdisplay | awk '/LV Name/ { print $3 }'`
+
+            # +-1 trix
+	    PART_NUM=`expr $PART_NUM - 1`
+
+            for vol in ${(f)volumes}; do
+
+	      PART_NUM=`expr $PART_NUM + 1`
+
+	      MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
+	      mkdir -p ${MNT}
+
+              mount $vol $MNT
+              if [ $? != 0 ]; then
+	        error "can't mount ${vol} : not a valid filesystem"
+	        continue
+	      fi
+
+              add_volume hdisk `basename ${vol}` hd${HD_NUM}/${PART_NUM} auto
+
+            done
+
+            continue
+          #################### LVM
+          
           # here check if FS ~= NTFS then use umask=0222
-	  if [ "`echo ${PART_FS}   | grep -i 'NTFS'`" ]; then
+	  elif [ "`echo ${PART_FS}   | grep -i 'NTFS'`" ]; then
 	    OPTIONS="ro,noexec,uid=0,gid=8,umask=0222"
 	    FILESYS="ntfs"
 
@@ -271,8 +314,6 @@ scan_storage() {
 	loadmod ${m}
     done
 
-
-
     #######################
     #### scan IDE harddisks
     #######################
@@ -315,9 +356,13 @@ scan_storage() {
       done
     fi
 
-    for DEV in `ls /dev | awk '/^sd./ {print $1}'`; do
+    # refresh the devices
+    /sbin/udevstart
+
+    for DEV in `ls /dev | awk '/^sd.$/ {print $1}'`; do
        # TODO: be sure to detect it's an harddisk
        HD_NUM=`expr $HD_NUM + 1`
+       notice "scanning storage ${DEV}"
        scan_partitions ${DEV}
     done
 

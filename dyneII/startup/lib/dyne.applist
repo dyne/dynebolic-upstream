@@ -5,7 +5,8 @@
 # runonce | multi = if there should be only one instance running, or not
 # terminal        = if it should run in a terminal
 # manual          = if it's a manual entry
-# root       = if it must be run as root
+# root | user     = if it must be run as root or as user
+
 
 XTerm | | launchterm | | Jimmy Terminator Zhou | mrxvt.sf.net
 
@@ -82,7 +83,9 @@ Jamin | equalizer | jamin | | jamin.sf.net | Jamin author
 FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
 Jack Rack | ladspa effects rack | jack-rack | | jack-rack.sf.net | Jack auth
 FreeWheeling | live sampling | fweelin | | freewheeling.sf.net | JP Mercury
+SooperLooper | live looping | slgui | | essej.net/sooperlooper | Jesse Chappell
 SoundTracker | fast tracker | soundtracker | | soundtracker.cx? | A. Koenig
+CheeseTracker | sound tracker | cheesetracker_qt | | cheesetracker.sf.net | Juan Linietsky
 Seq24 | midi sequencer | seq24 | | seq24.sf.net | seq24 auth
 ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
 TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A. Koenig
@@ -96,6 +99,7 @@ PD | pure data signal processing | pd | terminal | pure-data.org | Miller Pucket
 Ardour | multitrack studio | ardour | | www.ardour.org | Paul Davis
 Audacity | audio editor | audacity | | audacity.sf.net | Dominique Mazzoni
 ReZound | sample editor | rezound | | rezound.sf.net | rezound auth
+RoseGarden | midi editor | rosegarden | | rosegardenmusic.com | fervent software
 TimeMachine | realtime recorder | timemachine | | plugin.org.uk | plugin.org.uk
 
 	End | REC & EDIT
@@ -103,9 +107,9 @@ TimeMachine | realtime recorder | timemachine | | plugin.org.uk | plugin.org.uk
 	Begin | STREAM
 
 MuSE | your online radio | muse | | muse.dyne.org | Jaromil
-# Icecast2 | start streaming server | icecast -c /etc/icecast.xml | terminal | icecast.org | xiph.org
-# Icecast2 | administration interface | links -g http://admin:hackme@localhost:8000/admin | browser | icecast.org | xiph.org
-# Icecast2 | edit configuration | nedit /etc/icecast.xml | | icecast.org | xiph.org
+Icecast | edit configuration | nedit /etc/icecast.xml | | icecast.org | xiph.org
+Icecast | start streaming server | icecast -c /etc/icecast.xml | terminal | icecast.org | xiph.org
+Icecast | administration interface | links -g http://admin:hackme@localhost:8000/ | browser | icecast.org | xiph.org
 
 	End | STREAM
 
@@ -116,6 +120,7 @@ Begin | IMAGE
 Gimp | image manipulator | gimp | | gimp.org | Gimp team
 InkScape | vectorial graphics | inkscape | | inkscape.sf.net | Inkscape auth
 Blender | 3d editor and game engine | blender | | blender3d.org | Blender foundation
+Gphoto | connect photo camera | gtkam | | gphoto.sf.net | Gphoto developers
 XSane | scan paper images | xsane | | www.xsane.org | XSane
 Glito | fractal generator IFS | glito | | emmanuel.debanne.free.fr/glito | Emmanuel Debanne
 GQview | image file browser | gqview | | gqview.sf.net | GQView author
@@ -163,12 +168,13 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins &
 
 	Begin | SHARE
 
-Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
+KTorrent | p2p bittorrent client | ktorrent | | KTorrent.org | KTorrent developers
 Nicotine | p2p soulseek fileshare | nicotine | | nicotine.thegraveyard.org | Hyriand
 Gnutella | p2p gnutella filesharing | gtk-gnutella | user | gtk-gnutella.sf.net | gnutella auth
 Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
 MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
 The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
+Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 
 	End | SHARE
 
@@ -248,30 +254,38 @@ End | FILES
 
 Begin | GAMES
 
+
 Anatolia | online multi user dungeon | gmudix | | WEB | AUTH
-Armagetron | tron lightspeed cycles | armagetron | | WEB | AUTH
+Armagetron | tron lightspeed cycles | armagetronad | | WEB | AUTH
+BlobWars | blob liberation fighter | blobwars | | www.blobwars.org | Parallel Realities
 FreeCiv | free civilization | civclient | | WEB | AUTH
 CannonSmash | 3d multiplayer tabletennis | csmash | | WEB | AUTH
 Eat the whistle | sensible soccer | eat-the-whistle | | WEB | AUTH
 eBoard | GNU Chess & online board | eboard | | WEB | AUTH
 Foobillard | 3d carambola billard | foobillard | | WEB | AUTH
 FrozenBubble | puzzle bubble like | frozen-bubble | | WEB | AUTH
-RetroVolley | gnu arcade volleyball | gav | | WEB | AUTH
 glhack | graphical nethack dungeon | glhack | | WEB | AUTH
-VultureEyes | RPG nethack dungeon | vultureseye | | WEB | AUTH
-SuperMarioWars | jump on platforms | supermariowars | | WEB | AUTH
 lBreakout2 | arkanoid & breakout | lbreakout2 | | WEB | AUTH
 lTris | rich tetris clone | ltris | | WEB | AUTH
 Liquidwar | addictive multiplayer | liquidwar | | WEB | AUTH
 Matanza | ascii multiplayer asteroids | matanza | terminal | WEB | AUTH
-Netris | multiplayer ascii tetris| netris | terminal | AUTH | WEB
-PowerManga | galactic shot'em up | powermanga | | AUTH | WEB
-Racer | car racing from above | racer | | AUTH | WEB
-Starfighter | arcade space quest | starfighter | | AUTH | WEB
-tkSol | snappy solitaire | tksol | | AUTH | WEB
-Wesnoth | turn based strategy fantasy | wesnoth | | AUTH | WEB
-xMahjongg | chinese social game | xmahjongg | | AUTH | WEB
-xWellTris | 2.5 dimensional warped tetris | xwelltris | | AUTH | WEB
+Netris | multiplayer ascii tetris | netris | terminal | AUTH | WEB
+NeverBall | 3d floating ball | neverball | | neverball.icculus.org | Robert Kooima
+NeverPut | 3d mini golf | neverput | | neverball.icculus.org | Robert Kooima
+PowerManga | galactic shot'em up | powermanga | | WEB | AUTH
+Racer | car racing from above | racer | | WEB | AUTH
+RetroVolley | gnu arcade volleyball | gav | | WEB | AUTH
+Rick Dangerous | adventurer in the pyramid | xrick | | WEB | AUTH
+Shotgun Debug | run hacker run | sdb | | sdb.gamecreation.org | Game Creation Society
+Starfighter | arcade space quest | starfighter | | WEB | AUTH
+SuperMarioWars | jump on platforms | supermariowars | | WEB | AUTH
+tkSol | snappy solitaire | tksol | | WEB | AUTH
+TuxPaint | baby painting | tuxpaint | | www.tuxpaint.org | Tux Paint developers
+Wesnoth | turn based strategy fantasy | wesnoth | | WEB | AUTH
+Wormux | worms fighting freely | wormux | | www.wormux.org | Lawrence Azzoug
+xMahjongg | chinese social game | xmahjongg | | WEB | AUTH
+xWellTris | 2.5 dimensional warped tetris | xwelltris | | WEB | AUTH
+VultureEyes | RPG nethack dungeon | vultureseye | | WEB | AUTH
 
 End | GAMES
 

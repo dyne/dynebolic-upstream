@@ -58,7 +58,7 @@ if [ "`echo ${VGACARD} | grep Unknown`" ]; then
   return
 fi
 
-if [ ! -z "`echo ${VGACARD} | grep -iE ' nvidia| riva| viper| tnt| geforce' | grep -v Unknown`" ]; then
+if [ "`echo ${VGACARD} | grep -iE 'nvidia| riva| viper| tnt|geforce' | grep -v Unknown`" ]; then
   act "using X 'nv' driver for your nVidia card"
   sed "s/fbdev/nv/g" $DISTCFG > $CFG
   return

@@ -1,15 +1,18 @@
 #!/bin/sh
 
+PROG="`which zsh`"
+
 if [ -z $1 ]; then
   TITLE="Terminal"
 else 
   TITLE=$1
-fi
 
-if [ -z $2 ]; then
-  PROG="`which zsh`"
-else
-  PROG=$2
+  shift
+
+  if [ $1 ]; then
+    PROG=$@
+  fi
+
 fi
 
 launch \

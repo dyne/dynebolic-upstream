@@ -271,6 +271,9 @@ append_line /boot/dynenv "export DYNE_SYS_DEV=${DYNE_SYS_DEV}"
 append_line /boot/dynenv "export DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}"
 append_line /boot/dynenv "export DYNE_SYS_MNT=${DYNE_SYS_MNT}"
 
+# create a useful link to the dock
+ln -s ${DYNE_SYS_MNT} /lib/dyne/configure/Dyne
+
 }
 ##########################################
 
@@ -731,6 +734,11 @@ EOF
 ## both .xinitrc and .xsession will execute dyne_startx() in wmaker.sh
 ## to make your own startup x use the dyne.cfg configuration "startx"
 
+  # cleanup leftover locks (if there was a crash)
+  if [ -r /tmp/.X0-lock ]; then
+    rm -f /tmp/.X0-lock
+  fi
+  # setup a bootcheck for fbdev fallback
   touch /tmp/.booting_x
   chmod a+w /tmp/.booting_x
   # we delete it in startx, if X works

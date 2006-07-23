@@ -48,9 +48,9 @@ network_error_dialog() {
 "
   export MAIN_DIALOG
 
-  export "`gtkdialog --program=MAIN_DIALOG`"
+  eval `gtkdialog --program=MAIN_DIALOG`
 
-  if [ $EXIT = "\"Configure\"" ]; then
+  if [ $EXIT = "Configure" ]; then
     rox /lib/dyne/configure
   fi
 }

@@ -1,0 +1,46 @@
+#!/bin/zsh
+
+source /lib/dyne/utils.sh
+
+if [ -z $1 ]; then
+  echo "this is an ndiswrapper auxiliary script to load drivers"
+  echo "for more informations see ndiswrapper(8) manual page"
+  echo "usage: loadwindrv windows_driver.inf"
+  exit 1
+fi
+
+if ! [ -r $1 ]; then
+  echo "file not found: $1"
+  exit 2
+fi
+
+
+ndiswrapper -i $1
+
+
+module_is_loaded=`lsmod | awk '/^Module/{next} /^ndiswrapper/{print $1}'`
+if ! [ $module_is_loaded ]; then
+  /usr/sbin/modprobe ndiswrapper
+  if [ $? = 2 ]; then
+    echo "kernel module ndiswrapper succesfully loaded"
+  else
+    error_dialog "error loading kernel module ndiswrapper"
+  fi
+fi
+
+
+MAIN_DIALOG="
+<vbox>
+<frame Load windows device driver>
+<text>
+  <label>\"`ndiswrapper -l`\"</label>
+</text>
+</frame>
+<button ok></button>
+</vbox>
+"
+
+export MAIN_DIALOG
+
+gtkdialog --program=MAIN_DIALOG
+

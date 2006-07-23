@@ -122,25 +122,23 @@ MAIN_DIALOG="$MAIN_DIALOG
 </vbox>
 "
 
+# export the dialog
 export MAIN_DIALOG
 
-export `gtkdialog --program=MAIN_DIALOG`
+# show the dialog
+eval `gtkdialog --program=MAIN_DIALOG`
 
-if [ $EXIT = "\"Cancel\"" ]; then
+# check results
+if [ $EXIT = "Cancel" ]; then
   echo "operation aborted."
   exit 0
 fi
 
-if [ $new_host != "\"\"" ]; then
+if [ $new_host ]; then
   server=$new_host
 else
   server=$known_host
 fi
-
-# strip the quotes
-server=`echo $server | sed s/\"//g`
-username=`echo $username | sed s/\"//g`
-# mountpoint="/mnt/shares/$username@$server"
 
 xterm -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 \
       -bg black -fg green -e "$0 ${username}@${server}" &

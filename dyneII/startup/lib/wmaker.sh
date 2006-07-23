@@ -159,6 +159,16 @@ wmaker_gen_menu() {
        rm $WMMENU
     fi
 
+    # here deletes previous or user defined menu
+    if [ -r /root/GNUstep/Defaults/WMRootMenu ]; then
+       rm /root/GNUstep/Defaults/WMRootMenu
+    fi
+    for u in `ls /home`; do
+       if [ -r /home/$u/GNUstep/Defaults/WMRootMenu ]; then
+          rm /home/$u/GNUstep/Defaults/WMRootMenu
+       fi
+    done
+
     cat /boot/dyne.apps \
     | awk -f /lib/dyne/menugen.awk -v render=wmaker \
     > $WMMENU
@@ -406,6 +416,12 @@ print "}"
 
       cp -f $WMSTATETMP $WMSTATE
       rm -f $WMSTATETMP
+
+      # overwrite docks in nest with the fresh one
+      cp -f $WMSTATE /root/GNUstep/Defaults/WMState
+      for u in `ls /home`; do
+        cp -f $WMSTATE /home/${u}/GNUstep/Defaults/WMState
+      done
 
     else
 

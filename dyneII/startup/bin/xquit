@@ -78,27 +78,27 @@ export MAIN_DIALOG="
 "
 
 
-export "`gtkdialog --program=MAIN_DIALOG`"
+eval `gtkdialog --program=MAIN_DIALOG`
 
  # | awk ' BEGIN { FS="=" } { if($2 == "\"true\"") print $1 }'`
 
-if   [ "$EXIT" = "\"OK\"" ]; then
+if   [ $EXIT = "OK" ]; then
 
   notice "$MSG"
 
-  if   [ "$ACTION" = "halt" ]; then
+  if   [ $ACTION = "halt" ]; then
 
     launchroot /sbin/shutdown -h now
 
-  elif [ "$ACTION" = "reboot" ]; then
+  elif [ $ACTION = "reboot" ]; then
 
     launchroot /sbin/shutdown -r now
 
-  elif [ "$ACTION" = "killx" ]; then
+  elif [ $ACTION = "killx" ]; then
 
     launchroot /usr/bin/killall X
 
-  elif [ "$ACTION" = "logout" ]; then
+  elif [ $ACTION = "logout" ]; then
 
     launchroot /usr/bin/killall fluxbox
 
