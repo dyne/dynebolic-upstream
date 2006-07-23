@@ -66,7 +66,6 @@ while true; do
 	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/SDK)"
             act "-m     additional modules to add in ramdisk"
             act "-n     include current net modules in ramdisk (for netboot)"
-            act "-q     be quick and skip checksums and crypto sigs"
             act "-s     sign generated iso with gpg ID"
 
             notice "MODULE DEVELOPMENT COMMANDS:"
@@ -85,7 +84,6 @@ while true; do
 	-p) PFX=$2; shift 2 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
         -n) ADD_NETWORK_MODULES="yes"; shift 1 ;;
-        -q) QUICK="yes"; shift 1 ;;
         -s) SIGN=$2; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
@@ -258,6 +256,11 @@ develmod() {
         exit -1
     fi
 
+    # check if module is already uncompressed in SDK
+    if [ -x $PFX/modules/${MOD} ]; then
+        error "a development version of the module is already present in your SDK"
+        exit -1
+    fi
 
     MODSIZE=`du -hs /opt/$MOD | awk '{print $1}'`
 
@@ -521,6 +524,9 @@ EOF
     mkdir -p var/local var/lock var/tmp
     mkdir -p var/run var/log var/lib/rpm
     mkdir -p var/spool/cups
+    mkdir -p var/log/icecast
+    chown nobody:nogroup var/log/icecast
+
   
     if [ -x $PFX/startup/.svn ]; then
 	act "setup startup files from subversion repository"
@@ -530,37 +536,52 @@ EOF
         for f in `ls -A $PFX/startup/bin/ | grep -v .svn`; do
           cp -raf ${PFX}/startup/bin/${f}       bin
         done
-	for f in `ls $PFX/startup/lib/`; do
-	  cp -raf ${PFX}/startup/lib/${f}       lib/dyne/
-	done
-        mkdir -p lib/dyne/zsh
-	for f in `ls $PFX/startup/zsh/`; do
-	  cp -af ${PFX}/startup/zsh/${f}        lib/dyne/zsh/
-	done
-        mkdir -p lib/dyne/xdg
-	for f in `ls $PFX/startup/xdg/`; do
-	  cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
-	done
-        mkdir -p lib/dyne/skel
-	for f in `ls -A $PFX/startup/skel/ | grep -v .svn`; do
-	  cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
-	done
-        rm -f lib/dyne/hotplug/debug # no debug by default
-        for f in `ls $PFX/startup/hotplug/`; do
-          cp -raf ${PFX}/startup/hotplug/${f} lib/dyne/hotplug/
-        done
-        mkdir -p lib/dyne/udev
-        for f in `ls $PFX/startup/udev/`; do
-          cp -raf ${PFX}/startup/udev/${f}	lib/dyne/udev/
-        done
+
+        if [ -x ${PFX}/startup/lib ]; then
+          # blank all lib/dyne
+          rm -rf lib/dyne/*
+
+	  for f in `ls $PFX/startup/lib/`; do
+	    cp -raf ${PFX}/startup/lib/${f}       lib/dyne/
+	  done
+
+          mkdir -p lib/dyne/zsh
+	  for f in `ls $PFX/startup/zsh/`; do
+	    cp -af ${PFX}/startup/zsh/${f}        lib/dyne/zsh/
+	  done
+
+          mkdir -p lib/dyne/xdg
+	  for f in `ls $PFX/startup/xdg/`; do
+	    cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
+	  done
+
+          mkdir -p lib/dyne/skel
+	  for f in `ls -A $PFX/startup/skel/ | grep -v .svn`; do
+	    cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
+	  done
+
+          mkdir -p lib/dyne/hotplug
+          rm -f lib/dyne/hotplug/debug # no debug by default
+          for f in `ls $PFX/startup/hotplug/`; do
+            cp -raf ${PFX}/startup/hotplug/${f} lib/dyne/hotplug/
+          done
+
+          mkdir -p lib/dyne/udev
+          for f in `ls $PFX/startup/udev/`; do
+            cp -raf ${PFX}/startup/udev/${f}	lib/dyne/udev/
+          done
+          
+          mkdir -p lib/dyne/configure
+	  for f in `ls $PFX/startup/configure/`; do
+	    cp -af ${PFX}/startup/configure/${f}  lib/dyne/configure/
+            cp -f  ${PFX}/startup/configure/.DirIcon lib/dyne/configure/
+	  done
+        fi
+
 	mkdir -p etc/WindowMaker
 	for f in `ls $PFX/startup/GNUstep/`; do
 	  cp -af  ${PFX}/startup/GNUstep/${f}   etc/WindowMaker/
         done
-        mkdir -p lib/dyne/configure
-	for f in `ls $PFX/startup/configure/`; do
-	  cp -af ${PFX}/startup/configure/${f}  lib/dyne/configure/
-	done
 
         # delete all backup files
         for f in `find lib/dyne -name '*~'`; do
@@ -638,11 +659,11 @@ EOF
     act "generate device file"
     dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=12000
     act "formatting ramdisk filesystem"
-    mke2fs -m 0 -i 1024 cdrom/dyne/initrd
+    mke2fs -F -m 0 -i 1024 -L ramdisk cdrom/dyne/initrd
     act "populating ramdisk static file"
     mkdir -p tmp
 
-    mount -o loop,rw cdrom/dyne/initrd tmp
+    mount -o loop,rw -t ext2 cdrom/dyne/initrd tmp
     if [ $? != 0 ]; then
       error "mount of initrd filesystem failed, aborting"
       return
@@ -670,14 +691,22 @@ mkusr() {
     cp -v $PFX/devel/dynesdk /usr/sbin/dynesdk
 
     ask_yesno 10 \
-"Would you like to download an up-to-date PCI-ID database from online?"
+"Would you like to download an up-to-date device ID database from internet?"
     if [ $? = 1 ]; then
       mv /usr/share/pci.ids /usr/share/pci.ids.old
+      mv /usr/share/usb.ids /usr/share/usb.ids.old
       wget -O - http://pci-ids.ucw.cz/pci.ids.bz2 | bunzip2 > /usr/share/pci.ids
+      wget -O - http://www.linux-usb.org/usb.ids > /usr/share/usb.ids
+      if [ -r /usr/share/usb.ids ]; then
+        rm /usr/share/usb.ids.old
+      else
+        error "usb device ids not found online"
+        mv /usr/share/usb.ids.od /usr/share/usb.ids
+      fi
       if [ -r /usr/share/pci.ids ]; then
 	rm /usr/share/pci.ids.old
       else
-        error "operation failed. you need to be online to do that!"
+        error "pci device ids not found online"
 	mv /usr/share/pci.ids.old /usr/share/pci.ids
       fi
     fi
