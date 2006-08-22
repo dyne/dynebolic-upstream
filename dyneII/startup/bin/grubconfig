@@ -1,0 +1,1315 @@
+#!/bin/bash
+#
+# Copyright 2005 Kent Robotti <robotti@godmail.com> 3-24-2006
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# grubconfig is based on liloconfig by Patrick Volkerding fron the
+# Slackware Linux distribution.
+# further modifications by Denis "jaromil" Roio for dyne:bolic GNU/Linux
+#
+# Copyright 1994, 1998, 1999  Patrick Volkerding, Moorhead, Minnesota USA
+# Copyright 2002, 2003, 2004  Slackware Linux, Inc, Concord, CA
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+source /boot/dynenv
+
+TMP=/tmp/grubconfig
+BOOT_TMP=/tmp/boot
+CONSOLETYPE=standard
+CONSOLENUM=normal
+
+rm -rf $TMP $BOOT_TMP
+mkdir -p $TMP $BOOT_TMP
+
+#PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin
+
+# Menu to check if we want to use VESA framebuffer support:
+use_framebuffer() {
+CONSOLETYPE=standard
+CONSOLENUM=normal
+if grep -q "29 fb" /proc/devices ; then
+  dialog --title "CONFIGURE GRUB TO USE FRAME BUFFER CONSOLE?" \
+  --menu "Looking at /proc/devices, it seems your kernel has support for \
+the Linux frame buffer console.  If we enable this, it \
+will allow more rows and columns of text on the screen and give you a cool \
+penguin logo at boot time.  However, the frame buffer text console is \
+slower than a standard text console.  In addition, not every video card \
+or monitor supports all of these video modes.  Would you like to use the \
+frame buffer console, or the standard Linux console?" 0 0 0 \
+  "standard" "Use the standard Linux console (the safe choice)" \
+  "640x480x256" "Frame buffer console, 640x480x256" \
+  "800x600x256" "Frame buffer console, 800x600x256" \
+  "1024x768x256" "Frame buffer console, 1024x768x256" \
+  "640x480x32k" "Frame buffer console, 640x480x32k" \
+  "800x600x32k" "Frame buffer console, 800x600x32k" \
+  "1024x768x32k" "Frame buffer console, 1024x768x32k" \
+  "640x480x64k" "Frame buffer console, 640x480x64k" \
+  "800x600x64k" "Frame buffer console, 800x600x64k" \
+  "1024x768x64k" "Frame buffer console, 1024x768x64k" \
+  2> $TMP/reply
+  if [ ! $? = 0 ]; then
+    chroot_umount
+    exit
+  fi
+# Frame buffer modes above 1024x768 look terrible except
+# on LCD panels, and 32 bit color is slow.  Since we don't
+# even need to run a framebuffer console to run framebuffer
+# X anymore, these modes aren't of much real use.
+#  "1280x1024x256" "Frame buffer console, 1280x1024x256" \
+#  "1600x1200x256" "Frame buffer console, 1600x1200x256" \
+#  "1280x1024x32k" "Frame buffer console, 1280x1024x32k" \
+#  "1600x1200x32k" "Frame buffer console, 1600x1200x32k" \
+#  "1280x1024x64k" "Frame buffer console, 1280x1024x64k" \
+#  "1600x1200x64k" "Frame buffer console, 1600x1200x64k" \
+#  "640x480x16m" "Frame buffer console, 640x480x16.8m" \
+#  "800x600x16m" "Frame buffer console, 800x600x16.8m" \
+#  "1024x768x16m" "Frame buffer console, 1024x768x16.8m" \
+#  "1280x1024x16m" "Frame buffer console, 1280x1024x16.8m" \
+#  "1600x1200x16m" "Frame buffer console, 1600x1200x16.8m"
+  CONSOLETYPE="`cat $TMP/reply`"
+  if [ "$CONSOLETYPE" = "standard" ]; then
+    CONSOLENUM=normal
+  elif [ "$CONSOLETYPE" = "1600x1200x16m" ]; then
+    CONSOLENUM=799
+  elif [ "$CONSOLETYPE" = "1600x1200x64k" ]; then
+    CONSOLENUM=798
+  elif [ "$CONSOLETYPE" = "1600x1200x32k" ]; then
+    CONSOLENUM=797
+  elif [ "$CONSOLETYPE" = "1600x1200x256" ]; then
+    CONSOLENUM=796
+  elif [ "$CONSOLETYPE" = "1280x1024x16m" ]; then
+    CONSOLENUM=795
+  elif [ "$CONSOLETYPE" = "1280x1024x64k" ]; then
+    CONSOLENUM=794
+  elif [ "$CONSOLETYPE" = "1280x1024x32k" ]; then
+    CONSOLENUM=793
+  elif [ "$CONSOLETYPE" = "1280x1024x256" ]; then
+    CONSOLENUM=775
+  elif [ "$CONSOLETYPE" = "1024x768x16m" ]; then
+    CONSOLENUM=792
+  elif [ "$CONSOLETYPE" = "1024x768x64k" ]; then
+    CONSOLENUM=791
+  elif [ "$CONSOLETYPE" = "1024x768x32k" ]; then
+    CONSOLENUM=790
+  elif [ "$CONSOLETYPE" = "1024x768x256" ]; then
+    CONSOLENUM=773
+  elif [ "$CONSOLETYPE" = "800x600x16m" ]; then
+    CONSOLENUM=789
+  elif [ "$CONSOLETYPE" = "800x600x64k" ]; then
+    CONSOLENUM=788
+  elif [ "$CONSOLETYPE" = "800x600x32k" ]; then
+    CONSOLENUM=787
+  elif [ "$CONSOLETYPE" = "800x600x256" ]; then
+    CONSOLENUM=771
+  elif [ "$CONSOLETYPE" = "640x480x16m" ]; then
+    CONSOLENUM=786
+  elif [ "$CONSOLETYPE" = "640x480x64k" ]; then
+    CONSOLENUM=785
+  elif [ "$CONSOLETYPE" = "640x480x32k" ]; then
+    CONSOLENUM=784
+  elif [ "$CONSOLETYPE" = "640x480x256" ]; then
+    CONSOLENUM=769
+  fi
+fi
+}
+
+chroot_umount() {
+if [ "$CHROOT" = "YES" ]; then
+  umount /proc
+fi
+}
+
+create_devices() {
+      fdisk -l >$TMP/DEV 2>$TMP/null
+}
+
+hd_mbr() {
+      mbr_dev="`echo $TMP/DEV | awk '/^Disk \/dev\// { print $1 }' | head -n1 | cut -d: -f1`"
+      mbr_dev2="`echo $TMP/DEV | awk '/^Disk \/dev\// { print $1 }' | tail -n1 | cut -d: -f1`"
+
+if [ -z "$mbr_dev" ]; then
+         $DIALOG --title "ERROR" --msgbox \
+        "I can't find a device to install GRUB to!" 5 60
+         umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+         rm -rf $TMP
+         chroot_umount
+         exit
+elif [ $mbr_dev2 = $mbr_dev ]; then
+mbr_grub_dev=hd0
+if ! probe $mbr_dev; then
+         $DIALOG --title "ERROR" --msgbox \
+        "I can't find the device '$mbr_dev', so I can't install GRUB!" 5 68
+         umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+         rm -rf $TMP
+         chroot_umount
+         exit
+fi
+else
+while :
+do
+cat << EOF >$TMP/tmpmsg
+Usually GRUB is installed to the MBR of the primary
+hard drive, in your case '$mbr_dev'.
+
+If you have more than one hard drive and want GRUB installed
+to the MBR of another hard drive, put the device below, or
+leave the box blank for '$mbr_dev'.
+EOF
+ 
+    $DIALOG --title "HARD DRIVE MBR" --inputbox "`cat $TMP/tmpmsg`" 14 68 2> $TMP/mbr_dev
+    if [ ! $? = 0 ]; then
+      umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+      rm -rf $TMP
+      chroot_umount
+      echo
+      echo "Cancelled!"
+      exit
+    fi
+    
+     MBR_DEV="`cat $TMP/mbr_dev`"
+
+     if [ -n "$MBR_DEV" ]; then
+         old_mbr_dev=$mbr_dev
+         mbr_dev=$MBR_DEV
+     fi	 
+     
+     if probe $mbr_dev; then
+         break;
+     else
+         $DIALOG --title "ERROR" --msgbox \
+        "I can't find the device '$mbr_dev'." 5 45
+         mbr_dev=$old_mbr_dev
+         continue;
+     fi
+done
+NUM=0
+grep "^Disk /dev/" $TMP/DEV | cut -d ' ' -f 2 | cut -b 1-8 | while read dev; do
+echo "hd$NUM" >$TMP/mbr_grub_dev
+if [ "$dev" = "$mbr_dev" ]; then
+break
+fi
+NUM=$(( $NUM + 1 ))
+done
+mbr_grub_dev="`cat $TMP/mbr_grub_dev`"
+fi
+}
+
+get_root_dev() {
+NUM=0
+grep "^Disk /dev/" $TMP/DEV | cut -d ' ' -f 2 | cut -b 1-8 | while read dev; do
+echo "hd$NUM" >$TMP/hd_grub
+dev2="`echo $1 | cut -b 1-8`"
+if [ "$dev" = "$dev2" ]; then
+break
+fi
+NUM=$(( $NUM + 1 ))
+done
+hd="`cat $TMP/hd_grub`"
+}
+
+other() {
+ D=`echo "$@" | cut -d ' ' -f 1`
+ get_root_dev $D
+ 
+if echo "$@" | grep -q HURD ; then
+grub --no-floppy --batch << EOF 1>$TMP/find_file 2>$TMP/null
+find ($hd,$p2)/boot/gnumach.gz
+quit
+EOF
+if grep -q "($hd,$p2)" $TMP/find_file ; then
+OTHER="root ($hd,$p2)
+  kernel /boot/gnumach.gz root=device:$hd"s"$p1
+  module /hurd/ext2fs.static --multiboot-command-line=\${kernel-command-line} --host-priv-port=\${host-port} --device-master-port=\${device-port} --exec-server-task=\${exec-task} -T typed \${root} \$(task-create) \$(task-resume)
+  module /lib/ld.so.1 /hurd/exec \$(exec-task=task-create)"
+echo "GNU/Hurd on ($DOSP)" > $TMP/label
+else
+OTHER="rootnoverify ($hd,$p2)
+  makeactive
+  chainloader --force +1"
+echo "SCO Unixware on ($DOSP)" > $TMP/label
+fi
+elif echo "$@" | grep -q BSD ; then
+if echo "$@" | grep -q FreeBSD ; then
+OTHER="root ($hd,$p2,a)
+  kernel /boot/loader"
+else  
+OTHER="rootnoverify ($hd,$p2)
+  chainloader +1"
+fi
+elif echo "$@" | grep -q QNX ; then
+OTHER="map (hd0) ($hd)
+  map ($hd) (hd0)
+  rootnoverify ($hd,$p2)
+  chainloader +4"
+elif echo "$@" | grep -q -E "Plan 9|BeOS|Minix" ; then
+OTHER="rootnoverify ($hd,$p2)
+  chainloader +1"
+elif [ ! "$hd" = "hd0" ]; then
+if [ "$p2" = "0" ]; then
+OTHER="map (hd0) ($hd)
+  map ($hd) (hd0)
+  rootnoverify ($hd,$p2)
+  makeactive
+  chainloader +1"
+else
+OTHER="map (hd0) ($hd)
+  map ($hd) (hd0)
+  map (hd0,0) ($hd,$p2)
+  map ($hd,$p2) (hd0,0)
+  rootnoverify ($hd,$p2)
+  makeactive
+  chainloader +1"
+fi
+else
+if [ "$p2" = "0" ]; then
+OTHER="rootnoverify (hd0,$p2)
+  makeactive
+  chainloader +1"
+else
+OTHER="map (hd0,0) (hd0,$p2)
+  map (hd0,$p2) (hd0,0)
+  rootnoverify (hd0,$p2)
+  makeactive
+  chainloader +1"
+fi
+fi
+}
+
+# This function scans for bootable partitions (making some assumptions along
+# the way which may or may not be correct, but usually work), and sets up
+# GRUB in either the superblock, or the MBR.
+simplegrub()
+{
+ if grep -q "OS/2 Boot Manager" $TMP/DEV 2> $TMP/null ; then
+  $DIALOG --title "OS/2 BOOT MANAGER FOUND" --yesno \
+  "Your system appears to have Boot Manager, a boot menu system provided \
+with OS/2 and Partition Magic.  If you like, we can install a very simple \
+GRUB boot block at the start of your Linux partition.  Then, you can \
+add the partition to the Boot Manager menu, and you'll be able to use \
+Boot Manager to boot Linux.  Would you like to install GRUB in a Boot \
+Manager compatible way?" 11 65
+  if [ $? = 0 ]; then
+    TG=Root
+    skip=yes
+  fi
+fi
+
+if [ ! "$skip" = "yes" ]; then
+ $DIALOG --title "SELECT GRUB DESTINATION" --menu \
+"GRUB can be installed to a variety of places:\n\
+\n\
+  1. The superblock of a Linux partition '$ROOT_DEVICE',\n\
+     (which could be made the bootable partition with DOS or\n\
+     Linux fdisk, or booted with a Boot Manager like OS/2 etc.)\n\
+  2. A formatted floppy disk.\n\
+  3. The Master Boot Record of a hard drive.\n\
+\n\
+Options 1 and 2 are the safest, but option 1 does require a little\n\
+extra work later (setting the partition bootable with fdisk).\n\
+Which option would you like?" \
+ 20 72 3 \
+ "Root" "Install to superblock of Linux partition" \
+ "Floppy" "Install to a formatted floppy in /dev/fd0 (A:)" \
+ "MBR" "Install to Master Boot Record (possibly unsafe)" \
+ 2> $TMP/reply
+ if [ ! $? = 0 ]; then
+   chroot_umount
+   exit
+ fi
+ TG="`cat $TMP/reply`"
+fi
+ 
+ if [ "$TG" = "MBR" ]; then
+  hd_mbr
+  MBR=YES
+ elif [ "$TG" = "Root" ]; then
+  MBR=NO
+ elif [ "$TG" = "Floppy" ]; then
+  GRUB_TARGET="/dev/fd0"
+  MBR=NO
+ fi
+
+    $DIALOG --title "Working..." --infobox \
+    "Creating /boot/grub/$grub_config file on $ROOT_DEVICE..." 3 60
+     sleep 3
+
+ # Search for Linux partitions:
+ grep "83  Linux" $TMP/DEV | while read PART ; do 
+ if [ ! "$PART" = "" ]; then
+  LNXP="`echo $PART | cut -f 1 -d ' '`"
+  p1=`echo $LNXP | cut -b9-`
+  p2=$(( $p1 - 1 ))
+
+  get_root_dev $LNXP
+
+  KERNEL="kernel /dyne/linux root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=$CONSOLENUM"
+
+  title="dyne:bolic GNU/Linux"
+
+  num="`echo $LNXP | cut -b8-`" 
+
+  cat << EOF > $TMP/part.$num.sort
+# Linux bootable partition config begins
+  title $title
+  root ($hd,$p2)
+  $KERNEL
+  initrd /dyne/initrd.gz
+# Linux bootable partition config ends
+EOF
+ fi
+done
+
+ # OK, now let's look for DOS/WIN/OS2/BSD/HURD partitions:
+grep "^/dev/" $TMP/DEV | grep -E "DOS|Win95|W95|FAT|BSD|NTFS|HURD|QNX|Minix|Plan|BeOS" | \
+grep -v "Ext'd" | grep -v "Extend" | grep -v -i "swap" | while read PART ; do
+  if [ ! "$PART" = "" ]; then
+  DOSP="`echo $PART | cut -f 1 -d ' '`"
+  p1=`echo $DOSP | cut -b9-`
+  p2=$(( $p1 - 1 ))
+  if echo $PART | grep -q -E "Win95|W95|NTFS" ; then
+  LABEL="Windows on ($DOSP)"
+  elif echo $PART | grep -q -E "DOS|FAT" ; then
+  LABEL="DOS on ($DOSP)"
+  elif echo $PART | grep -q "FreeBSD" ; then
+  LABEL="FreeBSD on ($DOSP)"
+  elif echo $PART | grep -q "OpenBSD" ; then
+  LABEL="OpenBSD on ($DOSP)"
+  elif echo $PART | grep -q "NetBSD" ; then
+  LABEL="NetBSD on ($DOSP)"
+  elif echo $PART | grep -q "BSD" ; then
+  LABEL="BSD on ($DOSP)"
+  elif echo $PART | grep -q "Minix" ; then
+  LABEL="Minix on ($DOSP)"
+  elif echo $PART | grep -q "QNX" ; then
+  LABEL="QNX on ($DOSP)"
+  elif echo $PART | grep -q "BeOS" ; then
+  LABEL="BeOS on ($DOSP)"
+  elif echo $PART | grep -q "Plan 9" ; then
+  LABEL="Plan 9 on ($DOSP)"
+  fi
+
+  other $PART
+
+  if echo $PART | grep -q "HURD" ; then
+  LABEL="`cat $TMP/label`"
+  fi
+
+  num="`echo $DOSP | cut -b8-`" 
+
+  cat << EOF > $TMP/part.$num.sort
+# Other bootable partition config begins
+  title $LABEL
+  $OTHER
+# Other bootable partition config ends
+EOF
+fi
+done
+ # Done, now we must install GRUB:
+ chmod 644 $BOOT/grub/$grub_config
+ message=yes
+ installcolor;
+ umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+ rm -rf $TMP
+}
+
+find_kernel() {
+  KERNEL="kernel /dyne/linux root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=$CONSOLENUM"
+
+cat << EOF > $TMP/tmpmsg
+`echo "   Device Boot      Start         End      Blocks   Id  System"`
+`grep "^$PART" $TMP/fdisk.list`
+
+`echo $KERNEL | cut -d ' ' -f 2-`
+
+Do you want to pass any other options to the above kernel?
+For example: hdd=scsi
+
+Put then on one line one after the other or leave box blank.
+EOF
+
+    $DIALOG --title "KERNEL OPTIONS" --cr-wrap --inputbox "`cat $TMP/tmpmsg`" 0 0 2> $TMP/reply
+    APPEND="`cat $TMP/reply`"
+}
+
+install_grub()
+{
+NUM=0
+grep "^Disk /dev/" $TMP/DEV | cut -d ' ' -f 2 | cut -b 1-8 | while read dev; do
+echo "hd$NUM" >$TMP/root_dev
+dev2="`echo $ROOT_DEVICE | cut -b 1-8`"
+if [ "$dev" = "$dev2" ]; then
+break
+fi
+NUM=$(( $NUM + 1 ))
+done
+root_dev="`cat $TMP/root_dev`"
+
+     p1=`echo $ROOT_DEVICE | cut -b 9-`
+     p2=$(( $p1 - 1 ))
+
+rm -f $TMP/grub.conf
+for f in `ls $TMP/part.*.sort`
+do
+cat $f >> $TMP/grub.conf
+done
+
+cat << EOF >> $TMP/grub.conf
+title --- For help press 'c', type: 'help'
+root (hd0)
+title --- For usage examples, type: 'cat /boot/grub/grub.txt'
+root (hd0)
+EOF
+
+cat << EOF > $BOOT/grub/grub.txt
+=======================================================================
+This is an example of how to use the GRUB edit function.
+
+Highlight the menu entry you want to edit and press 'e', then
+highlight the line you want to edit and press 'e'. Add what
+you want to the line 'acpi=off' etc. and press enter, then
+'b' to boot.
+
+Examples of the difference between Linux and GRUB device names.
+
+Linux IDE:	GRUB IDE:	Linux SCSI:	GRUB SCSI:
+/dev/hda1       (hd0,0)		/dev/sda1       (hd0,0)
+/dev/hda2       (hd0,1)		/dev/sda2       (hd0,1)
+/dev/hda3       (hd0,2)		/dev/sda3       (hd0,2)
+/dev/hda4       (hd0,3)		/dev/sda4       (hd0,3)
+/dev/hdb1       (hd1,0)		/dev/sdb1       (hd1,0)
+/dev/hdb2       (hd1,1)		/dev/sdb2       (hd1,1)
+/dev/hdb3       (hd1,2)		/dev/sdb3       (hd1,2)
+/dev/hdb4       (hd1,3)		/dev/sdb4       (hd1,3)
+
+These are some examples of how to use GRUB from the command prompt.
+
+Press the 'c' key for the command prompt.
+
+If you want to boot a Linux system on a partition, using its kernel
+/boot/vmlinuz etc., do this.
+
+grub> root (hd0,1)
+grub> kernel /boot/vmlinuz root=/dev/hda2 ro
+grub> boot
+
+You could do this to find what partition the kernel is on.
+
+For example, show me what partitions have /boot/vmlinuz.
+
+grub> find /boot/vmlinuz
+(hd0,1)
+(hd0,2)
+
+If you want to boot a Windows partition, do this.
+
+For example, boot partition on /dev/hda1.
+
+grub> rootnoverify (hd0,0)
+grub> makeactive
+grub> chainloader +1
+grub> boot
+
+If you want to boot a FreeBSD partition, using /boot/loader.
+
+For example, boot FreeBSD partition on /dev/hda4.
+
+grub> root (hd0,3,a)
+grub> kernel /boot/loader
+grub> boot
+
+If that doesn't work, try this.
+
+grub> rootnoverify (hd0,3,a)
+grub> chainloader +1
+grub> boot
+==============================================================
+
+Press the [Esc] key to return to the GRUB menu.
+EOF
+
+sync
+
+if [ "$MBR" = "NO" ]; then
+if [ "$GRUB_TARGET" = "/dev/fd0" ]; then
+rm -f $BOOT/grub/device.map
+grub --device-map=$BOOT/grub/device.map --batch << EOF 1>$TMP/error 2>$TMP/null
+root ($root_dev,$p2)
+setup (fd0)
+quit
+EOF
+SUCCESS=0
+grep -q Error $TMP/error && SUCCESS=1
+installed="installed on the floppy disk"
+else
+rm -f $BOOT/grub/device.map
+grub --device-map=$BOOT/grub/device.map --no-floppy --batch << EOF 1>$TMP/error 2>$TMP/null
+root ($root_dev,$p2)
+setup ($root_dev,$p2)
+quit
+EOF
+SUCCESS=0
+grep -q Error $TMP/error && SUCCESS=1
+installed="installed on the Linux partition $ROOT_DEVICE"
+fi
+else
+dd if=$mbr_dev of=$BOOT/grub/mbr.`echo $mbr_dev | cut -b 6-8`.$$ bs=512 count=1 >$TMP/null 2>&1 && \
+backup_mbr=$BOOT/grub/mbr.`echo $mbr_dev | cut -b 6-8`.$$
+rm -f $BOOT/grub/device.map
+grub --device-map=$BOOT/grub/device.map --no-floppy --batch << EOF 1>$TMP/error 2>$TMP/null
+root ($root_dev,$p2)
+setup ($mbr_grub_dev)
+quit
+EOF
+SUCCESS=0
+grep -q Error $TMP/error && SUCCESS=1
+installed="installed on the MBR of $mbr_dev"
+fi  
+
+     if [ -r $BOOT/grub/$grub_config ]; then
+          mv $BOOT/grub/$grub_config $BOOT/grub/$grub_config.old.$$
+     fi
+
+if [ ! "$backup_mbr" = "" ]; then
+mbr_backup=`basename $backup_mbr` 
+ cat << EOF > $BOOT/grub/$grub_config
+# GRUB configuration file $grub_config
+# generated by grubconfig on dyne:bolic `date +%c 2>$TMP/null`
+#
+# for documentation about this bootloader see:
+# http://www.gnu.org/software/grub/manual/
+#
+# The backup copy of the MBR for drive '$mbr_dev' is in $mbr_backup
+# You can restore it like this:
+# dd if=$mbr_backup of=$mbr_dev bs=512 count=1
+#
+# Start GRUB global section
+timeout 30
+color light-gray/blue black/light-gray
+# End GRUB global section
+EOF
+else
+ cat << EOF > $BOOT/grub/$grub_config
+# GRUB configuration file $grub_config
+# generated by grubconfig on dyne:bolic `date +%c 2>$TMP/null`
+#
+# for documentation about this bootloader see:
+# http://www.gnu.org/software/grub/manual/
+#
+# Start GRUB global section
+timeout 30
+color light-gray/blue black/light-gray
+# End GRUB global section
+EOF
+fi
+cat $TMP/grub.conf >> $BOOT/grub/$grub_config
+chmod 644 $BOOT/grub/$grub_config
+}
+
+installcolor()
+{
+if [ "$GRUB_TARGET" = "/dev/fd0" ]; then
+while :
+do
+     $DIALOG --title "FLOPPY DISK" --menu \
+"The floppy should be formatted. \n\
+Put the floppy in the drive and press enter." 10 55 2 \
+ "Ready" "The floppy is already formatted" \
+ "Format" "Format the floppy" 2> $TMP/reply
+      if [ ! $? = 0 ]; then
+        chroot_umount
+        exit
+      elif ! (dd if=/dev/fd0 of=$TMP/null bs=1 count=1 1>$TMP/null 2>$TMP/null) ; then
+        continue
+      fi
+      REPLY="`cat $TMP/reply`"
+      if [ "$REPLY" = "Format" ]; then
+      [ -b /dev/fd0h1440 ] && fd=/dev/fd0h1440
+      [ -b /dev/fd0H1440 ] && fd=/dev/fd0H1440
+      [ -b /dev/fd0u1440 ] && fd=/dev/fd0u1440
+      if [ -x "`type -path fdformat`" ]; then
+        $DIALOG --title "Formatting floppy..." --infobox \
+        "fdformat -n $fd" 3 35
+        fdformat -n $fd || continue
+      elif [ -x "`type -path superformat`" ]; then
+        $DIALOG --title "Formatting floppy..." --infobox \
+        "superformat -f $fd" 3 35
+        superformat -f $fd || continue
+      else
+         $DIALOG --title "ERROR" --msgbox \
+        "Can't find 'fdformat' or 'superformat' to format floppy." 5 65
+         continue
+      fi
+      fi
+        break
+done
+fi
+
+   $DIALOG --infobox "\nInstalling the GRUB Bootloader..." 5 40
+   sleep 2 
+ 
+   if [ ! "$KILL" = "NO" ]; then
+     if [ -r /proc/sys/kernel/printk ]; then
+        echo 3 >/proc/sys/kernel/printk
+     else
+        killall klogd 2>$TMP/null
+        sleep 1
+        klogd -c 3 2>$TMP/null
+     fi
+   fi
+   
+   install_grub
+ 
+ if [ ! "$SUCCESS" = "0" ]; then # some GRUB error occured
+  if [ ! "$backup_mbr" = "" -a ! "$mbr_dev" = "" ]; then
+  if [ -s "$backup_mbr" ]; then
+  if dd if=$mbr_dev bs=512 count=1 | grep -q GRUB ; then
+     dd if=$backup_mbr of=$mbr_dev bs=512 count=1 >$TMP/null 2>&1
+  fi
+  fi
+  fi
+cat $TMP/error >$TMP/tmpmsg
+cat << EOF >>$TMP/tmpmsg
+-----------------------------------------------------------------------
+Sorry, but the attempt to install GRUB has returned an error, so GRUB
+has not been correctly installed.  You'll have to use a bootdisk to
+start your machine instead.  It may be possible to get GRUB working by
+editing the /boot/grub/$grub_config file and reinstalling GRUB manually.
+See the GRUB man page and info documentation in /usr/info for more help.
+-----------------------------------------------------------------------
+EOF
+  $DIALOG --title "GRUB INSTALL ERROR" --msgbox "`cat $TMP/tmpmsg`" 0 0
+ else
+  if [ "$message" = "yes" ]; then
+cat << EOF >$TMP/tmpmsg
+
+GRUB was successfully $installed.
+
+You should check and edit the '/boot/grub/$grub_config'
+file on '$ROOT_DEVICE', if needed.
+
+You can now reboot your computer without the CD inserted
+and boot into dyne:bolic.
+
+EOF
+   $DIALOG --title "GRUB INSTALL SUCCESS" --msgbox "`cat $TMP/tmpmsg`" 12 70
+  else
+   $DIALOG --title "GRUB INSTALL SUCCESS" --msgbox \
+   "GRUB was successfully $installed." 5 70
+  fi
+ fi
+}
+
+# 'probe()' borrowed from GRUB QuickInst.
+probe()
+{
+ [ ! -z "`dd if=$1 bs=1 count=1 2>$TMP/null | tr '\0' x`" ]
+ return
+}
+
+   DIALOG=`type -path dialog`
+   if [ ! -x "$DIALOG" ]; then
+     echo "This script requires the 'dialog' program to run."
+     chroot_umount
+     exit 1
+   fi
+
+ if [ ! `whoami` = "root" ]; then
+     $DIALOG --title "NOT ROOT" --msgbox \
+     "You need to be 'root' to run this script." 5 50
+     chroot_umount
+     exit
+ fi
+
+ if [ ! -x "`type -path grub`" ]; then
+     $DIALOG --title "CAN'T FIND GRUB" --msgbox \
+     "I can't find 'grub' on the system." 5 40
+     chroot_umount
+     exit
+ fi
+
+# detect existing /boot directories
+for p in `cat /boot/volumes | awk '/^hdisk/ { print $3 }'`; do
+  if [ -r ${p}/boot ]; then
+    BOOT=${p}/boot
+    break
+  fi
+done
+# or create one in current dock
+if [ -z $BOOT ]; then
+  BOOT=${DYNE_SYS_MNT}/boot
+fi
+
+ if grep -q $BOOT/grub/grub.conf 2>$TMP/null `type -path grub` ; then
+    grub_config=grub.conf
+ else
+    grub_config=menu.lst
+ fi
+
+root_device() {
+# Determine the root partition (such as /dev/hda2)
+  ROOT_DEVICE="$DYNE_SYS_DEV"
+ 
+    if [ -n "$ROOT_DEVICE" ]; then
+cat << EOF > $TMP/tmpmsg
+Where do you want the GRUB files to go?
+
+The default is to put them in /boot/grub on the current
+partition '$ROOT_DEVICE'.  To accept this default, leave
+the line below unchanged and hit ENTER (this should be
+fine for most users).  If (for some reason) you want to
+use a different partition, change it on the line below
+and hit ENTER.
+EOF
+else
+cat << EOF > $TMP/tmpmsg
+Where do you want the GRUB files to go?
+
+Usually they are put in the /boot directory.
+What partition has the /boot directory you want to use?
+Put the partition (/dev/hda2 etc.) in the box below:
+EOF
+    fi
+
+while :
+do
+
+    $DIALOG --title "SELECT GRUB PARTITION" --inputbox "`cat $TMP/tmpmsg`" 0 0 "$ROOT_DEVICE" 2> $TMP/root_device
+    if [ ! $? = 0 ]; then
+      umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+      rm -rf $TMP
+      chroot_umount
+      exit
+    fi    
+      ROOT_DEV=`cat $TMP/root_device`
+
+     if [ "$ROOT_DEVICE" = "" -a "$ROOT_DEV" = "" ]; then
+       continue
+     fi
+
+     if [ "$ROOT_DEVICE" = "$ROOT_DEV" ]; then
+       break
+     fi
+    
+       if [ ! "$ROOT_DEV" = "" ]; then
+         ROOT_DEVICE=`cat $TMP/root_device`
+       fi
+    
+        if ! grep "^$ROOT_DEVICE" $TMP/DEV | grep -q "83  Linux" ; then
+	  $DIALOG --title "ERROR" --msgbox \
+          "The partition '$ROOT_DEVICE' is not Linux." 5 55
+	  continue
+        fi
+       
+       if mount 2>$TMP/null | grep -q "^$ROOT_DEVICE" 2>$TMP/null ; then
+           BOOT="`mount 2>$TMP/null | grep $ROOT_DEVICE | cut -d ' ' -f 3`/boot"
+         if echo "fooboo" > $BOOT/fooboo 2>$TMP/null ; then
+ 	   rm -f $BOOT/fooboo
+         else
+ 	   $DIALOG --title "ERROR" --msgbox \
+           "The partition '$ROOT_DEVICE' is mounted read-only, \
+           either unmount it or mount it read-write." 6 55
+           rm -rf $TMP
+           chroot_umount
+	   exit
+	 fi
+           break
+       else
+       umount $BOOT_TMP 2>$TMP/null
+       mkdir -p $BOOT_TMP
+       mount -o rw $ROOT_DEVICE $BOOT_TMP 1>$TMP/null 2>$TMP/error
+       if [ ! $? = 0 ]; then
+       echo "" >> $TMP/error
+       echo "I couldn't mount '$ROOT_DEVICE' read-write!" >> $TMP/error
+       $DIALOG --title "MOUNT ERROR" --textbox "$TMP/error" 0 0
+       umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+       rm -rf $TMP
+       chroot_umount
+       exit
+       fi
+       BOOT=$BOOT_TMP/boot
+       break
+       fi
+ done
+
+    $DIALOG --title "" --infobox "Working..." 3 20
+    sleep 1
+    
+ fs=`mount | grep "^$ROOT_DEVICE" | awk '{print $5}'`
+ [ "$fs" = "ext2" -o "$fs" = "ext3" ] && fs=e2fs
+ [ "$fs" = "msdos" ] && fs=fat
+ [ "$fs" = "vfat" ] && fs=fat
+ 
+ if [ -d /usr/share/grub -o -d /usr/lib/grub -o -d /usr/local/share/grub ]; then
+   mkdir -p $BOOT/grub
+ if [ -d /usr/share/grub ]; then
+   cp -p /usr/share/grub/*/*stage* $BOOT/grub 2>$TMP/null
+ elif [ -d /usr/local/share/grub ]; then
+   cp -p /usr/local/share/grub/*/*stage* $BOOT/grub 2>$TMP/null
+ elif [ -d /usr/lib/grub ]; then
+   cp -p /usr/lib/grub/*/*stage* $BOOT/grub 2>$TMP/null
+ fi
+ 
+ for f in stage1 stage2 $fs"_stage1_5"
+ do
+ if [ ! -f $BOOT/grub/$f ]; then
+ echo "ERROR: Can't find '$f' from the grub package."
+ echo "If you have the grub package installed, you should have a"
+ echo "/usr/lib/grub, /usr/share/grub, or /usr/local/share/grub"
+ echo "directory, containing the stage files."
+ chroot_umount
+ exit 1
+ fi 
+ done
+ else
+ echo "ERROR: Can't find stage files from the grub package."
+ echo "If you have the grub package installed, you should have a"
+ echo "/usr/lib/grub, /usr/share/grub, or /usr/local/share/grub"
+ echo "directory, containing the stage files."
+ chroot_umount
+ exit 1
+ fi
+}
+
+HDR="no" # this means the header section of /boot/grub/menu.lst has not yet
+         # been configured
+LNX="no" # this means no Linux partition has been defined as bootable
+         # through GRUB. Both of these must change to "yes" before GRUB will
+         # install from this script.
+ 
+ # OK, now let's see if we should automate things:
+ $DIALOG --title "GRUBCONFIG v1.28 Kent Robotti <robotti@godmail.com>" --menu \
+ "GRUB is a generic bootloader.  There's a simple installation which tries\
+ to automatically set up GRUB to boot Linux (also DOS, Windows, BSD, HURD,\
+ QNX, PLAN9, BEOS, Minix, and OS/2 if found).  For more advanced users, the expert\
+ option offers more control over the installation process." 13 67 2 \
+ "simple" "Try to install GRUB automatically" \
+ "expert" "Use expert GRUB setup menu" 2> $TMP/reply
+ if [ ! $? = 0 ]; then
+  rm -rf $TMP
+  chroot_umount
+  echo
+  exit
+ fi
+
+  REPLY="`cat $TMP/reply`"
+
+  if [ ! -r /proc/partitions ]; then
+    CHROOT=YES
+    mkdir -p /proc
+    mount -t proc proc /proc
+  fi
+
+ if [ "$REPLY" = "simple" ]; then
+  # Do simple GRUB setup
+   use_framebuffer
+   $DIALOG --title "" --infobox "Working..." 3 20
+   sleep 1
+   create_devices
+   root_device
+     if [ -r /proc/sys/kernel/printk ]; then
+        echo 3 >/proc/sys/kernel/printk
+        KILL=NO
+     else
+        killall klogd 2>$TMP/null
+        sleep 1
+        klogd -c 3 2>$TMP/null
+        KILL=NO
+     fi
+   simplegrub
+   umount $BOOT_TMP 2>$TMP/null
+   rm -rf $TMP $BOOT_TMP
+   chroot_umount
+   exit
+ fi
+ # drop through to last option: (use the expert menus)
+ while [ 0 ]; do
+  $DIALOG --title "EXPERT GRUB INSTALLATION" --menu \
+"This menu directs the creation of the GRUB config file. \
+To install, you make a new GRUB configuration file by creating a new header \
+and then adding one or more bootable partitions to the file. Once you've done \
+this, you can select the install option. If you make \
+a mistake, you can always start over by choosing 'Begin'. \
+Which option would you like?" 18 76 7 \
+"Begin" "Start GRUB configuration with a new GRUB header" \
+"Linux" "Add Linux partition to GRUB config file" \
+"Other" "Add DOS/WIN/BSD/OS2/HURD partition to GRUB config file" \
+"Install" "Install GRUB" \
+"Skip" "Skip GRUB installation or exit this menu" \
+"View" "View your current /boot/grub/$grub_config" \
+"Help" "Read the GRUB Bootloader HELP file" 2> $TMP/reply
+  if [ ! $? = 0 ]; then
+   REPLY="Skip"
+  else
+   REPLY="`cat $TMP/reply`"
+  fi
+  if [ "$REPLY" = "Begin" ]; then
+    use_framebuffer
+
+    $DIALOG --title "" --infobox "Working..." 3 20
+    sleep 1
+
+    create_devices
+
+   $DIALOG --title "SELECT GRUB TARGET LOCATION" --menu "GRUB can be installed \
+to a variety of places: the master boot record of a hard drive, \
+the superblock of a Linux partition (which could be made \
+active with fdisk, or booted with a boot manager), or a formatted floppy disk, \
+If you're using a boot system such as OS/2's Boot Manager, you should use \
+the "Root" selection. Please pick a target location:" 15 68 3 \
+"Root" "Use superblock of Linux partition" \
+"Floppy" "Use a formatted floppy disk in the boot drive" \
+"MBR" "Use the Master Boot Record (possibly unsafe)" \
+2> $TMP/reply
+   if [ $? = 1 -o $? = 255 ]; then
+    HDR="no"
+    continue;
+   else
+    LNX="no"
+    TG="`cat $TMP/reply`"
+   fi
+   if [ "$TG" = "MBR" ]; then
+    hd_mbr
+    MBR=YES
+   elif [ "$TG" = "Root" ]; then
+    MBR=NO
+   elif [ "$TG" = "Floppy" ]; then
+    GRUB_TARGET="/dev/fd0"    
+    MBR=NO
+   else
+    HDR="no"
+    continue;
+   fi
+    HDR="yes"
+    root_device
+  elif [ "$REPLY" = "Linux" ]; then
+   if [ "$HDR" = "yes" ]; then
+echo "Press the [Space] key to untag any you don't want to include." > $TMP/tmpmsg1
+echo "Device Boot Start End Blocks Id System" >> $TMP/tmpmsg1
+grep "^/dev/" $TMP/DEV | grep "83  Linux" | grep -v "Ext'd" | grep -v "Extend" > $TMP/tmpmsg2
+
+if [ -s $TMP/tmpmsg2 ]; then
+echo '$DIALOG --title "POSSIBLE LINUX PARTITIONS" --cr-wrap --checklist "`cat $TMP/tmpmsg1`" 0 0 0 \' > $TMP/tmpmsg3
+cat $TMP/tmpmsg2 | sed "/^$/d" | while read device ; do
+device_name="`echo "$device" | awk '{print $1}'`"
+device_info="`echo "$device" | awk '{print $2,$3,$4,$5,$6,$7}' | sed "s/\//-/g" | sed "s/ $//g"`"
+echo "$device_name" | sed "/^$/d" | sed -e 's/.*/"&" '"'$device_info'"' on \\/' >> $TMP/tmpmsg3
+done
+echo "2> $TMP/parts" >> $TMP/tmpmsg3
+
+    . $TMP/tmpmsg3
+    if [ $? = 1 -o $? = 255 ]; then
+     rm -f $TMP/tmpmsg*
+     continue
+    else
+     cat $TMP/tmpmsg2 > $TMP/fdisk.list
+     rm -f $TMP/tmpmsg*
+    fi
+else
+      $DIALOG --title "" --msgbox \
+     "No Linux partitions found!" 5 35
+      continue
+fi
+    
+    if [ -s $TMP/parts ]; then
+      cat $TMP/parts | sed "s/\"//g" | sed "/^$/d" > $TMP/parts.a
+    else
+      $DIALOG --title "" --msgbox \
+     "No Linux partitions chosen!" 5 35
+      continue
+    fi
+        
+    for PART in `cat $TMP/parts.a` ; do
+
+cat << EOF > $TMP/tmpmsg
+`echo "   Device Boot      Start         End      Blocks   Id  System"`
+`grep "^$PART" $TMP/fdisk.list`
+
+Now you must select a name for the above partition.
+You'll use this name to specify a partition to boot from
+the GRUB menu.  Something like 'Slackware Linux' etc. might
+not be a bad choice.
+
+The default is 'dyne:bolic GNU/Linux'.  Just press ENTER for it.
+(the menu will add 'on ($PART)' for you automatically)
+EOF
+    $DIALOG --title "SELECT PARTITION NAME" --cr-wrap --inputbox "`cat $TMP/tmpmsg`" 0 0 2> $TMP/reply
+    if [ ! $? = 0 ]; then
+     break;
+    fi
+     LABEL="`cat $TMP/reply`"
+    if [ "$LABEL" = "" ]; then
+     LABEL="dyne:bolic GNU/Linux"
+    fi    
+    
+  p1=`echo $PART | cut -b 9-`
+  p2=$(( $p1 - 1 ))
+
+  find_kernel
+  get_root_dev $PART
+
+  num="`echo $PART | cut -b8-`" 
+
+  cat << EOF > $TMP/part.$num.sort
+# Linux bootable partition config begins
+  title $LABEL
+  root ($hd,$p2)
+  $KERNEL $APPEND
+  initrd /dyne/initrd.gz
+# Linux bootable partition config ends
+EOF
+done
+   else
+    $DIALOG --title "CAN'T ADD LINUX PARTITION" --msgbox "You can't add \
+partitions unless you start over with a new GRUB header." 6 60
+    continue
+   fi
+   LNX="yes"
+  elif [ "$REPLY" = "Other" ]; then
+   if [ "$HDR" = "yes" ]; then
+   rm -f $TMP/parts
+echo "Press the [Space] key to untag any you don't want to include." > $TMP/tmpmsg1
+echo "Device Boot Start End Blocks Id System" >> $TMP/tmpmsg1
+grep "^/dev/" $TMP/DEV | grep -E "DOS|Win95|W95|FAT|NTFS|BSD|HURD|QNX|BeOS|Minix|Plan" | \
+grep -v "Ext'd" | grep -v "Extend" | grep -v -i "swap" > $TMP/tmpmsg2
+
+if [ -s $TMP/tmpmsg2 ]; then
+echo '$DIALOG --title "POSSIBLE DOS/WIN/OS2/BSD etc. PARTITIONS" --cr-wrap --checklist "`cat $TMP/tmpmsg1`" 0 0 0 \' > $TMP/tmpmsg3
+cat $TMP/tmpmsg2 | sed "/^$/d" | while read device ; do
+device_name="`echo "$device" | awk '{print $1}'`"
+device_info="`echo "$device" | awk '{print $2,$3,$4,$5,$6,$7}' | sed "s/\//-/g" | sed "s/ $//g"`"
+echo "$device_name" | sed "/^$/d" | sed -e 's/.*/"&" '"'$device_info'"' on \\/' >> $TMP/tmpmsg3
+done
+echo "2> $TMP/parts" >> $TMP/tmpmsg3
+
+    . $TMP/tmpmsg3
+    if [ ! $? = 0 ]; then
+     rm -f $TMP/tmpmsg*
+     continue
+    else
+     cat $TMP/tmpmsg2 > $TMP/fdisk.list
+    fi
+fi
+
+    if [ ! -s $TMP/tmpmsg2 ]; then
+      $DIALOG --title "" --msgbox \
+     "No Other partitions found!" 5 35
+      rm -f $TMP/tmpmsg*
+      continue
+    elif [ -s $TMP/parts ]; then
+      cat $TMP/parts | sed "s/\"//g" | sed "/^$/d" > $TMP/parts.a
+    else
+      $DIALOG --title "" --msgbox \
+     "No Other partitions chosen!" 5 35
+      rm -f $TMP/tmpmsg*
+      continue
+    fi
+      rm -f $TMP/tmpmsg*
+    
+    for PART in `cat $TMP/parts.a` ; do
+cat << EOF > $TMP/tmpmsg
+`echo "   Device Boot      Start         End      Blocks   Id  System"`
+`grep "^$PART" $TMP/fdisk.list`
+
+Now you must select a name for the above partition.
+You'll use this name to specify a partition to boot from
+the GRUB menu. 'DOS, Win2k, WinXP, FreeBSD, GNU/Hurd,
+etc.' might not be a bad choice.
+EOF
+
+    $DIALOG --title "SELECT PARTITION NAME" --cr-wrap --inputbox "`cat $TMP/tmpmsg`" 0 0 2> $TMP/reply
+    if [ ! $? = 0 ]; then
+     break;
+    fi
+     LABEL="`cat $TMP/reply`"
+    if [ "$LABEL" = "" ]; then
+     LABEL=Unknown
+    fi    
+    p1=`echo $PART | cut -b 9-`
+    p2=$(( $p1 - 1 ))
+
+    part=`grep "^$PART" $TMP/fdisk.list`
+
+    other $part
+
+    num="`echo $PART | cut -b8-`" 
+
+  cat << EOF > $TMP/part.$num.sort
+# Other bootable partition config begins
+  title $LABEL on ($PART)
+  $OTHER
+# Other bootable partition config ends
+EOF
+done
+   else
+    $DIALOG --title "CAN'T ADD OTHER PARTITION" --msgbox "You can't add \
+partitions unless you start over with a new GRUB header." 6 60
+    continue
+   fi
+  elif [ "$REPLY" = "Install" ]; then
+   if [ "$LNX" = "no" ]; then
+    $DIALOG --title "CAN'T INSTALL GRUB" --msgbox "GRUB could not be \
+installed. If you have not created a GRUB configuration file by defining \
+a new header and adding at least one Linux bootable partition to it, you \
+must do so before installing GRUB." 8 70
+    continue
+   else
+       installcolor;
+       umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+       rm -rf $TMP
+   fi
+   rm -f $TMP/tmpmsg
+   break
+  elif [ "$REPLY" = "Skip" ]; then
+   umount $BOOT_TMP 2>$TMP/null && rmdir $BOOT_TMP
+   rm -rf $TMP
+   chroot_umount
+   break
+  elif [ "$REPLY" = "View" ]; then
+  
+  rm -f $TMP/view.conf
+  if ls $TMP/part.*.sort 2>$TMP/null ; then
+  for f in `ls $TMP/part.*.sort`
+  do
+    cat $f >> $TMP/view.conf
+  done
+  fi
+  
+   
+   if [ -r $TMP/view.conf ]; then
+    $DIALOG --title "YOUR NEW /boot/grub/$grub_config" --textbox "$TMP/view.conf" 22 70
+   else
+    if [ -r $BOOT/grub/$grub_config ]; then
+     $DIALOG --title "YOUR CURRENT /boot/grub/$grub_config" --textbox "$BOOT/grub/$grub_config" 22 70
+    else
+     $DIALOG --title "NO CONFIG FILE FOUND" --msgbox "Sorry, but you don't \
+have a GRUB configuration file that can be viewed." 6 60
+    fi
+   fi
+  elif [ "$REPLY" = "Help" ]; then
+cat << EOF > $TMP/tmpmsg
+
+This script 'grubconfig' helps you install the GRUB bootloader
+on your Linux system.
+
+It supports IDE and SCSI devices and has no support for RAID devices.
+
+These are the options you can use at the GRUB expert install menu:
+
+1. Start GRUB configuration with a new GRUB header.
+
+   This is the first step to start a new configuration file,
+   /boot/grub/$grub_config, with no OS's entered into it (yet).
+
+   You'll be asked where you want to install GRUB. This
+   can be to your Master Boot Record, a Linux partition's
+   superblock (for OS/2's Boot Manager etc. to boot), or
+   to a 1.44 MB formatted floppy disk. 
+   
+   Try installing to a floppy disk first, if it works
+   on the floppy it will probably work on the MBR, or
+   superblock.
+   
+   Once you've started a new /boot/grub/$grub_config file, you must
+   add at least one OS to it before you can install GRUB.
+
+   Next you'll want to add at least one Linux partition, the
+   one that will hold the GRUB files in /boot/grub.
+
+   You then may want to add other partitions, if you have any.
+   
+2. Menu choices to add Linux and other DOS/WIN/BSD/OS2/HURD/QNX/
+   PLAN9/BEOS/Minix partitions to the /boot/grub/$grub_config
+   file.
+
+   These all pretty much work the same way. You'll be asked 
+   which partitions you want to include in the grub menu, and 
+   you'll also be asked to assign a label to each partition.
+   The label can be any name such as Redhat Linux, Slackware Linux,
+   or WinXP etc.
+
+3. Install GRUB
+   
+   Once you've looked at your new config file and are 
+   satisfied with the way it looks, pick this option to 
+   install GRUB and exit the GRUB installation menu.
+
+Other options:
+
+  -- View your current /boot/grub/$grub_config file
+
+   If you haven't begun building a new $grub_config file, this choice
+   will let you take a look at the existing one in /boot/grub
+   on your GRUB Linux partition. 
+
+   If you have begun constructing a new $grub_config file, this
+   option will let you view the progress on that.
+
+ -- Skip GRUB installation or exit this menu
+
+  This option skips GRUB installation. Use this if you don't 
+  want to install GRUB, or if you've already installed it and 
+  want to exit.
+
+ -- Help - Read this GRUB Bootloader HELP file 
+ 
+-----------
+
+Other GRUB information:
+
+  GRUB on the Master Boot Record can be removed easily.
+   
+  DOS/Win9x fdisk has a 'fdisk /mbr' option that restores the original
+  master boot record. You can also restore your original boot sector from
+  the copy 'grubconfig' makes in /boot/grub/mbr.device.number.
+  
+  This is probably the best way to go about it.
+  
+  # dd if=/boot/grub/mbr.device.number of=/dev/device bs=512 count=1
+  
+  If you want to make any changes, you don't need to run grubconfig
+  again, you can just edit /boot/grub/$grub_config by hand.
+  
+--- end of GRUB help
+
+grubconfig is based on liloconfig by Patrick Volkerding fron the
+Slackware Linux distribution.
+EOF
+   $DIALOG --title "GRUB INSTALLATION HELP" --textbox "$TMP/tmpmsg" 22 74
+  fi
+ done
+
