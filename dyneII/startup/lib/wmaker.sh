@@ -418,8 +418,10 @@ print "}"
       rm -f $WMSTATETMP
 
       # overwrite docks in nest with the fresh one
+      mkdir -p /root/GNUstep/Defaults
       cp -f $WMSTATE /root/GNUstep/Defaults/WMState
       for u in `ls /home`; do
+        mkdir -p /home/${u}/GNUstep/Defaults
         cp -f $WMSTATE /home/${u}/GNUstep/Defaults/WMState
       done
 

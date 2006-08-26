@@ -105,7 +105,7 @@ apply_network() {
   # now activate configuration
   if [ $NET_IP = "dhcp" ]; then
     act "scanning for dhcp network configuration"
-    /usr/sbin/dhcpcd -d -n &
+    /sbin/pump &
   else
     act "configuring $NET_DEV network with ip $NET_IP and gateway $NET_GW"
     ifconfig $NET_DEV $NET_IP netmask $NET_MASK
@@ -135,6 +135,8 @@ apply_network() {
   act "our hostname is `hostname`"
   # setup the hostname in /etc/hosts to resolve it at least in loopback
   append_line /etc/hosts "127.0.0.1\t$HOSTNAME"
+  # start the portmapper daemon
+  /usr/sbin/portmap
 }
 
 
@@ -320,7 +322,7 @@ raise_soundcard_volumes() {
                                         $4 ~ "Headphone" { printctl() }
                                         $4 ~ "Capture"   { printctl() }'`
       for ctl in ${(f)controls}; do
-        amixer -q sset ${ctl} "77%" unmute
+        amixer -q sset ${ctl} "64%" unmute
       done
 
     fi

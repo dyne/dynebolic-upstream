@@ -38,6 +38,7 @@ DISTCFG=/etc/X11/xorg.conf.dist
 # it is included in the core so it is writable
 # to let easy installation of third-party drivers
 # but we have to keep the old build path:
+mkdir -p /opt
 ln -s /usr/X11R6 /opt/Xorg
 
 if [ -e $CFG ]; then return; fi

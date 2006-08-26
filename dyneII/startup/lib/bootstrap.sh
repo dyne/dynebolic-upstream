@@ -63,6 +63,8 @@ fi
 
 boot_single_user_mode() {
 
+notice "booting in single user mode"
+
 # launch system logging daemon
 /sbin/syslogd
 
@@ -288,6 +290,7 @@ ln -s ${DYNE_SYS_MNT} /lib/dyne/configure/Dyne
 
 boot_multi_user_mode() {
 
+notice "going into multi user mode"
 
 ######## HOME IS MOUNTER HERE
 ############ ALL MEDIA MOUNTED, now MOUNT dyne.sys
@@ -559,22 +562,6 @@ fi
 # configure language
 init_language
 
-##########################################
-## activate all dyne modules
-## looks into dyne/modules
-## or in dyne/SDK/modules if sdk=true
-notice "activating additional dyne modules"
-mount_dyne_modules
-# see /lib/dyne/modules.sh
-
-## scan all applications present in the running system
-notice "scanning all installed applications"
-check_apps_present
-
-
-
-
-
 
 ##########################################
 ## starting daemons here
@@ -583,33 +570,49 @@ notice "launching device filesystem daemon"
 /sbin/udevd --daemon
 /sbin/udevstart
 
+
+# notice "mounting static filesystem table"
+# if [ -r /etc/fstab.static ]; then
+#   # process static fstab rules
+#   fstab.static="`cat /etc/fstab.static`"
+#   for i in ${(f)fstab.static}; do
+# 
+#     # skip comments
+#     if [ $i[0] = "#" ]; then continue; fi
+# 
+#     mnt=`echo $i | awk '{ print $2 }'`
+# 
+#     # append the line to the existent fstab
+#     append_line /etc/fstab "$i"
+#
+#     # mount it
+#     mkdir -p ${mnt}
+#     mount ${mnt}
+#
+#   done
+#
+# fi
+
+
+
 notice "launching power management daemon"
 /usr/sbin/acpid
 
 # from services.sh - setup volumes to 77% unmuted
 raise_soundcard_volumes
 
-notice "mounting static filesystem table"
-if [ -r /etc/fstab.static ]; then
-  # process static fstab rules
-  fstab.static=`cat /etc/fstab.static`
-  for i in ${(f)fstab.static}; do
 
-    # skip comments
-    if [ $i[0] = "#" ]; then continue; fi
-
-    mnt=`echo $i | awk '{ print $2 }'`
-
-    # append the line to the existent fstab
-    append_line /etc/fstab "$i"
-
-    # mount it
-    mkdir -p ${mnt}
-    mount ${mnt}
-
-  done
-
-fi
+##########################################
+## activate all dyne modules
+## looks into dyne/modules
+## or in dyne/SDK/modules if sdk=true
+notice "activating additional dyne modules"
+mount_dyne_modules
+# see /lib/dyne/modules.sh
+## scan all applications present in the running system
+notice "scanning all installed applications"
+source /boot/dynenv.modules
+check_apps_present
 
 
 
@@ -648,6 +651,8 @@ sync
 ## GRAPHICAL USER MODE
 
 boot_graphical_user_mode() {
+
+notice "going in graphical user mode"
 
 # skip if we're in volatile mode
 # if [ `cat /boot/mode` = volatile ]; then exit 0; fi

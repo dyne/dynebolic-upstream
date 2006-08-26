@@ -3,6 +3,8 @@
 # execution wrapper that makes sure a program is started as user
 
 if [ "`id -nu`" = "root" ]; then
+  xhost +localhost
+  DISPLAY=:0
   EXEC="su - luther -c"
 else
   EXEC="exec"

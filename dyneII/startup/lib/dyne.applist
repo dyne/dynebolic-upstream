@@ -25,9 +25,9 @@ EffecTV | realtime video effects | effectv | | effectv.sf.net | Fukuchi Kentaro
 
 	Begin | PLAY
 
+MPlayer | versatile video player | gmplayer | multi,manual | mplayerhq.hu | Arpad
 Xine | multimedia player | xine | runonce | xinehq.de | Xine team
 XawTV | television viewer | xawtv | | bytesex.org | ???
-MPlayer | versatile video player | mplayer | multi,manual | mplayerhq.hu | Arpad
 Mp4Player | mpeg4 darwin player | gmp4player | multi | mpeg4ip.sf.net | Cisco
 
 	End | PLAY
@@ -85,7 +85,7 @@ Jack Rack | ladspa effects rack | jack-rack | | jack-rack.sf.net | Jack auth
 FreeWheeling | live sampling | fweelin | | freewheeling.sf.net | JP Mercury
 SooperLooper | live looping | slgui | | essej.net/sooperlooper | Jesse Chappell
 SoundTracker | fast tracker | soundtracker | | soundtracker.cx? | A. Koenig
-CheeseTracker | sound tracker | cheesetracker_qt | | cheesetracker.sf.net | Juan Linietsky
+CheeseTracker | music tracker | cheesetracker_qt | | cheesetracker.sf.net | Juan Linietsky
 Seq24 | midi sequencer | seq24 | | seq24.sf.net | seq24 auth
 ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
 TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A. Koenig
@@ -182,6 +182,7 @@ Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 
 XChat | irc chat | xchat | | xchat WEB | xchat auth
 Gaim | instant messaging | gaim | | gaim WEB | gaim auth
+Kiax | phone over internet | kiax | | kiax.sf.net | Kiax team
 OpenMash | audio/video conferenceu | mash-start | | openmash.org | mash auth
 KPhone | SIP web phone | kphone | | kphone WEB | kphone auth
 Nsdr | multicast session directory | nsdr | | openmash.org | mash auth
@@ -255,37 +256,38 @@ End | FILES
 Begin | GAMES
 
 
-Anatolia | online multi user dungeon | gmudix | | WEB | AUTH
-Armagetron | tron lightspeed cycles | armagetronad | | WEB | AUTH
-BlobWars | blob liberation fighter | blobwars | | www.blobwars.org | Parallel Realities
-FreeCiv | free civilization | civclient | | WEB | AUTH
-CannonSmash | 3d multiplayer tabletennis | csmash | | WEB | AUTH
-Eat the whistle | sensible soccer | eat-the-whistle | | WEB | AUTH
-eBoard | GNU Chess & online board | eboard | | WEB | AUTH
-Foobillard | 3d carambola billard | foobillard | | WEB | AUTH
-FrozenBubble | puzzle bubble like | frozen-bubble | | WEB | AUTH
-glhack | graphical nethack dungeon | glhack | | WEB | AUTH
-lBreakout2 | arkanoid & breakout | lbreakout2 | | WEB | AUTH
-lTris | rich tetris clone | ltris | | WEB | AUTH
-Liquidwar | addictive multiplayer | liquidwar | | WEB | AUTH
-Matanza | ascii multiplayer asteroids | matanza | terminal | WEB | AUTH
-Netris | multiplayer ascii tetris | netris | terminal | AUTH | WEB
-NeverBall | 3d floating ball | neverball | | neverball.icculus.org | Robert Kooima
-NeverPut | 3d mini golf | neverput | | neverball.icculus.org | Robert Kooima
+Anatolia | online multi user dungeon | gmudix | user | WEB | AUTH
+Armagetron | tron lightspeed cycles | armagetronad | user | WEB | AUTH
+BlobWars | blob liberation fighter | blobwars | user | www.blobwars.org | Parallel Realities
+FreeCiv | free civilization | civclient | user | WEB | AUTH
+CannonSmash | 3d multiplayer tabletennis | csmash | user | WEB | AUTH
+Eat the whistle | sensible soccer | eat-the-whistle | user | WEB | AUTH
+eBoard | GNU Chess & online board | eboard | user | WEB | AUTH
+Foobillard | 3d carambola billard | foobillard | user | WEB | AUTH
+FrozenBubble | puzzle bubble like | frozen-bubble | user | WEB | AUTH
+glhack | graphical nethack dungeon | glhack | user | WEB | AUTH
+lBreakout2 | arkanoid & breakout | lbreakout2 | user | WEB | AUTH
+lTris | rich tetris clone | ltris | user | WEB | AUTH
+Liquidwar | addictive multiplayer | liquidwar | user | WEB | AUTH
+Matanza | ascii multiplayer asteroids | matanza | terminal user | WEB | AUTH
+Netris | multiplayer ascii tetris | netris | terminal user | AUTH | WEB
+NeverBall | 3d floating ball | neverball | user | neverball.icculus.org | Robert Kooima
+NeverPut | 3d mini golf | neverput | user | neverball.icculus.org | Robert Kooima
 PowerManga | galactic shot'em up | powermanga | | WEB | AUTH
-Racer | car racing from above | racer | | WEB | AUTH
-RetroVolley | gnu arcade volleyball | gav | | WEB | AUTH
-Rick Dangerous | adventurer in the pyramid | xrick | | WEB | AUTH
-Shotgun Debug | run hacker run | sdb | | sdb.gamecreation.org | Game Creation Society
-Starfighter | arcade space quest | starfighter | | WEB | AUTH
-SuperMarioWars | jump on platforms | supermariowars | | WEB | AUTH
-tkSol | snappy solitaire | tksol | | WEB | AUTH
-TuxPaint | baby painting | tuxpaint | | www.tuxpaint.org | Tux Paint developers
-Wesnoth | turn based strategy fantasy | wesnoth | | WEB | AUTH
-Wormux | worms fighting freely | wormux | | www.wormux.org | Lawrence Azzoug
-xMahjongg | chinese social game | xmahjongg | | WEB | AUTH
-xWellTris | 2.5 dimensional warped tetris | xwelltris | | WEB | AUTH
-VultureEyes | RPG nethack dungeon | vultureseye | | WEB | AUTH
+Racer | car racing from above | racer | user | WEB | AUTH
+RetroVolley | gnu arcade volleyball | gav | user | WEB | AUTH
+Rick Dangerous | adventurer in the pyramid | xrick | user | WEB | AUTH
+Shotgun Debug | run hacker run | sdb | user | sdb.gamecreation.org | Game Creation Society
+Starfighter | arcade space quest | starfighter | user | WEB | AUTH
+SuperMarioWars | jump on platforms | supermariowars | user | WEB | AUTH
+SuperTux | penguin on platforms | supertux | user | WEB | AUTH
+tkSol | snappy solitaire | tksol | user | WEB | AUTH
+TuxPaint | baby painting | tuxpaint | user | www.tuxpaint.org | Tux Paint developers
+Wesnoth | turn based strategy fantasy | wesnoth | user | WEB | AUTH
+Wormux | worms fighting freely | wormux | user | www.wormux.org | Lawrence Azzoug
+xMahjongg | chinese social game | xmahjongg | user | WEB | AUTH
+xWellTris | 2.5 dimensional warped tetris | xwelltris | user | WEB | AUTH
+VultureEyes | RPG nethack dungeon | vultureseye | user | WEB | AUTH
 
 End | GAMES
 
