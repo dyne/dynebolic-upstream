@@ -796,6 +796,10 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       cp -rav ${DYNE_SYS_MNT}/modules ${PFX}/cdrom/dyne/
     fi 
     # the CONFIG
+    if [ -r $PFX/startup/dyne.cfg ]; then
+      act "updating dyne configuration from development subversion"
+      cp -a $PFX/startup/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
+    fi
     if ! [ -r $PFX/cdrom/dyne/dyne.cfg ]; then
       act "copying dyne configuration from current dock"
       cp -a ${DYNE_SYS_MNT}/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
