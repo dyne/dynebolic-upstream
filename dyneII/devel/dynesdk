@@ -235,31 +235,26 @@ mountmods() {
     fi
 }
 
-develmod() {
 
-    if ! [ $1 ]; then
-        error "no module specified: select a module in $DYNE_SYS_MNT/modules"
-	exit -1
-    fi
-
+develone() {
     MOD=$1
 
     if ! [ -x /opt/${MOD} ]; then
         error "module $MOD is not mounted in /opt"
-        exit -1
+        return
     fi
 
     # check if module is in use
     lsof /opt/${MOD} > /dev/null
     if [ $? = 0 ]; then
         error "module is currently in use, operation aborted."
-        exit -1
+        return
     fi
 
     # check if module is already uncompressed in SDK
     if [ -x $PFX/modules/${MOD} ]; then
         error "a development version of the module is already present in your SDK"
-        exit -1
+        return
     fi
 
     MODSIZE=`du -hs /opt/$MOD | awk '{print $1}'`
@@ -281,80 +276,77 @@ develmod() {
 }
 
 
-squash() {
-    notice "compressing the modules in the cdrom"
+develmod() {
+
     if [ $1 ]; then
-        MOD=$1
 
-        if ! [ -r ${PFX}/modules/${MOD} ]; then
-            error "module ${MOD} doesn't exists in SDK"
-            exit -1
-        fi
+      develone $1
 
-        if ! [ -r ${PFX}/modules/${MOD}/VERSION ]; then
-	    error "module ${MOD} misses VERSION information: skipped"
-            exit -1
-        fi
+    else
+
+      for mod in `ls --color=none /opt`; do
+
+         develone ${mod}
+
+      done
+
+    fi
+
+    act "modules were uncompressed in ${PFX}/modules"
+}
+
+
+squashone() {
+    MOD=$1
+
+    if ! [ -r ${PFX}/modules/${MOD} ]; then
+        error "module ${MOD} doesn't exists in SDK"
+        exit -1
+    fi
+
+    if ! [ -r ${PFX}/modules/${MOD}/VERSION ]; then
+        error "module ${MOD} misses VERSION information: skipped"
+        exit -1
+    fi
 	
-	act "compressing ${PFX}/cdrom/dyne/modules/${MOD}"
-	act "please wait, this may take a while..."
+    act "compressing ${PFX}/cdrom/dyne/modules/${MOD}"
+    act "please wait, this may take a while..."
 
-	mkdir -p ${PFX}/cdrom/dyne/modules
+    mkdir -p ${PFX}/cdrom/dyne/modules
 
-	if [ -r ${PFX}/cdrom/dyne/modules/${MOD}.dyne ]; then
-	  rm ${PFX}/cdrom/dyne/modules/${MOD}.dyne
-	fi
+    if [ -r ${PFX}/cdrom/dyne/modules/${MOD}.dyne ]; then
+      rm ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+    fi
 
-        # make the list of files to exclude
-	find ${PFX}/modules/${MOD} -name ".svn" > ${PFX}/squash_module_excludelist.tmp 
+    # make the list of files to exclude
+    EXCL="-e `find ${PFX}/modules/${MOD}/ -name .svn`" 
 
 	$MKSQUASHFS ${PFX}/modules/${MOD} \
-                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne \
-                -ef ${PFX}/squash_module_excludelist.tmp
+                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne -e  ${EXCL}
 	chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
         chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
 
-        rm ${PFX}/squash_module_excludelist.tmp
+    act "done with ${MOD}"
+    act "copy the module into your current dock to activate it:"
+    act "cp ${PFX}/cdrom/dyne/modules/${MOD}.dyne $DYNE_SYS_MNT/modules"
+ 
+}
 
-	act "done with ${MOD}"
-        act "copy the module into your current dock to activate it:"
-        act "cp ${PFX}/cdrom/dyne/modules/${MOD}.dyne $DYNE_SYS_MNT/modules"
+squash() {
+    notice "compressing the modules in the cdrom"
+    if [ $1 ]; then
 
-        return
+      squashone $1
+
+    else
+
+      for mod in `ls --color=none ${PFX}/modules`; do
+
+        squashone ${mod}
+
+      done
+
     fi
-
-
-    for mod in `ls --color=none ${PFX}/modules`; do
-
-	if ! [ -r ${PFX}/modules/${mod}/VERSION ]; then
-	    error "module ${mod} misses VERSION information: skipped"
-	    continue
-	fi
-	
-	act "compressing ${PFX}/cdrom/dyne/modules/${mod}"
-	act "please wait, this may take a while..."
-
-	mkdir -p ${PFX}/cdrom/dyne/modules
-
-	if [ -r ${PFX}/cdrom/dyne/modules/${mod}.dyne ]; then
-	  rm ${PFX}/cdrom/dyne/modules/${mod}.dyne
-	fi
-
-        # make the list of files to exclude
-	find ${PFX}/modules/${mod} -name ".svn" > ${PFX}/squash_module_excludelist.tmp 
-
-	$MKSQUASHFS ${PFX}/modules/${mod} \
-                    ${PFX}/cdrom/dyne/modules/${mod}.dyne \
-                -ef ${PFX}/squash_module_excludelist.tmp
-	chmod a+r   ${PFX}/cdrom/dyne/modules/${mod}.dyne
-        chmod -x    ${PFX}/cdrom/dyne/modules/${mod}.dyne
-
-        rm ${PFX}/squash_module_excludelist.tmp
-
-	act "done with ${mod}"
-	echo
-
-    done
 
     chmod -x  $PFX/cdrom/dyne/modules/*.dyne
     chmod a+r $PFX/cdrom/dyne/modules/*.dyne
@@ -407,6 +399,8 @@ mkinitrd() {
     rm -f etc/mtab
     rm -f etc/resolv.conf*
     rm -f etc/asound.state
+    rm -f etc/hosts
+echo "127.0.0.1 localhost" > etc/hosts
 cat << EOF > etc/resolv.conf
 nameserver 216.254.95.2
 nameserver 216.231.41.2
@@ -709,6 +703,11 @@ mkusr() {
         error "pci device ids not found online"
 	mv /usr/share/pci.ids.old /usr/share/pci.ids
       fi
+    fi
+
+    if [ -r $PFX/startup/xdg/dyne.xml ]; then
+      cp $PFX/startup/xdg/dyne.xml /usr/share/mime/packages/
+      update-mime-database /usr/share/mime
     fi
 
     act "start compressing: `date`"
