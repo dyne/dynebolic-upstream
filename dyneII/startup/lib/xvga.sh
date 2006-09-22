@@ -4,7 +4,7 @@
 # this script recognizes most vga cards in a very simple way
 # only sed is used
 #
-# (C) 2003-2006 Denis "Jaromil" Roio
+# (C) 2003-2006 Denis "Jaromil" Rojo
 
 
 # This source code is free software; you can redistribute it and/or
@@ -33,19 +33,15 @@ CFG=/etc/X11/xorg.conf
 # distributed template in module
 DISTCFG=/etc/X11/xorg.conf.dist
 
-## special fix in dyne 2.0
-# we don't use anymore Xorg as a module
-# it is included in the core so it is writable
-# to let easy installation of third-party drivers
-# but we have to keep the old build path:
-mkdir -p /opt
-ln -s /usr/X11R6 /opt/Xorg
-
-if [ -e $CFG ]; then return; fi
 
 notice "detecting VGA video card:"
 VGACARD="`lspci | grep VGA`"
 act "${VGACARD}"
+
+if [ -r $CFG ]; then
+  act "using existing VGA configuration in nest"
+  return
+fi
 
 if [ "`lspci | grep -i ' vmware'`" ]; then
   act "using X 'vmware' driver for your virtual machine"

@@ -23,17 +23,16 @@
 # dynebol.cfg is allways in the root of the filesystem
 # DYNEBOL_CRYPT=encryption algorithm (if there is one, only AES128 supported)
 
-
 source /lib/dyne/utils.sh
 
 LODEV=/dev/loop30 # always choose a free one!
-NESTNAME="dynebol.nst" # that's the default name, dynebolE.nst is encrypted
+VARDIR=/var/local
 
-mkdir -p /var/log/setup
+mkdir -p ${VARDIR}
 
 report_success() {
 # $1 success string
-    SUCCESS_FILE=/var/log/setup/success
+    SUCCESS_FILE=${VARDIR}/success
     MSG=$1
     if [ -z "$MSG" ]; then
 	return 0
@@ -48,7 +47,7 @@ report_success() {
 
 report_error() {
     # $1 error string
-    ERROR_FILE=/var/log/setup/error
+    ERROR_FILE=${VARDIR}/error
     MSG=$1
     if [ -z "$MSG" ]; then
 	return 0
@@ -71,7 +70,9 @@ act "(c)2003-2006 by Jaromil - RASTASOFT.org"
 act "invoked with args \"$*\" "
 act "running on `date`"
 
-OPTS=`getopt -o hvp:f: --long help,version,partition:,file: -n 'nidifica' -- "$@"`
+# save the cmdline
+CMDLINE="${@}"
+OPTS=`getopt -o hvp:f:x --long help,version,partition:,file:,xterm -n 'nidifica' -- "$@"`
 
 eval set -- "$OPTS"
 
@@ -83,6 +84,7 @@ while true; do
 	    echo " .  -h, --help      print this small usage guide"
             echo " .  -p, --partition use specified partition as nest"
 	    echo " .  -f, --file      create specified file,size as nest"
+            echo " .  -x, --xterm     run this script in a new xterm"
 	    exit 2
 	    ;;
 	-v)
@@ -96,10 +98,25 @@ while true; do
 	    LOOPBACK=$2
 	    shift 2
 	    ;;
+        -x) XTERM=true
+            shift 1
+            ;;
 	--) shift; break ;;
 	*) error "error in given options"; exit 1 ;;
     esac
 done
+
+# with -x we start this script in a terminal 
+if [ $XTERM ]; then
+        act "spawning a visual terminal for mknest ${CMDLINE}"
+	( `/usr/X11R6/bin/xterm \
+           -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 \
+           -bg black -fg green \
+           -T "creating dyne:bolic nest ${LOOPBACK}MB" -e \
+           "mknest -f ${LOOPBACK}"` )&
+        exit
+fi
+
 
 #########################################
 # check presence of all needed parameters
@@ -145,9 +162,10 @@ fi
 
 ## parameters ok here
 ####################################################################
-    
+   
 
 #### nest in a loopback file to be created
+
 if [ $LOOPBACK ]; then
 
     SIZE_4k=`expr \( $NSTSIZE \* 1000 \) / 4`
@@ -165,26 +183,14 @@ if [ $LOOPBACK ]; then
 	exit 1
     fi
     
-    notice "mounting loopback device"
-    
-    losetup ${LODEV} ${NSTFILE}
-    
-    if [ $? != 0 ]; then
-	report_error "Error in mounting nest loopback device : (losetup ${LODEV} ${NSTFILE})"
-	rm ${NSTFILE}
-	sleep 4
-	exit 1
-    fi
-    
     notice "Creating the EXT2 internal filesystem"
 
     # format the nest with journaled ext3
-    mkfs.ext3 -j -L "dyne:nest" ${LODEV}
+    mkfs.ext3 -F -j -L "dyne:nest" ${NSTFILE}
 
     if [ $? = 0 ]; then
 	act "OK, loopback device succesfully formatted"
     else
-	losetup -d ${LODEV}
 	report_error "Error formatting the nest (mkfs $LODEV)"
 	rm ${NSTFILE}
 	sleep 4
@@ -193,10 +199,10 @@ if [ $LOOPBACK ]; then
     
     notice "Mount the nest and populate it"
     mkdir -p /tmp/nest
-    mount -t ext3  ${LODEV} /tmp/nest
+    mount -o loop -t ext3  ${NSTFILE} /tmp/nest
     if [ $? != 0 ]; then
        error "cannot mount the nest"
-       report_error "Error mounting the nest (mount -t ext2 ${LODEV} /tmp/nest)"
+       report_error "Error mounting the nest (mount -t ext2 ${NSTFILE} /tmp/nest)"
        rm $NSTFILE
        sleep 4
        exit 1

@@ -2,16 +2,6 @@
 # (C) 2005-2006 Denis "jaromil" Rojo
 # GNU GPL License
 
-
-# TODO: automatic LVM support
-# by now dm-mod kernel module is inside the ramdisk
-# /sbin/lvm is present
-# the following commands are necessary to activate the support:
-# (from the lvm howto)
-#   dmsetup mknodes
-#   vgscan --ignorelockingfailure
-#   vgchange -ay --ignorelockingfailure
-
 source /lib/dyne/dock.sh
 source /lib/dyne/utils.sh
 
@@ -57,13 +47,13 @@ add_volume() {
       
       "floppy")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS}"
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tmsdos\tdefaults,noauto,user\t0\t0"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tmsdos\tdefaults,noauto,user,sync\t0\t0"
 	  ;;
      
  
       "usb")
 	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user\t0\t${PASS}"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user,sync\t0\t${PASS}"
 	  ;;
 
       
@@ -110,7 +100,6 @@ scan_cdrom() {
         DEV=`basename ${DEVPATH}`
 
 	# if it's not a cdrom then skip it
-	# TODO: verify if DVD has a "dvd" entry for media type
 	if  [ `cat /proc/ide/$DEV/media` != cdrom ]; then continue; fi
 
 	if [ "`dmesg|grep '$DEV.*DVD'`" ]; then 
@@ -225,6 +214,14 @@ scan_partitions() { #arg : devicename
           # here check if FS ~= LVM then use LVM-tools
           if [ "`echo ${PART_FS}   | grep 'LVM'`" ]; then
             # it's a LVM, see LVM-Howto online..
+            # long story made simple: this is our automatic LVM support :)
+            # dm-mod kernel module is inside the ramdisk
+            # /sbin/lvm is present
+            # the following commands are necessary to activate the support:
+            #   dmsetup mknodes
+            #   vgscan --ignorelockingfailure
+            #   vgchange -ay --ignorelockingfailure
+
             dmsetup mknodes
             /sbin/lvm.apps/vgscan --ignorelockingfailure
             /sbin/lvm.apps/vgchange -ay --ignorelockingfailure

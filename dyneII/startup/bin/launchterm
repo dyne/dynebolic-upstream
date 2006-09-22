@@ -16,7 +16,8 @@ else
 fi
 
 launch \
-mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
-      -tabfg lightgrey -itabfg darkgrey -tr -trm -trt -ss rxvt \
-      -sr -bgfade 80 -fade 50 -bc -vb -e $PROG
+`mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
+       -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
+       -sl 4096 -ss rxvt -sr -sw \
+       -bgfade 80 -htb -vb -bc -e $PROG`
 

@@ -123,6 +123,7 @@ loadmod() {
     for m in `iterate ${MODULES_DENY}`; do
         if [ x$MODULE = x$m ]; then
            act "$MODULE denied ... SKIPPED"
+           return
         fi
     done
 
@@ -174,7 +175,7 @@ loadmod() {
     # look for the module in ramdisk
     if [ -x /boot/modules/${KRN} ]; then
 
-      TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}*"`
+      TRYMOD=`find /boot/modules/${KRN} -name "${MODULE}.ko*"`
       if [ ${TRYMOD} ]; then
         # FOUND!
         mod_name=`basename ${TRYMOD}`
@@ -215,13 +216,13 @@ loadmod() {
     fi # the module it's not in the ramdisk
 
     ###############################################
-    # look for the kerne module in the dyne modules
+    # look for the kernel module in the dyne modules
     if [ -x /opt ]; then
       for dynemod in `ls /opt`; do
 
         if [ -x /opt/${dynemod}/kernel ]; then
 
-          TRYMOD=`find /opt/${dynemod}/kernel -name "${MODULE}"`
+          TRYMOD=`find /opt/${dynemod}/kernel -name "${MODULE}.ko*"`
         
           if [ ${TRYMOD} ]; then
 

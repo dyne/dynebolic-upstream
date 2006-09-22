@@ -1,5 +1,5 @@
 # dyne:II bootstrap functions
-# copyleft 2001 - 2005 Denis "jaromil" Rojo
+# copyleft 2001 - 2006 Denis "jaromil" Rojo
 
 # this is the third rewrite of dyne:bolic bootstrap process
 # done in 2005, after having studied AWK in India
@@ -90,39 +90,18 @@ mount /sys
 notice "initializing device filesystem"
 /sbin/udevstart
 
-# check if an usb controller is present
-if [ "`dmesg | grep 'USB hub found'`" ]; then
 
-   notice "USB controller detected"
+# remount the ramdisk read/write
+mount -o remount,rw /
 
-   # mount the usb device filesystem
-   mount /proc/bus/usb
- 
-   # start loading the usb storage
-   loadmod usb-storage
-   
-fi
-
-##
-
-notice "scan for fixed storage volumes"
-scan_storage
-
-##
-
-notice "scan for removable storage plugs"
-scan_removable
-
-##
-
-notice "scan for cdrom devices"
-scan_cdrom
-
-##
-
-### now load the module available to ramdisk
+## load the kernel modules available to ramdisk
 ## this is useful if we want to mount remote network systems
-CFG_MODULES="`get_config modules_ramdisk`" # list of modules (no extension) or 'autodetect' - modules need to be provided in ramdisk
+## or any special device which is not statically supported in kernel
+# syntax: comma separated list of modules (no extension)
+#         or 'autodetect'
+# the modules need to be provided in ramdisk, pack them using dynesdk:
+# dynesdk -m pcmcia,pcmcia_core,yenta_socket,ide-cs mkinitrd
+CFG_MODULES="`get_config modules_ramdisk`"
 if [ $CFG_MODULES ]; then
     notice "load kernel modules available to ramdisk"
 
@@ -146,6 +125,52 @@ if [ $CFG_MODULES ]; then
     done
 
 fi
+
+
+
+# check if an usb controller is present
+if [ "`dmesg | grep 'USB hub found'`" ]; then
+
+   notice "USB controller detected"
+
+   # mount the usb device filesystem
+   mount /proc/bus/usb
+ 
+   # start loading the usb storage
+   loadmod usb-storage
+   
+fi
+
+#########################################
+## scan all volumes by default
+scan_hdisk=true
+scan_cdrom=true
+scan_usb=true
+
+do_scan_storage="`get_config scan_hdisk`"
+if ! [ "$do_scan_storage" = "false" ]; then
+ notice "scan for fixed storage volumes"
+ scan_storage
+fi
+
+##
+
+do_scan_removable="`get_config scan_usb`"
+if ! [ "$do_scan_removable" = "false" ]; then
+  notice "scan for removable storage plugs"
+  scan_removable
+fi
+
+##
+
+do_scan_cdrom="`get_config scan_cdrom`"
+if ! [ "$do_scan_cdrom" = "false" ]; then
+  notice "scan for cdrom devices"
+  scan_cdrom
+fi
+
+##
+
 
 #### if network boot is configured...
 # at this point all modules should be loaded in order to have
@@ -218,7 +243,8 @@ if [ $BOOT_NETWORK ]; then
 	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
 	    mkdir -p /mnt/smbdock
 	    loadmod smbfs
-	    mount -t smbfs -o ro,guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock >/dev/null
+            sync
+	    mount -t smbfs -o ro,guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock
 	    if [ $? != 0 ]; then # mount failed
 		error "mount failed, remote dock aborted"
 	    else
@@ -229,6 +255,7 @@ if [ $BOOT_NETWORK ]; then
 		    DYNE_SYS_MEDIA=samba
 		    DYNE_SYS_MNT=/mnt/smbdock
 		    DYNE_SYS_DEV=${DOCK_SAMBA}
+                    append_line /boot/volumes "samba ${DOCK_SAMBA} /mnt/smbdock smbfs"
 		fi
 	    fi
 	fi
@@ -319,15 +346,24 @@ fi
 if [ "$bootmode" = "volatile" ]; then
     # stay into the ramdisk shell
     # for the volatile mode activable at boot prompt
-    notice "VOLATILE MODE :: opening a shell in dyne:bolic ramdisk"
-    act "you are entering a mantainance sector, whatever that means ;)"
+    echo
+    echo
+    echo "VOLATILE MODE :: opening a shell in dyne:bolic ramdisk"
+    echo "you are entering a mantainance sector, whatever that means ;)"
+    echo
+    echo "you are root and your password is luther."
+    echo
+    echo
+    echo
+    echo
+    # make sure we are in read-write
+    mount -o remount,rw /
 
     ## setup the interactive shell prompt
-    if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi
-
     rm -f /boot/mode
     echo "volatile" > /boot/mode
 
+    if [ -r /etc/zshrc ]; then rm -f /etc/zshrc; fi
     cat > /etc/zshrc <<EOF
     echo "dyne:bolic volatile shell environment"
     echo "this shell is in the ramdisk"
@@ -540,10 +576,6 @@ done
 # load necessary kernel modules
 init_modules
 
-# here we were configuring the videocard for X
-# this is now done in the Xorg module
-#/etc/init.d/rc.vga
-
 # configure your pcmcia
 init_pcmcia
 
@@ -567,6 +599,7 @@ init_language
 ## starting daemons here
 
 notice "launching device filesystem daemon"
+
 /sbin/udevd --daemon
 /sbin/udevstart
 
@@ -595,8 +628,10 @@ notice "launching device filesystem daemon"
 
 
 
-notice "launching power management daemon"
-/usr/sbin/acpid
+# load ACPI modules and launch daemon
+activate_acpi
+
+
 
 # from services.sh - setup volumes to 77% unmuted
 raise_soundcard_volumes
@@ -610,11 +645,17 @@ notice "activating additional dyne modules"
 mount_dyne_modules
 # see /lib/dyne/modules.sh
 ## scan all applications present in the running system
-notice "scanning all installed applications"
+notice "scanning installed applications"
 source /boot/dynenv.modules
 check_apps_present
 
-
+## scan for bootloaders
+for i in `cat /boot/volumes | awk '/^hdisk/ { print $3 }'`; do
+  if [ -x ${i}/boot/grub ]; then
+    act "grub bootloader found in $i"
+    ln -sf ${i}/grub /boot/
+  fi
+done
 
 # execute rc.local if present
 # you can create rc.local in the /etc directory
@@ -652,10 +693,14 @@ sync
 
 boot_graphical_user_mode() {
 
-notice "going in graphical user mode"
-
 # skip if we're in volatile mode
-# if [ `cat /boot/mode` = volatile ]; then exit 0; fi
+mode=`cat /boot/mode`
+if [ "$mode" = "volatile" ]; then
+  exit 0;
+fi
+
+
+notice "going in graphical user mode"
 
 
 
@@ -693,10 +738,7 @@ fi
 
 
 #################################
-#if [ -x /opt/Xorg/bin/X ]; then
-### we have Xorg
-
-  ## full dyne mode
+## full dyne mode
 
   source /lib/dyne/zsh/env
 

@@ -49,14 +49,23 @@ sync
 
 sync
 
-if [ -x /mnt/usr/bin ]; then  /bin/umount -d -f /mnt/usr;  fi
-if [ -x /usr/bin ]; then      /bin/umount -d -f /usr;      fi
-if [ -x /mnt/nest/etc ]; then /bin/umount -d -f /mnt/nest; fi
+/bin/umount /local
+/bin/umount /root
+/bin/umount /home
+/bin/umount /var
+/bin/umount /etc
+/bin/umount /tmp
+if [ -x /usr/bin ]; then      /bin/umount /usr;      fi
+if [ -x /mnt/usr/bin ]; then  /bin/umount -d /mnt/usr;  fi
+if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest; fi
 
 PATH=/bin:/sbin
 
 echo " .  sync harddrives" # this never hurts
 sync
+# sleep 1 fixes problems with some hard drives that
+# don't finish syncing before reboot or poweroff
+sleep 1
 
 
 if [ "$DYNE_SYS_MEDIA" = "cdrom" ]; then
@@ -68,10 +77,6 @@ fi
 if [ -r /boot/debug_shutdown ]; then
     /bin/ash
 fi
-
-# sleep 1 fixes problems with some hard drives that
-# don't finish syncing before reboot or poweroff
-sleep 1
 
 
 

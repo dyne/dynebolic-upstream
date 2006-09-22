@@ -1,5 +1,5 @@
 # dyne:II network shell library
-# (C)2006 Denis "Jaromil" Roio
+# (C)2006 Denis "Jaromil" Rojo
 # GNU GPL License
 
 source /lib/dyne/utils.sh

@@ -166,6 +166,13 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins &
 
 	End | EMAIL
 
+        Begin | PHONE
+
+Kiax | voice over ip | kiax | | kiax.sf.net | Kiax team
+Iaxcomm | voice over ip | iaxcomm | | iaxclient.sf.net/iaxcomm | Michael Van Donselaar
+
+	End | PHONE
+
 	Begin | SHARE
 
 KTorrent | p2p bittorrent client | ktorrent | | KTorrent.org | KTorrent developers

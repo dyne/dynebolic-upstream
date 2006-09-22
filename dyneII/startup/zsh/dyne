@@ -7,6 +7,7 @@ export LIBIND_PATH="/usr/lib/libind"
 export XWINHOME="/opt/Xorg"
 export X11HOME="$XWINHOME"
 export QTDIR="/usr"
+export PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
 
 # the terminal definition
 TERM="xterm-color"

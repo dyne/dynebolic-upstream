@@ -21,6 +21,7 @@ init_pcmcia() {
   if [ "`lspci | grep CardBus`" ]; then
     notice "enabling pcmcia cardbus support"
     loadmod pcmcia
+    pcmcia-socket-startup
   fi
 }
 
@@ -80,10 +81,13 @@ init_modules() {
    for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE '$BOGUS_SOUND' | grep -ivE '$BAD_MODULES'`; do
      loadmod $i 
    done
+}
 
-   # load ACPI button module for button-driven power down
+activate_acpi() {
+
    if [ -x /proc/acpi ]; then
-      act "activating ACPI modules"
+      notice "activating power management support"
+      act "loading ACPI modules"
       loadmod ac
       loadmod battery
       loadmod button
@@ -91,8 +95,13 @@ init_modules() {
       loadmod processor
       loadmod thermal
       loadmod video
-   fi
 
+      act "launching acpi daemon"
+      /usr/sbin/acpid
+
+   else
+      act "no power management support found"
+   fi
 }
 
 apply_network() {
@@ -134,7 +143,7 @@ apply_network() {
   hostname "$HOSTNAME"
   act "our hostname is `hostname`"
   # setup the hostname in /etc/hosts to resolve it at least in loopback
-  append_line /etc/hosts "127.0.0.1\t$HOSTNAME"
+  append_line /etc/hosts "127.0.0.1 $HOSTNAME"
   # start the portmapper daemon
   /usr/sbin/portmap
 }
@@ -216,19 +225,45 @@ init_network() {
     if [ $d = "samba" ]; then
       act "activating Samba filesharing"
       if [ -r /boot/dynenv.samba ]; then     rm -f /boot/dynenv.samba; fi
-      cat <<EOF > /boot/dynenv.samba
+      touch /boot/dynenv.samba
+      shares="`get_config shares`"
+
+      for s in `iterate $shares`; do
+
+        if [ $s = "dock" ]; then
+
+          cat <<EOF >> /boot/dynenv.samba
 [dyne.dock]
 comment = `cat /usr/etc/DYNEBOLIC`
 path = ${DYNE_SYS_MNT}
 public = yes
 read only = yes
 encrypt password = yes
-smb passwd file = /etc/samba/passwd
+smb passwd file = /etc/samba/private/smbpasswd
 EOF
+      
+        fi
+
+        if [ $s = "volumes" ]; then
+
+          cat <<EOF >> /boot/dynenv.samba
+[volumes]
+comment = `hostname shared volumes`
+path = /mnt
+public = yes
+rad only = yes
+encrypt password = yes
+smb passwd file = /etc/samba/private/smbpasswd
+
+EOF
+        fi
+
+      done
+
       loadmod smbfs
       smbd
-      # we are mostly clients, so we don't start our own name resolution
-      # nmbd
+      nmbd
+
     fi
   
     if [ $d = "firewall" ]; then

@@ -340,6 +340,10 @@ bind_nest() { # bind directories in /mnt/nest
   else
       # we wipe out /tmp at every boot
       cleandir ${NST}/tmp
+
+      # be sure we delete booting_x control flag
+      rm -f ${NST}/tmp/.booting_x
+
       # it's called temporary, you've been warned.
       mount -o bind ${NST}/tmp /tmp
       chmod a+rwx /tmp

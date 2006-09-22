@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-kernel-module">
+    <comment>Kernel driver module</comment>
+    <glob pattern="*.ko"/>
+  </mime-type>
+  <mime-type type="application/x-freej-script">
+    <comment>FreeJ realtime video script</comment>
+    <glob pattern="*.freej"/>
+  </mime-type>
+  <mime-type type="application/x-dyne-module">
+    <comment>Dyne modular software collection</comment>
+    <glob pattern="*.dyne"/>
+  </mime-type>
+  <mime-type type="application/x-windows-driver">
+    <comment>Windows device driver</comment>
+    <glob pattern="*.inf"/>
+  </mime-type>
+</mime-info>

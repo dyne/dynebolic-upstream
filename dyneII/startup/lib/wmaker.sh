@@ -492,13 +492,6 @@ bootstrap_x() {
 
     # popup a login prompt
     xdm
-    # delete booting_x now:
-    # dyne_startx is executed after login
-    sleep 5
-    xpid=`pidof xdm`
-    if [ $xpid ]; then
-      rm -f /tmp/.booting_x
-    fi
 
   elif [ `grep $USERLOGIN /etc/passwd` ]; then
 
@@ -512,6 +505,14 @@ bootstrap_x() {
 
   fi
 
+  # delete booting_x to signal we have succesfully started X
+  # dyne_startx is executed after login
+  sleep 5
+  xpid=`pidof X`
+  if [ $xpid ]; then
+    rm -f /tmp/.booting_x
+  fi
+ 
 }
 
 # this function is called in .xinitrc by default
