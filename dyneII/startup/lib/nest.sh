@@ -323,14 +323,15 @@ bind_nest() { # bind directories in /mnt/nest
       warning "nest is missing var, skipping"
   else
       # import logs
+      cleandir ${NST}/var/log
       cp -ra /var/log/* ${NST}/var/log/
       cleandir /var/log
-      # wipe out /var/run
-      if [ "`ls ${NST}/var/run`" ]; then
-        cleandir ${NST}/var/run
-        # just in case we have anything running in the ramdisk
-        mv -f /var/run/* ${NST}/var/run/
-      fi
+      # wipe out /var/run in nest
+      cleandir ${NST}/var/run
+      # just in case we have anything running in the ramdisk
+      mv -f /var/run/* ${NST}/var/run/
+      # wipe out all ramdisk /var and mount the nest one
+      cleandir /var
       mount -o bind    ${NST}/var /var
   fi
 

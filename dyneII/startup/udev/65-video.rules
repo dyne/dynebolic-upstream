@@ -1,0 +1,5 @@
+# for libraw1394, see http://www.linux1394.org/faq.php#udev
+KERNEL=="raw1394", NAME="%k", GROUP="video"
+KERNEL=="dv1394*", NAME="dv1394/%n", GROUP="video"
+KERNEL=="video1394*", NAME="video1394/%n", GROUP="video"
+

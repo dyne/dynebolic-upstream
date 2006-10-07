@@ -421,6 +421,7 @@ append_line() { # args:   file    new-line
 cleandir() {
     DIR=${1}
     act "cleaning all files in ${DIR}"
+    mkdir -p ${DIR}
     if [ "`ls -A ${DIR}/`" ]; then
 	rm -rf ${DIR}/*
     fi

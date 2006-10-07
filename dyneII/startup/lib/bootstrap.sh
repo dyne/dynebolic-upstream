@@ -124,6 +124,9 @@ if [ $CFG_MODULES ]; then
 
     done
 
+    # refresh device filesystem
+    /sbin/udevstart
+
 fi
 
 

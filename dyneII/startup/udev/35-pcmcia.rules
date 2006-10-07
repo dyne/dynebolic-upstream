@@ -2,7 +2,7 @@
 #
 # modprobe $modalias loads all possibly appropriate modules
 ACTION=="add", SUBSYSTEM=="pcmcia", MODALIAS=="?*", \
-		RUN+="/sbin/modprobe $modalias"
+		RUN+="/sbin/loadmod $modalias"
 
 # Very few CIS firmware entries (which we use for matching)
 # are so broken that we need to read out random bytes of it
@@ -20,7 +20,7 @@ ACTION=="add", SUBSYSTEM=="pcmcia", MODALIAS=="?*", \
 #
 # modprobe the pcmcia bus module so that 16-bit PCMCIA devices work
 ACTION=="add", SUBSYSTEM=="pcmcia_socket", \
-		RUN+="/sbin/modprobe pcmcia"
+		RUN+="/sbin/loadmod pcmcia"
 
 # if this is a PCMCIA socket which needs a resource database,
 # pcmcia-socket-startup sets it up

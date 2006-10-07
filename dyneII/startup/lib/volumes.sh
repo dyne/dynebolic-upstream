@@ -170,7 +170,7 @@ scan_partitions() { #arg : devicename
     PARTITIONS=`${FDISK} -l /dev/${DEV}            \
               | sed -e 's/ \* / /'              \
               | awk '/^\/dev\/*/ { if(NF!=1) print $0 }' \
-              | grep -Evi 'extended|swap|partition.map|free.space'`
+              | grep -Evi 'extended|swap|partition.map|free.space|diagnostics'`
     
         # cycle thru partitions
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn

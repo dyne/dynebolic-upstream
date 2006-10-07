@@ -25,38 +25,56 @@
 
 source /lib/dyne/utils.sh
 
-LODEV=/dev/loop30 # always choose a free one!
-VARDIR=/var/local
+LODEV=/dev/loop60 # always choose a free one!
 
-mkdir -p ${VARDIR}
 
 report_success() {
 # $1 success string
-    SUCCESS_FILE=${VARDIR}/success
-    MSG=$1
-    if [ -z "$MSG" ]; then
+# $2 optional icon
+    msg=$1
+    icon=$2
+
+    if [ -z "$msg" ]; then
 	return 0
     fi
-    notice "$MSG"
-    if [ -e $SUCCESS_FILE ]; then
-	rm -f $SUCCESS_FILE
+    if [ -z $DISPLAY ]; then
+    # if no display, just write on console
+	notice "$msg"
+	return
     fi
-    echo "$MSG" > $SUCCESS_FILE
-    return 1
+
+    if [ -z $icon ]; then
+    # if none specified use default icon
+	icon="/usr/share/icons/graphite/48x48/emblems/emblem-cool.png"
+    fi
+
+
+  export MAIN_DIALOG="
+<vbox>
+  <frame Success creating nest>
+    <hbox>
+      <pixmap>
+        <input file>${icon}</input>
+      </pixmap>
+      <text>
+        <label>${msg}</label>
+      </text>
+    </hbox>
+  </frame>
+  <button>
+    <input file stock=\"gtk-ok\"></input>
+    <label>OK!</label>
+  </button>
+
+</vbox>
+"
+
+  gtkdialog --program=MAIN_DIALOG >/dev/null
+
 }
 
 report_error() {
-    # $1 error string
-    ERROR_FILE=${VARDIR}/error
-    MSG=$1
-    if [ -z "$MSG" ]; then
-	return 0
-    fi
-    error "$MSG"
-    if [ -e $ERROR_FILE ]; then
-	rm -f $ERROR_FILE
-    fi
-    echo "$MSG" > $ERROR_FILE
+    error_dialog ${1} "/usr/share/dyne/taschino/error.png"
     return 1
 }
 
@@ -162,7 +180,8 @@ fi
 
 ## parameters ok here
 ####################################################################
-   
+
+PATH=/usr/bin:/usr/sbin:/bin:/sbin   
 
 #### nest in a loopback file to be created
 
@@ -241,9 +260,8 @@ if [ $LOOPBACK ]; then
     act "here is your new dyne:bolic nest:"
     stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
     
-    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: Once you reboot, you will be prompted for a login: user root has password luther :: you can activate multiple user accounts, refer to the manual for more informations."
+    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: It will be active starting from the next boot."
 
-    notice "REBOOT TO ACTIVATE YOUR NEW NEST!"
 
 fi # end nest in loopback
 
