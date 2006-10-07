@@ -163,17 +163,21 @@ void apply_nest(int sel) {
   
   proc = fork();
   if(!proc) {
-    setenv("PATH","/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin",1);
-    execlp("xterm","taschino","-tn","linux","-bg","lightgrey","-fg","black",
-	   "-T",mesg,"-geometry","118x20",
-	   "-e","mknest", "-f",nestfile, NULL);
+    setenv("PATH","/bin:/sbin:/usr/bin:/usr/sbin/:/usr/X11R6/bin",1);
+    execlp("mknest","mknest","-x","-f", nestfile, NULL);
     perror("can't fork to launch docking command");
     _exit(1);
   }
-  wait(&res);
+  //  waitpid(proc, &res, 0);
 
-  check_result();
+  //  check_result();
 
+  // this function now quits
+  // so when user selects it will all be dealt by mknest
+  // in future we can get rid of this old C program and do
+  // everything in a shell script: much more mantainable!
+  gtk_main_quit();
+  exit(1);
 }
 void apply_nest_usb(GtkWidget *widget, gpointer *data) {
   if(selection_usb<0)

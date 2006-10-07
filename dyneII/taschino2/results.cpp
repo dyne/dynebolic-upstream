@@ -38,8 +38,8 @@ static GtkWidget *win_success;
 static GtkLabel *error_text = NULL;
 static GtkLabel *success_text = NULL;
 
-#define SUCCESS_FILE "/var/log/setup/success"
-#define ERROR_FILE "/var/log/setup/error"
+#define SUCCESS_FILE "/tmp/nest_success"
+#define ERROR_FILE "/tmp/nest_error"
 
 void error(char *format, ...) {
   va_list arg;
