@@ -42,6 +42,8 @@ if [ -z $DYNESDK ]; then
 else
   PFX=${DYNESDK}
 fi
+# default name of the iso file
+ISO=dyne-${DYNE_SYS_VER}.iso
 
 notice "$PACKAGE version $VERSION   Software Development Kit"
 act "by RASTASOFT AFRO LINUX   for the Freedom of Creation"
@@ -52,7 +54,7 @@ if ! [ -x /lib/dyne ]; then
   exit 0
 fi
 
-OPTS=`getopt -o hvp:u:r:i:s:m:nq -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o hvp:o:s:m:n -n 'dynesdk' -- "$@"`
 
 #eval set -- "$OPTS"
 
@@ -66,6 +68,7 @@ while true; do
 	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/SDK)"
             act "-m     additional modules to add in ramdisk"
             act "-n     include current net modules in ramdisk (for netboot)"
+            act "-o     filename of the iso to generate (default dyne-VER.iso)"
             act "-s     sign generated iso with gpg ID"
 
             notice "MODULE DEVELOPMENT COMMANDS:"
@@ -84,6 +87,7 @@ while true; do
 	-p) PFX=$2; shift 2 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
         -n) ADD_NETWORK_MODULES="yes"; shift 1 ;;
+        -o) ISO=$2; shift 2 ;;
         -s) SIGN=$2; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
@@ -399,6 +403,7 @@ mkinitrd() {
     rm -f etc/mtab
     rm -f etc/resolv.conf*
     rm -f etc/asound.state
+    rm -f etc/modprobe.conf
     rm -f etc/hosts
 echo "127.0.0.1 localhost" > etc/hosts
 cat << EOF > etc/resolv.conf
@@ -624,7 +629,9 @@ EOF
       for m in `iterate $ADD_RAMDISK_MODULES`; do
     	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
 	  if [ -r ${M} ]; then
-	    cp -vu ${M} boot/modules/${KRN}/
+	    cp -v ${M} boot/modules/${KRN}/
+            echo -n "${m} "
+            bzip2 -9 boot/modules/${KRN}/${m}.ko
 	  else
 	    error "module ${m} not found"
           fi
@@ -809,9 +816,8 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       rm -rf ${svn}
     done
 
-    ISO=dyne-${DYNE_SYS_VER}.iso
     act "proceeding to pack the ISO image $ISO"
-    $MKISOFS -o $PFX/$ISO -J -R -udf \
+    $MKISOFS -o $PFX/$ISO -J -R -udf -m '.svn' \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
 	    $PFX/cdrom/
