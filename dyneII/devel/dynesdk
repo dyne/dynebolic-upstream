@@ -42,8 +42,11 @@ if [ -z $DYNESDK ]; then
 else
   PFX=${DYNESDK}
 fi
+
 # default name of the iso file
 ISO=dyne-${DYNE_SYS_VER}.iso
+# default name of the ramdisk
+INITRD=initrd
 
 notice "$PACKAGE version $VERSION   Software Development Kit"
 act "by RASTASOFT AFRO LINUX   for the Freedom of Creation"
@@ -87,7 +90,7 @@ while true; do
 	-p) PFX=$2; shift 2 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
         -n) ADD_NETWORK_MODULES="yes"; shift 1 ;;
-        -o) ISO=$2; shift 2 ;;
+        -o) OUTPUT=$2; shift 2 ;;
         -s) SIGN=$2; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; shift 1; break ;;
@@ -382,6 +385,7 @@ mkinitrd() {
     cp -f /usr/share/icons/graphite/48x48/apps/disks.png mnt/.DirIcon
     ln -s /usr usr/share
     ln -s /etc/terminfo usr/terminfo
+    ln -sf /bin/zsh bin/sh
     mknod dev/console c 5 1
     mkdir dev/pts
     mkdir -p var/run
@@ -656,15 +660,18 @@ EOF
 
     cd - > /dev/null
     cd $PFX
+
+    # setup the name for the ramdisk
+    if [ $OUTPUT ]; then INITRD=$OUTPUT; fi
 	     
     act "generate device file"
-    dd if=/dev/zero of=cdrom/dyne/initrd bs=1k count=12000
+    dd if=/dev/zero of=cdrom/dyne/$INITRD bs=1k count=12000
     act "formatting ramdisk filesystem"
-    mke2fs -F -m 0 -i 1024 -L ramdisk cdrom/dyne/initrd
+    mke2fs -F -m 0 -i 1024 -L ramdisk cdrom/dyne/$INITRD
     act "populating ramdisk static file"
     mkdir -p tmp
 
-    mount -o loop,rw -t ext2 cdrom/dyne/initrd tmp
+    mount -o loop,rw -t ext2 cdrom/dyne/$INITRD tmp
     if [ $? != 0 ]; then
       error "mount of initrd filesystem failed, aborting"
       return
@@ -677,10 +684,10 @@ EOF
     rm -rf initrd
 
     act "tuning filesystem"
-    tune2fs -c 0 -i 0 cdrom/dyne/initrd
-    rm -f cdrom/dyne/initrd.gz
-    gzip -9 cdrom/dyne/initrd
-    act "`stat cdrom/dyne/initrd.gz`"
+    tune2fs -c 0 -i 0 cdrom/dyne/$INITRD
+    rm -f cdrom/dyne/$INITRD.gz
+    gzip -9 cdrom/dyne/$INITRD
+    act "`stat cdrom/dyne/$INITRD.gz`"
     cd - > /dev/null
     sync
 }
@@ -722,7 +729,7 @@ mkusr() {
     if [ -r $PFX/cdrom/dyne/dyne.sys ]; then
       rm $PFX/cdrom/dyne/dyne.sys
     fi
-    $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys
+    $MKSQUASHFS /usr $PFX/cdrom/dyne/dyne.sys -root-owned
     chmod a+r $PFX/cdrom/dyne/dyne.sys
     chmod -x  $PFX/cdrom/dyne/dyne.sys
     act "end: `date`"
@@ -754,6 +761,9 @@ mkiso() {
       gpg -u $SIGN -b -a $PFX/cdrom/dyne/dyne.sys.md5
       gpg -u $SIGN -b -a $PFX/cdrom/dyne/initrd.gz.md5
     fi
+
+    # setup the name for the iso
+    if [ $OUTPUT ]; then ISO=$OUTPUT; fi
 
     act "checking if the CDROM is complete"
     # the RAMDISK
