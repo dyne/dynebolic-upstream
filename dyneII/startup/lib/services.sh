@@ -70,7 +70,7 @@ init_modules() {
    BOGUS_SOUND="btaudio|8x0m|modem"
 
    # we exclude the modules that crash some machines
-   BAD_MODULES="i810_rng|hw_random"
+   BAD_MODULES="i810_rng|hw_random|shpchp|pciehp"
 
    # load alsa modules first
    for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do
@@ -81,6 +81,10 @@ init_modules() {
    for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE '$BOGUS_SOUND' | grep -ivE '$BAD_MODULES'`; do
      loadmod $i 
    done
+
+   act "activating low-latency realtime scheduling"
+   loadmod realtime
+
 }
 
 activate_acpi() {
@@ -301,6 +305,11 @@ EOF
       cd /etc/privoxy
       privoxy
       cd -
+    fi
+
+    if [ $d = "vnc" ]; then
+      act "starting VNC remote desktop server"
+      export START_X11VNC=true
     fi
 
   done

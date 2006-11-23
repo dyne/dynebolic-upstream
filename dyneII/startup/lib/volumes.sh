@@ -32,6 +32,15 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
   fi
+  # samba mounts wont contain a dyne directory, so we check the root
+  if ! [ $FLAGS ]; then  # we do it in case nothing was found so far
+      if [ -r ${PFX}/${MNT}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+      if [ -r ${PFX}/${MNT}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+      if [ -r ${PFX}/${MNT}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
+      if [ -x ${PFX}/${MNT}/SDK ];      then FLAGS="$FLAGS sdk"; fi
+  fi
+
+
   if [ $FLAGS ]; then PASS=1; fi # check filesystem if sys|nst|cfg|sdk
 
   case ${MEDIA} in
@@ -62,6 +71,12 @@ add_volume() {
 	  append_line /etc/fstab \
           "/dev/${DEV}\t${PFX}/${MNT}\tauto\tdefaults,user,ro\t0\t0"
 	  ;;
+
+      "samba")
+          append_line /boot/volumes "$MEDIA ${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
+          append_line /etc/fstab \
+          "//${DEV}/dyne.dock\t${PFX}/${MNT}\tsmbfs\tguest,ro,ttl=10000,sock=IPTOS_LOWDELAY,TCP_NODELAY\t0\t0"
+          ;;
       
 
       *)
@@ -203,13 +218,15 @@ scan_partitions() { #arg : devicename
 
           act "mounting ${PART_FS} partition ${PART_DEV}"
 
+	  do_fsck="`get_config fsck`"
+	  if ! [ "$do_fsck" = "false" ]; then
           # starts a check on linux ext* filesystems
-          if [ "`echo $PART|grep -iE 'linux'`" ]; then
-            notice "linux filesytem check"
+	      if [ "`echo $PART|grep -iE 'linux'`" ]; then
+		  notice "linux filesytem check"
             # man fsck says this should safely work
-            fsck -TCp ${PART_DEV}
-          fi  
-
+		  fsck -TCp ${PART_DEV}
+	      fi  
+	  fi
 	   
           # here check if FS ~= LVM then use LVM-tools
           if [ "`echo ${PART_FS}   | grep 'LVM'`" ]; then
@@ -332,8 +349,15 @@ scan_storage() {
 	fi
 
         notice "scanning harddisk ${DEV}"
-        act "activating DMA channel and 32bit IO"
-        hdparm -d1 -c1 /dev/${DEV}        
+        nohdparm="`get_config nohdparm`" # no hdparm optimization settings, comma separated list of devices
+        if [ "$nohdparm" ]; then
+          for h in `iterate $nohdparm`; do
+            if [ "$h" != "${DEV}" ]; then
+              act "activating DMA channel and 32bit IO"
+              hdparm -d1 -c1 /dev/${DEV}        
+            fi
+          done
+        fi
 
 	# IDE partitions
 	scan_partitions ${DEV}
@@ -354,7 +378,8 @@ scan_storage() {
     fi
 
     # refresh the devices
-    /sbin/udevstart
+    act "refresh device filesystem"
+    udevstart
 
     for DEV in `ls /dev | awk '/^sd.$/ {print $1}'`; do
        # TODO: be sure to detect it's an harddisk
@@ -386,10 +411,10 @@ scan_removable() {
       # now find out the last sd? device
     done
     if [ -z $SCSIDEV ]; then # no scsi/sata fixed disc, pick the first
-      add_volume usb sda1 usb vfat
+      add_volume usb sda1 usb auto
     else
       USB=`alphabet ${SCSIDEV[3]} next`
-      add_volume usb "sd${USB}1" usb vfat
+      add_volume usb "sd${USB}1" usb auto
     fi
   fi
 

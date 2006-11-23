@@ -55,9 +55,6 @@ fi
 
 
 
-
-
-
 ##########################################
 ## SINGLE USER MODE (ex rc_S)
 
@@ -81,18 +78,29 @@ chmod +t    /tmp
 
 notice "dyne:bolic hardware device detection"
 mount /proc
+# deactivate hotplug at boot
+echo "0" >> /proc/sys/kernel/hotplug
+
 act "`cat /proc/cpuinfo|grep 'model name'|cut -d: -f2`"
 act "`cat /proc/cpuinfo|grep 'flags'|cut -d: -f2`"
 
-mount /dev/pts
-mount /sys
 
 notice "initializing device filesystem"
-/sbin/udevstart
 
-
-# remount the ramdisk read/write
 mount -o remount,rw /
+
+mount -t sysfs  sysfs  /sys
+
+mount -t devpts devpts /dev/pts
+
+# mount -o size=8m -t tmpfs tmpfs /dev
+
+# launch the udev daemon
+act "launching device filesystem daemon"
+/sbin/udevd --daemon
+
+act "populating device filesystem"
+udevstart
 
 ## load the kernel modules available to ramdisk
 ## this is useful if we want to mount remote network systems
@@ -125,7 +133,8 @@ if [ $CFG_MODULES ]; then
     done
 
     # refresh device filesystem
-    /sbin/udevstart
+    act "repopulating device filesystem"
+    udevstart
 
 fi
 
@@ -184,30 +193,17 @@ if [ $BOOT_NETWORK ]; then
     if [ "`ifconfig -a | grep eth`" ]; then
 
 	notice "Network booting is configured"
-	# go for the DHCP auto config
-#	if [ "`echo $BOOT_NETWORK | grep -iE 'pump|dhcp|auto'`" ]; then
 
-#           TODO: configure udhcpc properly for this function
+        IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
+        IP=`echo $BOOT_NETWORK      | cut -d, -f2`
+        if [ "`echo $IP | grep -iE 'pump|dhcp|auto'`" ]; then
+          act "autodetect network configuration (DHCP)"
+          pump -i ${IFACE}
+        else
+          act "configuring interface ${IFACE} with ip ${IP}"
+          ifconfig ${IFACE} ${IP}
+        fi
 
-#	    act "autodetect dhcp network address"
-#	    udhcpc
-
-#	else
-
-#	    IFACE=`echo $BOOT_NETWORK   |awk '{print $1}'`
-#	    IP=`echo $BOOT_NETWORK      |awk '{print $2}'`
-#	    NETMASK=`echo $BOOT_NETWORK |awk '{print $3}'`
-#	    GW=`echo $BOOT_NETWORK      |awk '{print $4}'`
-#	    DNS=`echo $BOOT_NETWORK     |awk '{print $5}'`
-
-	    IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
-	    IP=`echo $BOOT_NETWORK      | cut -d, -f2`
-	    ifconfig ${IFACE} ${IP}
-
-#	    route add default gw ${GW}
-#	    echo "nameserver $DNS" > /etc/resolv.conf
-
-#	fi
 
 
 
@@ -247,7 +243,7 @@ if [ $BOOT_NETWORK ]; then
 	    mkdir -p /mnt/smbdock
 	    loadmod smbfs
             sync
-	    mount -t smbfs -o ro,guest //${DOCK_SAMBA}/dyne.dock /mnt/smbdock
+	    mount -t smbfs -o ro,guest,ttl=10000,sock=IPTOS_LOWDELAY,TCP_NODELAY //${DOCK_SAMBA}/dyne.dock /mnt/smbdock
 	    if [ $? != 0 ]; then # mount failed
 		error "mount failed, remote dock aborted"
 	    else
@@ -258,7 +254,7 @@ if [ $BOOT_NETWORK ]; then
 		    DYNE_SYS_MEDIA=samba
 		    DYNE_SYS_MNT=/mnt/smbdock
 		    DYNE_SYS_DEV=${DOCK_SAMBA}
-                    append_line /boot/volumes "samba ${DOCK_SAMBA} /mnt/smbdock smbfs"
+                    add_volume samba ${DOCK_SAMBA} smbdock smbfs
 		fi
 	    fi
 	fi
@@ -321,6 +317,8 @@ ln -s ${DYNE_SYS_MNT} /lib/dyne/configure/Dyne
 boot_multi_user_mode() {
 
 notice "going into multi user mode"
+
+source /boot/dynenv
 
 ######## HOME IS MOUNTER HERE
 ############ ALL MEDIA MOUNTED, now MOUNT dyne.sys
@@ -549,6 +547,9 @@ fi
 # now the system is mounted expand our PATH
 export PATH=/usr/bin:/usr/sbin:$PATH
 
+# link bash to sh
+ln -sf /usr/bin/bash /bin/sh
+
 dmesg -n 1
 
 # notice "start multiuser system log monitor"
@@ -598,13 +599,8 @@ fi
 init_language
 
 
-##########################################
-## starting daemons here
-
-notice "launching device filesystem daemon"
-
-/sbin/udevd --daemon
-/sbin/udevstart
+act "repopulating device filesystem"
+udevstart
 
 
 # notice "mounting static filesystem table"
@@ -683,6 +679,8 @@ mount | logger -p syslog.info
 
 sync
 
+# activate hotplug
+echo "/sbin/hotplug" >> /proc/sys/kernel/hotplug
 
 }
 

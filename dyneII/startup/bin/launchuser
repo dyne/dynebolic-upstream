@@ -10,5 +10,5 @@ else
   EXEC="exec"
 fi
 
-launch $EXEC $@
+launch `$EXEC $@`
 

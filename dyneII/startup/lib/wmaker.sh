@@ -159,16 +159,6 @@ wmaker_gen_menu() {
        rm $WMMENU
     fi
 
-    # here deletes previous or user defined menu
-    if [ -r /root/GNUstep/Defaults/WMRootMenu ]; then
-       rm /root/GNUstep/Defaults/WMRootMenu
-    fi
-    for u in `ls /home`; do
-       if [ -r /home/$u/GNUstep/Defaults/WMRootMenu ]; then
-          rm /home/$u/GNUstep/Defaults/WMRootMenu
-       fi
-    done
-
     cat /boot/dyne.apps \
     | awk -f /lib/dyne/menugen.awk -v render=wmaker \
     > $WMMENU
@@ -178,6 +168,19 @@ wmaker_gen_menu() {
     cat /lib/dyne/menu.wmaker >> $WMMENU
     # and close up the menu
     echo ")" >> $WMMENU
+
+    # here overwrites previous or user defined menu
+    if [ -r /root/GNUstep/Defaults/WMRootMenu ]; then
+       rm /root/GNUstep/Defaults/WMRootMenu
+    fi
+    cp $WMMENU /root/GNUstep/Defaults/WMRootMenu
+    for u in `ls /home`; do
+       if [ -r /home/$u/GNUstep/Defaults/WMRootMenu ]; then
+          rm /home/$u/GNUstep/Defaults/WMRootMenu
+       fi
+       cp $WMMENU /home/$u/GNUstep/Defaults/WMRootMenu
+    done
+
 }
 
 
@@ -521,6 +524,10 @@ dyne_startx() {
 
   # honour configuration directives
   # sent thru kernel parameters and dyne.cfg
+
+  if [ $START_X11VNC = true ]; then
+    (sleep 10; x11vnc -shared -forever -display :0)&
+  fi
 
   # success booting x with current drivers:
   rm -f /tmp/.booting_x

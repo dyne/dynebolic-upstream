@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Add new users</Summary>
+  <About>
+    <Purpose>Setup new users in your nest</Purpose>
+    <Version>dyne:II</Version>
+    <Authors>Slackware Linux</Authors>
+    <License>GNU General Public License</License>
+    <Homepage></Homepage>
+  </About>
+</AppInfo>

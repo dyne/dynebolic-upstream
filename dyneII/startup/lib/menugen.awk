@@ -116,6 +116,12 @@ function render_wmaker() {
 		command = command "launchterm " title
         }
 
+	if ($4 ~ "root" ) # run as root
+	   command = command "launchroot "
+
+        if ($4 ~ "user" ) # run as user
+           command = command "launchuser "
+
 	command = command $3
 
 	print " \"" command "\")"

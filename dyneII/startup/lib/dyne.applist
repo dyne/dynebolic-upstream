@@ -44,8 +44,9 @@ xVidCap | desktop movie capture | xvidcap | | xvidcap WEB | xvidcap author
 Avidemux | simple video cutter | avidemux2 | runonce | fixounet.free.fr/avidemux | Mean 'fixounet'
 LiVES | linux video editing system | lives | runonce | lives.sf.net | Gabriel "Salsaman" Finch
 JahShaka | video effect integrator | jahshaka | runonce | jahshaka.org | JahShaka
-Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
 Cinelerra | multitrack non-linear editor | cinelerra | | heroinevirtual.com | Heroine Warrior
+Ksubtile | subtitle editor | ksubtile | | ksubtile.sf.net | Tom Deblauwe
+Transcode | video transcoder | gtranscode | | transcode WEB | transcode author
 Seven Gnomes | video file indexer | seven-gnomes | | www.roxton.kiev.ua/sevengnomes.html | Peter 'Roxton' Semiletov
 
 	End | EDIT
@@ -187,8 +188,8 @@ Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 
 	Begin | CHAT
 
-XChat | irc chat | xchat | | xchat WEB | xchat auth
-Gaim | instant messaging | gaim | | gaim WEB | gaim auth
+XChat | irc chat | xchat | user | xchat WEB | xchat auth
+Gaim | instant messaging | gaim | user | gaim WEB | gaim auth
 Kiax | phone over internet | kiax | | kiax.sf.net | Kiax team
 OpenMash | audio/video conferenceu | mash-start | | openmash.org | mash auth
 KPhone | SIP web phone | kphone | | kphone WEB | kphone auth
@@ -208,9 +209,10 @@ LFtp | advanced ftp client | lftp | terminal | lcftp WEB | lftp auth
 
 	Begin | VNC
 
-VncServer | start vnc server | vncserver | man | vnc WEB | vnc auth
-VncViewer | watch a vnc server | vncconnect | man | vnc WEB | vnc auth
-VncPasswd | vnc server password | vncpasswd | man | vnc WEB | vnc auth
+VncViewer | vnc client | vncviewer | | vnc WEB | vnc auth
+SshVncViewer | vnc client over ssl/ssh | ssl_vncviewer | | vnc WEB | vnc auth
+VncServer | vnc server | x11vnc -display :0 | | vnc WEB | vnc auth
+Vnc2Swf | desktop movie recorder | vnc2swf | | Yusuke Shinyama  | http://www.unixuser.org/~euske/vnc2swf/
 RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
 
 	End | VNC
@@ -283,6 +285,7 @@ NeverPut | 3d mini golf | neverput | user | neverball.icculus.org | Robert Kooim
 PowerManga | galactic shot'em up | powermanga | | WEB | AUTH
 Racer | car racing from above | racer | user | WEB | AUTH
 RetroVolley | gnu arcade volleyball | gav | user | WEB | AUTH
+Ri-Li | drive the choo choo | Ri_li | user | WEB | AUTH
 Rick Dangerous | adventurer in the pyramid | xrick | user | WEB | AUTH
 Shotgun Debug | run hacker run | sdb | user | sdb.gamecreation.org | Game Creation Society
 Starfighter | arcade space quest | starfighter | user | WEB | AUTH
@@ -320,6 +323,9 @@ xvKbd | touchscreen keyboard | xvkbd | | AUTH | WEB
 xKill | kill application | xkill | | X.org | http://x.org
 GkRellm | system monitors | gkrellm | | Gkrellm | http://gkrellm.sf.net
 QPs | process manager | qps | | Mattias Engdegård | http://qps.kldp.net
+Search | file search monkey | searchmonkey | | Adam Cottrell | http://searchmonkey.sf.net
+SysProf | runtime profiler | sysprof | | Saaren Sandmann | http://sysprof.sf.net
+GDMap | harddisk mapper | gdmap | | Markus Lausser | http://gdmap.sf.net
 xrMap | a world atlas | xrmap | | AUTH | WEB
 ical | a calendar organizer | ical | | AUTH | WEB
 FoxCalc | a calculator | calculator | | AUTH | WEB

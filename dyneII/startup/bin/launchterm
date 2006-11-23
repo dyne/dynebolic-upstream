@@ -9,15 +9,21 @@ else
 
   shift
 
-  if [ $1 ]; then
-    PROG=$@
-  fi
-
 fi
 
+if [ $1 ]; then
 launch \
 `mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
        -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
        -sl 4096 -ss rxvt -sr -sw \
-       -bgfade 80 -htb -vb -bc -e $PROG`
+       -bgfade 80 -htb -vb -bc -e $@`
+else
+launch \
+`mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
+       -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
+       -sl 4096 -ss rxvt -sr -sw \
+       -bgfade 80 -htb -vb -bc`
+fi
+
+
 

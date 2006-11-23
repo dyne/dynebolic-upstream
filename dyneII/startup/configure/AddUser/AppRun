@@ -1,0 +1,6 @@
+#!/bin/sh
+
+APP_DIR=`dirname "$0"` export APP_DIR
+
+exec launchroot xterm -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 -bg black -fg green -e /usr/sbin/adduser
+

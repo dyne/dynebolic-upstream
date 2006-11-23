@@ -1,0 +1,12 @@
+[Accounts]
+[Accounts/dyneuser]
+Host=blasterisk.blagblagblag.org
+Username=dynebolic
+Password=rasta
+[OT]
+[OT/0]
+Name=jaromil
+Extension=rasta
+[Prefs]
+Name=dyneuser
+

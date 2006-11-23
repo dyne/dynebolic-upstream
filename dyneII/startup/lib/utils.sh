@@ -63,6 +63,32 @@ xosd() {
       -f "-*-lucidatypewriter-*-*-*-sans-*-190-*-*-*-*-*-*" &
 }
 
+# udevstart populates and refreshes /dev directory
+udevstart() {
+  # regenerate events by triggering sysfs
+#  for i in /sys/class/t*/*/uevent; do echo 1 > $i; done
+  # wait for async events to finish
+  #  while [ $(cat /proc/*/status 2> /dev/null | grep -c -E '^Name:.udevd?$') -gt 1 ]; do
+  #      sleep 1
+  #  done
+#  for i in /sys/class/[!t]*/*/uevent; do echo 1 > $i; done
+#  for i in /sys/block/*/uevent; do echo 1 > $i; done
+#  if [ "`ls /sys/block | grep -vE 'ram|loop'`" ]; then
+#    for i in /sys/block/*/*[1-9]/uevent; do echo 1 > $i; done
+#  fi
+#  for i in /sys/bus/*/devices/*/uevent; do echo 1 > $i; done
+
+  # wait for async events to finish
+#  while [ $(cat /proc/*/status 2> /dev/null | grep -c -E '^Name:.udevd?$') -gt 1 ]; do
+#      sleep 1
+#  done
+
+udevtrigger
+udevsettle
+
+}
+
+
 # configuration handling
 # returns the value of a configuration variable
 get_config() {
