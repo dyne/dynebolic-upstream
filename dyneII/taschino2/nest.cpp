@@ -41,16 +41,20 @@ static int selection = -1;
 static int selection_usb = -1;
 
 void select_nest(int *num) {
+  int max = 1024; // MAX size for a nest
+  int available;
+
   if(scan_parts()<*num) return;
   selection = *num;
   fprintf(stderr,"HD selected %i : %s\n", 
 	  selection, parts[selection].label);
 
+  available = ( parts[selection].fs.f_bavail * (parts[selection].fs.f_bsize/1024) ) /1000;
+  if(available<max) max = available;
+
   gtk_range_set_adjustment
     (hscale_hd,GTK_ADJUSTMENT
-     (gtk_adjustment_new(32,32,
-			 (parts[selection].fs.f_bavail *
-			  (parts[selection].fs.f_bsize/1024))/1000,1,0,0)));
+     (gtk_adjustment_new(32, 32, max, 1, 0, 0) ) );
 }
 
 void scan_nest_usb() {
