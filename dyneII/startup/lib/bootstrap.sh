@@ -35,6 +35,9 @@ if [ -z $INIT_VERSION ]; then
   exit -1
 fi
 
+
+# the following files contain various shell functions
+# that are called by this script
 source /lib/dyne/services.sh
 source /lib/dyne/language.sh
 source /lib/dyne/volumes.sh
@@ -99,9 +102,6 @@ mount -t devpts devpts /dev/pts
 act "launching device filesystem daemon"
 /sbin/udevd --daemon
 
-act "populating device filesystem"
-udevstart
-
 ## load the kernel modules available to ramdisk
 ## this is useful if we want to mount remote network systems
 ## or any special device which is not statically supported in kernel
@@ -132,10 +132,6 @@ if [ $CFG_MODULES ]; then
 
     done
 
-    # refresh device filesystem
-    act "repopulating device filesystem"
-    udevstart
-
 fi
 
 
@@ -150,8 +146,21 @@ if [ "`dmesg | grep 'USB hub found'`" ]; then
  
    # start loading the usb storage
    loadmod usb-storage
-   
+
+   sync
+ 
+   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
+     act "waiting for the kernel to scan usb devices"
+     while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
+         echo -n "."
+         sleep 1 # wait that the kernel scans before we scan
+     done
+   fi
+  
 fi
+
+act "populating device filesystem"
+udevstart
 
 #########################################
 ## scan all volumes by default
@@ -599,8 +608,8 @@ fi
 init_language
 
 
-act "repopulating device filesystem"
-udevstart
+#act "repopulating device filesystem"
+#udevstart
 
 
 # notice "mounting static filesystem table"
@@ -630,7 +639,8 @@ udevstart
 # load ACPI modules and launch daemon
 activate_acpi
 
-
+# activate hotplug
+echo "/sbin/hotplug" >> /proc/sys/kernel/hotplug
 
 # from services.sh - setup volumes to 77% unmuted
 raise_soundcard_volumes
@@ -678,9 +688,6 @@ logger -p syslog.notice "=== mounted filesystems:"
 mount | logger -p syslog.info
 
 sync
-
-# activate hotplug
-echo "/sbin/hotplug" >> /proc/sys/kernel/hotplug
 
 }
 

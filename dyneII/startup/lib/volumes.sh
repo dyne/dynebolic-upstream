@@ -370,16 +370,7 @@ scan_storage() {
     #### scan SCSI harddisks
     ########################
 
-    if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
-      act "waiting for the kernel to scan usb devices"
-      while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
-	  sleep 1 # wait that the kernel scans before we scan
-      done
-    fi
-
-    # refresh the devices
-    act "refresh device filesystem"
-    udevstart
+#    udevstart
 
     for DEV in `ls /dev | awk '/^sd.$/ {print $1}'`; do
        # TODO: be sure to detect it's an harddisk
