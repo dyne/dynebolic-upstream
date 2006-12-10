@@ -1,8 +1,8 @@
-#!/bin/ash
+#!/bin/zsh --no-zle
 
-ash /lib/dyne/shutdown.sh
+touch /boot/halt
 
-/sbin/halt -ihdp
+ash /lib/dyne/shutdown.sh &
 
 exit 0;
 

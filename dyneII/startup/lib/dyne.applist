@@ -254,6 +254,7 @@ Rox | our file browser | rox | | rox.sf.net | Thomas Leonard
 Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
 xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
 MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
+GDMap | harddisk mapper | gdmap |  | http://gdmap.sf.net| Markus Lausser
 xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
 Gringotts | encrypted data storage | gringotts -s | user | WEB | AUTH
 gCombust | cd burner | gcombust | | WEB | AUTH
@@ -325,7 +326,6 @@ GkRellm | system monitors | gkrellm | | http://gkrellm.sf.net| Gkrellm
 QPs | process manager | qps | | http://qps.kldp.net| Mattias Engdegård 
 Search | file search monkey | searchmonkey | | http://searchmonkey.sf.net| Adam Cottrell 
 SysProf | runtime profiler | sysprof | | http://sysprof.sf.net| Saaren Sandmann 
-GDMap | harddisk mapper | gdmap |  | http://gdmap.sf.net| Markus Lausser
 xrMap | a world atlas | xrmap | | AUTH | WEB
 ical | a calendar organizer | ical | | AUTH | WEB
 FoxCalc | a calculator | calculator | | AUTH | WEB

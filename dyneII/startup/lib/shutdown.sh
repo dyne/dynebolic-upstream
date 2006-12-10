@@ -43,18 +43,15 @@ done
 
 echo " .  umount all volumes"
 
-sync
-
 /bin/umount -a
 
-sync
+#/bin/umount /usr/local
+#/bin/umount /root
+#/bin/umount /home
+#/bin/umount /var
+#/bin/umount /etc
+#/bin/umount /tmp
 
-/bin/umount /local
-/bin/umount /root
-/bin/umount /home
-/bin/umount /var
-/bin/umount /etc
-/bin/umount /tmp
 if [ -x /usr/bin ]; then      /bin/umount /usr;      fi
 if [ -x /mnt/usr/bin ]; then  /bin/umount -d /mnt/usr;  fi
 if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest; fi
@@ -78,6 +75,9 @@ if [ -r /boot/debug_shutdown ]; then
     /bin/ash
 fi
 
-
-
+if   [ -r /boot/halt ]; then
+    /sbin/halt -ihdp
+elif [ -r /boot/reboot ]; then
+    /sbin/reboot
+fi
 

@@ -84,6 +84,10 @@
 (GNUEmacs (set-face-foreground 'modeline "red")
 	  (set-face-background 'modeline "lemonchiffon"))
 
+; load color-themes extension
+(require 'color-theme)
+(color-theme-initialize)
+
 (GNUEmacs
  (setq transient-mark-mode 't)
  )

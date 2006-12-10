@@ -1,9 +1,8 @@
-#!/bin/ash
+#!/bin/zsh --no-zle
 
-ash /lib/dyne/shutdown.sh
+touch /boot/reboot
 
-echo "[*] Reboot."
-reboot
+ash /lib/dyne/shutdown.sh &
 
 exit 0;
 
