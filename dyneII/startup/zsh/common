@@ -113,6 +113,9 @@ if [ -x /usr/bin/ls ]; then
   alias -g H='|head'
   alias -g T='|tail'
 
+  #dmalloc debugger
+  function dmalloc { eval `command dmalloc -b $*`; }
+
   # Filename suffixes to ignore during completion
   fignore=(.o .c~ .old .pro)
 

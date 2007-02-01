@@ -43,6 +43,13 @@ add_module_path() {
         "export MANPATH=\$MANPATH:/opt/${mod}/man"
     fi
 
+    # info files
+    if [ -x /opt/${mod}/info ]; then
+      append_line /boot/dynenv.modules \
+        "export INFOPATH=\$INFOPATH:/opt/$mod/info"
+    fi
+
+
     # configuration files in home directories
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then

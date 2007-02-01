@@ -16,4 +16,8 @@
     <comment>Windows device driver</comment>
     <glob pattern="*.inf"/>
   </mime-type>
+  <mime-type type="text/x-tbt">
+    <comment>Time Based Text</comment>
+    <glob pattern="*.tbt"/>
+  </mime-type>
 </mime-info>

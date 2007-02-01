@@ -662,7 +662,7 @@ check_apps_present
 for i in `cat /boot/volumes | awk '/^hdisk/ { print $3 }'`; do
   if [ -x ${i}/boot/grub ]; then
     act "grub bootloader found in $i"
-    ln -sf ${i}/grub /boot/
+    ln -sf ${i}/boot/grub /boot/
   fi
 done
 

@@ -230,7 +230,7 @@ Minicom | serial terminal | minicom | terminal | minicom WEB | AUTH
 
 	End | TOOLS
 
-Modem | | chestnut-dialer | root | chestnut WEB | AUTH
+Modem | | modemconfig | root | chestnut WEB | AUTH
 Network | | netconf | root | dynebolic.org | Jaromil
 
 End | NET
@@ -265,10 +265,11 @@ End | FILES
 
 Begin | GAMES
 
-
+0verkill | ascii blood wars | 0verkill | terminal | artax.karlin.mff.cuni.cz/~brain/0verkill/ | Brain
 Anatolia | online multi user dungeon | gmudix | user | WEB | AUTH
 Armagetron | tron lightspeed cycles | armagetronad | user | WEB | AUTH
 BlobWars | blob liberation fighter | blobwars | user | www.blobwars.org | Parallel Realities
+BlobConquer | blob 3d fighter | blobAndConquer | | www.blobwars.org | Parallel Realities
 FreeCiv | free civilization | civclient | user | WEB | AUTH
 CannonSmash | 3d multiplayer tabletennis | csmash | user | WEB | AUTH
 Eat the whistle | sensible soccer | eat-the-whistle | user | WEB | AUTH
@@ -293,6 +294,7 @@ Starfighter | arcade space quest | starfighter | user | WEB | AUTH
 SuperMarioWars | jump on platforms | supermariowars | user | WEB | AUTH
 SuperTux | penguin on platforms | supertux | user | WEB | AUTH
 tkSol | snappy solitaire | tksol | user | WEB | AUTH
+TypusPocus | typing wizard | typuspocus | user | www.python.com.ar/moin/juegos/TypusPocus | Python Argentina
 TuxPaint | baby painting | tuxpaint | user | www.tuxpaint.org | Tux Paint developers
 Wesnoth | turn based strategy fantasy | wesnoth | user | WEB | AUTH
 Wormux | worms fighting freely | wormux | user | www.wormux.org | Lawrence Azzoug
@@ -313,6 +315,7 @@ Scite | development text editor | SciTE | www.scintilla.org | Neil Hodgson
 Vim | versatile text editor | vim | terminal | vim.org | Braam Moolenaar et al.
 Emacs | extensible text editor | emacs | | gnu.org/software/emacs | Richard Stallman
 Adie | advanced interactive editor | adie | | fox-toolkit.org | Jeroen van der Zijp
+Valkyrie | runtime memory debugger | valkyrie | | valgrind.org | Valgrind developers
 
 End | DEVEL
 

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=dynesplash
+Comment=Welome to dyne:bolic
+Exec=dynesplash
+Icon=/usr/share/icons/logo.png
+Terminal=false
+Type=Application
+OnlyShowIn=XFCE;
+Hidden=false
