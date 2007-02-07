@@ -1,0 +1,10 @@
+#!/bin/sh
+
+APP_DIR=`dirname "$0"` export APP_DIR
+
+if   [ "`pidof wmaker`" ]; then
+  exec wmakerconf "$@"
+elif [ "`pidof xfwm4`" ]; then
+  exec xfce-setting-show "$@"
+fi
+
