@@ -214,6 +214,44 @@ EOF
       floating_nest
 
     fi
+
+    act "binding temporary directory"
+    mkdir -p /tmp
+
+    # try first with tmp in docks
+    tmps=`cat /boot/volumes | grep '^hdisk.*tmp' | awk '{print $3}'`
+    for t in ${(f)tmps}; do
+	if [ -w ${t}/dyne/tmp ]; then
+	   mount -o bind,rw ${t}/dyne/tmp /tmp
+           if [ $? != 0 ]; then
+              error "error mounting tmp in harddisk ${t}"
+           fi
+        fi
+    done
+    if [ "`is_mounted /tmp`" = "false" ]; then
+       # try in the nest
+       if [ -e /mnt/nest/tmp ]; then
+          mount -o bind,rw /mnt/nest/tmp /tmp
+          if [ $? != 0 ]; then
+            error "error mounting tmp in nest"
+          fi
+       fi
+    fi
+    if [ "`is_mounted /tmp`" = "false" ]; then
+       # do the ramdisk
+       mkdir       /dev/shm/tmp
+       mount -o bind,rw /dev/shm/tmp  /tmp
+       if [ $? != 0 ]; then
+	   error "error mounting tmp in ramdisk"
+       fi
+    fi
+  # we wipe out /tmp at every boot
+  cleandir /tmp
+  chmod a+rwx /tmp
+  chmod +t    /tmp
+  tmpdir=`cat /etc/mtab | awk '/ \/tmp/ { if($2 = "/tmp") print $1 }'`
+  act "bound to $tmpdir"
+        
 }
 
 
@@ -259,11 +297,6 @@ floating_nest() {
   ln -s /lib/dyne/configure /dev/shm/home/luther/Configure
   ln -s /mnt /dev/shm/home/luther/Volumes
 
-  act "initializing /tmp"
-  mkdir       /dev/shm/tmp
-  chmod a+rwx /dev/shm/tmp
-  chmod +t    /dev/shm/tmp
-
   act "loading /var"
   mv /var /dev/shm/var
   mkdir -p /var
@@ -273,7 +306,6 @@ floating_nest() {
   mount -o bind /dev/shm/var  /var
   mount -o bind /dev/shm/root /root
   mount -o bind /dev/shm/home /home
-  mount -o bind /dev/shm/tmp  /tmp
 
 }
 
@@ -313,8 +345,9 @@ bind_nest() { # bind directories in /mnt/nest
   if [ ! -e ${NST}/etc ]; then
       warning "nest is missing etc, skipping"
   else
-      cp -f /etc/fstab ${NST}/etc/fstab
-      cp -f /etc/mtab  ${NST}/etc/mtab
+      cp -f  /etc/fstab ${NST}/etc/fstab
+      cp -f  /etc/mtab  ${NST}/etc/mtab
+      cp -fr /etc/pam.d ${NST}/etc/
       mount -o bind ${NST}/etc /etc
   fi
 
@@ -333,22 +366,6 @@ bind_nest() { # bind directories in /mnt/nest
       # wipe out all ramdisk /var and mount the nest one
       cleandir /var
       mount -o bind    ${NST}/var /var
-  fi
-
-  # bind tmp
-  if [ ! -e ${NST}/tmp ]; then
-      warning "nest is missing tmp, skipping"
-  else
-      # we wipe out /tmp at every boot
-      cleandir ${NST}/tmp
-
-      # be sure we delete booting_x control flag
-      rm -f ${NST}/tmp/.booting_x
-
-      # it's called temporary, you've been warned.
-      mount -o bind ${NST}/tmp /tmp
-      chmod a+rwx /tmp
-      chmod +t    /tmp
   fi
 
   # bind /usr/local

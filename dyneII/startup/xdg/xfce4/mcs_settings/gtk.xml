@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mcs-option SYSTEM "mcs-option.dtd">
+
+<mcs-option>
+	<option name="Gtk/CanChangeAccels" type="int" value="0"/>
+	<option name="Gtk/CursorThemeName" type="string" value="default"/>
+	<option name="Gtk/CursorThemeSize" type="int" value="21"/>
+	<option name="Gtk/FontName" type="string" value="Sans 11"/>
+	<option name="Gtk/KeyThemeName" type="string" value="Default"/>
+	<option name="Gtk/ToolbarStyle" type="string" value="icons"/>
+	<option name="Net/CursorBlink" type="int" value="1"/>
+	<option name="Net/CursorBlinkTime" type="int" value="500"/>
+	<option name="Net/DndDragThreshold" type="int" value="8"/>
+	<option name="Net/DoubleClickTime" type="int" value="300"/>
+	<option name="Net/IconThemeName" type="string" value="graphite"/>
+	<option name="Net/ThemeName" type="string" value="Clearlooks-graphite"/>
+	<option name="Xft/Antialias" type="int" value="1"/>
+	<option name="Xft/HintStyle" type="string" value="hintfull"/>
+	<option name="Xft/Hinting" type="int" value="1"/>
+	<option name="Xft/RGBA" type="string" value="none"/>
+</mcs-option>

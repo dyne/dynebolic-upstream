@@ -321,6 +321,7 @@ EOF
   chmod ug+rwx     /mnt/shares
   ln -s /usr/apps/Network/LinNeighborhood /mnt/shares/Add_Shares
   ln -s /usr/apps/Network/DyneSsh /mnt/shares/Add_SSH
+  ln -s /usr/share/icons/graphite/48x48/filesystems/gnome-fs-network.png /mnt/shares/.DirIcon
   
 }
 

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "`which xfce4-mixer`" ]; then
+	exec xfce4-mixer $@
+elif [ "`which alsamixer`" ]; then
+	exec alsamixer $@
+fi
+

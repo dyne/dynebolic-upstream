@@ -28,6 +28,11 @@ WMMENU=/etc/WindowMaker/WMRootMenu
 # Fluxbox paths
 FLXMENU=/etc/fluxbox/menu
 
+# Xfce paths
+XFCEMENU=/etc/xdg/xfce4/desktop/menu.xml
+XFCEPANEL=/etc/xdg/xfce4/panel   # note this is a directory
+
+
 check_app_entry() {
 # usage:
 # check_app_entry  single_line_from_applist  file_to_write
@@ -465,6 +470,225 @@ EOF
     fi
 }
 
+xfce_gen_menu() {
+
+    if [ -r $XFCEMENU ]; then
+	rm $XFCEMENU
+    fi
+
+    # print the header in the new menu.xml
+    cat <<EOF > ${XFCEMENU}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xfdesktop-menu>
+<!-- automatically generated menu by dyne:bolic startup -->
+<xfdesktop-menu>
+<title name="Software Menu" icon="/usr/share/dyne/logo-icon.png"/>
+<separator/>
+<app name="Web Browser" cmd="xfbrowser4" icon="mozilla-firefox"/>
+<app name="File Search" cmd="searchmonkey" icon="gnome-searchtool"/>
+<app name="Terminal" cmd="launchterm" icon="gnome-terminal"/>
+
+<separator/>
+EOF
+
+    cat /boot/dyne.apps \
+	| awk -f /lib/dyne/menugen.awk -v render=xfce \
+	>> ${XFCEMENU}
+
+    cat <<EOF >> ${XFCEMENU}
+<builtin name="Quit" cmd="quit" icon="gnome-logout"/>
+</xfdesktop-menu>
+EOF
+
+}
+
+xfce_gen_volumes() {
+
+    if [ -r $XFCEPANEL/panels.xml ]; then
+	rm $XFCEPANEL/panels.xml
+    fi
+    
+    cat <<EOF > $XFCEPANEL/panels.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "config.dtd">
+<panels>
+	<panel>
+		<properties>
+			<property name="size" value="26"/>
+			<property name="monitor" value="0"/>
+			<property name="screen-position" value="11"/>
+			<property name="fullwidth" value="1"/>
+			<property name="xoffset" value="0"/>
+			<property name="yoffset" value="741"/>
+			<property name="handlestyle" value="0"/>
+			<property name="autohide" value="0"/>
+			<property name="transparency" value="20"/>
+			<property name="activetrans" value="1"/>
+		</properties>
+		<items>
+			<item name="showdesktop" id="1"/>
+			<item name="pager" id="2"/>
+			<item name="tasklist" id="3"/>
+			<item name="systray" id="4"/>
+		</items>
+	</panel>
+	<panel>
+		<properties>
+			<property name="size" value="36"/>
+			<property name="monitor" value="0"/>
+			<property name="screen-position" value="7"/>
+			<property name="fullwidth" value="0"/>
+			<property name="xoffset" value="981"/>
+			<property name="yoffset" value="0"/>
+			<property name="handlestyle" value="0"/>
+			<property name="autohide" value="0"/>
+			<property name="transparency" value="20"/>
+			<property name="activetrans" value="1"/>
+		</properties>
+                <items>
+			<item name="xfce4-menu" id="5"/>
+			<item name="separator" id="6"/>
+			<item name="launcher" id="7"/>
+EOF
+
+    tmpid=30
+
+    ################################# HARDDISK
+
+    hdisks=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
+    
+    for hd in `echo $hdisks | awk '{print $0}'`; do
+
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"$tmpid\"/>" >> $XFCEPANEL/panels.xml
+	
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Harddisk
+Exec=rox /mnt/${hd}
+Terminal=false
+StartupNotify=false
+Comment=Persistent storage
+Icon=/usr/share/icons/graphite/48x48/filesystems/gnome-fs-blockdev.png
+EOF
+    done
+
+
+    devs=`cat /boot/volumes | grep -v "^hdisk"`
+
+    ############################# CDROM & DVD
+    
+    for c in `echo $devs | awk '/^cd/ { print $3 } /^dvd/ { print $3 }'`; do
+	
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+	
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Cd Rom
+Exec=rox ${c}
+Terminal=false
+StartupNotify=false
+Comment=Compact Disk / DVD
+Icon=/usr/share/icons/graphite/48x48/devices/gnome-dev-cdrom.png
+EOF
+    done
+
+    ############################# NETWORK
+    LAN=`lspci | grep -i 'ethernet'`
+    if [ $LAN ]; then
+	
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Network
+Exec=rox /mnt/shares
+Terminal=false
+StartupNotify=false
+Comment=Shared Volumes
+Icon=/mnt/shares/.DirIcon
+EOF
+    fi
+
+
+
+
+    ############################# USB KEY 
+
+    usbs=`echo $devs | awk '/^usb/ { print $3 }'`
+    for u in ${(f)usbs}; do
+	
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+	
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Usb key
+Exec=rox ${u}
+Terminal=false
+StartupNotify=false
+Comment=Usb removable storage
+Icon=/usr/share/icons/crystalsvg/48x48/devices/usbpendrive_unmount.png
+EOF
+    done
+
+    ############################# PHOTO CAMERA
+    if [ -r /proc/bus/usb/devices ]; then
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+	
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Photo camera
+Exec=gtkam
+Terminal=false
+StartupNotify=false
+Comment=Usb Photo Camera
+Icon=/usr/share/icons/graphite/48x48/apps/camera.png
+EOF
+    fi
+	
+
+    ############################# FLOPPY
+    
+    for d in `echo $devs | awk '/^floppy/ { print $3 }'`; do
+
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"launcher\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[Entry 0]
+Name=Floppy Disk
+Exec=rox ${d}
+Terminal=false
+StartupNotify=false
+Comment=Floppy disk storage
+Icon=/usr/share/icons/graphite/48x48/devices/gnome-dev-floppy.png
+EOF
+    done
+
+
+    ###########################################
+    ##### END OF PANEL
+
+cat <<EOF >> $XFCEPANEL/panels.xml
+			<item name="separator" id="101"/>
+			<item name="clock" id="105"/>
+                </items>
+        </panel>
+</panels>
+EOF
+
+}
+
 
 # this function is called at the end of bootstrap.sh
 # it starts up X with the current configuration
@@ -483,6 +707,21 @@ bootstrap_x() {
     fi
     return
   fi
+
+  # setup window managers
+
+  notice "initializing window managers"
+  # generate window manager menu entries
+  fluxbox_gen_menu
+  wmaker_gen_menu
+  xfce_gen_menu
+
+  # generate window manager volumes entries
+  rox_gen_volumes
+  wmaker_gen_volumes
+  xfce_gen_volumes
+  
+
 
   USERLOGIN="`get_config user`"
 
@@ -521,11 +760,12 @@ bootstrap_x() {
 # this function is called in .xinitrc by default
 dyne_startx() {
   # source /etc/LANGUAGE
+  source /boot/dynenv.modules
 
   # honour configuration directives
   # sent thru kernel parameters and dyne.cfg
 
-  if [ $START_X11VNC = true ]; then
+  if [ "$START_X11VNC" = "true" ]; then
     (sleep 10; x11vnc -shared -forever -display :0)&
   fi
 
@@ -567,6 +807,14 @@ dyne_startx() {
 
     # start our ROX filer with pinboard and panel
     (sleep 3; rox -p Default -r Default &)&
+
+  fi
+
+  if [ $WINDOWMANAGER = xfce ]; then
+
+      if [ "`which xfce4-session`" ]; then
+        WINDOWMANAGER=xfce4-session
+      fi
 
   fi
 

@@ -65,26 +65,26 @@ xosd() {
 
 # udevstart populates and refreshes /dev directory
 udevstart() {
-  # regenerate events by triggering sysfs
-#  for i in /sys/class/t*/*/uevent; do echo 1 > $i; done
-  # wait for async events to finish
-  #  while [ $(cat /proc/*/status 2> /dev/null | grep -c -E '^Name:.udevd?$') -gt 1 ]; do
-  #      sleep 1
-  #  done
-#  for i in /sys/class/[!t]*/*/uevent; do echo 1 > $i; done
-#  for i in /sys/block/*/uevent; do echo 1 > $i; done
-#  if [ "`ls /sys/block | grep -vE 'ram|loop'`" ]; then
-#    for i in /sys/block/*/*[1-9]/uevent; do echo 1 > $i; done
-#  fi
-#  for i in /sys/bus/*/devices/*/uevent; do echo 1 > $i; done
+  act "populating device filesystem"
 
-  # wait for async events to finish
-#  while [ $(cat /proc/*/status 2> /dev/null | grep -c -E '^Name:.udevd?$') -gt 1 ]; do
-#      sleep 1
-#  done
+  udevtrigger --subsystem-match=mem \
+              --subsystem-match=ide \
+              --subsystem-match=net \
+              --subsystem-match=input \
+              --subsystem-match=block \
+              --subsystem-match=tty \
+              --subsystem-match=vc \
+              --subsystem-match=misc \
+              --subsystem-match=acpi \
+              --subsystem-match=sound \
+              --subsystem-match=ieee1394 \
+              --subsystem-match=graphics
 
-udevtrigger
-udevsettle
+  sync
+
+  udevtrigger --retry-failed
+
+  udevsettle
 
 }
 

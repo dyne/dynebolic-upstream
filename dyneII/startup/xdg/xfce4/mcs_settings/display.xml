@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mcs-option SYSTEM "mcs-option.dtd">
+
+<mcs-option>
+	<option name="XDisplay/bgamma" type="int" value="100"/>
+	<option name="XDisplay/ggamma" type="int" value="100"/>
+	<option name="XDisplay/rate" type="int" value="-1"/>
+	<option name="XDisplay/rgamma" type="int" value="100"/>
+	<option name="XDisplay/size" type="int" value="-1"/>
+	<option name="XDisplay/syncGamma" type="int" value="1"/>
+</mcs-option>

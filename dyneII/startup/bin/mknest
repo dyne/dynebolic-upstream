@@ -187,6 +187,9 @@ PATH=/usr/bin:/usr/sbin:/bin:/sbin
 
 if [ $LOOPBACK ]; then
 
+    # put a busy watch on the cursor
+    xsetroot -cursor_name watch
+
     SIZE_4k=`expr \( $NSTSIZE \* 1000 \) / 4`
     notice "generating file of ${NSTSIZE}Mb (${SIZE_4k} blocks of 4Kb)"
     act "dd if=/dev/zero of=${NSTFILE} bs=4k count=$SIZE_4k"
@@ -259,9 +262,12 @@ if [ $LOOPBACK ]; then
     
     act "here is your new dyne:bolic nest:"
     stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
-    
-    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: It will be active starting from the next boot."
 
+    # restore the cursor
+    xsetroot -cursor_name arrow
+
+    report_success "Dynebolic nest succesfully created in ${NSTFILE} :: It will be active starting from the next boot."
+    
 
 fi # end nest in loopback
 

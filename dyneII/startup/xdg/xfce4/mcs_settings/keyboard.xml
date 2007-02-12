@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mcs-option SYSTEM "mcs-option.dtd">
+
+<mcs-option>
+	<option name="Key/BounceKeys" type="int" value="0"/>
+	<option name="Key/DeBounceDelay" type="int" value="200"/>
+	<option name="Key/RepeatDelay" type="int" value="500"/>
+	<option name="Key/RepeatKey" type="int" value="1"/>
+	<option name="Key/RepeatRate" type="int" value="30"/>
+	<option name="Key/SlowKeys" type="int" value="0"/>
+	<option name="Key/SlowKeysDelay" type="int" value="200"/>
+	<option name="Key/StickyKeys" type="int" value="0"/>
+	<option name="Key/StickyLatchToLock" type="int" value="0"/>
+	<option name="Key/StickyTwoKeysDisable" type="int" value="0"/>
+</mcs-option>

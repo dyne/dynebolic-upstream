@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mcs-option SYSTEM "mcs-option.dtd">
+
+<mcs-option>
+	<option name="Xfce4/ShortcutThemeFile" type="string" value="/etc/xdg/xfce4/shortcuts/dynebolic.xml"/>
+	<option name="Xfce4/ShortcutThemeName" type="string" value="dynebolic"/>
+</mcs-option>

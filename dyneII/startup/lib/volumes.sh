@@ -16,6 +16,8 @@ add_volume() {
   MNT=${3}
   FS=${4}
 
+  KRN=`uname -r`
+
   if [ ! -r /boot/volumes ]; then touch /boot/volumes; fi
 
   FLAGS=""
@@ -31,6 +33,9 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/linux-mods-${KRN}.sys ]; then FLAGS="$FLAGS krn"; fi
+      if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
   fi
   # samba mounts wont contain a dyne directory, so we check the root
   if ! [ $FLAGS ]; then  # we do it in case nothing was found so far
@@ -38,6 +43,9 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/SDK ];      then FLAGS="$FLAGS sdk"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/linux-mods-${KRN}.sys ]; then FLAGS="$FLAGS krn"; fi
+      if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
   fi
 
 
@@ -391,9 +399,14 @@ scan_storage() {
 
 scan_removable() {
 
-  act "checking for a floppy driver"
-  if [ "`dmesg |grep ' fd0 '`" ]; then
-    add_volume floppy fd0 floppy auto
+  act "checking for floppy drivers"
+  if ! [ "`dmesg | grep 'no floppy controllers'`" ]; then
+      if [ "`dmesg | grep -i 'floppy.*fd0'`" ]; then
+	  add_volume floppy fd0 floppy auto
+      fi
+      if [ "`dmesg | grep -i 'floppy.*fd1'`" ]; then
+	  add_volume floppy fd1 floppy auto
+      fi
   fi
 
   act "checking for a usb plug"

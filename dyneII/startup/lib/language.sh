@@ -6,6 +6,8 @@
 # simple parser for settings and list of available languages
 # all with my beloved AWK
 
+source /lib/dyne/utils.sh
+
 init_language() {
 
   if ! [ -r /etc/LANGUAGE ]; then

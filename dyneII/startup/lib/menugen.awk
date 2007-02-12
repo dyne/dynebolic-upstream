@@ -67,11 +67,63 @@ function render_fluxbox() {
 
         if ($4 ~ "user" ) # run as user
            command = command "launchuser "
-
+	     
 	if ($4 ~ "terminal" ) # run into a terminal
-	   command = "launchterm '" $1 " :: " $2 "' "
+	   command = command "launchterm '" $1 " :: " $2 "' "
 
 	command = command $3 "}"
+
+	print line command
+
+}
+
+function render_xfce() {
+
+	if ($4 ~ "manual" ) # CLI sw, RTFM
+	   # let's skip it for now
+           return
+        fi
+
+	# if we have submenus to render in queue, then do it now
+	# that we are sure there is an executable for them
+	for(c=0; c<qsub_num; c++) {
+ 
+                menu_icon="emblem-generic"
+		if      (qsubmenu[c+1] ~ "AUDIO")  menu_icon="gnome-settings-sound"
+		else if (qsubmenu[c+1] ~ "VIDEO") menu_icon="gnome-multimedia"
+		else if (qsubmenu[c+1] ~ "IMAGE") menu_icon="gnome-graphics"
+                else if (qsubmenu[c+1] ~ "TEXT")  menu_icon="gnome-applications"
+		else if (qsubmenu[c+1] ~ "NET") menu_icon="xfce-internet"
+		else if (qsubmenu[c+1] ~ "DEVEL") menu_icon="gnome-devel"
+		else if (qsubmenu[c+1] ~ "GAMES")  menu_icon="xfce-games"
+		else if (qsubmenu[c+1] ~ "FILES") menu_icon="disks"
+		else if (qsubmenu[c+1] ~ "OFFICE") menu_icon="ooo_calc"
+		else if (qsubmenu[c+1] ~ "XUTILS") menu_icon="gnome-util"
+		else if (qsubmenu[c+1] ~ "CONFIG") menu_icon="gnome-settings"
+		line = "	<menu name=\"" qsubmenu[c+1] "\" icon=\"" menu_icon "\">"
+
+		print line
+
+		delete qsubmenu[c+1]
+		  
+	}
+
+	qsub_num = 0 # all queue is flushed now
+
+	line = "	<app name=\"" $1 " :: " $2 "\" "
+
+	command = "cmd=\""
+
+	if ($4 ~ "root" ) # run as root
+	   command = command "launchroot "
+
+        if ($4 ~ "user" ) # run as user
+           command = command "launchuser "
+
+	if ($4 ~ "terminal" ) # run into a terminal
+	   command = command "launchterm '" $1 " :: " $2 "' "
+
+	command = command $3 "\"/>"
 
 	print line command
 
@@ -151,6 +203,11 @@ BEGIN {
 		print "# to add you own entries, use ~/.fluxbox/usermenu"
 		print "[begin] (dyne:II)"
 
+		  
+        } else if (render == "xfce" ) {
+
+                windowmanager = "Xfce"
+
 	} else {
 		print "unrecognized renderer"
 		print "please specify \"-v render=param\" on commandline"
@@ -228,9 +285,13 @@ END {
 		print "\n"
 		line = ")"
 
-	} else if ( renderer = "fluxbox" ) {
+	} else if ( render == "fluxbox" ) {
 
 	  line = "[end]"
+
+        } else if ( render == "xfce" ) {
+	  
+	  line = "	</menu>"
 
 	}
 	# fill in missing renderers
@@ -251,6 +312,7 @@ END {
 
 	if      ( render == "wmaker" )  render_wmaker()
 	else if ( render == "fluxbox" ) render_fluxbox()
+        else if ( render == "xfce" )    render_xfce()
 
 	# fill in missing renderers
 }

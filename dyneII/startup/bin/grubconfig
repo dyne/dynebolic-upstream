@@ -19,6 +19,7 @@ TMP=/tmp/grubconfig
 BOOT_TMP=/tmp/boot
 CONSOLETYPE=standard
 CONSOLENUM=normal
+KRN=`uname -r`
 
 rm -rf $TMP $BOOT_TMP
 mkdir -p $TMP $BOOT_TMP
@@ -41,7 +42,7 @@ EOF
 	c=`expr $c + 1`
 	type=`echo $i| awk '{print $1}'`
 	dev=`echo $i| awk '{print $2}'`
-	fs=`vol_id -t $dev` 
+	fs=`/lib/udev/vol_id -t $dev` 
 	echo \
 	    "\"$dev\" \"$type\" \"formatted $fs\"" >> $TMP/hdselect_dialog
     done
@@ -101,7 +102,7 @@ color light-gray/blue black/light-gray
 # Start dyne:bolic entry
 title dyne:II DHORUBA
 root $grubsel
-kernel /dyne/linux root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=791
+kernel /dyne/linux-$KRN root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=791
 initrd /dyne/initrd.gz
 
 # for a windlows partition use the following entry

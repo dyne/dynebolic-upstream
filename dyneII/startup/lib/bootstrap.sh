@@ -96,6 +96,30 @@ mount -t sysfs  sysfs  /sys
 
 mount -t devpts devpts /dev/pts
 
+# check if an usb controller is present
+if [ "`dmesg | grep 'USB hub found'`" ]; then
+
+   notice "USB controller detected"
+
+   # mount the usb device filesystem
+   mount /proc/bus/usb
+ 
+   # start loading the usb storage
+   loadmod usb-storage
+
+   sync
+ 
+   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
+     act "waiting for the kernel to scan usb devices"
+     while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
+         echo -n "."
+         sleep 1 # wait that the kernel scans before we scan
+     done
+   fi
+  
+fi
+
+
 # mount -o size=8m -t tmpfs tmpfs /dev
 
 # launch the udev daemon
@@ -135,31 +159,7 @@ if [ $CFG_MODULES ]; then
 fi
 
 
-
-# check if an usb controller is present
-if [ "`dmesg | grep 'USB hub found'`" ]; then
-
-   notice "USB controller detected"
-
-   # mount the usb device filesystem
-   mount /proc/bus/usb
- 
-   # start loading the usb storage
-   loadmod usb-storage
-
-   sync
- 
-   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
-     act "waiting for the kernel to scan usb devices"
-     while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
-         echo -n "."
-         sleep 1 # wait that the kernel scans before we scan
-     done
-   fi
-  
-fi
-
-act "populating device filesystem"
+## populate the device filesystem
 udevstart
 
 #########################################
@@ -451,7 +451,7 @@ if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
     # avoid to update next time
     rm $src/VERSION
 
-    notice "system is now rebooting..."
+    notice "UPDATE COMPLETED :: system is now rebooting"
     sync
     umount $DYNE_SYS_MNT
     sleep 3
@@ -459,6 +459,28 @@ if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
   fi 
 
 fi
+##################### update done
+
+
+##################### mount kernel modules
+KRN=`uname -r`
+kmods=`cat /boot/volumes | grep krn`
+mkdir -p /lib/modules/${KRN}
+
+act "searching for kernel modules..."
+for k in ${(f)kmods}; do
+    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-mods-${KRN}.sys"
+    mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
+    if [ $? = 0 ]; then
+	act "kernel modules found in ${kpath}"
+	break;
+    fi
+done
+if ! [ -x /lib/modules/"`uname -r`"/kernel ]; then
+    error "no extra kernel modules found"
+fi
+########################### kernel modules done
+
 
 if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin ]; then
   # we have an uncompressed dock in the SDK
@@ -493,35 +515,35 @@ elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
     if [ $? = 0 ]; then
 
       # load union filesystem module from inside the squash
-      insmod /mnt/usr/lib/modules/`uname -r`/kernel/fs/unionfs/unionfs.ko
-
-      if [ $? = 0 ]; then
-
+	insmod /lib/modules/`uname -r`/kernel/fs/unionfs/unionfs.ko
+	
+	if [ $? = 0 ]; then
+	    
         # create directory where to store unionfs changes
-        mkdir -p /var/cache/union/usr_rw
+	    mkdir -p /var/cache/union/usr_rw
         # mount the unionfs layers
         # /var/cache/union/usr_rw <- read/write, stores modifications
         # /mnt/usr <- read only, core system
-        mount -t unionfs \
-              -o dirs=/var/cache/union/usr_rw=rw:/mnt/usr=ro unionfs /usr
-        sync
-
-      else
-
-        error "failed to load unionfs kernel module, reverting /usr to read-only mode"
-        mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
-
-      fi
-
+	    mount -t unionfs \
+		-o dirs=/var/cache/union/usr_rw=rw:/mnt/usr=ro unionfs /usr
+	    sync
+	    
+	else
+	    
+	    error "failed to load unionfs kernel module, reverting /usr to read-only mode"
+	    mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
+	    
+	fi
+	
     else
-
+	
       # mount of dyne.sys squashfs failed - fatal :(
-      error "fatal error occurred: can't mount dyne.sys filesystem"
-
+	error "fatal error occurred: can't mount dyne.sys filesystem"
+	
     fi
-
+    
   fi
-
+  
 fi
 
 if ! [ -x /usr/bin ]; then # if we couldn't mount
@@ -754,17 +776,6 @@ fi
   # and load necessary kernel modules
   # see xvga.sh
   detect_x_driver 
-
-  notice "initializing window manager"
-  # generate window manager menu entries
-  fluxbox_gen_menu
-  wmaker_gen_menu
-
-
-  # generate window manager volumes entries
-  #wmaker_gen_volumes
-  rox_gen_volumes
-  wmaker_gen_volumes
 
   ## setup the interactive shell prompt for X
   if [ -r /etc/zshrc ]; then rm /etc/zshrc; fi

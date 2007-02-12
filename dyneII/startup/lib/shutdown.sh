@@ -35,25 +35,19 @@ fi
 
 cd /
 
-echo " .  unload all kernel modules"
-for m in `lsmod | awk '!/Module/ {print $1}'`; do
-  rmmod ${m}
-done
-
 
 echo " .  umount all volumes"
 
 /bin/umount -a
 
-#/bin/umount /usr/local
-#/bin/umount /root
-#/bin/umount /home
-#/bin/umount /var
-#/bin/umount /etc
-#/bin/umount /tmp
 
-if [ -x /usr/bin ]; then      /bin/umount /usr;      fi
-if [ -x /mnt/usr/bin ]; then  /bin/umount -d /mnt/usr;  fi
+echo " .  unload all kernel modules"
+for m in `lsmod | awk '!/Module/ {print $1}'`; do
+  rmmod ${m}
+done
+
+if [ -x /usr/bin ];      then /bin/umount /usr;         fi
+if [ -x /mnt/usr/bin ];  then /bin/umount -d /mnt/usr;  fi
 if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest; fi
 
 PATH=/bin:/sbin

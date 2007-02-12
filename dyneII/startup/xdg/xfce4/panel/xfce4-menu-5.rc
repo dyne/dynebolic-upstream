@@ -1,2 +1,7 @@
 use_default_menu=true
+menu_file=/etc/xdg/xfce4/desktop/menu.xml
+icon_file=/usr/share/dyne/logo-icon.png
+show_menu_icons=true
+button_title=Software Menu
 show_button_title=false
+
