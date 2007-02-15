@@ -48,6 +48,13 @@ ISO=dyne-${DYNE_SYS_VER}.iso
 # default name of the ramdisk
 INITRD=initrd
 
+if [ -z $KRN ]; then KRN=`uname -r`; fi
+
+if [ -x /mnt/usr/lib/modules ]; then
+    MODDIR=/mnt/usr/lib/modules
+else MODDIR=/usr/lib/modules; fi
+
+
 notice "$PACKAGE version $VERSION   Software Development Kit"
 act "by RASTASOFT AFRO LINUX   for the Freedom of Creation"
 
@@ -73,7 +80,7 @@ while true; do
             act "-n     include current net modules in ramdisk (for netboot)"
             act "-o     filename of the iso to generate (default dyne-VER.iso)"
             act "-s     sign generated iso with gpg ID"
-
+	    act "define kernel version in \$KRN (current is `uname -r`)"
             notice "MODULE DEVELOPMENT COMMANDS:"
 	    act "mksdk      create an SDK environment inside the harddisk dock"
             act "mount      mount all unmounted SDK/modules in /opt"
@@ -84,6 +91,7 @@ while true; do
 	    notice "CORE DEVELOPMENT COMMANDS:"
 	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
 	    act "mkusr      packs the dyne.sys in the SDK/cdrom"
+            act "mkkern     packs the kernel and modules in the SDK/cdrom"
 
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
@@ -326,10 +334,10 @@ squashone() {
     fi
 
     # make the list of files to exclude
-    EXCL="-e `find ${PFX}/modules/${MOD}/ -name .svn`" 
+    EXCL="-e '`find ${PFX}/modules/${MOD}/ -name .svn`'" 
 
 	$MKSQUASHFS ${PFX}/modules/${MOD} \
-                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne -e  ${EXCL}
+                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne ${EXCL}
 	chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
         chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
 
@@ -377,7 +385,12 @@ mkinitrd() {
 
     act "creating the ramdisk filesystem"
     cp -ra /etc .
+
     cp -ra /lib .
+    rm -rf lib/firmware
+    rm -rf lib/modules
+    ln -sf /usr/lib/firmware lib/firmware
+    
     cp -ra /bin .
     cp -ra /sbin .
     mkdir -p boot dev proc root sys usr mnt home tmp
@@ -511,6 +524,10 @@ sysfs		/sys		sysfs	defaults	0	0
 usbfs		/proc/bus/usb	usbfs	defaults	0	0
 EOF
 
+    act "linking shared libraries in ramdisk"
+    touch etc/ld.so.conf
+    ldconfig -r .
+
     act "packaging /var"
     cp -ra /var .
     cleandir var/local
@@ -599,11 +616,6 @@ EOF
 
     ######## KERNEL MODULES
 
-    if [ -z $KRN ]; then KRN=`uname -r`; fi
-
-    if [ -x /mnt/usr/lib/modules ]; then
-      MODDIR=/mnt/usr/lib/modules
-    else MODDIR=/usr/lib/modules; fi
 
     act "setup boot kernel modules for ${KRN}"
     echo -n ":: "
@@ -626,6 +638,8 @@ EOF
     cp `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
     bzip2 -9 boot/modules/${KRN}/usb-storage.ko
     echo -n "usb-storage "
+
+    echo
     
     # copy any additional module specified on commandline
     if [ $ADD_RAMDISK_MODULES ]; then
@@ -633,7 +647,7 @@ EOF
       for m in `iterate $ADD_RAMDISK_MODULES`; do
     	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
 	  if [ -r ${M} ]; then
-	    cp -v ${M} boot/modules/${KRN}/
+	    cp ${M} boot/modules/${KRN}/
             echo -n "${m} "
             bzip2 -9 boot/modules/${KRN}/${m}.ko
 	  else
@@ -737,6 +751,60 @@ mkusr() {
     sync
 }
 
+mkkern() {
+    notice "packing the kernel version $KRN"
+
+    if ! [ -r ${PFX}/cdrom/dyne/linux-$KRN ]; then
+	act "searching for kernel image bytecode in ${MODDIR}/${KRN}/build"
+
+	if [ -r ${DYNE_SYS_MNT}/linux-${KRN} ]; then
+
+	    act "found linux-${KRN} in dock"
+	    cp ${DYNE_SYS_MNT}/linux-${KRN} ${PFX}/cdrom/dyne/
+	    
+	elif [ -x ${MODDIR}/${KRN}/build/arch ]; then
+	    
+	    vmlinuz="`find ${MODDIR}/${KRN}/build/arch -name '*zImage'`"
+	    if [ $vmlinuz ]; then
+
+		act "found: using $vmlinuz"
+		cp ${MODDIR}/${KRN}/build/arch/${vmlinuz} ${PFX}/cdrom/dyne/linux-${KRN}
+
+	    else
+
+		error "the kernel source is not yet compiled in the SDK"
+		
+	    fi
+	    
+	else
+	    
+		error "can't find any kernel version $KRN"
+		
+	fi
+
+    fi
+
+    if ! [ -r ${PFX}/cdrom/dyne/linux-$KRN ]; then
+	error "compile your kernel sources in $PFX/kernel"
+	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}"
+	error "to change kernel version export \$KRN variable"
+	error "operation aborted."
+	exit 1;
+    fi
+
+    act "calculating module dependencies"
+    depmod -ae ${KRN}
+
+    modpack="$PFX/cdrom/dyne/linux-mods-${KRN}.sys"
+    
+    act "packing modules from ${MODDIR}/${KRN}"
+    $MKSQUASHFS ${MODDIR}/${KRN} $modpack -root-owned
+    chmod a+r $modpack
+    chmod -x  $modpack
+    act "`stat $modpack`"
+    sync
+}
+
 mkiso() {
     notice "making the dyneII ISO"
     echo "# Forged on `date` " \
@@ -791,20 +859,8 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       fi
     fi
     # the KERNEL
-    if ! [ -r $PFX/cdrom/dyne/linux ]; then
-      act "linux kernel is missing"
-      SDK_KERNEL=`find ${PFX}/kernel -name "linux-${KRN}"`
-      if [ -r $SDK_KERNEL/arch/`uname -i`/boot/bzImage ]; then
-        act "using the kernel in SDK: $SDK_KERNEL"
-        cp -v $SDK_KERNEL/arch/`uname -i`/boot/bzImage cdrom/dyne/linux
-      elif [ -r ${DYNE_SYS_MNT}/linux ]; then
-        act "using the kernel found in current dock"
-        cp -v ${DYNE_SYS_MNT}/linux cdrom/dyne/linux
-      else
-        error "you're missing the kernel, provide one from a dyne CD"
-        error "or compile one yourself, if you dare ;>"
-        exit 0
-      fi
+    if ! [ -r $PFX/cdrom/dyne/linux-${KRN} ]; then
+	mkkern
     fi
     # the MODULES
     if ! [ -r $PFX/cdrom/dyne/modules ]; then
@@ -857,10 +913,11 @@ case "$CMD" in
     squash)   squash    $@ ;;
     mkiso)    mkiso        ;;
     authors)  authors      ;;
-
+    
     mkinitrd) mkinitrd ;;
     mkusr)    mkusr    ;;
-    
+    mkkern)   mkkern   ;;
+
     *) error "command \"$CMD\" not recognized"
        act "try -h for help"
        ;;
