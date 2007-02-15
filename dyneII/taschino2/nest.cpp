@@ -133,9 +133,9 @@ void scan_nest_hd() {
 } /* end of HARDDISK DETECTION */
 
 static char nest_size[256];
-// static char nest_crypt[256];
+static char nest_crypt[256];
 void apply_nest(int sel) {
-//  GtkToggleButton *cryptoggle;
+  GtkToggleButton *cryptoggle;
   GtkRange *sizebar;
   bool crypt = false;
   int size = 0;
@@ -149,10 +149,10 @@ void apply_nest(int sel) {
 
   /* gather user input settings */
  
-  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
+  /* encryption */
   cryptoggle = (GtkToggleButton*)glade_xml_get_widget(gui,nest_crypt);
   crypt = gtk_toggle_button_get_active( cryptoggle );
-  fprintf(stderr,"encryption is %i\n",crypt); */
+  fprintf(stderr,"encryption is %i\n",crypt);
 
   sizebar = (GtkRange*)glade_xml_get_widget(gui,nest_size);
   size = (unsigned int) sizebar->adjustment->value;
@@ -168,7 +168,10 @@ void apply_nest(int sel) {
   proc = fork();
   if(!proc) {
     setenv("PATH","/bin:/sbin:/usr/bin:/usr/sbin/:/usr/X11R6/bin",1);
-    execlp("mknest","mknest","-x","-f", nestfile, NULL);
+    if(crypt)
+      execlp("mknest","mknest","-x","-f", nestfile, "-e", NULL);
+    else
+      execlp("mknest","mknest","-x","-f", nestfile, NULL);
     perror("can't fork to launch docking command");
     _exit(1);
   }
@@ -193,8 +196,7 @@ void apply_nest_usb(GtkWidget *widget, gpointer *data) {
     error("%s",gtk_label_get_text(label_usb));
   else {
     sprintf(nest_size,"hscale_nest_usb_size");
-  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
-    sprintf(nest_crypt,"toggle_nest_usb_crypt"); */
+    sprintf(nest_crypt,"usb_encrypt_toggle");
     apply_nest(selection_usb);
   }
 }
@@ -216,8 +218,7 @@ void apply_nest_usb(GtkWidget *widget, gpointer *data) {
     return;
   } else {
     sprintf(nest_size,"hscale_nest_hd_size");
-  /* encryption not yet implemented with 2.6 kernel - HELP NEEDED 
-    sprintf(nest_crypt,"toggle_nest_hd_crypt"); */
+    sprintf(nest_crypt,"hd_encrypt_toggle");
     apply_nest(selection);
   }
 }
