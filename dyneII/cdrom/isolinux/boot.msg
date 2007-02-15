@@ -1,16 +1,16 @@
 
                      ____
                     /\   \
-   GNU/Linux live  /::\ D \      DYNEBOLIC   GNU/LINUX   LIVE   BOOTABLE CD
+   GNU/Linux live  /::\ D \      DYNE:BOLIC   AFRO LINUX   LIVE   BOOTABLE CD
      open source  /::::\ Y \               1 0 0 %  FREE SOFTWARE
   free software  /::::::\ N \     
-   bootable CD  /:::/\:::\ E \     ver II beta      .'~~~~~~~~~~~~~~~~~~~~~~'\
+   bootable CD  /:::/\:::\ E \     ver 2.4          .'~~~~~~~~~~~~~~~~~~~~~~'\
                /:::/@@\:::\ B \                     |                       | \
-              /:::/@@@/\:::\ O \    codename SELMA  | boot menu:            |_/
- v. 2.0-b5   /:::/@@@/  \:::\ L \                   |                       |
+              /:::/@@@/\:::\ O \    codename        | boot menu:            |_/
+ v. 2.4      /:::/@@@/  \:::\ L \        DHORUBA    |                       |
  forged in  /:::/@@@/____\:::\ I \                  | F1 - intro banner     |
  Amsterdam /:::/@@@/  (((i)))   C \  RASTA SOFTWARE |                       |
-  1Dec05  /:::/@@@/_____________   \  (C) 2001-2006 | F2 - boot options     |
+  15feb07 /:::/@@@/_____________   \  (C) 2001-2007 | F2 - boot options     |
          /::::\   \@@@@@@@@@@@@/\ G \  jaromil aka  | F3 - video modes      |
         /::::::\   \@@@@@@@@@@/::\ N \  Denis Rojo  | F4 - thin client      |
        /:::/\:::\   \    /:::/\:::\ U \             |                       |

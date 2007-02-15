@@ -1,26 +1,17 @@
-
 To manually change the resolution in which dynebolic is going to boot,
-you can use the video= parameter at the kernel boot: prompt, i.e:
+you can use the vga= parameter at the kernel boot: prompt.
 
- boot: linux video=vesafb:800x600-32
+The vga parameter sets the VESA mode in which you want to run your
+console framebuffer, and eventually your XWin.
 
-The video parameter sets the VESA mode in which you want to run your
-console framebuffer, and eventually your XWindows.
+Here are available modes and numbers:
 
-In this version of dyne:bolic VESA mode is handled by Vesafb-tng, so
-the previous configuration system has changed.
+              Resolution 640x480 800x600 1024x768 1280x1024 1600x1200
+Colors
+256 (8bit)               769     771     773      775       796
+32768 (15bit)            784     787     790      793       797
+65536 (16bit)            785     788     791      794       798
+16.8M (24bit)            786     789     792      795       799
 
-Here are most available modes:
-
-640x480-16    640x480-32
-              800x600-32
-1024x768-16   1024x768-32
-
-for a full list of modes supported by your videocard, once booted use
-this command into an XTerminal:
- $ cat /proc/fb0/modes
-
-dynebolic defaults: framebuffer video mode is 800x600-32
-                    XWindows video mode is 1024x768-16
-
+dynebolic default is 788 = 16bit 800x600
 

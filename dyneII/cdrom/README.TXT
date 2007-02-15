@@ -8,8 +8,7 @@
    to anyone you like. To know better what's inside see the website at
    ___ __ _  _  http://dynebolic.org
    
-   BOOT from a CD-ROM (scsi not supported):
-   ATAPI CD-ROMs are in every Standard PC Box, also a DVD players work.
+   BOOT from a CD or DVD:
    You need to choose the CD as Boot-Device. With most computers
    you will have to enable "Boot from CD" in the BIOS. Please check
    your computer's instructions.
@@ -28,17 +27,6 @@
    on your harddisk, simply dragging it in C: for instance. That's it!
    dyne:bolic will now run from your harddisk booting from floppy.
 
-   BOOT on XBOX:
-   If you have a 'modded' XBOX, which means an XBOX game console by
-   Mirco$oft with a software or hardware modification to run non-signed 
-   software, then you can also run dyne:bolic.
-   If you see your screen flickering on your NTSC XBOX, you have to use
-   the command 'xbv -NTSC -auto 640 480 12.00 9.00' from inside an XTERM
-   to get things allright. You can try to blindly do it from the desktop
-   pressing alt-x to open a terminal and type the command in. XBOX will
-   also have an open sshd server listening, you can login as root with
-   password 'luther' and then issue the command.
- 
  
    There is much more to know about dyne:bolic, please take some time to
    read the included manual (you'll find a PDF version in the CD)
@@ -47,7 +35,7 @@
 
 
   
-   dyne:bolic is Copyright (c) 2001-2005 by Denis "jaromil" Rojo
+   dyne:bolic is Copyright (c) 2001-2007 by Denis "jaromil" Rojo
 
 
 
