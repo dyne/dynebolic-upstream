@@ -67,18 +67,20 @@ xosd() {
 udevstart() {
   act "populating device filesystem"
 
-  udevtrigger --subsystem-match=mem \
-              --subsystem-match=ide \
-              --subsystem-match=net \
-              --subsystem-match=input \
-              --subsystem-match=block \
-              --subsystem-match=tty \
-              --subsystem-match=vc \
-              --subsystem-match=misc \
-              --subsystem-match=acpi \
-              --subsystem-match=sound \
-              --subsystem-match=ieee1394 \
-              --subsystem-match=graphics
+#  udevtrigger --subsystem-match=mem \
+#              --subsystem-match=ide \
+#              --subsystem-match=net \
+#              --subsystem-match=input \
+#              --subsystem-match=block \
+#              --subsystem-match=tty \
+#              --subsystem-match=vc \
+#              --subsystem-match=misc \
+#              --subsystem-match=acpi \
+#              --subsystem-match=sound \
+#              --subsystem-match=ieee1394 \
+#              --subsystem-match=graphics
+
+  udevtrigger
 
   sync
 

@@ -35,6 +35,12 @@ fi
 
 cd /
 
+umount /mnt/nest
+
+if [ -r /dev/mapper/dyne.nst ]; then # we have an encrypted nest
+   # must unload the mapped device with cryptsetup
+   cryptsetup luksClose dyne.nst
+fi
 
 echo " .  umount all volumes"
 
@@ -46,9 +52,9 @@ for m in `lsmod | awk '!/Module/ {print $1}'`; do
   rmmod ${m}
 done
 
-if [ -x /usr/bin ];      then /bin/umount /usr;         fi
-if [ -x /mnt/usr/bin ];  then /bin/umount -d /mnt/usr;  fi
-if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest; fi
+if [ -x /usr/bin ];      then /bin/umount /usr         2>&1 > /dev/null; fi
+if [ -x /mnt/usr/bin ];  then /bin/umount -d /mnt/usr  2>&1 > /dev/null; fi
+if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest 2>&1 > /dev/null; fi
 
 PATH=/bin:/sbin
 

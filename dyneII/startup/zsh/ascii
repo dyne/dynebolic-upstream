@@ -1,6 +1,6 @@
 
 TERM="linux"
 
-alias links="links -g -driver sdl"
+alias links="links -g -driver sdl -mode 1024x768"
 alias mplayer="mplayer -vo fb"
 

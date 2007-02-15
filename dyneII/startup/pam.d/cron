@@ -1,0 +1,13 @@
+#
+# The PAM configuration file for the cron daemon
+#
+
+@include common-auth
+auth       required   pam_env.so
+@include common-account
+@include common-session
+# Sets up user limits, please define limits for cron tasks
+# through /etc/security/limits.conf
+session    required   pam_limits.so
+
+

@@ -175,16 +175,16 @@ wmaker_gen_menu() {
     echo ")" >> $WMMENU
 
     # here overwrites previous or user defined menu
-    if [ -r /root/GNUstep/Defaults/WMRootMenu ]; then
-       rm /root/GNUstep/Defaults/WMRootMenu
-    fi
-    cp $WMMENU /root/GNUstep/Defaults/WMRootMenu
-    for u in `ls /home`; do
-       if [ -r /home/$u/GNUstep/Defaults/WMRootMenu ]; then
-          rm /home/$u/GNUstep/Defaults/WMRootMenu
-       fi
-       cp $WMMENU /home/$u/GNUstep/Defaults/WMRootMenu
-    done
+    #if [ -r /root/GNUstep/Defaults/WMRootMenu ]; then
+    #   rm /root/GNUstep/Defaults/WMRootMenu
+    #fi
+    #cp $WMMENU /root/GNUstep/Defaults/WMRootMenu
+    #for u in `ls /home`; do
+    #   if [ -r /home/$u/GNUstep/Defaults/WMRootMenu ]; then
+    #      rm /home/$u/GNUstep/Defaults/WMRootMenu
+    #   fi
+    #   cp $WMMENU /home/$u/GNUstep/Defaults/WMRootMenu
+    #done
 
 }
 

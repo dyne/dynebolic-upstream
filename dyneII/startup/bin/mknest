@@ -2,7 +2,7 @@
 #
 # mknest - script to NEST dyne:II in various forms
 #
-#  * Copyright (C) 2003-2006 Denis "jaromil" Rojo - RASTASOFT.org
+#  * Copyright (C) 2003-2007 Denis "jaromil" Rojo - RASTASOFT.org
 #
 #  * freely distributed in dyne:bolic GNU/Linux http://dynebolic.org
 #
@@ -25,8 +25,9 @@
 
 source /lib/dyne/utils.sh
 
-LODEV=/dev/loop60 # always choose a free one!
+source /boot/dynenv
 
+export PATH="$PATH:/usr/X11R6/bin"
 
 report_success() {
 # $1 success string
@@ -84,13 +85,13 @@ report_error() {
 ###
 
 notice "nidifica  - create dyne:II nest"
-act "(c)2003-2006 by Jaromil - RASTASOFT.org"
+act "(c)2003-2007 by Jaromil - RASTASOFT.org"
 act "invoked with args \"$*\" "
 act "running on `date`"
 
 # save the cmdline
 CMDLINE="${@}"
-OPTS=`getopt -o hvp:f:x --long help,version,partition:,file:,xterm -n 'nidifica' -- "$@"`
+OPTS=`getopt -o hvf:ex --long help,version,file:,encrypt,xterm -n 'nidifica' -- "$@"`
 
 eval set -- "$OPTS"
 
@@ -100,23 +101,24 @@ while true; do
 	    echo " .  nidifica [-hv] [-p part ] [-f file,mbytes]"
 	    echo " .  -v, --version   print out application info"
 	    echo " .  -h, --help      print this small usage guide"
-            echo " .  -p, --partition use specified partition as nest"
 	    echo " .  -f, --file      create specified file,size as nest"
+            echo " .  -e, --encrypt   secure the nest with encryption"
             echo " .  -x, --xterm     run this script in a new xterm"
 	    exit 2
 	    ;;
 	-v)
 	    exit 2
 	    ;;
-	-p)
-	    PARTITION=$2
-	    shift 2
-	    ;;
 	-f)
 	    LOOPBACK=$2
 	    shift 2
 	    ;;
-        -x) XTERM=true
+        -e)
+            ENCRYPT=true
+            shift 1
+            ;;
+        -x)
+            XTERM=true
             shift 1
             ;;
 	--) shift; break ;;
@@ -127,11 +129,15 @@ done
 # with -x we start this script in a terminal 
 if [ $XTERM ]; then
         act "spawning a visual terminal for mknest ${CMDLINE}"
+        cmdline="-f ${LOOPBACK}"
+        if [ $ENCRYPT ]; then
+           cmdline="$cmdline -e"
+        fi
 	( `/usr/X11R6/bin/xterm \
            -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 \
            -bg black -fg green \
            -T "creating dyne:bolic nest ${LOOPBACK}MB" -e \
-           "mknest -f ${LOOPBACK}"` )&
+           "mknest ${cmdline}"` )&
         exit
 fi
 
@@ -188,7 +194,7 @@ PATH=/usr/bin:/usr/sbin:/bin:/sbin
 if [ $LOOPBACK ]; then
 
     # put a busy watch on the cursor
-    xsetroot -cursor_name watch
+    # xsetroot -cursor_name watch
 
     SIZE_4k=`expr \( $NSTSIZE \* 1000 \) / 4`
     notice "generating file of ${NSTSIZE}Mb (${SIZE_4k} blocks of 4Kb)"
@@ -204,31 +210,88 @@ if [ $LOOPBACK ]; then
 	sleep 4
 	exit 1
     fi
-    
-    notice "Creating the EXT2 internal filesystem"
 
+    mkdir -p /tmp/nest    
+    
+    if [ $ENCRYPT ]; then
+	
+	encrypt=true
+
+	notice "Creating a cryptographically encrypted nest"
+
+	loadmod dm-crypt
+	loadmod aes-i586
+
+	nstloop=`losetup -f`
+	
+	losetup -f ${NSTFILE}
+	act "Generating secret key..."
+
+	dd if=/dev/urandom bs=1 count=1024 | strings | cbar -s 32 -bl 1 -of /var/run/secret.tmp -de -nb -np
+
+        clear
+
+        notice "Setup your secret key file dyne.nst.gpg"
+	gpg -o "${NSTFILE}.gpg" --no-options --openpgp -c -a /var/run/secret.tmp 2>/dev/null
+	# here user is prompted for password
+
+	act "formatting Luks mapped device"
+	cryptsetup --batch-mode --cipher aes luksFormat ${nstloop} /var/run/secret.tmp
+
+	act "formatting Ext3 filesystem"
+
+        cryptsetup --key-file /var/run/secret.tmp --batch-mode --cipher aes luksOpen ${nstloop} dyne.mknest
+
+	rm -f /var/run/secret.tmp
+
+	mkfs.ext3 -F -j -L "dyne:nest" /dev/mapper/dyne.mknest
+
+	if [ $? = 0 ]; then
+	    act "OK, encrypted nest succesfully formatted"
+	else
+	    act "error formatting nest with Ext3 filesystem"
+	fi
+
+	mount -t ext3 /dev/mapper/dyne.mknest /tmp/nest
+
+	if [ $? != 0 ]; then
+	    error "cannot mount the nest"
+	    report_error "Error mounting the nest (mount -t ext2 ${NSTFILE} /tmp/nest)"
+	    cryptsetup luksClose dyne.mknest
+	    losetup -d ${nstloop}
+	    sleep 4
+	    exit 1
+	fi
+
+
+    else ####################### no encryption
+	
+	notice "Creating the EXT2 internal filesystem"
+	
     # format the nest with journaled ext3
-    mkfs.ext3 -F -j -L "dyne:nest" ${NSTFILE}
+	mkfs.ext3 -F -j -L "dyne:nest" ${NSTFILE}
+	
+	if [ $? = 0 ]; then
+	    act "OK, loopback device succesfully formatted"
+	else
+	    report_error "Error formatting the nest (mkfs $LODEV)"
+	    rm ${NSTFILE}
+	    sleep 4
+	    exit 1
+	fi
+	
 
-    if [ $? = 0 ]; then
-	act "OK, loopback device succesfully formatted"
-    else
-	report_error "Error formatting the nest (mkfs $LODEV)"
-	rm ${NSTFILE}
-	sleep 4
-	exit 1
+	mount -o loop -t ext3  ${NSTFILE} /tmp/nest
+	if [ $? != 0 ]; then
+	    error "cannot mount the nest"
+	    report_error "Error mounting the nest (mount -t ext2 ${NSTFILE} /tmp/nest)"
+	    rm $NSTFILE
+	    sleep 4
+	    exit 1
+	fi
     fi
-    
-    notice "Mount the nest and populate it"
-    mkdir -p /tmp/nest
-    mount -o loop -t ext3  ${NSTFILE} /tmp/nest
-    if [ $? != 0 ]; then
-       error "cannot mount the nest"
-       report_error "Error mounting the nest (mount -t ext2 ${NSTFILE} /tmp/nest)"
-       rm $NSTFILE
-       sleep 4
-       exit 1
-    fi
+
+    act "please wait while populating the nest...."
     
     mkdir -p /tmp/nest/home/luther
     cp -ra /etc/skel/*     /tmp/nest/home/luther
@@ -253,18 +316,27 @@ if [ $LOOPBACK ]; then
     chmod a+rwt /tmp/nest/tmp
 
     umount /tmp/nest
-    
+
+    if [ $encrypt = true ]; then
+	act "unmounting encrypted partition"
+	cryptsetup luksClose dyne.mknest
+	losetup -d ${nstloop}
+    fi
+
     notice "done!"
-    
-    losetup -d ${LODEV}
     
     sync
     
     act "here is your new dyne:bolic nest:"
     stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
 
+    if [ $encrypt = true ]; then
+	act "encryption key is stored in file ${NSTFILE}.gpg"
+	act "the key is sealed by your secret passphrase"
+    fi	
+
     # restore the cursor
-    xsetroot -cursor_name arrow
+    # xsetroot -cursor_name arrow
 
     report_success "Dynebolic nest succesfully created in ${NSTFILE} :: It will be active starting from the next boot."
     

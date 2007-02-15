@@ -368,6 +368,7 @@ if [ "$bootmode" = "volatile" ]; then
     echo
     # make sure we are in read-write
     mount -o remount,rw /
+    ldd /bin/login
 
     ## setup the interactive shell prompt
     rm -f /boot/mode
@@ -400,14 +401,9 @@ fi
 
 
 
-
-
-########################################
-## DETECT AND MOUNT NEST (or RAM VFS)
-# see /lib/dyne/nest.sh
-choose_nest
-###########
-
+#### HERE was mounting the nest, changed in 2.4
+### now mounted after the system is found
+### so we can use encryption tools for the nest
 
 
 
@@ -583,6 +579,7 @@ ln -sf /usr/bin/bash /bin/sh
 
 dmesg -n 1
 
+
 # notice "start multiuser system log monitor"
 # killall syslogd
 # /usr/sbin/syslogd
@@ -604,12 +601,21 @@ for gh in `fdisk -l | grep -iE "linux.*swap*" | awk '{print $1}'`; do
 done
 
 
+########################################
+## DETECT AND MOUNT NEST (or RAM VFS)
+# see /lib/dyne/nest.sh
+choose_nest
+###########
+
+
 # here we were detecting xbox for proper module loading
 # if [ ! -z "`uname -a | grep xbox`" ]; then
 
     
 # load necessary kernel modules
 init_modules
+
+
 
 # configure your pcmcia
 init_pcmcia

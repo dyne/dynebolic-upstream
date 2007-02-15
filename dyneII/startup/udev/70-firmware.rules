@@ -1,1 +1,4 @@
 ACTION=="add", SUBSYSTEM=="firmware", RUN+="/sbin/udev_run_hotplugd"
+KERNEL=="raw1394", NAME="%k"
+KERNEL=="dv1394*", NAME="dv1394/%n"
+KERNEL=="video1394*", NAME="video1394/%n"

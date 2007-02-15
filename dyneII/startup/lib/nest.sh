@@ -390,14 +390,74 @@ mount_nest() {
 
 	    notice "activating dyne:bolic nest in ${nst}"
 
-            act "nest filesystem check"
-            fsck.ext3 -p -C0 ${nst}
+	    mkdir -p /mnt/nest
 	    
 	    act "mounting nest over loopback device"
-	    mkdir -p /mnt/nest
-	    mount -t ext3 -o loop ${nst} /mnt/nest
-	    if [ $? != 0 ]; then
-	       error "mount failed with exitcode $?"
+	    nstloop=`losetup -f`
+	    losetup -f ${nst}
+	 
+	    act "check if nest is a an encrypted LUKS device"
+	    cryptsetup isLuks ${nstloop}
+	    if [ $? = 0 ]; then # it's a LUKS encrypted nest, see cryptsetup(1)
+
+                # check if key file is present
+		if ! [ -r "${nst}.gpg" ]; then
+		   error "secret encryption key is not present for this nest"
+		   error "copy it in ${nst}.gpg"
+                   losetup -d ${nstloop}
+		   sleep 5
+		   return
+	        fi
+
+                loadmod dm-crypt
+                loadmod aes-i586
+
+                notice "Password is required for nest in ${nst}"
+                for c in 1 2 3 4 5; do
+
+                  dialog --backtitle "Nest is encrypted for privacy protection" --title "Security check" \
+                         --insecure --passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+
+                  cat /var/run/.scolopendro \
+                     | gpg --passphrase-fd 0 --no-tty --no-options -d "${nst}.gpg" | grep -v passphrase \
+                     | cryptsetup --key-file - luksOpen ${nstloop} dyne.nst
+
+                  rm -f /var/run/.scolopendro
+
+                  if [ -r /dev/mapper/dyne.nst ]; then
+                     break;  # password was correct
+                  else
+                     dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
+                  fi
+
+                done
+
+                if ! [ -r /dev/mapper/dyne.nst ]; then
+                  error "failure mounting the encrypted nest"
+                  ls /dev
+                  ls /var
+                  tail /var/log/messages
+                  losetup -d ${nstloop}
+                  sleep 5
+                  return
+                fi
+        	
+                act "nest filesystem check"
+                fsck.ext3 -p -C0 /dev/mapper/dyne.nst
+        
+                mount -t ext3 /dev/mapper/dyne.nst /mnt/nest
+                	
+	    else 
+	
+                act "nest filesystem check"
+                fsck.ext3 -p -C0 ${nst}
+       
+	        mount -t ext3 -o loop ${nst} /mnt/nest
+
+	        if [ $? != 0 ]; then
+	           error "mount failed with exitcode $?"
+                fi
+
             fi
 
     else
