@@ -877,11 +877,6 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       cp -a ${DYNE_SYS_MNT}/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
     fi
     
-    act "purging development files in the cdrom"
-    for svn in `find $PFX/cdrom -name '.svn'`; do
-      rm -rf ${svn}
-    done
-
     act "proceeding to pack the ISO image $ISO"
     $MKISOFS -o $PFX/$ISO -J -R -udf -m '.svn' \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
