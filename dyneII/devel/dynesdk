@@ -36,23 +36,29 @@ func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 source /lib/dyne/modules.sh
 
 PACKAGE="dyne:OS SDK"
-VERSION="2.0"
+VERSION="2.4"
 if [ -z $DYNESDK ]; then
   PFX="$DYNE_SYS_MNT/SDK" # you can change it to static path where dynesdk resides
 else
   PFX=${DYNESDK}
 fi
 
-# default name of the iso file
+# get the SDK system version
+source ${PFX}/cdrom/dyne/VERSION
+# generate the default name of the iso file
 ISO=dyne-${DYNE_SYS_VER}.iso
-# default name of the ramdisk
+# generate the default name of the ramdisk
 INITRD=initrd
 
+# degine KRN for version of the kernel
 if [ -z $KRN ]; then KRN=`uname -r`; fi
 
-if [ -x /mnt/usr/lib/modules ]; then
-    MODDIR=/mnt/usr/lib/modules
-else MODDIR=/usr/lib/modules; fi
+# define MODDIR for path to kernel modules
+if ! [ $MODDIR ]; then
+    if [ -x /mnt/usr/lib/modules ]; then
+	MODDIR=/mnt/usr/lib/modules
+    else MODDIR=/usr/lib/modules; fi
+fi
 
 
 notice "$PACKAGE version $VERSION   Software Development Kit"
@@ -754,13 +760,19 @@ mkusr() {
 mkkern() {
     notice "packing the kernel version $KRN"
 
-    if ! [ -r ${PFX}/cdrom/dyne/linux-$KRN ]; then
+    # compose the kernel file name removing all . or -
+    krnfile="`echo ${KRN} | sed -e 's/\.//g' | sed -r 's/-//g' | cut -c 1-8`.krn"
+
+    act "due to isolinux restrictions on filesystems (8.3 names)"
+    act "your kernel filename is: $krnfile"
+
+    if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 	act "searching for kernel image bytecode in ${MODDIR}/${KRN}/build"
 
-	if [ -r ${DYNE_SYS_MNT}/linux-${KRN} ]; then
+	if [ -r ${DYNE_SYS_MNT}/${krnfile} ]; then
 
-	    act "found linux-${KRN} in dock"
-	    cp ${DYNE_SYS_MNT}/linux-${KRN} ${PFX}/cdrom/dyne/
+	    act "found ${krnfile} in dock"
+	    cp ${DYNE_SYS_MNT}/${krnfile} ${PFX}/cdrom/dyne/
 	    
 	elif [ -x ${MODDIR}/${KRN}/build/arch ]; then
 	    
@@ -768,7 +780,7 @@ mkkern() {
 	    if [ $vmlinuz ]; then
 
 		act "found: using $vmlinuz"
-		cp ${MODDIR}/${KRN}/build/arch/${vmlinuz} ${PFX}/cdrom/dyne/linux-${KRN}
+		cp ${MODDIR}/${KRN}/build/arch/${vmlinuz} ${PFX}/cdrom/dyne/${krnfile}
 
 	    else
 
@@ -784,25 +796,30 @@ mkkern() {
 
     fi
 
-    if ! [ -r ${PFX}/cdrom/dyne/linux-$KRN ]; then
+    if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 	error "compile your kernel sources in $PFX/kernel"
-	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}"
+	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}.krn"
 	error "to change kernel version export \$KRN variable"
 	error "operation aborted."
 	exit 1;
     fi
 
-    act "calculating module dependencies"
-    depmod -ae ${KRN}
+    # now the modules, if they are not squashed
 
     modpack="$PFX/cdrom/dyne/linux-mods-${KRN}.sys"
     
-    act "packing modules from ${MODDIR}/${KRN}"
-    $MKSQUASHFS ${MODDIR}/${KRN} $modpack -root-owned
-    chmod a+r $modpack
-    chmod -x  $modpack
-    act "`stat $modpack`"
-    sync
+    if ! [ -r ${modpack} ]; then
+
+	act "calculating module dependencies"
+	depmod -ae ${KRN}
+	
+	act "packing modules from ${MODDIR}/${KRN}"
+	$MKSQUASHFS ${MODDIR}/${KRN} $modpack -root-owned
+	chmod a+r $modpack
+	chmod -x  $modpack
+	act "`stat $modpack`"
+	sync
+    fi
 }
 
 mkiso() {
