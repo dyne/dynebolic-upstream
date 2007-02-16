@@ -368,7 +368,6 @@ if [ "$bootmode" = "volatile" ]; then
     echo
     # make sure we are in read-write
     mount -o remount,rw /
-    ldd /bin/login
 
     ## setup the interactive shell prompt
     rm -f /boot/mode

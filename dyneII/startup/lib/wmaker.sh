@@ -694,7 +694,7 @@ EOF
 # it starts up X with the current configuration
 bootstrap_x() {
 
-  source /etc/zshenv
+    source /lib/dyne/zsh/common
 
   # remote X client-server
   XREMOTE="`get_config x_remote`"
@@ -725,25 +725,27 @@ bootstrap_x() {
 
   USERLOGIN="`get_config user`"
 
-  if ! [ $USERLOGIN ]; then
+  if [ $USERLOGIN = root ]; then
 
     # login directly into the desktop as root
-    su - root -c xinit &
-
+    #  su - root -c xinit &
+      envuidgid root xinit &
+      
   elif [ $USERLOGIN = multi ]; then
-
+      
     # popup a login prompt
-    xdm
-
+      xdm
+      
   elif [ `grep $USERLOGIN /etc/passwd` ]; then
-
+      
     # login directly selected user
-    su - $USERLOGIN -c xinit &
-    
+      su - $USERLOGIN -c xinit &
+      
   else
-
+      
     # login directly into the desktop as root
-    su - root -c xinit &
+      # su - root -c xinit &
+      exec xinit &
 
   fi
 

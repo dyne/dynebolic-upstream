@@ -236,13 +236,18 @@ if [ $LOOPBACK ]; then
 	# here user is prompted for password
 
 	act "formatting Luks mapped device"
-	cryptsetup --batch-mode --cipher aes luksFormat ${nstloop} /var/run/secret.tmp
+        # dm-crypt only supports sha1
+        # but we can use aes-cbc-essiv with sha256 for better security
+        # see http://clemens.endorphin.org/LinuxHDEncSettings
+	cryptsetup --batch-mode --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${nstloop} /var/run/secret.tmp
 
 	act "formatting Ext3 filesystem"
 
         cryptsetup --key-file /var/run/secret.tmp --batch-mode --cipher aes luksOpen ${nstloop} dyne.mknest
 
 	rm -f /var/run/secret.tmp
+
+        cryptsetup luksDump ${nstloop}
 
 	mkfs.ext3 -F -j -L "dyne:nest" /dev/mapper/dyne.mknest
 

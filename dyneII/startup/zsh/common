@@ -1,5 +1,5 @@
-# dyne:bolic common shell environment
 # zsh configuration file of dyne:bolic GNU/Linux
+# with the full multimedia environment
 # by jaromil http://rastasoft.org
 
 export HOSTTYPE="i586"
@@ -7,141 +7,30 @@ export LANG="C"
 export MACHTYPE="i586-pc-linux-gnu"
 export OSTYPE="linux-gnu"
 export SHELL="/bin/zsh"
+	
+if [ -z $MANPATH ]; then # setup minimum manpath if none is there
+    export MANPATH=/usr/share/man:/usr/netpbm/man
+fi
+
+if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
+    export PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin:.
+fi
+
+export PAGER="/usr/bin/most"
+export EDITOR="/usr/bin/edit"
+export LIBIND_PATH="/usr/lib/libind"
+export XWINHOME="/usr/X11R6"
+export X11HOME="$XWINHOME"
+export QTDIR="/usr"
+export PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
 
 
 # A lucky prompt:
 PROMPT='[d:b] %B%30<..<%~%b %(!.#.>)'
 
-if [ -x /usr/bin/ls ]; then
+umask 022
 
-  RPROMPT="%T"  # right hand prompt
+# the terminal definition
+TERM="xterm-color"
 
-  # Search path for the cd command
-  cdpath=(.. ~)
 
-  # Use hard limits, except for a smaller stack and no core dumps
-  unlimit
-  limit stack 8192
-  limit core 0
-  limit -s
-
-  umask 022
-
-  setenv() { export $1=$2 } # csh compatibility
-
-  # ssh hosts completion - i know you love it ;)
-  function c_ssh_knownhosts {
-     reply=(`sed -e 's/ .*$//' \
-            -e 's/,[0-9]\{3\}\..*//' ~/.ssh/known_hosts`);
-  }
-
-  if [ -z $MANPATH ]; then # setup minimum manpath if none is there
-    export MANPATH=/usr/share/man:/usr/netpbm/man
-  fi
-
-  if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
-    export PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin:.
-  fi
-
-  export PAGER="/usr/bin/most"
-
-  # Set/unset  shell options
-  setopt   notify globdots correct pushdtohome cdablevars autolist
-  setopt   list_types list_ambiguous correct autocd recexact longlistjobs
-  setopt   print_exit_value autoresume histignoredups pushdsilent noclobber
-  setopt   autopushd pushdminus extendedglob rcquotes mailwarning
-  setopt   bash_auto_list list_packed nohup
-  unsetopt bgnice autoparamslash
-
-  # Setup some basic programmable completions.  To see more examples
-  # of these, check Misc/compctl-examples in the zsh distribution.
-  compctl -g '*(-/)' cd pushd
-  compctl -g '*(/)' rmdir dircmp
-  compctl -j -P '%' -x 's[-] p[1]' -k signals -- kill
-  compctl -j -P '%' fg bg wait jobs disown
-  compctl -A shift
-  compctl -caF type whence which
-  compctl -F unfunction
-  compctl -a unalias
-  compctl -v unset typeset declare vared readonly export integer
-  compctl -e disable
-  compctl -d enable
-
-  compctl -K c_ssh_knownhosts ssh
-  # Complete the current word with files after a `:', with ssh
-  # hosts after a `@', and with hosts or files (in that order)
-  # at the start of a word.
-  compctl -x 'n[0,:]' -f - 'n[0,@],s[]' -K c_ssh_knownhosts -S: + -f -- scp
-  compctl -g ':completion:*:complete:ssh:*:hosts' hosts $hosts
-  
-  # kill takes signal names as the first argument after -, but job names after %
-  # or PIDs as a last resort
-  compctl -j -P '%' + -s '`ps -x | tail +2 | cut -c1-5`' + \
-          -x 's[-] p[1]' -k "($signals[1,-3])" -- kill
-
-  # Commands that are usually used on non-generated files.
-  compctl -g '*.gz *.Z *.bz2' \
-     + -g '*.web *.docbook' \
-     + -g '*.c *.cc *.C *.cxx *.cpp *.h *.tex *.txt *.html' \
-     + -g '^*.(o|a|so|aux|dvi|log|swp|fig|bbl|blg|bst|idx|ind|out|toc)' \
-     + -g '.*' \
-     + -g '*(/)' vi vim gvim less grep zgrep
-	       
-  c_groups=( $(cut -d: -f1 /etc/group) )
-
-  # Set up aliases
-  alias mv='nocorrect mv'       # no spelling correction on mv
-  alias cp='nocorrect cp'       # no spelling correction on cp
-  alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
-  alias j=jobs
-  alias pu=pushd
-  alias po=popd
-  alias d='dirs -v'
-  alias h=history
-
-  # List only directories and symbolic
-  # links that point to directories
-  alias lsd='ls -ld *(-/DN)'
-  # List only file beginning with "."
-  alias lsa='ls -ld .*'
-  alias ls='ls --color=auto'
-  alias ll='ls -l'
-  alias la='ls -a'
-  # Global aliases -- These do not have to be
-  # at the beginning of the command line.
-  alias -g M='|most'
-  alias -g H='|head'
-  alias -g T='|tail'
-
-  #dmalloc debugger
-  function dmalloc { eval `command dmalloc -b $*`; }
-
-  # Filename suffixes to ignore during completion
-  fignore=(.o .c~ .old .pro)
-
-# this makes most uncomfortable
-#  export LESS=-cx3M
-
-  export HELPDIR=/usr/lib/zsh/help  # directory for run-help function to find docs
-
-  MAILCHECK=300
-
-  # Watch for my friends
-  #watch=($(cat ~/.friends))      # watch for people in .friends file
-  watch=(notme)                   # watch for everybody but me
-  LOGCHECK=300                    # check every 5 min for login/logout activity
-  WATCHFMT='%n %a %l from %m at %t.'
-
-  # Some optional key bindings
-  #bindkey '^X^Z' universal-argument ' ' magic-space
-  #bindkey '^X^A' vi-find-prev-char-skip
-  #bindkey '^Z' accept-and-hold
-  #bindkey -s '\M-/' \\\\
-  #bindkey -s '\M-=' \|
-
-  # bindkey -v             # vi key bindings
-  bindkey -e               # emacs key bindings
-
-  bindkey ' ' magic-space  # also do history expansino on space
-
-fi

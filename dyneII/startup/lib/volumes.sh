@@ -148,14 +148,9 @@ scan_cdrom() {
 	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
 
 	elif [ -r /mnt/${MNT}/dyne/dyne.sys ]; then # device contains dyne sys
-	    
-	    FLAGS=sys # check if it has also a config file
-	    if [ -r /mnt/${MNT}/dyne/dyne.cfg ]; then
-		FLAGS="$FLAGS cfg"
-	    fi
-	    
+	    	    
             # leave it mounted and add it to the list of volumes
-	    append_line /boot/volumes "${MEDIA} /dev/${DEV} /mnt/${MNT} ${CDFS} ${FLAGS}"
+	    add_volume ${MEDIA} ${DEV} ${MNT} ${CDFS}
 	    
 	else # device has a CD inside, not the dyne one
 
