@@ -33,7 +33,7 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
-      if [ -r ${PFX}/${MNT}/${DOCK}/linux-mods-${KRN}.sys ]; then FLAGS="$FLAGS krn"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
   fi
@@ -43,7 +43,7 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/SDK ];      then FLAGS="$FLAGS sdk"; fi
-      if [ -r ${PFX}/${MNT}/${DOCK}/linux-mods-${KRN}.sys ]; then FLAGS="$FLAGS krn"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
   fi

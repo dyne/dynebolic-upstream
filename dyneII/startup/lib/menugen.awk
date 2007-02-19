@@ -99,7 +99,12 @@ function render_xfce() {
 		else if (qsubmenu[c+1] ~ "FILES") menu_icon="disks"
 		else if (qsubmenu[c+1] ~ "OFFICE") menu_icon="ooo_calc"
 		else if (qsubmenu[c+1] ~ "XUTILS") menu_icon="gnome-util"
-		else if (qsubmenu[c+1] ~ "CONFIG") menu_icon="gnome-settings"
+	        else if (qsubmenu[c+1] ~ "PLAY" ) menu_icon="stock_media-play"
+		else if (qsubmenu[c+1] ~ "PERFORM" ) menu_icon="stock_midi"
+		else if (qsubmenu[c+1] ~ "EDIT" ) menu_icon="stock_mic"
+       		else if (qsubmenu[c+1] ~ "STREAM" ) menu_icon="stock_channel"
+
+
 		line = "	<menu name=\"" qsubmenu[c+1] "\" icon=\"" menu_icon "\">"
 
 		print line
@@ -123,7 +128,8 @@ function render_xfce() {
 	if ($4 ~ "terminal" ) # run into a terminal
 	   command = command "launchterm '" $1 " :: " $2 "' "
 
-	command = command $3 "\"/>"
+        if      ($1 ~ "CONFIGURE" ) icon="gnome-settings"
+	command = command $3 "\" icon=\"" icon "\"/>"
 
 	print line command
 

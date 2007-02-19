@@ -14,7 +14,7 @@
 	<option name="Xfwm/SnapToBorder" type="int" value="1"/>
 	<option name="Xfwm/SnapToWindows" type="int" value="1"/>
 	<option name="Xfwm/SnapWidth" type="int" value="10"/>
-	<option name="Xfwm/ThemeName" type="string" value="Alternate"/>
+	<option name="Xfwm/ThemeName" type="string" value="Default-4.2"/>
 	<option name="Xfwm/TitleAlign" type="string" value="center"/>
 	<option name="Xfwm/TitleFont" type="string" value="Sans Bold 9"/>
 	<option name="Xfwm/WrapResistance" type="int" value="10"/>

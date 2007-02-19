@@ -120,7 +120,6 @@ if [ "`dmesg | grep 'USB hub found'`" ]; then
 fi
 
 
-# mount -o size=8m -t tmpfs tmpfs /dev
 
 # launch the udev daemon
 act "launching device filesystem daemon"
@@ -161,6 +160,27 @@ fi
 
 ## populate the device filesystem
 udevstart
+
+notice "populating virtual filesystem in memory"
+RAMSIZE=`cat /proc/meminfo | awk '/MemTotal/{print $2}'`
+SHMSIZE=`expr $RAMSIZE / 1024 / 4`
+act "RAM detected: `expr $RAMSIZE / 1024` Mb"
+act "max VFS size: $SHMSIZE Mb"
+append_line /etc/fstab "tmpfs\t/dev/shm\ttmpfs\tdefaults,size=${SHMSIZE}m\t0\t0"
+mkdir -p /dev/shm # since 2.6.13 we need to create this dir by hand
+mount /dev/shm
+		
+act "binding /var in shared memory"
+mv /var /dev/shm/var
+mkdir -p /var
+mount -o bind /dev/shm/var /var
+
+act "binding /tmp in shared memory"
+mkdir       /dev/shm/tmp
+mount -o bind,rw /dev/shm/tmp  /tmp
+chmod a+rwx /tmp
+chmod +t    /tmp
+ 
 
 #########################################
 ## scan all volumes by default
@@ -392,7 +412,8 @@ if [ "$bootmode" = "volatile" ]; then
     echo "happy hacking ;)"
 EOF
 
-    exit 0
+    /bin/zsh --no-zle
+
 fi
 
 
@@ -457,22 +478,43 @@ fi
 ##################### update done
 
 
-##################### mount kernel modules
+###########################################################
+##################### MOUNT the system and kernel modules #
+###########################################################
+
+
+
+#################################### first the kernel modules
+
 KRN=`uname -r`
 kmods=`cat /boot/volumes | grep krn`
-mkdir -p /lib/modules/${KRN}
 
 act "searching for kernel modules..."
 for k in ${(f)kmods}; do
-    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-mods-${KRN}.sys"
-    mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
+    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
+    mkdir -p /mnt/kmods/${KRN}
+    mkdir -p /lib/modules/${KRN}
+    act "kernel modules found in ${kpath}"
+
+    mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
+
+    # load union filesystem module from inside the squash
+    insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
+	
     if [ $? = 0 ]; then
-	act "kernel modules found in ${kpath}"
-	break;
+	act "overlaying module directory with unionfs"
+	mkdir -p /var/cache/union/kmods_rw
+	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/kmods/${KRN}=ro unionfs /lib/modules/${KRN}
+    else
+        error "no unionfs module found, mounting kernel modules read-only"
+        umount /mnt/kmods/${KRN}
+        mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
     fi
+
 done
+
 if ! [ -x /lib/modules/"`uname -r`"/kernel ]; then
-    error "no extra kernel modules found"
+    error "no kernel modules found"
 fi
 ########################### kernel modules done
 
@@ -509,10 +551,10 @@ elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
 
     if [ $? = 0 ]; then
 
-      # load union filesystem module from inside the squash
-	insmod /lib/modules/`uname -r`/kernel/fs/unionfs/unionfs.ko
-	
-	if [ $? = 0 ]; then
+      # check if we use unionfs
+      lsmod | grep unionfs > /dev/null
+    
+      if [ $? = 0 ]; then
 	    
         # create directory where to store unionfs changes
 	    mkdir -p /var/cache/union/usr_rw
@@ -523,12 +565,12 @@ elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
 		-o dirs=/var/cache/union/usr_rw=rw:/mnt/usr=ro unionfs /usr
 	    sync
 	    
-	else
+      else
 	    
 	    error "failed to load unionfs kernel module, reverting /usr to read-only mode"
 	    mount -o loop,ro,suid -t squashfs ${DYNE_SYS_MNT}/dyne.sys /usr
 	    
-	fi
+      fi
 	
     else
 	
@@ -566,6 +608,8 @@ if ! [ -x /usr/bin ]; then # if we couldn't mount
   echo "volatile" > /boot/mode
   exit 0;
 fi
+
+
 
 ##########################################
 # WE HAVE THE SYSTEM MOUNTED now!

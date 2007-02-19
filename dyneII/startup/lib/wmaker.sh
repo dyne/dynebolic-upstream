@@ -484,7 +484,7 @@ xfce_gen_menu() {
 <xfdesktop-menu>
 <title name="Software Menu" icon="/usr/share/dyne/logo-icon.png"/>
 <separator/>
-<app name="Web Browser" cmd="xfbrowser4" icon="mozilla-firefox"/>
+<app name="Web Browser" cmd="xfbrowser4" icon="stock_internet"/>
 <app name="File Search" cmd="searchmonkey" icon="gnome-searchtool"/>
 <app name="Terminal" cmd="launchterm" icon="gnome-terminal"/>
 
@@ -503,7 +503,7 @@ EOF
 }
 
 xfce_gen_volumes() {
-
+    
     if [ -r $XFCEPANEL/panels.xml ]; then
 	rm $XFCEPANEL/panels.xml
     fi
@@ -550,6 +550,39 @@ xfce_gen_volumes() {
 			<item name="separator" id="6"/>
 			<item name="launcher" id="7"/>
 EOF
+
+    ################################# HOME / NEST
+    rm -f $XFCEPANEL/launcher-7.rc
+    cat <<EOF > $XFCEPANEL/launcher-7.rc
+[Entry 0]
+Name=Home
+Exec=gohome
+Terminal=false
+StartupNotify=false
+EOF
+    
+    mount | grep '/mnt/nest/home on /home' > /dev/null
+    if [ $? = 0 ]; then # there is a nest
+
+	if [ -r /dev/mapper/dyne.nst ]; then # is encrypted
+
+	    echo "Comment=Nested home fortified with encryption" >> $XFCEPANEL/launcher-7.rc
+	    echo "Icon=/usr/share/icons/tower.png" >> $XFCEPANEL/launcher-7.rc
+
+	else # is not encrypted
+
+	    echo "Comment=Nested home, not encrypted" >> $XFCEPANEL/launcher-7.rc
+	    echo "Icon=/usr/share/icons/graphite/48x48/gtk/gtk-home.png" >> $XFCEPANEL/launcher-7.rc
+
+	fi
+
+    else                # there is no nest
+
+	echo "Comment=Volatile home floating in RAM" >> $XFCEPANEL/launcher-7.rc
+	echo "Icon=/usr/share/icons/graphite/48x48/apps/gnome-home.png" >>  $XFCEPANEL/launcher-7.rc
+    fi
+
+
 
     tmpid=30
 
@@ -729,7 +762,8 @@ bootstrap_x() {
 
     # login directly into the desktop as root
     #  su - root -c xinit &
-      envuidgid root xinit &
+      export HOME=/root
+      xinit &
       
   elif [ $USERLOGIN = multi ]; then
       
@@ -739,12 +773,14 @@ bootstrap_x() {
   elif [ `grep $USERLOGIN /etc/passwd` ]; then
       
     # login directly selected user
-      su - $USERLOGIN -c xinit &
+      export HOME=/home/$USERLOGIN
+      setuidgid $USERLOGIN xinit &
       
   else
       
     # login directly into the desktop as root
       # su - root -c xinit &
+      export HOME=/root
       exec xinit &
 
   fi

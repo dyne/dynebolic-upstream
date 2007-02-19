@@ -229,7 +229,7 @@ ld_regenerate_cache() {
                                    }' > /tmp/ld.so.conf
   cp -f /tmp/ld.so.conf /etc/ld.so.conf
   rm -f /tmp/ld.so.conf
-  act "regenerating linkage cache"
-  ldconfig
+  act "regenerating linkage cache in background"
+  ldconfig &
 } 
 

@@ -140,6 +140,13 @@ loadmod() {
 
     MODULE=${1}
 
+    # check if the module is already loaded
+    for checkmod in `lsmod | awk '{ print $1 }'`; do
+        if [ "$checkmod" = "$MODULE" ]; then
+            return
+        fi
+    done
+
     if [ $2 ]; then  # there are arguments
       MODARGS=`echo $@ | cut -d' ' -f 2-`
     else

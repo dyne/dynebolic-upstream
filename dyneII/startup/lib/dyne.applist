@@ -243,11 +243,12 @@ End | OFFICE
 Begin | FILES
 
 K3b | CD/DVD mastering | k3b | | www.k3b.org | K3b team
+GDMap | harddisk mapper | gdmap |  | http://gdmap.sf.net| Markus Lausser
+Parted | partition editor | qtparted | root | qtparted.sf.net | Andrew Clausen, Vanni Brutto
 Rox | our file browser | rox | | rox.sf.net | Thomas Leonard
 Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
 xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
 MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
-GDMap | harddisk mapper | gdmap |  | http://gdmap.sf.net| Markus Lausser
 xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
 Gringotts | encrypted data storage | gringotts -s | user | WEB | AUTH
 gCombust | cd burner | gcombust | | WEB | AUTH

@@ -316,9 +316,6 @@ if [ $LOOPBACK ]; then
     cp -ra /usr/local/*    /tmp/nest/local
 
     cp -ra /etc /tmp/nest
-    cp -ra /var /tmp/nest
-    mkdir       /tmp/nest/tmp
-    chmod a+rwt /tmp/nest/tmp
 
     umount /tmp/nest
 
