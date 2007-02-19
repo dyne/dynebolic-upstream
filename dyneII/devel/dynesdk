@@ -809,7 +809,7 @@ mkkern() {
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 	error "compile your kernel sources in $PFX/kernel"
-	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}.sys"
+	error "or provide one in ${DYNE_SYS_MNT}/${krnfile}"
 	error "to change kernel version export \$KRN variable"
 	error "operation aborted."
 	exit 1;
