@@ -221,8 +221,6 @@ You can DOCK the system simply copying the /dyne directory from the CD inside on
 
 If this is your first boot, you can become root with password 'luther'.
 
-Switch desktop alt+2,3... get menu with right click!
-
 Happy hacking ;^)
 </property>
 		</widget>
@@ -521,11 +519,8 @@ mutual support</property>
 		  <property name="text" translatable="yes">
 An HACKtive and friendly community uses and develops DYNE software: creative people sharing ideas and crafty skills, ospitality and a funky mood.
 
-We use dyne:bolic for audio video manipulation, skill sharing, art, recycling and streaming...
-
-You are welcome to join us, exchange help, share your wisdom and good vibes ;^)
-
-Press the buttons to visit our website.</property>
+We use dyne:bolic for audio video manipulation, skill sharing, art, recycling and streaming... and you are free to use it, modify it and redistribute it.
+</property>
 		</widget>
 	      </child>
 	    </widget>
@@ -1055,10 +1050,15 @@ your appreciation</property>
 		  <property name="left_margin">3</property>
 		  <property name="right_margin">0</property>
 		  <property name="indent">0</property>
-		  <property name="text" translatable="yes">GNU GENERAL PUBLIC LICENSE  Version 2, June 1991
+		  <property name="text" translatable="yes">
+
+
+GNU GENERAL PUBLIC LICENSE  Version 2, June 1991
 dyne:bolic is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 dyne:bolic is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please refer to the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with dyne:bolic; if not, write to: Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</property>
+You should have received a copy of the GNU General Public License along with dyne:bolic; if not, write to: Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+</property>
 		</widget>
 	      </child>
 	    </widget>
@@ -1078,7 +1078,7 @@ You should have received a copy of the GNU General Public License along with dyn
 	      <child>
 		<widget class="GtkLabel" id="label7">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">dyne:bolic is copyleft (c)2001-2006 by Denis &quot;jaromil&quot; Rojo
+		  <property name="label" translatable="yes">dyne:bolic is copyleft (c)2001-2007 by Denis &quot;jaromil&quot; Rojo
 Several redistributed binaries are copyrighted by the respective authors, refer to documentation for details.
 The source of all included binaries is available upon request: it's GNU GPL license and, in some cases, X/BSD/Mozilla/MIT.</property>
 		  <property name="use_underline">False</property>
