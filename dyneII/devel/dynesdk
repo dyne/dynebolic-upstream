@@ -2,10 +2,13 @@
 #
 # dyne:bolic software development kit - the commandline tool
 #
-# Copyright (C) 2003-2006 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# Copyright (C) 2003-2007 Denis "Jaromil" Rojo <jaromil@dyne.org>
+#
 # with contributions and testing by:
-#                    Alex "Smilzo" Gnoli    <smilzo@sfrajone.org>
+#      2004          Alex "Smilzo" Gnoli    <smilzo@sfrajone.org>
 #                    Pierluigi "Newmark" Maori <newmark@dyne.org>
+#      2006          Aymeric Mansoux <aym3ric@goto10.org>
+#                    Antonios Galanopoulos <anton@goto10.org>
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -44,7 +47,12 @@ else
 fi
 
 # get the SDK system version
-source ${PFX}/cdrom/dyne/VERSION
+if [ -r ${PFX}/cdrom/dyne/VERSION ]; then
+  source ${PFX}/cdrom/dyne/VERSION
+else
+  source ${DYNE_SYS_MNT}/VERSION
+fi
+
 # generate the default name of the iso file
 ISO=dyne-${DYNE_SYS_VER}.iso
 # generate the default name of the ramdisk
@@ -403,6 +411,8 @@ mkinitrd() {
     # here copy the icon for the Volumes
     cp -f /usr/share/icons/graphite/48x48/apps/disks.png mnt/.DirIcon
     ln -s /usr usr/share
+    mkdir usr/lib
+    ln -s /lib/security usr/lib/security
     ln -s /etc/terminfo usr/terminfo
     ln -sf /bin/zsh bin/sh
     mknod dev/console c 5 1
@@ -419,7 +429,6 @@ mkinitrd() {
     rm -f etc/HOSTNAME
     rm -f etc/NETWORK
     rm -f etc/LANGUAGE
-    rm -f etc/ld.so.conf
     rm -f etc/auto.removable
     rm -f etc/blkid.tab*
     rm -f etc/fstab
@@ -532,7 +541,9 @@ EOF
 
     act "linking shared libraries in ramdisk"
     touch etc/ld.so.conf
-    ldconfig -r .
+    echo "/usr/lib" >> etc/ld.so.conf
+    echo "/usr/X11R6/lib" >> etc/ld.so.conf
+    ldconfig -f etc/ld.so.conf -C etc/ld.so.cache
 
     act "packaging /var"
     cp -ra /var .
@@ -780,7 +791,7 @@ mkkern() {
 	    if [ $vmlinuz ]; then
 
 		act "found: using $vmlinuz"
-		cp ${MODDIR}/${KRN}/build/arch/${vmlinuz} ${PFX}/cdrom/dyne/${krnfile}
+		cp ${vmlinuz} ${PFX}/cdrom/dyne/${krnfile}
 
 	    else
 
@@ -798,7 +809,7 @@ mkkern() {
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 	error "compile your kernel sources in $PFX/kernel"
-	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}.krn"
+	error "or provide one in ${DYNE_SYS_MNT}/linux-${KRN}.sys"
 	error "to change kernel version export \$KRN variable"
 	error "operation aborted."
 	exit 1;
@@ -806,7 +817,7 @@ mkkern() {
 
     # now the modules, if they are not squashed
 
-    modpack="$PFX/cdrom/dyne/linux-mods-${KRN}.sys"
+    modpack="$PFX/cdrom/dyne/linux-${KRN}.kmods"
     
     if ! [ -r ${modpack} ]; then
 
