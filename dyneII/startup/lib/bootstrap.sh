@@ -487,10 +487,44 @@ fi
 #################################### first the kernel modules
 
 KRN=`uname -r`
-kmods=`cat /boot/volumes | grep krn`
 
 act "searching for kernel modules..."
+kmods_found=false
+
+kmods=`cat /boot/volumes | grep '^hdisk' | grep krn`
 for k in ${(f)kmods}; do
+
+    if [ $kmods_found = true ]; then break; fi
+
+    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
+    mkdir -p /mnt/kmods/${KRN}
+    mkdir -p /lib/modules/${KRN}
+    act "kernel modules found in ${kpath}"
+
+    mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
+    if [ $? = 0]; then kmods_found=true; fi
+
+    # load union filesystem module from inside the squash
+    insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
+	
+    if [ $? = 0 ]; then
+	act "overlaying module directory with unionfs"
+	mkdir -p /var/cache/union/kmods_rw
+	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/kmods/${KRN}=ro unionfs /lib/modules/${KRN}
+    else
+        error "no unionfs module found, mounting kernel modules read-only"
+        umount /mnt/kmods/${KRN}
+        mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
+    fi
+
+done
+
+kmods=`cat /boot/volumes | grep -v '^hdisk' | grep krn`
+
+for k in ${(f)kmods}; do
+
+    if [ $kmods_found = true ]; then break; fi
+
     kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
     mkdir -p /mnt/kmods/${KRN}
     mkdir -p /lib/modules/${KRN}
@@ -512,6 +546,9 @@ for k in ${(f)kmods}; do
     fi
 
 done
+
+
+
 
 if ! [ -x /lib/modules/"`uname -r`"/kernel ]; then
     error "no kernel modules found"

@@ -468,7 +468,7 @@ cleandir() {
 ask_yesno() {
    TTL=${1}
    dialog --timeout ${TTL} --colors --backtitle \
-   "        dyne:II .:.:.:. `uname -ormp` .:.:.:. RASTASOFT AFRO LINUX" \
+   "        dyne:II .:.:.:. `uname -rm` .:.:.:. RASTASOFT AFRO LINUX" \
    --yesno "$2" 0 0
 
    case $? in
