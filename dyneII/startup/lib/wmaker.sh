@@ -294,7 +294,7 @@ EOF
 wmaker_gen_volumes() {
 # this functions generates the right hand dock for wmaker
 
-    if [ -r $WMSTATEDOCK ]; then rm $WMSTATEDOCK; fi
+    if [ -r $WMSTATEDOCK ]; then return; fi
 
     # generate the list of harddisks
     HDISKS=`cat /boot/volumes | grep "^hdisk" | awk '{print $3}' | cut -d/ -f3 | uniq`
@@ -745,14 +745,14 @@ bootstrap_x() {
 
   notice "initializing window managers"
   # generate window manager menu entries
-  fluxbox_gen_menu
-  wmaker_gen_menu
-  xfce_gen_menu
+#  fluxbox_gen_menu
+#  wmaker_gen_menu
+#  xfce_gen_menu
 
   # generate window manager volumes entries
-  rox_gen_volumes
-  wmaker_gen_volumes
-  xfce_gen_volumes
+#  rox_gen_volumes
+#  wmaker_gen_volumes
+#  xfce_gen_volumes
   
 
 
@@ -770,14 +770,17 @@ bootstrap_x() {
     # popup a login prompt
       xdm
       
-  elif [ `grep $USERLOGIN /etc/passwd` ]; then
-      
+  elif [ $USERLOGIN ]; then
+
+    grep $USERLOGIN /etc/passwd > /dev/null
+    if [ $? = 0 ]; then
     # login directly selected user
       export HOME=/home/$USERLOGIN
       setuidgid $USERLOGIN xinit &
-      
+    fi
+  
   else
-      
+     
     # login directly into the desktop as root
       # su - root -c xinit &
       export HOME=/root
