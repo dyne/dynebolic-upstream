@@ -502,7 +502,7 @@ for k in ${(f)kmods}; do
     act "kernel modules found in ${kpath}"
 
     mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
-    if [ $? = 0]; then kmods_found=true; fi
+    if [ $? = 0 ]; then kmods_found=true; fi
 
     # load union filesystem module from inside the squash
     insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
