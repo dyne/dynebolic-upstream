@@ -10,7 +10,7 @@
  v. 2.4      /:::/@@@/  \:::\ L \        DHORUBA    |                       |
  forged in  /:::/@@@/____\:::\ I \                  | F1 - intro banner     |
  Amsterdam /:::/@@@/  (((i)))   C \  RASTA SOFTWARE |                       |
-  15feb07 /:::/@@@/_____________   \  (C) 2001-2007 | F2 - boot options     |
+  6jun06  /:::/@@@/_____________   \  (C) 2001-2007 | F2 - boot options     |
          /::::\   \@@@@@@@@@@@@/\ G \  jaromil aka  | F3 - video modes      |
         /::::::\   \@@@@@@@@@@/::\ N \  Denis Rojo  | F4 - thin client      |
        /:::/\:::\   \    /:::/\:::\ U \             |                       |
