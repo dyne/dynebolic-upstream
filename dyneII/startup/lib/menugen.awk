@@ -117,12 +117,11 @@ function render_xfce() {
 
 	line = "	<app name=\"" $1 " :: " $2 "\" "
 
-	command = "cmd=\""
+	command = "cmd=\"launch "
 
 	if ($4 ~ "root" ) # run as root
 	   command = command "launchroot "
-
-        if ($4 ~ "user" ) # run as user
+	else if ($4 ~ "user" ) # run as user
            command = command "launchuser "
 
 	if ($4 ~ "terminal" ) # run into a terminal
