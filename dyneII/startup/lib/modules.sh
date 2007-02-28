@@ -49,6 +49,11 @@ add_module_path() {
         "export INFOPATH=\$INFOPATH:/opt/$mod/info"
     fi
 
+    # locate database
+    if [ -r /opt/${mod}/var/lib/updatedb ]; then
+      append_line /boot/dynenv.modules \
+        "export LOCATE_PATH=\$LOCATE_PATH:/opt/$mod/var/lib/updatedb"
+    fi
 
     # configuration files in home directories
     # DANGER! this is a possible security flaw

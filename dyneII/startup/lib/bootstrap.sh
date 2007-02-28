@@ -1,5 +1,5 @@
 # dyne:II bootstrap functions
-# copyleft 2001 - 2006 Denis "jaromil" Rojo
+# copyleft 2001 - 2007 Denis "jaromil" Rojo
 
 # this is the third rewrite of dyne:bolic bootstrap process
 # done in 2005, after having studied AWK in India
@@ -491,18 +491,21 @@ KRN=`uname -r`
 act "searching for kernel modules..."
 kmods_found=false
 
+# first the harddisks
 kmods=`cat /boot/volumes | grep '^hdisk' | grep krn`
 for k in ${(f)kmods}; do
 
-    if [ $kmods_found = true ]; then break; fi
+    if [ "$kmods_found" = "true" ]; then break; fi
 
     kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
+
     mkdir -p /mnt/kmods/${KRN}
     mkdir -p /lib/modules/${KRN}
     act "kernel modules found in ${kpath}"
 
     mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
-    if [ $? = 0 ]; then kmods_found=true; fi
+    if [ $? = 0 ]; then kmods_found=true
+    else continue; fi
 
     # load union filesystem module from inside the squash
     insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
@@ -519,18 +522,21 @@ for k in ${(f)kmods}; do
 
 done
 
+# then all the other storage devices
 kmods=`cat /boot/volumes | grep -v '^hdisk' | grep krn`
-
 for k in ${(f)kmods}; do
 
-    if [ $kmods_found = true ]; then break; fi
+    if [ "$kmods_found" = "true" ]; then break; fi
 
     kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
+
     mkdir -p /mnt/kmods/${KRN}
     mkdir -p /lib/modules/${KRN}
     act "kernel modules found in ${kpath}"
 
     mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
+    if [ $? = 0 ]; then kmods_found=true
+    else continue; fi
 
     # load union filesystem module from inside the squash
     insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
@@ -549,11 +555,18 @@ done
 
 
 
-
+###############################################
 if ! [ -x /lib/modules/"`uname -r`"/kernel ]; then
     error "no kernel modules found"
 fi
 ########################### kernel modules done
+
+
+
+
+###############################################
+## mount the /usr squashed filesystem dyne.sys
+###############################################
 
 
 if [ -x ${DYNE_SYS_MNT}/SDK/sys/bin ]; then
@@ -650,6 +663,11 @@ fi
 
 ##########################################
 # WE HAVE THE SYSTEM MOUNTED now!
+
+# check if it's an ASCII-only system
+if ! [ -x /usr/X11R6/bin ]; then
+  export ASCII=true
+fi
 
 # now the system is mounted expand our PATH
 export PATH=/usr/bin:/usr/sbin:$PATH
@@ -760,11 +778,15 @@ raise_soundcard_volumes
 ## or in dyne/SDK/modules if sdk=true
 notice "activating additional dyne modules"
 mount_dyne_modules
+source /boot/dynenv.modules
 # see /lib/dyne/modules.sh
 ## scan all applications present in the running system
-notice "scanning installed applications"
-source /boot/dynenv.modules
-check_apps_present
+# unless we are in ASCII mode, then we don't need menus
+if ! [ $ASCII ]; then ASCII="`get_config ascii`"; fi
+if ! [ $ASCII ]; then
+  notice "scanning installed applications"
+  check_apps_present
+fi
 
 ## scan for bootloaders
 for i in `cat /boot/volumes | awk '/^hdisk/ { print $3 }'`; do
@@ -813,6 +835,8 @@ boot_graphical_user_mode() {
 mode=`cat /boot/mode`
 if [ "$mode" = "volatile" ]; then
   exit 0;
+elif [ "$mode" = "ascii" ]; then
+  ASCII=true
 fi
 
 
@@ -822,7 +846,7 @@ notice "going in graphical user mode"
 
 #################################
 ######## ASCII MODE
-ASCII="`get_config ascii`"
+if ! [ $ASCII ]; then ASCII="`get_config ascii`"; fi
 if [ $ASCII ]; then
     rm -f /boot/mode
     echo ascii > /boot/mode
@@ -843,18 +867,16 @@ fortune -s
 echo
 EOF
     exit 0;
+
+
+#################################
+######## FULL DYNE MODE
 else
 
     rm -f /boot/mode
     echo dyne > /boot/mode
 
 fi
-#################################
-
-
-
-#################################
-## full dyne mode
 
   source /lib/dyne/zsh/env
 

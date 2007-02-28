@@ -8,12 +8,14 @@ export MACHTYPE="i586-pc-linux-gnu"
 export OSTYPE="linux-gnu"
 export SHELL="/bin/zsh"
 	
-if [ -z $MANPATH ]; then # setup minimum manpath if none is there
-    export MANPATH=/usr/share/man:/usr/netpbm/man
-fi
+if [ -z $DYNE_MODULES_SOURCED ]; then # setup base paths
 
-if [ -z $DYNE_MODULES_SOURCED ]; then # setup base path
     export PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin:.
+    export MANPATH=/usr/share/man:/usr/netpbm/man
+    export INFOPATH=/usr/share/info
+    export PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
+    export LOCATE_PATH=/usr/var/lib/updatedb
+
 fi
 
 export PAGER="/usr/bin/most"
@@ -22,7 +24,6 @@ export LIBIND_PATH="/usr/lib/libind"
 export XWINHOME="/usr/X11R6"
 export X11HOME="$XWINHOME"
 export QTDIR="/usr"
-export PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
 
 
 # A lucky prompt:

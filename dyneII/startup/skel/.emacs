@@ -87,31 +87,12 @@
 ; load color-themes extension
 (require 'color-theme)
 (color-theme-initialize)
+(global-font-lock-mode t)
 
 (GNUEmacs
  (setq transient-mark-mode 't)
  )
 
-(XEmacs
- (set-face-foreground 'bold-italic "Blue")
- )
-
-(GNUEmacs
- (Xlaunch
-  (make-face-bold 'bold-italic)
-  ))
-
-(set-face-foreground 'bold-italic "Blue")
-
-(setq default-frame-alist
-      '(
-;;; Define here the default geometry or via ~/.Xdefaults.
-;;	(width . 84) (height . 46)
-	(width . 106) (height . 49)
-	(cursor-color . "red")
-	(cursor-type . box)
-	(foreground-color . "black")
-	(background-color . "honeydew")))
 
 ;; A small exemples to show how Emacs is powerfull.
 ; Define function to match a parenthesis otherwise insert a %

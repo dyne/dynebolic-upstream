@@ -248,6 +248,7 @@ Parted | partition editor | qtparted | root | qtparted.sf.net | Andrew Clausen, 
 Rox | our file browser | rox | | rox.sf.net | Thomas Leonard
 Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
 xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
+Wine | windows emulator | winecfg | | www.winehq.org | wine developers
 MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
 xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
 Gringotts | encrypted data storage | gringotts -s | user | WEB | AUTH

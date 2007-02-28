@@ -20,4 +20,8 @@
     <comment>Time Based Text</comment>
     <glob pattern="*.tbt"/>
   </mime-type>
+  <mime-type type="application/x-win32-exe">
+    <comment>Windows executable</comment>
+    <glob pattern="*.EXE"/>
+  </mime-type>
 </mime-info>
