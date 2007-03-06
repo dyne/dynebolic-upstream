@@ -742,17 +742,22 @@ bootstrap_x() {
   fi
 
   # setup window managers
+  act "creating socket directories for Xorg"
+  mkdir /tmp/.font-unix ; chmod a+wt /tmp/.font-unix
+  mkdir /tmp/.ICE-unix  ; chmod a+wt /tmp/.ICE-unix
+  mkdir /tmp/.X11-unix  ; chmod a+wt /tmp/.X11-unix
+
 
   notice "initializing window managers"
   # generate window manager menu entries
-#  fluxbox_gen_menu
-#  wmaker_gen_menu
-#  xfce_gen_menu
+  fluxbox_gen_menu
+  wmaker_gen_menu
+  xfce_gen_menu
 
   # generate window manager volumes entries
-#  rox_gen_volumes
-#  wmaker_gen_volumes
-#  xfce_gen_volumes
+  rox_gen_volumes
+  wmaker_gen_volumes
+  xfce_gen_volumes
   
 
 

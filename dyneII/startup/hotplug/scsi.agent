@@ -1,10 +1,13 @@
-#!/bin/sh
+#!/bin/zsh
 #
 # SCSI hotplug agent for 2.5 kernels 
+# modified in 2007 by Jaromil for dyne:II
 #
 #	ACTION=add
 #	DEVPATH=devices/scsi0/0:0:0:0
 #
+
+source /lib/dyne/utils.sh
 
 cd /etc/hotplug
 . ./hotplug.functions
@@ -40,7 +43,7 @@ add)
     TYPE=$(cat $TYPE_ATTR) 
     case "$TYPE" in
     # 2.5.51 style attributes; <scsi/scsi.h> TYPE_* constants
-    0)		TYPE=disk ; MODULE=sd_mod ;;
+    0)		TYPE=disk ; MODULE=sd_mod ; SCRIPT=refresh_storage ;;
     # FIXME some tapes use 'osst' not 'st'
     1)		TYPE=tape ; MODULE=st ;;
     2)		TYPE=printer ;;
@@ -54,11 +57,15 @@ add)
     14)		TYPE=enclosure ;;
     esac
     if [ "$MODULE" != "" ]; then
-	mesg "$TYPE at $DEVPATH"
+	notice "connected device type $TYPE at $DEVPATH"
 	modprobe $MODULE
     else
-	debug_mesg "how to add device type=$TYPE at $DEVPATH ??"
+	notice "connected device type $TYPE"
     fi
+    if [ $SCRIPT ]; then
+       exec $SCRIPT
+    fi
+
     ;;
 
 *)

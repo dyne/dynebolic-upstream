@@ -277,6 +277,7 @@ loadmod() {
 
     fi
 
+
     ###############################################
     # at last if the system is mounted try modprobe
     if [ -x /usr/sbin/modprobe ]; then
@@ -299,6 +300,24 @@ loadmod() {
 	return
    
     fi
+
+    ###############################################
+    # load from modules directory without modprobe
+    if [ -x /lib/modules/${KRN}/kernel ]; then
+      TRYMOD=`find /lib/modules/$KRN -name "${MODULE}.ko"`
+        if [ ${TRYMOD} ]; then
+
+          insmod ${TRYMOD} ${MODARGS} 1>/dev/null 2>/dev/null
+          if [ $? = 0 ]; then
+            act "${MODULE} kernel module loaded"
+          else
+            error "error loading kernel module $TRYMOD"
+          fi
+          return
+
+        fi
+    fi
+
 
     error "kernel module $MODULE not found"
 }

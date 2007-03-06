@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+
+source /lib/dyne/utils.sh
+source /lib/dyne/modules.sh
+
+mount_dyne_modules
+
+source /boot/dynenv.modules
+
+

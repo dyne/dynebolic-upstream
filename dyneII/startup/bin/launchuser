@@ -1,14 +1,78 @@
-#!/bin/sh
+#!/bin/zsh
 
 # execution wrapper that makes sure a program is started as user
+# (C) 2006-2007 Denis "jaromil" Rojo
 
-if [ "`id -nu`" = "root" ]; then
-  xhost +localhost
-  DISPLAY=:0
-  EXEC="su - luther -c"
-else
-  EXEC="exec"
+# requirements: gtkdialog
+
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+source /lib/dyne/utils.sh
+
+if [ -z $DISPLAY ]; then
+  error "no DISPLAY found"
 fi
 
-launch `$EXEC $@`
+if [ "`id -nu`" = "root" ]; then
+
+export MAIN_DIALOG="
+<vbox>
+
+<frame Executing unstable application as root>
+
+<hbox>
+
+<pixmap>
+  <input file>/usr/share/icons/graphite/48x48/emblems/emblem-important.png</input>
+</pixmap>
+
+<text>
+  <label>Launching the application [ $@ ] as root might make the system vulnerable. Are you sure you want to proceed?</label>
+</text>
+
+</hbox>
+
+</frame>
+
+<hbox>
+
+ <button ok></button>
+
+ <button cancel></button>
+
+</hbox>
+
+</vbox>
+"
+
+
+#eval `/usr/bin/gtkdialog --program=MAIN_DIALOG`
+eval `gtkdialog --program=MAIN_DIALOG`
+
+if [ "$EXIT" = "OK" ]; then
+    
+    act "launching [ $@ ] as root"
+    
+else
+    
+    act "user aborted launching [ $@ ] as root"
+    exit 0
+
+fi
+
+fi # if id=root
+
+launch $@
 

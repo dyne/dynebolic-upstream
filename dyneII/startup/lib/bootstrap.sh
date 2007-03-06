@@ -43,6 +43,8 @@ source /lib/dyne/language.sh
 source /lib/dyne/volumes.sh
 source /lib/dyne/modules.sh
 source /lib/dyne/wmaker.sh
+source /lib/dyne/kmods.sh
+source /lib/dyne/dock.sh
 source /lib/dyne/nest.sh
 source /lib/dyne/xvga.sh
 
@@ -210,7 +212,84 @@ if ! [ "$do_scan_cdrom" = "false" ]; then
   scan_cdrom
 fi
 
-##
+###### check if we have updates
+if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
+
+  scan_dock_updates
+
+fi
+##################### updates done
+
+
+#################################### first mount the kernel modules
+
+KRN=`uname -r`
+
+act "searching for kernel modules..."
+kmods_found=false
+
+# first the harddisks
+scan_docked_kmods hdisk
+
+if [ "$kmods_found" = "false" ]; then
+  scan_docked_kmods dvd
+fi
+
+if [ "$kmods_found" = "false" ]; then
+  scan_docked_kmods cdrom
+fi
+
+
+
+###############################################
+if ! [ -x /lib/modules/${KRN}/kernel ]; then
+
+    error "no kernel modules found"
+
+else
+
+    cat /boot/volumes | grep ' sys '
+    if [ $? = 1 ]; then
+      notice "no system found on storage, attempting to scan local network"
+
+      for m in `pcimodules | sort -r | uniq | grep -v snd-`; do
+
+        TRYMOD=`find /lib/modules/$KRN/kernel/drivers/net -name "${m}.ko"`
+
+        if [ ${TRYMOD} ]; then
+
+          insmod ${TRYMOD} 1>/dev/null 2>/dev/null
+          if [ $? = 0 ]; then
+
+            act "${m} kernel module loaded - network support activated"
+
+          else
+
+            error "error loading kernel module $m"
+
+          fi
+
+        fi
+
+      done
+
+      netcards=`ifconfig -a | awk '/^eth/ { print $1 "   " $5 }'`
+      for n in ${(f)netcards}; do
+
+        act "scanning on network interface ${n}"
+        eth="`echo $n | awk '{print $1}'`"
+        mac="`echo $n | awk '{print $2}'`"
+        pump -i ${eth}
+        
+        act " TODO - howl scan on ${mac} for shared systems"
+
+      done
+
+    fi
+fi
+########################### kernel modules loaded
+
+
 
 
 #### if network boot is configured...
@@ -306,8 +385,8 @@ if ! [ $DYNE_SYS_MEDIA ]; then
   ##### NOW HERE THE SYSTEM SELECTION
 
     # call the procedure to select and upgrade detected systems
-    choose_volumes
-    # see /lib/dyne/volumes.sh
+    mount_dock
+    # see /lib/dyne/dock.sh
 
   else
 
@@ -330,6 +409,7 @@ append_line /boot/dynenv "export DYNE_SYS_MNT=${DYNE_SYS_MNT}"
 
 # create a useful link to the dock
 ln -s ${DYNE_SYS_MNT} /lib/dyne/configure/Dyne
+
 
 }
 ##########################################
@@ -427,139 +507,13 @@ fi
 
 
 
-mkdir -p /usr
-
-# check if we have an update
-if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
-  source ${DYNE_SYS_MNT}/update/VERSION
-
-  ask_yesno 10 \
-"the Dock on your harddisk contains an update:\n\n
- dyne.sys version ${DYNE_SYS_VER}\n
- initrd.gz version ${DYNE_INITRD_VER}\n
- Do you want to apply it to the current system?"
-
-  if [ $? = 1 ]; then
-    src=${DYNE_SYS_MNT}/update
-    dst=${DYNE_SYS_MNT}
-
-    notice "updating docked system, please wait while copying files..."
-    act "when complete, this computer will be rebooted."
-    if [ -r $src/initrd.gz ]; then
-      act "updating ramdisk"
-      mv $src/initrd.gz $dst/initrd.gz
-    fi
-    if [ -r $src/linux ]; then
-      act "updating kernel"
-      mv $src/linux     $dst/linux
-    fi
-    if [ -r $src/dyne.sys ]; then
-      act "updating core binary system"
-      mv $src/dyne.sys  $dst/dyne.sys
-    fi
-
-    if [ -x $src/modules ]; then
-      act "updating modules"
-      ls $src/modules
-      mv $src/modules/* $dst/modules/
-    fi
-
-    # avoid to update next time
-    rm $src/VERSION
-
-    notice "UPDATE COMPLETED :: system is now rebooting"
-    sync
-    umount $DYNE_SYS_MNT
-    sleep 3
-    reboot
-  fi 
-
-fi
-##################### update done
-
 
 ###########################################################
 ##################### MOUNT the system and kernel modules #
 ###########################################################
 
 
-
-#################################### first the kernel modules
-
-KRN=`uname -r`
-
-act "searching for kernel modules..."
-kmods_found=false
-
-# first the harddisks
-kmods=`cat /boot/volumes | grep '^hdisk' | grep krn`
-for k in ${(f)kmods}; do
-
-    if [ "$kmods_found" = "true" ]; then break; fi
-
-    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
-
-    mkdir -p /mnt/kmods/${KRN}
-    mkdir -p /lib/modules/${KRN}
-    act "kernel modules found in ${kpath}"
-
-    mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
-    if [ $? = 0 ]; then kmods_found=true
-    else continue; fi
-
-    # load union filesystem module from inside the squash
-    insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
-	
-    if [ $? = 0 ]; then
-	act "overlaying module directory with unionfs"
-	mkdir -p /var/cache/union/kmods_rw
-	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/kmods/${KRN}=ro unionfs /lib/modules/${KRN}
-    else
-        error "no unionfs module found, mounting kernel modules read-only"
-        umount /mnt/kmods/${KRN}
-        mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
-    fi
-
-done
-
-# then all the other storage devices
-kmods=`cat /boot/volumes | grep -v '^hdisk' | grep krn`
-for k in ${(f)kmods}; do
-
-    if [ "$kmods_found" = "true" ]; then break; fi
-
-    kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
-
-    mkdir -p /mnt/kmods/${KRN}
-    mkdir -p /lib/modules/${KRN}
-    act "kernel modules found in ${kpath}"
-
-    mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
-    if [ $? = 0 ]; then kmods_found=true
-    else continue; fi
-
-    # load union filesystem module from inside the squash
-    insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
-	
-    if [ $? = 0 ]; then
-	act "overlaying module directory with unionfs"
-	mkdir -p /var/cache/union/kmods_rw
-	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/kmods/${KRN}=ro unionfs /lib/modules/${KRN}
-    else
-        error "no unionfs module found, mounting kernel modules read-only"
-        umount /mnt/kmods/${KRN}
-        mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
-    fi
-
-done
-
-
-
-###############################################
-if ! [ -x /lib/modules/"`uname -r`"/kernel ]; then
-    error "no kernel modules found"
-fi
-########################### kernel modules done
+mkdir -p /usr
 
 
 
@@ -711,7 +665,7 @@ choose_nest
 
     
 # load necessary kernel modules
-init_modules
+load_pci_kmods
 
 
 

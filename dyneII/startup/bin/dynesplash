@@ -1,12 +1,17 @@
 #!/bin/sh
 
 
-if [ -r /dev/dsp ]; then
-  # play the startup sound
-  mplayer /usr/share/dyne/egoboo_splashjingle.ogg 2>&1 > /dev/null &
-fi
+mount | grep '/mnt/nest/home on /home' > /dev/null
+if ! [ $? = 0 ]; then # there is no nest
 
-cd /usr/share/dyne/splash
-./dynesplash
-cd -
+  if [ -r /dev/dsp ]; then
+    # play the startup sound
+    mplayer /usr/share/dyne/egoboo_splashjingle.ogg 2>&1 > /dev/null &
+  fi
+
+  cd /usr/share/dyne/splash
+    ./dynesplash
+  cd -
+
+fi
 

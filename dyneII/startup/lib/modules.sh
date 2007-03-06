@@ -50,9 +50,9 @@ add_module_path() {
     fi
 
     # locate database
-    if [ -r /opt/${mod}/var/lib/updatedb ]; then
+    if [ -r /opt/${mod}/var/lib/locatedb ]; then
       append_line /boot/dynenv.modules \
-        "export LOCATE_PATH=\$LOCATE_PATH:/opt/$mod/var/lib/updatedb"
+        "export LOCATE_PATH=\$LOCATE_PATH:/opt/$mod/var/lib/locatedb"
     fi
 
     # configuration files in home directories

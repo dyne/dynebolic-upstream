@@ -25,68 +25,6 @@ init_pcmcia() {
   fi
 }
 
-init_modules() {
-
-   notice "loading kernel modules"
-
-   # first apply fixes:
-
-   # FIX es1988 driver (found on a hp omnibook xe3
-   # uses the kernel oss maestro3 driver
-   # jaromil 26 07 2002
-   if [ ! -z "`lspci| grep 'ESS Technology ES1988 Allegro-1'`" ]; then
-     loadmod maestro3
-   fi
-
-   # FIX VIA Rhine ethernet cards
-   # Ethernet controller: VIA Technologies, Inc.: Unknown device 3065
-   # 28 aug 2002 // jaromil
-   if [ ! -z "`lspci|grep 'Ethernet controller: VIA Technologies'`" ]; then
-     echo "[*] VIA Rhine ethernet card detected"
-     loadmod via-rhine
-   fi
-
-
-   # FIX for nforce onboard audio and ethernet from nvidia
-   # those are very popular, expecially on compact EPIA mini-ITX m/b
-   # dirty fix by jrml 14 08 2003
-   # let's not use the nvidia audio driver,
-   # there is an alsa one working better !
-   #if [ ! -z "`lspci | grep -i 'multimedia audio' | grep -i ' nvidia'`" ]; then
-   #  notice "NForce audio controller found"
-   #  loadmod nvaudio
-   #fi
-   if [ ! -z "`lspci| grep -i 'ethernet' | grep -i ' nvidia'`" ]; then
-     notice "NForce ethernet device found"
-     loadmod nvnet
-   fi
-
-   ### NOW WITH PCIMODULES
-
-   # 27 maggio 2003 - jaromil e mose'
-   # the first thing we want to load are alsa modules
-   # btaudio and modem devices should be secondary
-   # so we push on top of the list snd-* 
-   BOGUS_SOUND="btaudio|8x0m|modem"
-
-   # we exclude the modules that crash some machines
-   BAD_MODULES="i810_rng|hw_random|shpchp|pciehp"
-
-   # load alsa modules first
-   for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do
-     loadmod $i
-   done
-
-   # then load all other modules (alsa overrides oss this way)
-   for i in `pcimodules | sort -r | uniq | grep -v snd- | grep -ivE '$BOGUS_SOUND' | grep -ivE '$BAD_MODULES'`; do
-     loadmod $i 
-   done
-
-   act "activating low-latency realtime scheduling"
-   loadmod realtime
-
-}
-
 activate_acpi() {
 
    if [ -x /proc/acpi ]; then

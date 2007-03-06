@@ -2,7 +2,6 @@
 # (C) 2005-2006 Denis "jaromil" Rojo
 # GNU GPL License
 
-source /lib/dyne/dock.sh
 source /lib/dyne/utils.sh
 
 add_volume() {
@@ -36,6 +35,7 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/${DOCK}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/update/VERSION ]; then FLAGS="$FLAGS upd"; fi
   fi
   # samba mounts wont contain a dyne directory, so we check the root
   if ! [ $FLAGS ]; then  # we do it in case nothing was found so far
@@ -43,9 +43,10 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/SDK ];      then FLAGS="$FLAGS sdk"; fi
-      if [ -r ${PFX}/${MNT}/${DOCK}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
-      if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
-      if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
+      if [ -r ${PFX}/${MNT}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
+      if [ -x ${PFX}/${MNT}/tmp ]; then FLAGS="$FLAGS tmp"; fi
+      if [ -r ${PFX}/${MNT}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
+      # no update for rooted docks, mostly online mounted 
   fi
 
 
@@ -323,13 +324,16 @@ scan_storage() {
     ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
 
 	
-    # load all kernel modules for supported filesystems
-    # refer to SUPPORTED_FS defined in utils.sh
-    # all unused modules will be removed at the end of this function
-    act "load modules to scan supported filesystems"
-    for m in `iterate $SUPPORTED_FS`; do
-	loadmod ${m}
-    done
+    if ! [ -x /usr/sbin/modprobe ]; then
+      # we are in the ramdisk
+      # load all kernel modules for supported filesystems
+      # refer to SUPPORTED_FS defined in utils.sh
+      # all unused modules will be removed at the end of this function
+      act "load modules to scan supported filesystems"
+      for m in `iterate $SUPPORTED_FS`; do
+	  loadmod ${m}
+      done
+    fi
 
     #######################
     #### scan IDE harddisks
@@ -382,14 +386,16 @@ scan_storage() {
        scan_partitions ${DEV}
     done
 
-    # now remove all unused filesystem kernel modules
-    act "cleanup unused filesystem modules"
-    USEDFS=`mount | awk '{print $5}'`
-    for fs in `iterate_backwards $SUPPORTED_FS`; do
-	if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
-		rmmod ${fs}
-	fi
-    done
+    if ! [ -x /usr/sbin/modprobe ]; then
+      # now remove all unused filesystem kernel modules
+      act "cleanup unused filesystem modules"
+      USEDFS=`mount | awk '{print $5}'`
+      for fs in `iterate_backwards $SUPPORTED_FS`; do
+	  if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
+		  rmmod ${fs}
+	  fi
+      done
+    fi
 }
 
 scan_removable() {
@@ -420,184 +426,5 @@ scan_removable() {
 }
 
 
-
-
-# this function is called by the cdrom detection when a system is found on CD
-# it goes thru the harddisks detected and check if they have a system
-# match versions and ask user what to do if they are different
-# (use cd | hd | update hd)
-# setup DYNE_SYS_* variables in order to have the system mounted at the end
-# of this script
-#
-# flowchart attempt:
-#
-# - check all HD, find system and schedule usage in $DYNE_SYS*
-# - check all CD, check system version against all HD, query update
-#                 if $DYNE_SYS* is not present, set $DYNE_SYS* to CD
-#                 if $DYNE_SYS* is present, ask CD or HD
-
-choose_volumes() {
-
-    # count the harddisk
-    HDSYS=`cat /boot/volumes|grep -E 'hdisk.*(sys|sdk)'`
-    HDSYS_NUM=0
-    rm -f /boot/hdsyslist
-    touch /boot/hdsyslist
-
-    for v in ${(f)HDSYS}; do
-	# volumes syntax: media device mount filesystem
-	#        we want:       ^^^^^^ ^^^^^ ^^ TODO ^^ have fsys displayed at choice
-	DEV="`echo $v|awk '{print $2}'`"
-	MNT="`echo $v|awk '{print $3}'`"
-
-	# if the /mntpoint/dyne/VERSION is there, source it
-	if [ -r ${MNT}/dyne/VERSION ]; then
-	    # get versions:
-	    # DYNE_SYS_VER
-	    # DYNE_INITRD_VER
-	    source ${MNT}/dyne/VERSION
-	fi
-
-	# dev mnt sys_ver init_ver
-	echo "$DEV $MNT $DYNE_SYS_VER $DYNE_INITRD_VER" >> /boot/hdsyslist
-	HDSYS_NUM=`expr $HDSYS_NUM + 1`
-    done
-    
-    # get the first cdrom
-    CDSYS="`cat /boot/volumes|grep -E 'cdrom.*sys'`"
-    C=0
-    for v in ${(f)CDSYS}; do
-	C=`expr $C + 1`
-
-	if [ $C != 1 ]; then
-	    warning "multiple system cdroms were detected"
-	    warning "using: $v"
-	else
-	    CD=${v} # get only the first
-	fi
-    done
-    
-
-    if [ $HDSYS_NUM = 0 ]; then # no docks ...
-
-	if [ -z $CD ]; then # no cd
-	    
-	    error "no device containing the dyne:bolic system was detected"
-	    return
-	    
-	else # cd found
-	    
-	    DYNE_SYS_MEDIA=cdrom
-	    DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-	    DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
-	    return
-
-	fi
-
-    elif [ $HDSYS_NUM = 1 ]; then # ***** ... there is one dock
-	
-	if [ $CD ]; then # and there is a cdrom
-
-	    MNT="`echo $CD|awk '{print $3}'`"
-	    source ${MNT}/dyne/VERSION
-
-	    # check if version differs between cd and hdisk
-	    # hdsyslist format: dev mnt sys_ver init_ver
-	    HD_SYS_VER="`cat /boot/hdsyslist|awk '{print $3}'`"
-	    HD_INIT_VER="`cat /boot/hdsyslist| awk '{print $4}'`"
-            ask_update=false;
-	    if [ "$DYNE_SYS_VER" != "$HD_SYS_VER" ]; then ask_update=true; fi
-	    if [ "$DYNE_INITRD_VER" != "$HD_INIT_VER" ]; then ask_update=true; fi
-
-	    # prompt if upgrading from cd is desired
-	    if [ x$ask_update = xtrue ]; then
-
-		ask_yesno 10 \
-"the Dock on your harddisk is different from the CDROM:\n\n
-CDROM :: sys $DYNE_SYS_VER :: init $DYNE_INITRD_VER\n
-HDISK :: sys $HD_SYS_VER :: init $HD_INITRD_VER\n\n
-Do you want to upgrade the system on your harddisk?"
-
-		if [ $? = 1 ]; then
-		    notice "upgrading harddisk system version to $DYNE_SYS_VER"
-		    act "please wait while transferring files..."
-		    HD_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-		    cp -rf ${MNT}/dyne ${HD_MNT}
-		    act "done!"
-		else
-		    act "Not upgrading from CD."
-		fi
-
-	    fi
-
-            # prompt if boot from cdrom or harddisk
-            ask_yesno 10 "Do you want to boot from the system on your harddisk?"
-
-            if [ $? != 0 ]; then
-
-	      DYNE_SYS_MEDIA=hdisk
-	      DYNE_SYS_DEV="`cat /boot/hdsyslist| uniq | awk '{print $1}'`"
-	      DYNE_SYS_MNT="`cat /boot/hdsyslist| uniq | awk '{print $2}'`/dyne"
-	      source ${DYNE_SYS_MNT}/VERSION
-	      notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
-              cd_dev=`echo ${CD} | awk '{print $2}'`
-              cd_mnt=`echo ${CD} | awk '{print $3}'`
-              eject ${cd_dev}
-              # device is already in the list of volumes
-              # now add it to the fstab so that it will automount
-              append_line /etc/fstab "${cd_dev}\t${cd_mnt}\tauto\tdefaults,user,ro\t0\t0"
-	      return
-
-            else # boot from cd
-	    
-	      DYNE_SYS_MEDIA=cdrom
-	      DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-	      DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
-              source ${DYNE_SYS_MNT}/VERSION
-              notice "mounting the cdrom system on $DYNE_SYS_MNT"
-	      return
-
-            fi
-
-	else # and there is no cdrom
-
-	    DYNE_SYS_MEDIA=hdisk
-	    DYNE_SYS_DEV="`cat /boot/hdsyslist|awk '{print $1}'`"
-	    DYNE_SYS_MNT="`cat /boot/hdsyslist|awk '{print $2}'`/dyne"
-	    source ${DYNE_SYS_MNT}/VERSION
-	    notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
-	    return
-	    
-	fi
-
-    else # ... there is more than one dock
-
-	if [ $CD ]; then # and there is a cdrom
-
-	    # prompt if upgrading from cd is desired
-            update_multiple_docks $CD
-
-	fi
-	
-        # prompt which dock has to be mounted
-	choose_multiple_docks
-
-        # fetch the selection
-        sel=`cat /tmp/choice`
-	    
-	syslist=`cat /boot/volumes | grep sys`
-
-	dock_sel=`echo $syslist | awk -v l=$sel 'NR == l { print $0 }'`
-
-	act "dock selected: $dock_sel"
-
-	DYNE_SYS_MEDIA=`echo $dock_sel | awk '{print $1}'`
-	DYNE_SYS_DEV="`echo $dock_sel  | awk '{print $2}'`"
-	DYNE_SYS_MNT="`echo $dock_sel  | awk '{print $3}'`/dyne"
-	source ${DYNE_SYS_MNT}/VERSION
-	notice "mounting the $DYNE_SYS_MEDIA docked system on $DYNE_SYS_MNT"
-
-    fi
-}
 
 

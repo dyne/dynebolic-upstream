@@ -60,6 +60,7 @@ Begin | AUDIO
 
 Xmms | hifi audio player | xmms | 		| www.xmms.org | Xmms team
 Amarok | music jukebox | amarok | 		| amarok.kde.org | Amarok dev team
+StreamTuner | internet radio | streamtuner |    | streamtuner.sf.net | StreamTuner developers
 Timidity | midi player | timidity -ig | 	| timidity WEB | Timidity auth
 MikMod | track player | mikmod | terminal 	| mikmod.raphnet.net | MikMod team
 
@@ -127,8 +128,8 @@ End | IMAGE
 
 Begin | TEXT
 
-AbiWord | word processor | abiword | 		| abiword.org | abiword auth
-Scribus | desktop publisher | scribus | 	| scribus WEB | scribus auth
+AbiWord | word processor | abiword | 		| www.abisource.com | Abisource community
+Scribus | desktop publisher | scribus | 	| www.scribus.net | scribus auth
 Lyx | document processor | lyx | | www.lyx.org 	| lyx developers
 Ted | rich text editor | Ted | 			| Ted WEB | Ted auth
 Bluefish | html editor | bluefish -s | 		| bluefish.org | bluefish auth
@@ -279,13 +280,14 @@ Matanza | ascii multiplayer asteroids | matanza | terminal user | WEB | AUTH
 Netris | multiplayer ascii tetris | netris | terminal user | AUTH | WEB
 NeverBall | 3d floating ball | neverball | user | neverball.icculus.org | Robert Kooima
 NeverPut | 3d mini golf | neverput | user | neverball.icculus.org | Robert Kooima
-PowerManga | galactic shot'em up | powermanga | | WEB | AUTH
+PowerManga | galactic shot'em up | powermanga --window | | WEB | AUTH
 Racer | car racing from above | racer | user | WEB | AUTH
 RetroVolley | gnu arcade volleyball | gav | user | WEB | AUTH
 Ri-Li | drive the choo choo | Ri_li | user | WEB | AUTH
 Rick Dangerous | adventurer in the pyramid | xrick | user | WEB | AUTH
 Shotgun Debug | run hacker run | sdb | user | sdb.gamecreation.org | Game Creation Society
 Starfighter | arcade space quest | starfighter | user | WEB | AUTH
+Stellarium | watch stars in the sky | stellarium | | WEB | AUTH
 SuperMarioWars | jump on platforms | supermariowars | user | WEB | AUTH
 SuperTux | penguin on platforms | supertux | user | WEB | AUTH
 tkSol | snappy solitaire | tksol | user | WEB | AUTH
@@ -303,7 +305,8 @@ End | GAMES
 
 Begin | DEVEL
 
-Gambas | Visual application builder | gambas | | gambas.sf.net | Gambas developers
+Gambas | Basic Application Development | gambas | | gambas.sf.net | Gambas developers
+Qemu | Virtual Machine Emulator | qemu-launcher | | fabrice.bellard.free.fr/qemu | Fabrice Bellard
 Glade | Gtk2 user interface builder | glade-2 | | glade.gnome.org | Damon Chaplin
 Fluid | Fltk user interface builder | fluid | | www.fltk.org | EasySW
 Scite | development text editor | SciTE | www.scintilla.org | Neil Hodgson

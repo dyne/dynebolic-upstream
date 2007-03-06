@@ -63,13 +63,13 @@ function render_fluxbox() {
 	command = "launch "
 
 	if ($4 ~ "root" ) # run as root
-	   command = command "launchroot "
+	   command = "launchroot "
 
         if ($4 ~ "user" ) # run as user
-           command = command "launchuser "
+           command = "launchuser "
 	     
 	if ($4 ~ "terminal" ) # run into a terminal
-	   command = command "launchterm '" $1 " :: " $2 "' "
+	   command = "launchterm '" $1 " :: " $2 "' "
 
 	command = command $3 "}"
 
@@ -120,12 +120,12 @@ function render_xfce() {
 	command = "cmd=\"launch "
 
 	if ($4 ~ "root" ) # run as root
-	   command = command "launchroot "
+	   command = "cmd=\"launchroot "
 	else if ($4 ~ "user" ) # run as user
-           command = command "launchuser "
+           command = "cmd=\"launchuser "
 
 	if ($4 ~ "terminal" ) # run into a terminal
-	   command = command "launchterm '" $1 " :: " $2 "' "
+	   command = "cmd=\"launchterm '" $1 " :: " $2 "' "
 
         if      ($1 ~ "CONFIGURE" ) icon="gnome-settings"
 	command = command $3 "\" icon=\"" icon "\"/>"
@@ -165,19 +165,20 @@ function render_wmaker() {
 
         print "EXEC,"
 
-	command = "launch "
         title = $1 "_::_" $2
+
+	command = "launch "
 
 	if ( $4 ~ "term" ) { # prefix the terminal launcher
                 gsub(/\ /, "_", title)
-		command = command "launchterm " title
+		command = "launchterm " title
         }
 
 	if ($4 ~ "root" ) # run as root
-	   command = command "launchroot "
+	   command = "launchroot "
 
         if ($4 ~ "user" ) # run as user
-           command = command "launchuser "
+           command = "launchuser "
 
 	command = command $3
 

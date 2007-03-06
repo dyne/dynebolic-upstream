@@ -1,0 +1,80 @@
+#!/bin/zsh
+
+PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin
+
+source /lib/dyne/volumes.sh
+source /lib/dyne/wmaker.sh
+source /lib/dyne/utils.sh
+
+# TODO:
+# check that in the past happened hotplug event: usb_device
+# if dmesg is hanging on "usb-storage: waiting"
+# then wait for "usb-storage: device scan complete"
+# scan for the new "SCSI device sd*"
+# scan for partitions in sd??
+# if not partitions present, pick MBR sd?
+# if partitions present, pick the first (i.e. sda1)
+
+
+
+notice "new storage device plugged"
+
+/bin/pidof X
+if ! [ $? = 0 ]; then
+    act "X is not running, user confirmation skipped"
+    scan_storage
+    act "device scanned and mounted"
+    exit 0
+else
+    export DISPLAY=:0
+fi
+
+export MAIN_DIALOG="
+<vbox>
+
+<frame New storage device detected>
+
+<hbox>
+
+<pixmap>
+  <input file>/usr/share/icons/graphite/48x48/devices/gnome-dev-harddisk-usb.png</input>
+</pixmap>
+
+<text>
+  <label>Do you want to scan and mount the storage device connected?</label>
+</text>
+
+</hbox>
+
+</frame>
+
+<hbox>
+
+ <button ok></button>
+
+ <button cancel></button>
+
+</hbox>
+
+</vbox>
+"
+
+
+eval `gtkdialog --program=MAIN_DIALOG`
+
+if [ "$EXIT" = "OK" ]; then
+
+    scan_storage
+    
+# refresh xfce panel
+    /bin/pidof xfce4-panel
+    if [ $? = 0 ]; then
+	xfce_gen_volumes
+    fi
+    
+# popup rox filer on volumes
+    launch rox /mnt
+
+fi
+    
+
