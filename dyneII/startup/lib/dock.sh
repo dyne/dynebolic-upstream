@@ -3,7 +3,7 @@
 # GNU GPL License
 
 source /lib/dyne/dialog.sh
-
+source /lib/dyne/utils.sh
 
 
 
@@ -16,7 +16,7 @@ source /lib/dyne/dialog.sh
 # to select which system to upgrade on the harddisk,
 # it should be called when booting from CD on a system with multiple docks
 update_multiple_docks() {
-    CD="$1"
+    CD="`cat /boot/volumes | grep -E 'cdrom.*sys'`"
     c=0
     HDSYSLIST=`cat /boot/hdsyslist`
 
@@ -90,16 +90,22 @@ EOF
 
 check_hd_and_cd() {
 
-    MNT="`echo $CD|awk '{print $3}'`"
-    source ${MNT}/dyne/VERSION
+    # *syslist format: dev mnt sys_ver init_ver
+
+    cd_dev=`cat /boot/cdsyslist | awk '{print $1}'`
+    cd_mnt=`cat /boot/cdsyslist | awk '{print $2}'`
+    cd_sys_ver=`cat /boot/cdsyslist | awk '{print $3}'`
+    cd_initrd_ver=`cat /boot/cdsyslist | awk '{print $4}'`
+
+    hd_dev=`cat /boot/hdsyslist | awk '{print $1}'`
+    hd_mnt=`cat /boot/hdsyslist | awk '{print $2}'`
+    hd_sys_ver=`cat /boot/hdsyslist | awk '{print $3}'`
+    hd_initrd_ver=`cat /boot/hdsyslist | awk '{print $4}'`
 
     # check if version differs between cd and hdisk
-    # hdsyslist format: dev mnt sys_ver init_ver
-    HD_SYS_VER="`cat /boot/hdsyslist|awk '{print $3}'`"
-    HD_INIT_VER="`cat /boot/hdsyslist| awk '{print $4}'`"
     ask_update=false;
-    if [ "$DYNE_SYS_VER" != "$HD_SYS_VER" ]; then ask_update=true; fi
-    if [ "$DYNE_INITRD_VER" != "$HD_INIT_VER" ]; then ask_update=true; fi
+    if [ "$cd_sys_ver" != "$hd_sys_ver" ]; then ask_update=true; fi
+    if [ "$cd_initrd_ver" != "$hd_initrd_ver" ]; then ask_update=true; fi
 
     # prompt if upgrading from cd is desired
     if [ x$ask_update = xtrue ]; then
@@ -114,7 +120,7 @@ Do you want to upgrade the system on your harddisk?"
 	    notice "upgrading harddisk system version to $DYNE_SYS_VER"
 	    act "please wait while transferring files..."
 	    HD_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-	    cp -rf ${MNT}/dyne ${HD_MNT}
+	    cp -rf ${cd_mnt}/dyne ${hd_mnt}/dyne
 	    act "done!"
 	else
 	    act "Not upgrading from CD."
@@ -128,12 +134,10 @@ Do you want to upgrade the system on your harddisk?"
     if [ $? != 0 ]; then
 
       DYNE_SYS_MEDIA=hdisk
-      DYNE_SYS_DEV="`cat /boot/hdsyslist| uniq | awk '{print $1}'`"
-      DYNE_SYS_MNT="`cat /boot/hdsyslist| uniq | awk '{print $2}'`/dyne"
+      DYNE_SYS_DEV=${hd_dev}
+      DYNE_SYS_MNT="${hd_mnt}/dyne"
       source ${DYNE_SYS_MNT}/VERSION
       notice "mounting the harddisk docked system on $DYNE_SYS_MNT"
-      cd_dev=`echo ${CD} | awk '{print $2}'`
-      cd_mnt=`echo ${CD} | awk '{print $3}'`
       eject ${cd_dev}
       # device is already in the list of volumes
       # now add it to the fstab so that it will automount
@@ -143,8 +147,8 @@ Do you want to upgrade the system on your harddisk?"
    else # boot from cd
 	    
       DYNE_SYS_MEDIA=cdrom
-      DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-      DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
+      DYNE_SYS_DEV=${cd_dev}
+      DYNE_SYS_MNT="${cd_mnt}/dyne"
       source ${DYNE_SYS_MNT}/VERSION
       notice "mounting the cdrom system on $DYNE_SYS_MNT"
       return
@@ -231,7 +235,7 @@ scan_dock_updates() {
 mount_dock() {
 
     # count the harddisk
-    HDSYS=`cat /boot/volumes|grep -E '^hdisk.*(sys|sdk)'`
+    HDSYS=`cat /boot/volumes|grep -E '^hdisk.*sys'`
     HDSYS_NUM=0
     rm -f /boot/hdsyslist
     touch /boot/hdsyslist
@@ -239,40 +243,44 @@ mount_dock() {
     for v in ${(f)HDSYS}; do
 	# volumes syntax: media device mount filesystem
 	#        we want:       ^^^^^^ ^^^^^ ^^ TODO ^^ have fsys displayed at choice
-	DEV="`echo $v|awk '{print $2}'`"
-	MNT="`echo $v|awk '{print $3}'`"
+	hd_dev="`echo $v|awk '{print $2}'`"
+	hd_mnt="`echo $v|awk '{print $3}'`"
 
 	# if the /mntpoint/dyne/VERSION is there, source it
-	if [ -r ${MNT}/dyne/VERSION ]; then
-	    # get versions:
-	    # DYNE_SYS_VER
-	    # DYNE_INITRD_VER
-	    source ${MNT}/dyne/VERSION
+	if [ -r ${hd_dev}/dyne/VERSION ]; then
+	    # get versions: DYNE_SYS_VER DYNE_INITRD_VER
+	    source ${hd_mnt}/dyne/VERSION
 	fi
 
 	# dev mnt sys_ver init_ver
-	echo "$DEV $MNT $DYNE_SYS_VER $DYNE_INITRD_VER" >> /boot/hdsyslist
+	echo "${hd_dev} ${hd_mnt} $DYNE_SYS_VER $DYNE_INITRD_VER" >> /boot/hdsyslist
 	HDSYS_NUM=`expr $HDSYS_NUM + 1`
     done
     
     # get the first cdrom
     CDSYS="`cat /boot/volumes|grep -E 'cdrom.*sys'`"
-    C=0
-    for v in ${(f)CDSYS}; do
-	C=`expr $C + 1`
+    CDSYS_NUM=0
+    rm -f /boot/cdsyslist
+    touch /boot/cdsyslist
 
-	if [ $C != 1 ]; then
-	    warning "multiple system cdroms were detected"
-	    warning "using: $v"
-	else
-	    CD=${v} # get only the first
+    for v in ${(f)CDSYS}; do
+	cd_dev="`echo $v|awk '{print $2}'`"
+	cd_mnt="`echo $v|awk '{print $3}'`"
+
+	# if the /mntpoint/dyne/VERSION is there, source it
+	if [ -r ${cd_mnt}/dyne/VERSION ]; then
+	    # get versions: DYNE_SYS_VER DYNE_INITRD_VER
+	    source ${cd_mnt}/dyne/VERSION
 	fi
+
+	echo "${cd_dev} ${cd_mnt} $DYNE_SYS_VER $DYNE_INITRD_VER" >> /boot/cdsyslist
+	CDSYS_NUM=`expr $CDSYS_NUM + 1`
     done
     
 
     if [ $HDSYS_NUM = 0 ]; then # no docks on harddisk ...
 
-	if [ -z $CD ]; then # ... and no cd
+	if [ $CDSYS_NUM = 0 ]; then # ... and no cd
 	    
 	    error "no device containing the dyne:bolic system was detected"
 	    return
@@ -280,15 +288,15 @@ mount_dock() {
 	else # ... and a cd found
 	    
 	    DYNE_SYS_MEDIA=cdrom
-	    DYNE_SYS_DEV="`echo $CD|awk '{print $2}'`"
-	    DYNE_SYS_MNT="`echo $CD|awk '{print $3}'`/dyne"
+	    DYNE_SYS_DEV="`echo ${cd_dev}|awk '{print $2}'`"
+	    DYNE_SYS_MNT="`echo ${cd_mnt}|awk '{print $3}'`/dyne"
 	    return
 
 	fi
 
     elif [ $HDSYS_NUM = 1 ]; then # ***** one dock on harddisk ...
 	
-	if [ $CD ]; then # ... and there is a dyne cdrom
+	if [ $CDSYS_NUM != 0 ]; then # ... and there is a dyne cdrom
 
             check_hd_and_cd
 
@@ -305,10 +313,10 @@ mount_dock() {
 
     else # ... there is more than one dock
 
-	if [ $CD ]; then # and there is a cdrom
+	if [ $CDSYS_NUM != 0 ]; then # and there is a cdrom
 
 	    # prompt if upgrading from cd is desired
-            update_multiple_docks $CD
+            update_multiple_docks
 
 	fi
 	

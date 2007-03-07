@@ -248,7 +248,7 @@ if ! [ -x /lib/modules/${KRN}/kernel ]; then
 
 else
 
-    cat /boot/volumes | grep ' sys '
+    cat /boot/volumes | grep ' sys ' 1>/dev/null 2>/dev/null
     if [ $? = 1 ]; then
       notice "no system found on storage, attempting to scan local network"
 

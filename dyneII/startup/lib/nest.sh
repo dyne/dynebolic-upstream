@@ -4,6 +4,7 @@
 
 # nesting utilities
 
+source /lib/dyne/dialog.sh
 source /lib/dyne/utils.sh
 
 
