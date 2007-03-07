@@ -490,8 +490,9 @@ if [ "$bootmode" = "volatile" ]; then
     echo "grep, sed and awk - wild scripting"
     echo "smbmount - samba filesystem"
     echo "happy hacking ;)"
+    echo
 EOF
-
+    /etc/zshrc
     /bin/zsh --no-zle
 
 fi
@@ -814,8 +815,8 @@ if [ $ASCII ]; then
     cat > /etc/zshrc <<EOF
 # ascii mode
 cd
-echo "you are running `uname -mnrsp`"
-echo "uptime: `/usr/bin/uptime`"
+echo "you are running \`uname -mnrsp\`"
+echo "uptime: \`/usr/bin/uptime\`"
 echo
 fortune -s
 echo
@@ -844,8 +845,8 @@ fi
   cat > /etc/zshrc <<EOF
 # dyne mode
 cd
-echo "you are running `uname -mnrsp`"
-echo "uptime: `/usr/bin/uptime`"
+echo "you are running \`uname -mnrsp\`"
+echo "uptime: \`/usr/bin/uptime\`"
 echo
 fortune -s
 echo
