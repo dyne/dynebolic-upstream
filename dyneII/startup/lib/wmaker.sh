@@ -233,18 +233,19 @@ EOF
     # panel
     cat /boot/volumes | grep -v "^hdisk" | awk '
         /^floppy/ {  print "  <icon label=\"Floppy\">" $3 "</icon>" }
-        /^usb/    {  print "  <icon label=\"Usb\">" $3 "</icon>"    }
         /^cd/     {  print "  <icon label=\"CD\">" $3 "</icon>"     }
         /^dvd/    {  print "  <icon label=\"DVD\">" $3 "</icon>"    }
         ' >> $ROXPDTMP
+        # usb is now automounted so these lines are removed
+        #/^usb/    {  print "  <icon label=\"Usb\">" $3 "</icon>"    }
 
     # icons
     cat /boot/volumes | grep -v "^hdisk" | awk '
         /^floppy/ { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/graphite/48x48/devices/gnome-dev-floppy.png</icon></rule>" }
         /^cd/     { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/graphite/48x48/devices/gnome-dev-cdrom.png</icon></rule>" }
         /^dvd/    { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/graphite/48x48/devices/gnome-dev-dvdr.png</icon></rule>" }
-        /^usb/    { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/crystalsvg/48x48/devices/usbpendrive_unmount.png</icon></rule>" }
         ' >> $ROXICONSTMP
+        #/^usb/    { print "<rule match=\"" $3 "\"><icon>/usr/share/icons/crystalsvg/48x48/devices/usbpendrive_unmount.png</icon></rule>" }
 
     # local area network, check IANA assigned private ips:
 #    LAN=`ifconfig | awk '/inet addr.*192.168/ { print "true"; exit }
@@ -872,6 +873,10 @@ dyne_startx() {
   if [ $KEYB ]; then
     (sleep 2; /usr/X11R6/bin/setxkbmap $KEYB &)&
   fi
+
+
+  # enable local connections to running X
+  (sleep 5; xhost "+`hostname`")&
 
 
   # and the window manager

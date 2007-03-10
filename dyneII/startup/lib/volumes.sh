@@ -28,7 +28,7 @@ add_volume() {
   PASS=2
   # check for a dock
   if [ -x ${PFX}/${MNT}/${DOCK} ]; then
-      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/VERSION  ]; then FLAGS="$FLAGS sys"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
@@ -324,16 +324,13 @@ scan_storage() {
     ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
 
 	
-    if ! [ -x /usr/sbin/modprobe ]; then
-      # we are in the ramdisk
-      # load all kernel modules for supported filesystems
-      # refer to SUPPORTED_FS defined in utils.sh
-      # all unused modules will be removed at the end of this function
-      act "load modules to scan supported filesystems"
-      for m in `iterate $SUPPORTED_FS`; do
+    # load all kernel modules for supported filesystems
+    # refer to SUPPORTED_FS defined in utils.sh
+    # all unused modules will be removed at the end of this function
+    act "load modules to scan supported filesystems"
+    for m in `iterate $SUPPORTED_FS`; do
 	  loadmod ${m}
-      done
-    fi
+    done
 
     #######################
     #### scan IDE harddisks
@@ -386,16 +383,14 @@ scan_storage() {
        scan_partitions ${DEV}
     done
 
-    if ! [ -x /usr/sbin/modprobe ]; then
-      # now remove all unused filesystem kernel modules
-      act "cleanup unused filesystem modules"
-      USEDFS=`mount | awk '{print $5}'`
-      for fs in `iterate_backwards $SUPPORTED_FS`; do
-	  if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
-		  rmmod ${fs}
-	  fi
-      done
-    fi
+    # now remove all unused filesystem kernel modules
+    act "cleanup unused filesystem modules"
+    USEDFS=`mount | awk '{print $5}'`
+    for fs in `iterate_backwards $SUPPORTED_FS`; do
+      if [ -z "`echo ${USEDFS} | grep ${fs}`" ]; then
+        rmmod ${fs} 2>/dev/null 1>/dev/null
+      fi
+    done
 }
 
 scan_removable() {
@@ -408,19 +403,6 @@ scan_removable() {
       if [ "`dmesg | grep -i 'floppy.*fd1'`" ]; then
 	  add_volume floppy fd1 floppy auto
       fi
-  fi
-
-  act "checking for a usb plug"
-  if [ "`dmesg | grep 'USB hub found'`" ]; then
-    for SCSIDEV in `ls /dev | awk '/^sd./ {print $1}'`; do
-      # now find out the last sd? device
-    done
-    if [ -z $SCSIDEV ]; then # no scsi/sata fixed disc, pick the first
-      add_volume usb sda1 usb auto
-    else
-      USB=`alphabet ${SCSIDEV[3]} next`
-      add_volume usb "sd${USB}1" usb auto
-    fi
   fi
 
 }

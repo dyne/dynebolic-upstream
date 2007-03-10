@@ -79,16 +79,17 @@ function render_fluxbox() {
 
 function render_xfce() {
 
-	if ($4 ~ "manual" ) # CLI sw, RTFM
-	   # let's skip it for now
-           return
-        fi
+  if ($4 ~ "manual" ) # CLI sw, RTFM
+# let's skip it for now
+    return
+      fi
+      
+# if we have submenus to render in queue, then do it now
+# that we are sure there is an executable for them
+      for(c=0; c<qsub_num; c++) {
+	
+	menu_icon="emblem-generic"
 
-	# if we have submenus to render in queue, then do it now
-	# that we are sure there is an executable for them
-	for(c=0; c<qsub_num; c++) {
- 
-                menu_icon="emblem-generic"
 		if      (qsubmenu[c+1] ~ "AUDIO")  menu_icon="gnome-settings-sound"
 		else if (qsubmenu[c+1] ~ "VIDEO") menu_icon="gnome-multimedia"
 		else if (qsubmenu[c+1] ~ "IMAGE") menu_icon="gnome-graphics"
@@ -103,6 +104,7 @@ function render_xfce() {
 		else if (qsubmenu[c+1] ~ "PERFORM" ) menu_icon="stock_midi"
 		else if (qsubmenu[c+1] ~ "EDIT" ) menu_icon="stock_mic"
        		else if (qsubmenu[c+1] ~ "STREAM" ) menu_icon="stock_channel"
+                else if (qsubmenu[c+1] ~ "MANUALS" ) menu_icon="gdict"
 
 
 		line = "	<menu name=\"" qsubmenu[c+1] "\" icon=\"" menu_icon "\">"

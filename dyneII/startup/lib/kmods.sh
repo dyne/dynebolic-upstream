@@ -32,10 +32,10 @@ scan_docked_kmods() {
 
     if [ "$kmods_found" = "true" ]; then break; fi
 
-    mkdir -p /mnt/kmods/${KRN}
+    mkdir -p /mnt/.kmods/${KRN}
     mkdir -p /lib/modules/${KRN}
 
-    mount -o loop,ro -t squashfs ${kpath} /mnt/kmods/${KRN}
+    mount -o loop,ro -t squashfs ${kpath} /mnt/.kmods/${KRN}
     if [ $? = 0 ]; then
 
       act "kernel modules found in ${kpath}"
@@ -48,15 +48,15 @@ scan_docked_kmods() {
     fi
 
     # load union filesystem module from inside the squash
-    insmod /mnt/kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
+    insmod /mnt/.kmods/${KRN}/kernel/fs/unionfs/unionfs.ko
 	
     if [ $? = 0 ]; then
 	act "overlaying module directory with unionfs"
 	mkdir -p /var/cache/union/kmods_rw
-	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/kmods/${KRN}=ro unionfs /lib/modules/${KRN}
+	mount -t unionfs -o dirs=/var/cache/union/kmods_rw=rw:/mnt/.kmods/${KRN}=ro unionfs /lib/modules/${KRN}
     else
         error "no unionfs module found, mounting kernel modules read-only"
-        umount /mnt/kmods/${KRN}
+        umount /mnt/.kmods/${KRN}
         mount -o loop,ro -t squashfs ${kpath} /lib/modules/${KRN}
     fi
 

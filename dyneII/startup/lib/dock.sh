@@ -34,9 +34,12 @@ EOF
 	dev=`echo $i| awk '{print $1}' | cut -d/ -f2`
 	mnt=`echo $i| awk '{print $2}'`
 	sys_ver=`echo $i| awk '{print $3}'`
-	echo \
-        "\"$mnt\" \"version $sys_ver on $dev\" \"upgrade the system on partition $c\"" \
-	>> /tmp/dialog
+	is_new_version $sys_ver $DYNE_SYS_VER
+	if [ $? = 0 ]; then
+	    echo \
+		"\"$mnt\" \"version $sys_ver on $dev\" \"upgrade the system on partition $c\"" \
+		>> /tmp/dialog
+	fi
     done
 
     # now render the dialog
@@ -102,25 +105,27 @@ check_hd_and_cd() {
     hd_sys_ver=`cat /boot/hdsyslist | awk '{print $3}'`
     hd_initrd_ver=`cat /boot/hdsyslist | awk '{print $4}'`
 
-    # check if version differs between cd and hdisk
+    # check if version on cd is newer than on hdisk
     ask_update=false;
-    if [ "$cd_sys_ver" != "$hd_sys_ver" ]; then ask_update=true; fi
-    if [ "$cd_initrd_ver" != "$hd_initrd_ver" ]; then ask_update=true; fi
+    is_new_version ${hd_sys_ver} ${cd_sys_ver}
+    if [ $? = 0 ]; then ask_update=true; fi
+    is_new_version ${hd_initrd_ver} ${cd_initrd_ver}
+    if [ $? = 0 ]; then ask_update=true; fi
 
     # prompt if upgrading from cd is desired
     if [ x$ask_update = xtrue ]; then
 
 	ask_yesno 10 \
-"the Dock on your harddisk is different from the CDROM:\n\n
-CDROM :: sys $DYNE_SYS_VER :: init $DYNE_INITRD_VER\n
-HDISK :: sys $HD_SYS_VER :: init $HD_INITRD_VER\n\n
+"the Dock on your harddisk is older, the CDROM contains an update:\n\n
+CDROM :: sys $cd_sys_ver :: init $cd_initrd_ver\n
+HDISK :: sys $hd_sys_ver :: init $hd_initrd_ver\n\n
 Do you want to upgrade the system on your harddisk?"
 
 	if [ $? = 1 ]; then
 	    notice "upgrading harddisk system version to $DYNE_SYS_VER"
 	    act "please wait while transferring files..."
 	    HD_MNT="`cat /boot/hdsyslist|awk '{print $2}'`"
-	    cp -rf ${cd_mnt}/dyne ${hd_mnt}/dyne
+	    rsync -Pr --exclude="*.cfg" --exclude="*.nst" --exclude="*.gpg" ${cd_mnt}/dyne ${hd_mnt}/
 	    act "done!"
 	else
 	    act "Not upgrading from CD."
@@ -128,10 +133,40 @@ Do you want to upgrade the system on your harddisk?"
 
     fi
 
-    # prompt if boot from cdrom or harddisk
-    ask_yesno 10 "Do you want to boot from the system on your harddisk?"
+    # prompt if install of extra modules is desired
+    cd_mods=`ls ${cd_mnt}/dyne/modules`
+    install_extra=false
+    for m in ${(f)cd_mods}; do
 
-    if [ $? != 0 ]; then
+	if ! [ -r ${hd_mnt}/dyne/modules/${m} ]; then
+
+	    if [ $install_extra = false ]; then
+		ask_yesno 10 "Extra modules have been detected in the CD, do you want to install them?"
+		if [ $? != 0 ]; then install_extra=true; fi
+	    fi
+
+	    if [ $install_extra = true ]; then
+		cbar -if ${cd_mnt}/dyne/modules/${m} -of ${hd_mnt}/dyne/modules/${m}
+	    fi
+	    
+	fi
+
+    done
+	
+    dock_on_hd=true
+    # prompt if boot from cdrom or harddisk
+    if [ -r ${cd_mnt}/dyne/dyne.sys ]; then
+
+      ask_yesno 10 "Do you want to boot from the system on your harddisk?"
+      if [ $? = 0 ]; then dock_on_hd=false; fi
+    
+    else
+
+      notice "Extras in CDROM installed, proceeding with boot from harddisk"
+
+    fi
+
+    if [ $dock_on_hd = "true" ]; then
 
       DYNE_SYS_MEDIA=hdisk
       DYNE_SYS_DEV=${hd_dev}
@@ -170,45 +205,61 @@ scan_dock_updates() {
     upd_dev=`echo $upd | awk '{print $2}' | basename`
     upd_mnt=`echo $upd | awk '{print $3}'`
     source ${upd_mnt}/dyne/update/VERSION
+    upd_sys_ver=${DYNE_SYS_VER}
+    upd_initrd_ver=${DYNE_INITRD_VER}
+    source ${upd_mnt}/dyne/VERSION
+    cur_sys_ver=${DYNE_SYS_VER}
+    cur_initrd_ver=${DYNE_INITRD_VER}
 
-  ask_yesno 10 \
+    ask_update=false;
+    is_new_version ${cur_sys_ver} ${upd_sys_ver}
+    if [ $? = 0 ]; then ask_update=true; fi
+    is_new_version ${cur_initrd_ver} ${upd_initrd_ver}
+    if [ $? = 0 ]; then ask_update=true; fi
+
+    # prompt upgrading if newer version
+    if [ x$ask_update = xtrue ]; then
+
+	ask_yesno 10 \
 "the Dock on harddisk $upd_dev contains an update:\n\n
  dyne.sys version ${DYNE_SYS_VER}\n
  initrd.gz version ${DYNE_INITRD_VER}\n
  Do you want to apply it to the current system?"
-
-  if [ $? = 1 ]; then
-    src=${upd_mnt}/dyne/update
-    dst=${upd_mnt}/dyne
-
-    notice "updating docked system, please wait while copying files..."
-    act "when complete, this computer will be rebooted."
-    if [ -r $src/initrd.gz ]; then
-      act "updating ramdisk"
-      mv $src/initrd.gz* $dst/
-    fi
-    if [ -r $src/linux ]; then
-      act "updating kernel"
-      mv $src/*.krn     $dst/
-      mv $src/*.kmods   $dst/
-    fi
-    if [ -r $src/dyne.sys ]; then
-      act "updating core binary system"
-      mv $src/dyne.sys*  $dst/
-    fi
-
-    if [ -x $src/modules ]; then
-      act "updating modules"
-      ls $src/modules
-      mv $src/modules/* $dst/modules/
-    fi
-
+ 
+        if [ $? = 1 ]; then
+	    src=${upd_mnt}/dyne/update
+	    dst=${upd_mnt}/dyne
+	    
+	    notice "updating docked system, please wait while copying files..."
+	    act "when complete, this computer will be rebooted."
+	    if [ -r $src/initrd.gz ]; then
+		act "updating ramdisk"
+		mv $src/initrd.gz* $dst/
+	    fi
+	    if [ -r $src/linux ]; then
+		act "updating kernel"
+		mv $src/*.krn     $dst/
+		mv $src/*.kmods   $dst/
+	    fi
+	    if [ -r $src/dyne.sys ]; then
+		act "updating core binary system"
+		mv $src/dyne.sys*  $dst/
+	    fi
+	    
+	    if [ -x $src/modules ]; then
+		act "updating modules"
+		ls $src/modules
+		mv $src/modules/* $dst/modules/
+	    fi
+	    
     # avoid to update next time
-    rm $src/VERSION
+	    rm $src/VERSION
+	    
+	    notice "UPDATE to $DYNE_SYS_VER / $DYNE_INITRD_VER COMPLETED"
+	    
+	fi 
 
-    notice "UPDATE to $DYNE_SYS_VER / $DYNE_INITRD_VER COMPLETED"
-
-  fi 
+    fi
 
   done
 }
@@ -286,10 +337,14 @@ mount_dock() {
 	    return
 	    
 	else # ... and a cd found
+
+	    cd_dev="`cat /boot/volumes | awk '/cdrom.*sys/ {print $2}'`"
+	    cd_mnt="`cat /boot/volumes | awk '/cdrom.*sys/ {print $3}'`"
 	    
 	    DYNE_SYS_MEDIA=cdrom
-	    DYNE_SYS_DEV="`echo ${cd_dev}|awk '{print $2}'`"
-	    DYNE_SYS_MNT="`echo ${cd_mnt}|awk '{print $3}'`/dyne"
+	    DYNE_SYS_DEV="${cd_dev}"
+	    DYNE_SYS_MNT="${cd_mnt}/dyne"
+
 	    return
 
 	fi

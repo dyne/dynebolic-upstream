@@ -129,5 +129,3 @@ error_dialog() {
   gtkdialog --program=MAIN_DIALOG >/dev/null
 
 }
-
-

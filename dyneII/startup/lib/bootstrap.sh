@@ -50,10 +50,6 @@ source /lib/dyne/xvga.sh
 
 source /boot/dynenv
 
-# notice we're booting
-if ! [ -r /boot/mode ]; then
-  echo "booting" > /boot/mode
-fi
 
 ##########################################
 
@@ -213,12 +209,8 @@ if ! [ "$do_scan_cdrom" = "false" ]; then
 fi
 
 ###### check if we have updates
-if [ -r ${DYNE_SYS_MNT}/update/VERSION ]; then
+scan_dock_updates
 
-  scan_dock_updates
-
-fi
-##################### updates done
 
 
 #################################### first mount the kernel modules
@@ -588,7 +580,7 @@ elif [ -r ${DYNE_SYS_MNT}/dyne.sys ]; then
   
 fi
 
-if ! [ -x /usr/bin ]; then # if we couldn't mount
+if ! [ -x /usr/bin/yes ]; then # if we couldn't mount
   echo
   error "A problem occurred while mounting the dyne.sys"
   error "corrupted dyne.sys on ${DYNE_SYS_DEV}"

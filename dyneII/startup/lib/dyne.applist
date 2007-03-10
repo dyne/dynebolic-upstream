@@ -252,6 +252,7 @@ Samba | online shared folders | LinNeighborhood | | www.samba.org | AUTH
 xFE | a file explorer | xfe | | xfe WEB | xfe AUTH
 Wine | windows emulator | winecfg | | www.winehq.org | wine developers
 MC | midnight commander | mc | terminal | www.ibiblio.org/mc | midnight commander
+GRSync | remote file sync | grsync | | www.opbyte.it/grsync | OPByte
 xFSamba | samba file explorer | xfsamba | | xfsamba WEB | xfsamba AUTH
 Gringotts | encrypted data storage | gringotts -s | user | WEB | AUTH
 gCombust | cd burner | gcombust | | WEB | AUTH
@@ -339,6 +340,13 @@ xVidtune | vidtun (danger) | xvidtune | | X.org | x.org
 xEyes | someone's watching | xeyes | | X.org | x.org
 
 End | XUTILS
+
+Begin | MANUALS
+
+dyne:bolic | User's manual | dynemanual | | Jaromil | dynebolic.org
+GNU | *nix manuals | xman -notopbox | | GNU | www.gnu.org
+
+End | MANUALS
 
 CONFIGURE | | rox /lib/dyne/configure | | afrolinux.org| Jaromil 
 

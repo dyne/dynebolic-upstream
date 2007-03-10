@@ -42,9 +42,34 @@ if [ -r /dev/mapper/dyne.nst ]; then # we have an encrypted nest
    cryptsetup luksClose dyne.nst
 fi
 
+mount | grep '^unionfs.*kmods'
+if [ $? = 0 ]; then
+  echo " .  umount unionfs overlay on kernel modules"
+  unionctl "/lib/modules/`uname -r`" --remove /var/cache/union/kmods_rw
+  unionctl /lib/modules/`uname -r` --remove "/mnt/.kmods/`uname -r`"
+  sync
+fi
+
+echo " .  umount kernel modules"
+umount "/lib/modules/`uname -r`"
+
+mount | grep '^unionfs.*/usr'
+if [ $? = 0 ]; then
+  echo " .  umount unionfs overlay on /usr filesystem"
+  unionctl /usr --remove /var/cache/union/usr_rw
+  unionctl /usr --remove /mnt/usr
+  sync
+fi
+
+echo " .  umount /usr filesystem"
+umount /usr
+
+
+PATH=/bin:/sbin
+
 echo " .  umount all volumes"
 
-/bin/umount -a
+umount -a
 
 
 echo " .  unload all kernel modules"
@@ -56,7 +81,6 @@ if [ -x /usr/bin ];      then /bin/umount /usr         2>&1 > /dev/null; fi
 if [ -x /mnt/usr/bin ];  then /bin/umount -d /mnt/usr  2>&1 > /dev/null; fi
 if [ -x /mnt/nest/etc ]; then /bin/umount -d /mnt/nest 2>&1 > /dev/null; fi
 
-PATH=/bin:/sbin
 
 echo " .  sync harddrives" # this never hurts
 sync

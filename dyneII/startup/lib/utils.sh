@@ -143,7 +143,7 @@ loadmod() {
     # check if the module is already loaded
     for checkmod in `lsmod | awk '{ print $1 }'`; do
         if [ "$checkmod" = "$MODULE" ]; then
-            return
+            return 0
         fi
     done
 
@@ -158,7 +158,7 @@ loadmod() {
     for m in `iterate ${MODULES_DENY}`; do
         if [ x$MODULE = x$m ]; then
            act "$MODULE denied ... SKIPPED"
-           return
+           return 0
         fi
     done
 
@@ -170,7 +170,7 @@ loadmod() {
 	    act "Loading kernel module $MODULE"
 	else
 	    act "Skipped kernel module $MODULE"
-            return
+            return 0
 	fi
     fi
 
@@ -194,7 +194,7 @@ loadmod() {
             else
               error "error loading kernel module $TRYMOD"
             fi
-            return
+            return 0
 
           fi
 
@@ -232,7 +232,7 @@ loadmod() {
           # remove the uncompressed module in /tmp
           rm -f ${mod_name}
           cd -
-	  return 
+	  return 0
 
         else # it's non-compressed in ramdisk
 
@@ -242,7 +242,7 @@ loadmod() {
           else
             error "error loading kernel module $TRYMOD"
           fi
-          return
+          return 0
 
         fi
 
@@ -267,7 +267,7 @@ loadmod() {
             else
               error "error loading kernel module $TRYMOD"
             fi
-            return
+            return 0
 
           fi
 
@@ -297,7 +297,7 @@ loadmod() {
 	else
 	    error "error loading kernel module $MODULE"
 	fi
-	return
+	return 0
    
     fi
 
@@ -313,7 +313,7 @@ loadmod() {
           else
             error "error loading kernel module $TRYMOD"
           fi
-          return
+          return 0
 
         fi
     fi
@@ -479,6 +479,39 @@ cleandir() {
     if [ "`ls -A ${DIR}/`" ]; then
 	rm -rf ${DIR}/*
     fi
+}
+
+# takes two arguments, first is old version and second is newer
+# in case the second is really newer returns 0 otherwise 1
+is_new_version() {
+    old="$1"
+    new="$2"
+    c=0
+
+    # cycle thru major.minor numbers from left to right
+    for n in `echo ${new} | awk 'BEGIN{RS="."} {print $1}'`; do
+
+	c=`expr $c + 1`
+
+	n="`echo $n | cut -d- -f1`" # strip dashed codenames
+
+	o="`echo ${old} | awk -v c=$c '
+ BEGIN{RS="."}
+
+ { if(NR==c) { print $1
+               exit
+             }
+ }
+'`"
+	o="`echo $o | cut -d- -f1`" # strip dashed codenames
+
+	if [ $o -gt $n ]; then
+	    return 1
+	fi
+
+    done
+
+    return 0
 }
 
 fi # DYNE_SHELL_UTILS=included
