@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 #
 # dyne:bolic software development kit - the commandline tool
 #
@@ -37,6 +37,7 @@ fi
 func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
 
 source /lib/dyne/modules.sh
+source /lib/dyne/dialog.sh
 
 PACKAGE="dyne:OS SDK"
 VERSION="2.4"
@@ -352,12 +353,11 @@ squashone() {
     fi
 
     # make the list of files to exclude
-    EXCL="-e '`find ${PFX}/modules/${MOD}/ -name .svn`'" 
+    EXCL="`find ${PFX}/modules/${MOD}/ -name .svn`"
 
-	$MKSQUASHFS ${PFX}/modules/${MOD} \
-                    ${PFX}/cdrom/dyne/modules/${MOD}.dyne ${EXCL}
-	chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
-        chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+    $MKSQUASHFS "${PFX}/modules/${MOD}" "${PFX}/cdrom/dyne/modules/${MOD}.dyne" "-e" "${EXCL}"
+    chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
+    chmod -x    ${PFX}/cdrom/dyne/modules/${MOD}.dyne
 
     act "done with ${MOD}"
     act "copy the module into your current dock to activate it:"
@@ -454,6 +454,8 @@ EOF
     rm -f boot/dynenv*
     touch boot/dynenv
     touch boot/dynenv.modules
+    rm -f boot/mode
+    echo "booting" > boot/mode
     # here windowmaker dock and menu is reset
     rm -f etc/WindowMaker/WMRootMenu
     rm -f etc/WindowMaker/WMState
@@ -787,9 +789,17 @@ mkkern() {
     act "your kernel filename is: $krnfile"
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
-	act "searching for kernel image bytecode in ${MODDIR}/${KRN}/build"
 
-	if [ -r ${DYNE_SYS_MNT}/${krnfile} ]; then
+	act "searching for kernel image bytecode in current kernel tree: ./arch/`uname -i`/boot/bzImage"
+
+        if [ -r "arch/`uname -i`/boot/bzImage" ]; then
+
+            act "found kernel in current kernel tree"
+            cp -v "arch/`uname -i`/boot/bzImage" ${PFX}/cdrom/dyne/${krnfile}
+
+        elif [ -r ${DYNE_SYS_MNT}/${krnfile} ]; then
+
+	    act "searching for kernel image bytecode in ${MODDIR}/${KRN}/build"
 
 	    act "found ${krnfile} in dock"
 	    cp ${DYNE_SYS_MNT}/${krnfile} ${PFX}/cdrom/dyne/
@@ -810,10 +820,12 @@ mkkern() {
 	    
 	else
 	    
-		error "can't find any kernel version $KRN"
+		error "could not find any kernel version $KRN"
 		
 	fi
 
+    else
+            error "kernel $krnfile is already present in ${PFX}/cdrom/dyne/"
     fi
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
@@ -830,13 +842,19 @@ mkkern() {
     
     if ! [ -r ${modpack} ]; then
 
+        act "temporary installation of modules in ${PFX}/tmp"
+	mkdir -p ${PFX}/tmp
+        INSTALL_MOD_PATH="${PFX}/tmp" make modules_install
+        
+
 	act "calculating module dependencies"
-	depmod -ae ${KRN}
+	depmod -ae ${KRN} -F System.map --basedir ${PFX}/tmp
 	
 	act "packing modules from ${MODDIR}/${KRN}"
-	$MKSQUASHFS ${MODDIR}/${KRN} $modpack -root-owned
+	$MKSQUASHFS ${PFX}/tmp/lib/modules/${KRN} $modpack -root-owned
 	chmod a+r $modpack
 	chmod -x  $modpack
+        rm -rf ${PFX}/tmp
 	act "`stat $modpack`"
 	sync
     fi
@@ -891,8 +909,8 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       if [ $? = 1 ]; then
         mkusr
       else
-        act "using current dyne.sys"
-        cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
+    #    act "using current dyne.sys"
+    #    cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
       fi
     fi
     # the KERNEL
@@ -929,7 +947,7 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
 authors() {
   notice "extracting authors information in $PFX/AUTHORS"
   cat $PFX/startup/lib/dyne.applist \
-   | awk -F '|' '!/^#/ {print $6 $1}' |sort|uniq \
+   | awk -F '|' '!/^#/ { print "<a href=\"http://"$5"\">" $1 "</a> by " $6 }' |sort|uniq \
    | grep -vi 'WEB|AUTH' | grep -vi www > $PFX/AUTHORS
   act "done, `wc -l $PFX/AUTHORS` entries"
   warning "edit the file by hand for correct formatting in your document (or use awk)"
