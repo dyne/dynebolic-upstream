@@ -24,4 +24,8 @@
     <comment>Windows executable</comment>
     <glob pattern="*.EXE"/>
   </mime-type>
+  <mime-type type="application/x-win32-drv">
+    <comment>Windows device driver</comment>
+    <glob pattern="*.INF"/>
+  </mime-type>
 </mime-info>

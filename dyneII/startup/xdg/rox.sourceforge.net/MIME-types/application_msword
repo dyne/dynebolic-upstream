@@ -1,2 +1,2 @@
 #! /bin/sh
-exec soffice "$@"
+exec abiword "$@"

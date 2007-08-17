@@ -715,6 +715,11 @@ activate_acpi
 # activate hotplug
 echo "/sbin/hotplug" >> /proc/sys/kernel/hotplug
 
+# generate dbus machine unique id
+if ! [ -r /usr/var/lib/dbus/machine-id ]; then
+  dbus-uuidgen > /usr/var/lib/dbus/machine-id
+fi
+
 # from services.sh - setup volumes to 77% unmuted
 raise_soundcard_volumes
 

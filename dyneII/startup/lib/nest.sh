@@ -50,7 +50,7 @@ choose_nest() {
       else
 
 	# loop-mount the nest in /mnt/nest
-	mount_nest ${nest_mnt}/dyne/dyne.nst
+	mount_nest ${nest_mnt}/dyne/dyne.nst /mnt/nest
 
       fi
 	
@@ -112,7 +112,7 @@ choose_nest() {
 `cat /boot/nestlist`\n\n
 Do you want to activate it?"
         if [ $? != 0 ]; then
-	  mount_nest ${nest_mnt}/dyne/dyne.nst
+	  mount_nest ${nest_mnt}/dyne/dyne.nst /mnt/nest
         fi
 	
     else    
@@ -177,7 +177,7 @@ EOF
             if [ $nest_mnt ]; then
               notice "selected nest in $nest_mnt"
               stat ${nest_mnt}/dyne/dyne.nst
-	      mount_nest ${nest_mnt}/dyne/dyne.nst
+	      mount_nest ${nest_mnt}/dyne/dyne.nst /mnt/nest
             else
               notice "not using any nest, running the system in RAM"
             fi
@@ -337,12 +337,13 @@ bind_nest() { # bind directories in /mnt/nest
 
 mount_nest() {
     nst=${1}
+    mnt=${2}
 
     if [ -r $nst ]; then
 
 	    notice "activating dyne:bolic nest in ${nst}"
 
-	    mkdir -p /mnt/nest
+	    mkdir -p ${mnt}
 	    
 	    act "mounting nest over loopback device"
 	    nstloop=`losetup -f`
@@ -364,6 +365,8 @@ mount_nest() {
                 loadmod dm-crypt
                 loadmod aes-i586
 
+                mapper="nest.`date +%s`"
+
                 notice "Password is required for nest in ${nst}"
                 for c in 1 2 3 4 5; do
 
@@ -372,11 +375,11 @@ mount_nest() {
 
                   cat /var/run/.scolopendro \
                      | gpg --passphrase-fd 0 --no-tty --no-options -d "${nst}.gpg" 2>/dev/null | grep -v passphrase \
-                     | cryptsetup --key-file - luksOpen ${nstloop} dyne.nst
+                     | cryptsetup --key-file - luksOpen ${nstloop} ${mapper}
 
                   rm -f /var/run/.scolopendro
 
-                  if [ -r /dev/mapper/dyne.nst ]; then
+                  if [ -r /dev/mapper/${mapper} ]; then
                      break;  # password was correct
                   else
                      dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
@@ -384,7 +387,7 @@ mount_nest() {
 
                 done
 
-                if ! [ -r /dev/mapper/dyne.nst ]; then
+                if ! [ -r /dev/mapper/${mapper} ]; then
                   error "failure mounting the encrypted nest"
                   ls /dev
                   ls /var
@@ -395,16 +398,16 @@ mount_nest() {
                 fi
         	
                 act "nest filesystem check"
-                fsck.ext3 -p -C0 /dev/mapper/dyne.nst
+                fsck.ext3 -p -C0 /dev/mapper/${mapper}
         
-                mount -t ext3 /dev/mapper/dyne.nst /mnt/nest
+                mount -t ext3 /dev/mapper/${mapper} ${mnt}
                 	
 	    else 
 	
                 act "nest filesystem check"
                 fsck.ext3 -p -C0 ${nst}
        
-	        mount -t ext3 -o loop ${nst} /mnt/nest
+	        mount -t ext3 -o loop ${nst} ${mnt}
 
 	        if [ $? != 0 ]; then
 	           error "mount failed with exitcode $?"

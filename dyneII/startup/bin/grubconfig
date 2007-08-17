@@ -21,6 +21,10 @@ CONSOLETYPE=standard
 CONSOLENUM=normal
 KRN=`uname -r`
 
+# compose the kernel file name removing all . or -
+krnfile="`echo ${KRN} | sed -e 's/\.//g' | sed -r 's/-//g' | cut -c 1-8`.krn"
+
+
 rm -rf $TMP $BOOT_TMP
 mkdir -p $TMP $BOOT_TMP
 
@@ -102,7 +106,7 @@ color light-gray/blue black/light-gray
 # Start dyne:bolic entry
 title dyne:II DHORUBA
 root $grubsel
-kernel /dyne/linux-$KRN root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=791
+kernel /dyne/$krnfile root=/dev/ram0 rw load_ramdisk=1 max_loop=64 vga=791
 initrd /dyne/initrd.gz
 
 # for a windlows partition use the following entry

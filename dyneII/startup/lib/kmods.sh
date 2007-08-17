@@ -92,8 +92,10 @@ load_pci_kmods() {
    # so we push on top of the list snd-* 
    BOGUS_SOUND="btaudio|8x0m|modem"
 
-   # we exclude the modules that crash some machines
-   BAD_MODULES="i810_rng|hw_random|shpchp|pciehp"
+   # june 2007 - pure:dyne - eth1394 out
+   # firewire interface when present conflicts with real eth
+   # in general here we exclude the modules that crash some machines
+   BAD_MODULES="i810_rng|hw_random|shpchp|pciehp|eth1394"
 
    # load alsa modules first
    for i in `pcimodules | sort -r | uniq | grep snd- | grep -ivE "$BOGUS_SOUND"`; do

@@ -75,9 +75,16 @@ if [ "`echo ${VGACARD} | grep -iE ' intel.*8'`" ]; then
   sed "s/fbdev/i810/g" $DISTCFG > $CFG
   loadmod i810
 #  loadmod i830     - obsoleted?
+  return
+fi
+
+if [ "`echo ${VGACARD} | grep -iE ' intel.*9'`" ]; then
+  act "using X 'i810' driver for your Intel card"
+  sed "s/fbdev/i810/g" $DISTCFG > $CFG
   loadmod i915
   return
 fi
+
 
 if [ "`echo ${VGACARD} | grep -i ' neomagic'`" ]; then
   act "using X 'neomagic' driver for your Neomagiccard"

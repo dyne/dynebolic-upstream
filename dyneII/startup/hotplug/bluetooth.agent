@@ -1,0 +1,8 @@
+#!/bin/zsh
+# simple bluetooth agent for d:b
+# jaromil 2007
+
+bluetooth start
+hciconfig hci0 up name `hostname`
+
+

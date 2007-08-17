@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+# activate bluetooth
+
+bluetooth start
+hciconfig hci0 up name `hostname`
+kmobiletools &
+

@@ -1,0 +1,4 @@
+#!/bin/sh
+CFLAGS="-Os -fomit-frame-pointer -pipe $CFLAGS" CXXFLAGS="$CFLAGS" \
+./configure --prefix=/usr --host=i586-pc-linux-gnu $@
+

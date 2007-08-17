@@ -1,0 +1,17 @@
+#!/bin/sh
+
+source /lib/dyne/utils.sh
+
+MOD=$1
+if ! [ -r /opt/${MOD}/VERSION ]; then
+  error "module $MOD doesn't seems to be mounted in /opt"
+  exit 0
+fi
+
+shift 1
+
+CFLAGS="-I/opt/${MOD}/include -L/opt/${MOD}/lib -O2 -ffast-math -fomit-frame-pointer -mmmx -pipe $CFLAGS" \
+CXXFLAGS="$CFLAGS" \
+PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/opt/${MOD}/lib/pkgconfig" \
+./configure --prefix=/opt/${MOD} --host=i586-pc-linux-gnu $@
+

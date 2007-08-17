@@ -319,7 +319,7 @@ if [ $LOOPBACK ]; then
 
     umount /tmp/nest
 
-    if [ $encrypt = true ]; then
+    if [ "$encrypt" = "true" ]; then
 	act "unmounting encrypted partition"
 	cryptsetup luksClose dyne.mknest
 	losetup -d ${nstloop}
@@ -332,7 +332,7 @@ if [ $LOOPBACK ]; then
     act "here is your new dyne:bolic nest:"
     stat ${NSTFILE} | tee -a $DYNEBOLIC_LOG
 
-    if [ $encrypt = true ]; then
+    if [ "$encrypt" = "true" ]; then
 	act "encryption key is stored in file ${NSTFILE}.gpg"
 	act "the key is sealed by your secret passphrase"
     fi	

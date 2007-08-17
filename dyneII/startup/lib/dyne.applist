@@ -12,10 +12,10 @@ Begin | VIDEO
 
 	Begin | PLAY
 
-MPlayer | versatile video player | gmplayer | multi,manual 		| mplayerhq.hu | Arpad
-Xine | multimedia player | xine | runonce 				| xinehq.de | Xine team
+MPlayer | versatile video player | gmplayer |  		| mplayerhq.hu | Arpad
+Xine | multimedia player | xine |  				| xinehq.de | Xine team
 XawTV | television viewer | xawtv | 					| bytesex.org | Gerd Knorr
-Mp4Player | mpeg4 darwin player | gmp4player | multi 			| mpeg4ip.sf.net | Cisco
+Mp4Player | mpeg4 darwin player | gmp4player |  			| mpeg4ip.sf.net | Cisco
 
 	End | PLAY
 
@@ -24,6 +24,7 @@ Mp4Player | mpeg4 darwin player | gmp4player | multi 			| mpeg4ip.sf.net | Cisco
 FreeJ | free the veejay! | freej | terminal 		| freej.dyne.org | Jaromil
 Bomb | visual plasma music | bomb | 			| bomb WEB | Scott Draves
 Xaos | fractal zoomer/morpher | xaos -driver x11 | 	| xaos WEB | Jan Hubicka
+TBT | time based text | tbt.intro | terminal | tbt.dyne.org | Jaromil
 Gephex | modular video jockey | gephex | 		| gephex.sf.net | Gephex team
 Veejay | remote control OSC/PD | veejay | 		| veejay.sf.net | Niels Elburg
 EffecTV | realtime video effects | effectv | 		| effectv.sf.net | Fukuchi Kentaro
@@ -75,7 +76,9 @@ Jamin | equalizer | jamin | 			| jamin.sf.net | Jamin author
 FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
 Jack Rack | ladspa effects rack | jack-rack | 	| jack-rack.sf.net | Jack auth
 FreeWheeling | live sampling | fweelin | 	| freewheeling.sf.net | JP Mercury
+Aldrin | modular tracker | aldrin | | http://trac.zeitherrschaft.org/aldrin | Leonard 'paniq' Ritter
 SooperLooper | live looping | slgui | 		| essej.net/sooperlooper | Jesse Chappell
+OpenCubic | MOD player | ocp | | http://www.cubic.org/player | Dirk Jagdmann
 SoundTracker | fast tracker | soundtracker | 	| soundtracker.cx? | A. Koenig
 CheeseTracker | music tracker | cheesetracker_qt | | cheesetracker.sf.net | Juan Linietsky
 Seq24 | midi sequencer | seq24 | 		| seq24.sf.net | seq24 auth
@@ -88,6 +91,7 @@ PD | pure data signal processing | pd | terminal | pure-data.org | Miller Pucket
 
 	Begin | REC / EDIT
 
+Ardour 2 | multitrack studio | ardour2 | 		| www.ardour.org | Paul Davis
 Ardour | multitrack studio | ardour | 		| www.ardour.org | Paul Davis
 Audacity | audio editor | audacity | 		| audacity.sf.net | Dominique Mazzoni
 ReZound | sample editor | rezound | 		| rezound.sf.net | rezound auth
@@ -164,6 +168,7 @@ Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins, 
 
         Begin | PHONE
 
+Ekiga | video conferencing | ekiga | www.ekiga.net | Ekiga |  Damien Sandras
 Kiax | voice over ip | kiax | 		| kiax.sf.net | Kiax team
 Iaxcomm | voice over ip | iaxcomm | 	| iaxclient.sf.net/iaxcomm | Michael Van Donselaar
 
@@ -175,7 +180,7 @@ KTorrent | p2p bittorrent client | ktorrent | 	| KTorrent.org | KTorrent develop
 Nicotine | p2p soulseek fileshare | nicotine | 	| nicotine.thegraveyard.org | Hyriand
 Gnutella | p2p gnutella filesharing | gtk-gnutella | user | gtk-gnutella.sf.net | gnutella auth
 Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
-MLdonkey | p2p edonkey filesharing | mlnet+gui | | mldonkey.sf.net | mldonk au
+MLdonkey | p2p edonkey filesharing | mldonkey+gui | | mldonkey.sf.net | mldonk au
 The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
 Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 
@@ -184,7 +189,7 @@ Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
 	Begin | CHAT
 
 XChat | irc chat | xchat | user | xchat WEB | xchat auth
-Gaim | instant messaging | gaim | user | gaim WEB | gaim auth
+Pidgin | instant messaging | pidgin | user | pidgin.im | Sean Egan & co.
 Kiax | phone over internet | kiax | | kiax.sf.net | Kiax team
 OpenMash | audio/video conferenceu | mash-start | | openmash.org | mash auth
 KPhone | SIP web phone | kphone | | kphone WEB | kphone auth
@@ -206,7 +211,7 @@ LFtp | advanced ftp client | lftp | terminal | lcftp WEB | lftp auth
 
 VncViewer | vnc client | vncviewer | | vnc WEB | vnc auth
 SshVncViewer | vnc client over ssl/ssh | ssl_vncviewer | | vnc WEB | vnc auth
-VncServer | vnc server | x11vnc -display :0 | | vnc WEB | vnc auth
+VncServer | vnc server | x11vnc -display :0 | terminal | vnc WEB | vnc auth
 Vnc2Swf | desktop movie recorder | vnc2swf | 		| http://www.unixuser.org/~euske/vnc2swf/ | Yusuke Shinyama
 RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
 
@@ -216,6 +221,8 @@ RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
 
 Nmap | network scanner | xnmap | | www.insecure.org/nmap | Insecure.org
 Traceroute | net path finder | mtr | | http://www.bitwizard.nl/mtr | BitWizard
+Guarddog | personal firewall | guarddog | | http://www.simonzone.com/software/guarddog | Simon Edwards
+WireShark | network analyzer | wireshark | | http://www.wireshark.org | Gerald Combs
 FWBuilder | firewall builder | fwbuilder | | fwbuilder WEB | AUTH
 Ethereal | network analyzer | ethereal | | ethereal WEB | AUTH
 Ettercap | multipurpose sniffer | ettercap | | ettercap WEB | AUTH

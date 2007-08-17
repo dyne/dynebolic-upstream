@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Connect your mobile phone</Summary>
+  <About>
+    <Purpose>Setup a connection to a GSM phone</Purpose>
+    <Version>2.4 dyne:II 2007</Version>
+    <Authors>Kmobiletool developers</Authors>
+    <License>GNU General Public License</License>
+    <Homepage>kmobiletools</Homepage>
+  </About>
+</AppInfo>

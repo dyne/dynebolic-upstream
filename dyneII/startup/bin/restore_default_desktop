@@ -1,0 +1,67 @@
+#!/bin/zsh
+#
+# simple desktop restorage script
+# based on dyne libraries
+# copyleft 2007 Jaromil
+
+
+source /lib/dyne/utils.sh
+source /lib/dyne/wmaker.sh
+source /lib/dyne/dialog.sh
+
+ROXUSRPD=$HOME/.config/rox.sourceforge.net/ROX-Filer/pan_Default
+ROXUSRICONS=$HOME/.config/rox.sourceforge.net/ROX-Filer/globicons
+
+if [ -x $HOME/GNUstep ]; then
+  WMUSRSTATE=$HOME/GNUstep/Defaults/WMState
+  WMUSRMENU=$HOME/GNUstep/Defaults/WMRootMenu
+fi
+
+if [ -x $HOME/.fluxbox ]; then
+  FLXUSRMENU=$HOME/.fluxbox/menu
+fi
+
+if [ -x $HOME/.config/xfce4/desktop ]; then
+  XFCEUSRMENU=$HOME/.config/xfce4/desktop/menu.xml
+fi
+
+XFCEUSRPANEL=$HOME/.config/xfce4/panel # a directory
+
+
+
+ask_yesno 10 "This program will restore your desktop to the initial default. Proceed with loosing current configuration?"
+if [ $? != 1 ]; then
+  notice "operation aborted"
+  exit 1
+fi
+
+act "please wait while checking installed applications"
+check_apps_present
+
+act "generating wmaker menu"
+wmaker_gen_menu
+
+act "generating wmaker panel"
+wmaker_gen_volumes
+
+act "generating fluxbox menu"
+fluxbox_gen_menu
+
+act "generating xfce menu"
+xfce_gen_menu
+
+act "generating xfce panel"
+xfce_gen_volumes
+
+act "overwriting current user configuration"
+cp -f ${ROXPD} ${ROXUSRPD}
+cp -f ${ROXICONS} ${ROXUSRICONS}
+cp -f ${WMSTATE} ${WMUSRSTATE}
+cp -f ${WMMENU} ${WMUSRMENU}
+cp -f ${FLXMENU} ${FLXUSRMENU}
+cp -f ${XFCEMENU} ${XFCEUSRMENU}
+rm -rf ${XFCEUSRPANEL}
+cp -fra ${XFCEPANEL} ${XFCEUSRPANEL} 
+
+notice "operation completed!"
+

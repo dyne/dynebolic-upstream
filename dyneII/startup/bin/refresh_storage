@@ -2,9 +2,8 @@
 
 PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/X11R6/bin
 
-source /lib/dyne/volumes.sh
 source /lib/dyne/wmaker.sh
-source /lib/dyne/utils.sh
+source /lib/dyne/volumes.sh
 
 # TODO:
 # check that in the past happened hotplug event: usb_device
@@ -19,14 +18,16 @@ source /lib/dyne/utils.sh
 
 notice "new storage device plugged"
 
+# by default we don't do fsck on hotplugged devices
+export fsck=false
+
 /bin/pidof X
 if ! [ $? = 0 ]; then
     act "X is not running, user confirmation skipped"
     scan_storage
     act "device scanned and mounted"
+    unset fsck
     exit 0
-else
-    export DISPLAY=:0
 fi
 
 export MAIN_DIALOG="
@@ -60,7 +61,7 @@ export MAIN_DIALOG="
 "
 
 
-eval `gtkdialog --program=MAIN_DIALOG`
+eval `DISPLAY=:0.0 gtkdialog --program=MAIN_DIALOG`
 
 if [ "$EXIT" = "OK" ]; then
 
@@ -73,8 +74,10 @@ if [ "$EXIT" = "OK" ]; then
     fi
     
 # popup rox filer on volumes
-    launch rox /mnt
+    DISPLAY=:0.0 launch rox /mnt
 
 fi
+
+unset fsck
     
 

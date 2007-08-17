@@ -37,10 +37,13 @@ cd /
 
 umount /mnt/nest
 
-if [ -r /dev/mapper/dyne.nst ]; then # we have an encrypted nest
-   # must unload the mapped device with cryptsetup
-   cryptsetup luksClose dyne.nst
-fi
+for m in `ls /dev/mapper/nest.* | cut -d/ -f4` ; do
+  # we have encrypted nest(s)
+
+  # must unload the mapped device with cryptsetup
+  cryptsetup luksClose ${m}
+
+done
 
 mount | grep '^unionfs.*kmods'
 if [ $? = 0 ]; then

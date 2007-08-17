@@ -98,7 +98,12 @@ check_apps_present() {
   echo "# automatically generated at boot" >> /boot/dyne.apps
   echo >> $APPS
 
-  # if modules contain etc/applist then process it first
+  LINE=`cat /lib/dyne/dyne.applist`
+  for l in ${(f)LINE}; do
+    check_app_entry $l $APPS
+  done
+
+  # if modules contain etc/applist then process it
   # this way modules can provide their own description for applications
   # and have a separated menu entry for them.
   for mod in `ls /opt`; do
@@ -108,11 +113,6 @@ check_apps_present() {
         check_app_entry $l $APPS
       done
     fi
-  done
-
-  LINE=`cat /lib/dyne/dyne.applist`
-  for l in ${(f)LINE}; do
-    check_app_entry $l $APPS
   done
 
 }
@@ -708,6 +708,22 @@ Comment=Floppy disk storage
 Icon=/usr/share/icons/graphite/48x48/devices/gnome-dev-floppy.png
 EOF
     done
+
+    ############################# VOLUME
+    if [ -r /dev/mixer ]; then
+	tmpid=`expr $tmpid + 1`
+	echo "<item name=\"xfce4-mixer\" id=\"${tmpid}\"/>" >> $XFCEPANEL/panels.xml
+	
+	rm -f $XFCEPANEL/launcher-${tmpid}.rc
+	cat <<EOF > $XFCEPANEL/launcher-${tmpid}.rc
+[mixer-plugin]
+Device=/dev/mixer
+LauncherCommand=volumemixer
+LauncherRunInTerminal=false
+LauncherUseStartupNotification=false
+MasterControl=Vol
+EOF
+    fi
 
 
     ###########################################

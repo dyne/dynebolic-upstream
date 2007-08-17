@@ -15,14 +15,14 @@ if [ $1 ]; then
 launch \
 `mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
        -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
-       -sl 4096 -ss rxvt -sr -sw \
-       -bgfade 80 -htb -vb -bc -e $@`
+       -sl 4096 -ss rxvt -sr -sw -xft \
+       -bgfade 80 -htb -vb -bc $XTERM_EXTRA_OPTS -e $@`
 else
 launch \
 `mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
        -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
-       -sl 4096 -ss rxvt -sr -sw \
-       -bgfade 80 -htb -vb -bc`
+       -sl 4096 -ss rxvt -sr -sw -xft \
+       -bgfade 80 -htb -vb -bc $XTERM_EXTRA_OPTS`
 fi
 
 

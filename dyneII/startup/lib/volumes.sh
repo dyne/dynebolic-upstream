@@ -28,8 +28,9 @@ add_volume() {
   PASS=2
   # check for a dock
   if [ -x ${PFX}/${MNT}/${DOCK} ]; then
-      if [ -r ${PFX}/${MNT}/${DOCK}/VERSION  ]; then FLAGS="$FLAGS sys"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+      if [ -r ${PFX}/${MNT}/${DOCK}/dyne.nst.gpg ]; then FLAGS="$FLAGS key"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/${DOCK}/SDK ];      then FLAGS="$FLAGS sdk"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
@@ -41,6 +42,7 @@ add_volume() {
   if ! [ $FLAGS ]; then  # we do it in case nothing was found so far
       if [ -r ${PFX}/${MNT}/dyne.sys ]; then FLAGS="$FLAGS sys"; fi
       if [ -r ${PFX}/${MNT}/dyne.nst ]; then FLAGS="$FLAGS nst"; fi
+      if [ -r ${PFX}/${MNT}/dyne.nst.gpg ]; then FLAGS="$FLAGS key"; fi
       if [ -r ${PFX}/${MNT}/dyne.cfg ]; then FLAGS="$FLAGS cfg"; fi
       if [ -x ${PFX}/${MNT}/SDK ];      then FLAGS="$FLAGS sdk"; fi
       if [ -r ${PFX}/${MNT}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
@@ -274,8 +276,8 @@ scan_partitions() { #arg : devicename
           
           # here check if FS ~= NTFS then use umask=0222
 	  elif [ "`echo ${PART_FS}   | grep -i 'NTFS'`" ]; then
-	    OPTIONS="ro,noexec,uid=0,gid=8,umask=0222"
-	    FILESYS="ntfs"
+	    OPTIONS="rw,uid=0,gid=8,umask=0002"
+	    FILESYS="ntfs-3g"
 
           # and here check if FS ~= bsd44
 	  elif [ "`echo ${PART_FS} | grep -iE 'BSD|ufs'`" ]; then
@@ -284,7 +286,7 @@ scan_partitions() { #arg : devicename
 
           # FAT
           elif [ "`echo ${PART_FS} | grep -i 'FAT'`" ]; then
-            OPTIONS="rw,noexec,uid=0,gid=8,umask=0002"
+            OPTIONS="noexec,uid=0,gid=8,umask=0002"
             FILESYS="vfat"
 
           # linux filesystems have granular permissions

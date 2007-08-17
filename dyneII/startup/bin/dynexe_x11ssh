@@ -1,0 +1,147 @@
+#!/bin/zsh
+
+# dyne:II graphical tool for remote command execution over ssh and X11
+# (C) 2007 Denis "jaromil" Rojo
+
+# requirements: gtkdialog, ssh and X11
+
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA
+
+source /lib/dyne/utils.sh
+
+if [ -z $DISPLAY ]; then
+  error "no DISPLAY found"
+fi
+
+MYIP=`ifconfig | awk '/inet addr/ { print $2 }'| cut -d: -f2 | grep -v 127.0.0.1`
+
+if [ $1 ]; then
+  # called with arguments: don't prompt dialog but make the mount!
+  username=`echo $1|cut -d@ -f1`
+  server=`echo $1|cut -d@ -f2`
+  app=$2
+
+  echo "executing $app on $server as $username"
+  /bin/ping $server
+  if [ $? = 1 ]; then
+    echo "host is unreachable, operation aborted."
+    sleep 5
+    exit 0
+  fi
+
+  # allowing X11 connections
+  xhost +$server
+
+  echo "executing application $app ... (please wait)"
+  ssh -X -C $username@$server "DISPLAY=$MYIP:0 xterm"
+
+  sleep 5
+
+  exit 1 
+
+fi
+
+
+MAIN_DIALOG="
+<vbox>
+
+<frame Execute remote applications over SSH / X11>
+
+<vbox>
+
+<text>
+  <label>Your username:</label>
+</text>
+
+<entry>
+  <default>${USER}</default>
+  <variable>username</variable>
+</entry>
+
+<text>
+  <label>server address:</label>
+</text>
+
+<entry>
+  <variable>new_host</variable>
+</entry>
+</vbox>
+"
+
+if [ -r $HOME/.ssh/known_hosts ]; then
+MAIN_DIALOG="$MAIN_DIALOG
+<text>
+<label>or choose a known host:</label>
+</text>
+"
+
+  MAIN_DIALOG="$MAIN_DIALOG
+<combobox>
+  <variable>known_host</variable>
+"
+  known_hosts=`cat $HOME/.ssh/known_hosts | cut -d, -f1 | awk '{print $1}'`
+  for h in ${(f)known_hosts}; do
+    MAIN_DIALOG="$MAIN_DIALOG
+  <item>${h}</item>"
+  done
+  MAIN_DIALOG="$MAIN_DIALOG
+</combobox>
+"
+fi
+
+
+
+MAIN_DIALOG="$MAIN_DIALOG
+<text>
+  <label>Application:</label>
+</text>
+
+<entry>
+  <default>rox /mnt</default>
+  <variable>application</variable>
+</entry>
+
+<hbox>
+  <button ok></button>
+  <button cancel></button>
+</hbox>
+
+</frame>
+</vbox>
+"
+
+# export the dialog
+export MAIN_DIALOG
+
+# show the dialog
+eval `gtkdialog --program=MAIN_DIALOG`
+
+# check results
+if [ $EXIT = "Cancel" ]; then
+  echo "operation aborted."
+  exit 0
+fi
+
+if [ $new_host ]; then
+  server=$new_host
+else
+  server=$known_host
+fi
+
+xterm -fn "-*-lucidatypewriter-*-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x15 \
+      -bg black -fg green -e "$0 ${username}@${server} ${application}" &
+
+exit 1
+
