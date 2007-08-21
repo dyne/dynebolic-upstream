@@ -825,7 +825,7 @@ mkkern() {
 	fi
 
     else
-            error "kernel $krnfile is already present in ${PFX}/cdrom/dyne/"
+            act "kernel $krnfile is already present in ${PFX}/cdrom/dyne/"
     fi
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
@@ -839,25 +839,63 @@ mkkern() {
     # now the modules, if they are not squashed
 
     modpack="$PFX/cdrom/dyne/linux-${KRN}.kmods"
+    krnverabbr="`echo $krnfile | cut -d. -f1`"
     
     if ! [ -r ${modpack} ]; then
 
         act "temporary installation of modules in ${PFX}/tmp"
 	mkdir -p ${PFX}/tmp
         INSTALL_MOD_PATH="${PFX}/tmp" make modules_install
-        
+        cp System.map ${PFX}/tmp
 
 	act "calculating module dependencies"
 	depmod -ae ${KRN} -F System.map --basedir ${PFX}/tmp
+
+        act "linking sources and system map"
+        cp System.map ${PFX}/tmp/lib/modules/${KRN}
+        rm ${PFX}/tmp/lib/modules/${KRN}/build
+        rm ${PFX}/tmp/lib/modules/${KRN}/source
+
+        ln -sf /opt/kernel-src-${krnverabbr}/src/linux-${KRN} ${PFX}/tmp/lib/modules/${KRN}/build
+        ln -sf /opt/kernel-src-${krnverabbr}/src/linux-${KRN} ${PFX}/tmp/lib/modules/${KRN}/source
 	
-	act "packing modules from ${MODDIR}/${KRN}"
+	act "packing modules in ${modpack}"
 	$MKSQUASHFS ${PFX}/tmp/lib/modules/${KRN} $modpack -root-owned
 	chmod a+r $modpack
 	chmod -x  $modpack
         rm -rf ${PFX}/tmp
 	act "`stat $modpack`"
 	sync
+    else
+        act "kernel modules linux-${KRN}.kmods are already present in ${PFX}/cdrom/dyne"
     fi
+
+    # and the kernel sources
+    if ! [ -r $PFX/modules/kernel-src-${krnverabbr}/VERSION ]; then
+      if [ -r ./MAINTAINERS ]; then # we are in the kernel source tree
+
+        act "making kernel source clean"
+        make clean
+        act "packing kernel sources in $krnverabbr (please wait patiently)"
+        mkdir -p $PFX/modules/kernel-src-${krnverabbr}
+        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/etc
+        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src
+        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}
+        cp -ar . $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}/
+        cat << EOF > $PFX/modules/kernel-src-${krnverabbr}/VERSION
+name		Linux kernel sources
+desc		packed the `date +%D` on `hostname`
+version		${KRN}
+url		http://kernel.org
+packager	${USER}
+EOF
+ 
+        notice "kernel sources packages in ${PFX}/modules/kernel-src-${krnverabbr}"
+        act    "launch 'dynesdk squash kernel-src-${krnverabbr}' to squash the module"
+
+      fi
+    fi
+
 }
 
 mkiso() {
