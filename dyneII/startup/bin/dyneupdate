@@ -1,0 +1,105 @@
+#!/bin/zsh
+#
+# automatic network update script
+# for a p2p updating scheme - fetch updates on your local network from other dyne:bolic
+# we don't like centralized systems, so anyone can be the freshest! :)
+# Jaromil, GNU GPL copyleft 2007
+
+source /boot/dynenv
+source /lib/dyne/utils.sh
+source /lib/dyne/dialog.sh
+
+if [ -z $1 ]; then
+  notice "usage: dyneupdate host_or_ip"
+  exit 0
+fi
+
+if ! [ $DYNE_SYS_MEDIA = "hdisk" ]; then
+  error "you are not running in an harddisk docked system: cannot write updates on a CD"
+  exit 0
+fi 
+
+host=$1
+
+notice "contacting host ${host}"
+
+smbclient -c 'get VERSION /tmp/VERSION' \
+          //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+
+if [ $? = 1 ]; then
+  error "error updating from ${host}: unreachable or dyne.dock not present"
+  exit 1
+fi
+
+source /tmp/VERSION
+
+host_sys_ver=${DYNE_SYS_VER}
+host_initrd_ver=${DYNE_INITRD_VER}
+act "${host} runs a dyne OS version sys:${host_sys_ver} initrd:${host_initrd_ver}"
+
+source ${DYNE_SYS_MNT}/VERSION
+my_sys_ver=${DYNE_SYS_VER}
+my_initrd_ver=${DYNE_INITRD_VER}
+
+if [ -r /tmp/update.actions ]; then rm -f /tmp/update.actions; fi
+
+touch /tmp/update.actions
+
+is_new_version ${my_sys_ver} ${host_sys_ver}
+if [ $? = 0 ]; then
+   act "sys is newer, updating"
+   mkdir ${DYNE_SYS_MNT}/update 
+   echo "sys dyne.sys dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+#   smbclient -c 'get dyne.sys ${DYNE_SYS_MNT}/update' \
+#             //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+fi
+
+smbclient -c 'get SDK/cdrom/dyne/VERSION /tmp/VERSION' \
+          //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+
+if [ $? = 0 ]; then
+   source /tmp/VERSION
+   host_sys_ver=${DYNE_SYS_VER}
+   host_initrd_ver=${DYNE_INITRD_VER}
+   act "${host} has a dyne:SDK version sys:$host_sys_ver initrd:$host_initrd_ver"
+   echo "is_new_version ${my_sys_ver} ${host_sys_ver}"
+   if [ $? = 0 ]; then
+      act "SDK sys is newer, updating"
+      mkdir -p ${DYNE_SYS_MNT}/update 
+      echo "sdk dyne.sys SDK/cdrom/dyne/dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+#      smbclient -c 'get SDK/cdrom/dyne/dyne.sys ${DYNE_SYS_MNT}/update' \
+#                //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+#      sleep 10
+   fi
+fi
+
+mods="`smbclient -c 'ls modules/*' //${host}/dyne.dock -N 2>/dev/null | grep dyne`"
+
+if [ $? = 0 ]; then
+   nmods=`echo ${mods} | wc -l`
+   act "$nmods modules found:"
+   echo ${mods}
+fi 
+
+if [ -r /tmp/dialogarg ]; then rm -f /tmp/dialogarg; fi
+echo "--separate-output --checklist \"Choose modules:\" 30 50 ${nmods}" > /tmp/dialogarg 
+for m in ${(f)mods}; do
+  tag=`echo ${m} | awk '{print $1}'`
+  size=`echo ${m} | awk '{ if($2=="R") print $3; else print $2}'`
+  size=`echo "${size}/1024"|bc`
+  echo "${tag} \"${size} KB\" ${host}"  >> /tmp/dialogarg
+done
+
+if [ -r /tmp/install_modules ]; then rm -f /tmp/install_modules; fi
+dynedialog --file /tmp/dialogarg 2> /tmp/install_modules
+
+inst=`cat /tmp/install_modules | awk '{print $1}'`
+for i in ${(f)inst}; do
+  echo "mod ${DYNE_SYS_MNT}/modules/$i modules/$i" >> /tmp/update.actions
+done
+
+notice "confirm updating from ${host}:"
+acts=`cat /tmp/update.actions`
+for a in ${(f)acts}; do
+  act "${a}"
+done
