@@ -72,8 +72,8 @@ add_volume() {
      
  
       "usb")
-	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} ${FS} ${FLAGS}"
-	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\t${FS}\tdefaults,user,sync\t0\t${PASS}"
+	  append_line /boot/volumes "${MEDIA} /dev/${DEV} ${PFX}/${MNT} auto ${FLAGS}"
+	  append_line /etc/fstab "/dev/${DEV}\t${PFX}/${MNT}\tauto\t${OPTIONS},defaults,user,sync\t0\t${PASS}"
 	  ;;
 
       
@@ -169,7 +169,7 @@ scan_cdrom() {
 
 ###### HARDDISK
 
-scan_partitions() { #arg : devicename
+scan_partitions() { #arg : devicename (hotplug)
     # scans a list of fdisk format partitions
     PART_NUM=0
     DEV=`basename $1`
@@ -191,7 +191,7 @@ scan_partitions() { #arg : devicename
     PARTITIONS=`${FDISK} -l /dev/${DEV}            \
               | sed -e 's/ \* / /'              \
               | awk '/^\/dev\/*/ { if(NF!=1) print $0 }' \
-              | grep -Evi 'extended|swap|partition.map|free.space|diagnostics'`
+              | grep -Evi 'extended|ext.d|swap|partition.map|free.space|diagnostics'`
     
         # cycle thru partitions
         # ${(f)..} splits the result of the expansion to lines. see: man zshexpn
@@ -212,7 +212,12 @@ scan_partitions() { #arg : devicename
 	    
         fi 
 
-	MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
+        if [ "$2" = "hotplug" ]; then
+	  MNT="/mnt/usb${HD_NUM}/${PART_NUM}"
+        else
+	  MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
+        fi
+
 	mkdir -p ${MNT}
 
 	# mount the partition only if not already mounted
@@ -257,19 +262,21 @@ scan_partitions() { #arg : devicename
             for vol in ${(f)volumes}; do
 
 	      PART_NUM=`expr $PART_NUM + 1`
-
+	      
 	      MNT="/mnt/hd${HD_NUM}/${PART_NUM}"
+
 	      mkdir -p ${MNT}
 
               mount $vol $MNT
+
               if [ $? != 0 ]; then
 	        error "can't mount ${vol} : not a valid filesystem"
 	        continue
 	      fi
 
-              add_volume hdisk `basename ${vol}` hd${HD_NUM}/${PART_NUM} auto
+	      add_volume hdisk `basename ${vol}` hd${HD_NUM}/${PART_NUM} auto
 
-            done
+            done 
 
             continue
           #################### LVM
@@ -286,7 +293,7 @@ scan_partitions() { #arg : devicename
 
           # FAT
           elif [ "`echo ${PART_FS} | grep -i 'FAT'`" ]; then
-            OPTIONS="noexec,uid=0,gid=8,umask=0002"
+            OPTIONS="rw,noexec,uid=0,gid=8,umask=0002"
             FILESYS="vfat"
 
           # linux filesystems have granular permissions
@@ -304,13 +311,16 @@ scan_partitions() { #arg : devicename
 	    
           if [ $? != 0 ]; then
 	    error "can't mount ${PART_DEV} : not a valid filesystem"
-	    PART_NUM=`expr $PART_NUM - 1`
 	    continue
 	  fi
 
 	  PART_DEV=`basename $PART_DEV`
-	
-	  add_volume hdisk ${PART_DEV} hd${HD_NUM}/${PART_NUM} ${PART_FS}
+
+	      if [ "$2" = "hotplug" ]; then
+		  add_volume usb ${PART_DEV} usb${HD_NUM}/${PART_NUM} ${PART_FS}
+	      else	
+		  add_volume hdisk ${PART_DEV} hd${HD_NUM}/${PART_NUM} ${PART_FS}
+	      fi
 
         fi
 
@@ -320,8 +330,7 @@ scan_partitions() { #arg : devicename
 
 HD_NUM=0
 scan_storage() {
-# $1 = device, without partition number (es: hda)
-#  DEV=$1
+# $1 = if 'hotplug' then can be a usb key or so
 
     ROOT_PART="`get_config root | grep -E 'dev.(hd|sd)'`"
 
@@ -337,6 +346,9 @@ scan_storage() {
     #######################
     #### scan IDE harddisks
     #######################
+    ## not if in hotplug (i presume there aren't /dev/hd* devices)
+    if ! [ "$2" = "hotplug" ]; then
+
     for DEVPATH in `ls /proc/ide | awk '/^hd.*/ {print $1}'`; do
 
         DEV=`basename ${DEVPATH}`
@@ -370,19 +382,28 @@ scan_storage() {
 
     done
 
-
+    fi # hotplug
 
     ########################
     #### scan SCSI harddisks
     ########################
 
-#    udevstart
-
     for DEV in `ls /dev | awk '/^sd.$/ {print $1}'`; do
        # TODO: be sure to detect it's an harddisk
        HD_NUM=`expr $HD_NUM + 1`
-       notice "scanning storage ${DEV}"
-       scan_partitions ${DEV}
+       if [ "$1" = "hotplug" ]; then
+	   
+	   notice "scanning hotplug storage ${DEV}"
+	   
+	   scan_partitions ${DEV} hotplug
+
+       else
+
+	   notice "scanning storage ${DEV}"
+	   
+	   scan_partitions ${DEV}
+
+       fi
     done
 
     # now remove all unused filesystem kernel modules

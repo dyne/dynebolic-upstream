@@ -65,13 +65,7 @@ eval `DISPLAY=:0.0 gtkdialog --program=MAIN_DIALOG`
 
 if [ "$EXIT" = "OK" ]; then
 
-    scan_storage
-    
-# refresh xfce panel
-    /bin/pidof xfce4-panel
-    if [ $? = 0 ]; then
-	xfce_gen_volumes
-    fi
+    scan_storage hotplug
     
 # popup rox filer on volumes
     DISPLAY=:0.0 launch rox /mnt

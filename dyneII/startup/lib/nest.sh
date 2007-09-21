@@ -15,10 +15,6 @@ source /lib/dyne/utils.sh
 
 choose_nest() {
 
-# TODO: encryption is not yet supported: cryptoloop should be used
-#       please help here if you can ;)
-
-    
     if [ `is_mounted /home` = true ]; then
 	warning "script error"
 	warning "choose_nest was called but a nest is already mounted in /home"

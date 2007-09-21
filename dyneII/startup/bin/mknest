@@ -232,7 +232,10 @@ if [ $LOOPBACK ]; then
         clear
 
         notice "Setup your secret key file dyne.nst.gpg"
-	gpg -o "${NSTFILE}.gpg" --no-options --openpgp -c -a /var/run/secret.tmp 2>/dev/null
+	gpg -o "${NSTFILE}.gpg" --no-options --openpgp -c -a /var/run/secret.tmp
+	while [ $? = 2 ]; do
+	  gpg -o "${NSTFILE}.gpg" --no-options --openpgp -c -a /var/run/secret.tmp
+	done
 	# here user is prompted for password
 
 	act "formatting Luks mapped device"

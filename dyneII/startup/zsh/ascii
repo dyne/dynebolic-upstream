@@ -3,4 +3,5 @@ TERM="linux"
 
 alias links="links -g -driver fb -mode 0"
 alias mplayer="mplayer -vo fbdev"
+alias ls="ls --color=auto"
 

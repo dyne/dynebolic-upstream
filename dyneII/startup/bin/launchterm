@@ -1,7 +1,5 @@
 #!/bin/sh
 
-PROG="`which zsh`"
-
 if [ -z $1 ]; then
   TITLE="Terminal"
 else 
@@ -15,13 +13,13 @@ if [ $1 ]; then
 launch \
 `mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
        -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
-       -sl 4096 -ss rxvt -sr -sw -xft \
+       -sl 4096 -ss rxvt -sr -xft \
        -bgfade 80 -htb -vb -bc $XTERM_EXTRA_OPTS -e $@`
 else
 launch \
 `mrxvt -tn xterm-color -bg black -fg white -T "$TITLE" \
        -tabbg black -tabfg green -itabbg black -itabfg lightgrey -tr -trm -trt \
-       -sl 4096 -ss rxvt -sr -sw -xft \
+       -sl 4096 -ss rxvt -sr -xft \
        -bgfade 80 -htb -vb -bc $XTERM_EXTRA_OPTS`
 fi
 

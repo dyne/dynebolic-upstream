@@ -14,6 +14,15 @@ if [ -z $1 ]; then
   exit 0
 fi
 
+if ! [ "$2" = "xterm" ]; then
+
+  xterm -fn "-*-fixed-medium-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x30 \
+        -bg black -fg green -e "dyneupdate $1 xterm"
+  exit 0
+
+fi
+
+
 if ! [ $DYNE_SYS_MEDIA = "hdisk" ]; then
   error "you are not running in an harddisk docked system: cannot write updates on a CD"
   exit 0
@@ -28,6 +37,7 @@ smbclient -c 'get VERSION /tmp/VERSION' \
 
 if [ $? = 1 ]; then
   error "error updating from ${host}: unreachable or dyne.dock not present"
+  sleep 10
   exit 1
 fi
 
@@ -48,8 +58,8 @@ touch /tmp/update.actions
 is_new_version ${my_sys_ver} ${host_sys_ver}
 if [ $? = 0 ]; then
    act "sys is newer, updating"
-   mkdir ${DYNE_SYS_MNT}/update 
-   echo "sys dyne.sys dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+   mkdir -p ${DYNE_SYS_MNT}/update 
+   echo "sys dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
 #   smbclient -c 'get dyne.sys ${DYNE_SYS_MNT}/update' \
 #             //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
 fi
@@ -66,7 +76,7 @@ if [ $? = 0 ]; then
    if [ $? = 0 ]; then
       act "SDK sys is newer, updating"
       mkdir -p ${DYNE_SYS_MNT}/update 
-      echo "sdk dyne.sys SDK/cdrom/dyne/dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+      echo "sdk dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
 #      smbclient -c 'get SDK/cdrom/dyne/dyne.sys ${DYNE_SYS_MNT}/update' \
 #                //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
 #      sleep 10
@@ -77,14 +87,21 @@ mods="`smbclient -c 'ls modules/*' //${host}/dyne.dock -N 2>/dev/null | grep dyn
 
 if [ $? = 0 ]; then
    nmods=`echo ${mods} | wc -l`
-   act "$nmods modules found:"
-   echo ${mods}
+   act "$nmods modules found"
+   updmods=""
+   for m in ${(f)mods}; do
+     tag=`echo ${m} | awk '{print $1}'`
+     if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
+     updmods+="${tag} "
+   done
+   updnmods=`echo $updmods | wc -w`
 fi 
 
 if [ -r /tmp/dialogarg ]; then rm -f /tmp/dialogarg; fi
-echo "--separate-output --checklist \"Choose modules:\" 30 50 ${nmods}" > /tmp/dialogarg 
+echo "--separate-output --checklist \"${updnmods} new modules found, choose which to install:\" 20 60 ${updnmods}" > /tmp/dialogarg 
 for m in ${(f)mods}; do
   tag=`echo ${m} | awk '{print $1}'`
+  if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
   size=`echo ${m} | awk '{ if($2=="R") print $3; else print $2}'`
   size=`echo "${size}/1024"|bc`
   echo "${tag} \"${size} KB\" ${host}"  >> /tmp/dialogarg
@@ -92,14 +109,20 @@ done
 
 if [ -r /tmp/install_modules ]; then rm -f /tmp/install_modules; fi
 dynedialog --file /tmp/dialogarg 2> /tmp/install_modules
-
 inst=`cat /tmp/install_modules | awk '{print $1}'`
+rm -f /tmp/install_modules
+
 for i in ${(f)inst}; do
-  echo "mod ${DYNE_SYS_MNT}/modules/$i modules/$i" >> /tmp/update.actions
+  echo "mod $i" >> /tmp/update.actions
 done
 
-notice "confirm updating from ${host}:"
 acts=`cat /tmp/update.actions`
+
+ask_yesno 10 "confirm updating from ${host}:\n$acts"
+if [ $? = 1 ]; then
+  echo "update"
+fi
+
 for a in ${(f)acts}; do
   act "${a}"
 done

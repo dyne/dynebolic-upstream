@@ -55,6 +55,12 @@ add_module_path() {
         "export LOCATE_PATH=\$LOCATE_PATH:/opt/$mod/var/lib/locatedb"
     fi
 
+    # python site-packages
+    if [ -x /opt/${mod}/lib/python2.4/site-packages ]; then
+      append_line /boot/dynenv.modules \
+        "export PYTHONPATH=\$PYTHONPATH:/opt/$mod/lib/python2.4/site-packages"
+    fi
+
     # configuration files in home directories
     # DANGER! this is a possible security flaw
     if [ -x /opt/${mod}/skel ]; then

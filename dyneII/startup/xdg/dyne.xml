@@ -28,4 +28,22 @@
     <comment>Windows device driver</comment>
     <glob pattern="*.INF"/>
   </mime-type>
+  <mime-type type="application/x-dyne-nest">
+    <comment>Dyne nest for user settings and data</comment>
+    <glob pattern="*.nst"/>
+  </mime-type>
+  <mime-type type="application/x-dyne-kernel">
+    <comment>Dyne Linux kernel</comment>
+    <glob pattern="*.krn"/>
+  </mime-type>
+  <mime-type type="application/x-dyne-kernel-modules">
+    <comment>Dyne Linux kernel modules</comment>
+    <glob pattern="*.kmods"/>
+  </mime-type>
+  <mime-type type="application/x-dyne-nest-key">
+    <comment>Dyne nest encryption key</comment>
+    <glob pattern="*.nst.gpg"/>
+  </mime-type>
+
+
 </mime-info>

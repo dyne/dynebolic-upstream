@@ -3,8 +3,13 @@
 
 source /lib/dyne/utils.sh
 source /lib/dyne/modules.sh
+source /lib/dyne/wmaker.sh
 
 mount_dyne_modules
+
+check_apps_present
+
+xfce_gen_menu
 
 source /boot/dynenv.modules
 

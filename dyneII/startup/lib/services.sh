@@ -106,8 +106,6 @@ apply_network() {
   act "our hostname is `hostname`"
   # setup the hostname in /etc/hosts to resolve it at least in loopback
   append_line /etc/hosts "127.0.0.1 $HOSTNAME"
-  # start the portmapper daemon
-  /usr/sbin/portmap
 }
 
 
@@ -292,6 +290,12 @@ EOF
       mDNSResponder -f /boot/services  
     fi
 
+    if [ $d = "nfs" ]; then
+        # start the portmapper daemon
+	/usr/sbin/portmap
+	# TODO: all the rest needed for NFS here
+    fi
+    
   done
   
 

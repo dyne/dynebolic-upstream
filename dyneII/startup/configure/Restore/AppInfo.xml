@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AppInfo>
+  <Summary>Restore your desktop</Summary>
+  <About>
+    <Purpose>Revert all desktop customizations and rebuilds it as fresh installed</Purpose>
+    <Version>2.5 dyne:II 2007</Version>
+    <Authors>Jaromil</Authors>
+    <License>GNU General Public License</License>
+    <Homepage>http://dynebolic.org</Homepage>
+  </About>
+</AppInfo>

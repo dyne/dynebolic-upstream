@@ -75,7 +75,6 @@ MAIN_DIALOG="
 </text>
 
 <entry>
-  <default>${USER}</default>
   <variable>username</variable>
 </entry>
 
@@ -129,7 +128,7 @@ export MAIN_DIALOG
 eval `gtkdialog --program=MAIN_DIALOG`
 
 # check results
-if [ $EXIT = "Cancel" ]; then
+if [ "$EXIT" = "Cancel" ]; then
   echo "operation aborted."
   exit 0
 fi

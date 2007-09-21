@@ -278,6 +278,9 @@ EOF
 <rule match="/proc"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
 <rule match="/boot"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
 <rule match="/var"><icon>/usr/share/icons/graphite/48x48/apps/hwbrowser.png</icon></rule>
+<rule match="/mnt/usb1"><icon>/usr/share/dyne/taschino/usbpen_unmount.png</icon></rule>
+<rule match="/mnt/usb2"><icon>/usr/share/dyne/taschino/usbpen_unmount.png</icon></rule>
+<rule match="/mnt/usb3"><icon>/usr/share/dyne/taschino/usbpen_unmount.png</icon></rule>
 EOF
     # close the panel
     echo "</start>" >> $ROXPDTMP

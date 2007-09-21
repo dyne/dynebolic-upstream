@@ -14,8 +14,9 @@ Begin | VIDEO
 
 MPlayer | versatile video player | gmplayer |  		| mplayerhq.hu | Arpad
 Xine | multimedia player | xine |  				| xinehq.de | Xine team
-XawTV | television viewer | xawtv | 					| bytesex.org | Gerd Knorr
-Mp4Player | mpeg4 darwin player | gmp4player |  			| mpeg4ip.sf.net | Cisco
+Mp4Player | darwin stream player | gmp4player |  			| mpeg4ip.sf.net | Cisco
+TVtime | television viewer | tvtime | 					| tvtime.sf.net | Billy Biggs 
+XawTV | camera viewer | xawtv | 					| bytesex.org | Gerd Knorr 
 
 	End | PLAY
 
@@ -239,6 +240,7 @@ End | NET
 
 Begin | OFFICE
 
+Faces | project management | faces | | faces.homeip.net | Michael Reithinger
 Open Office | office suite | soffice | | openoffice.org | Sun
 Spreadsheet | calculator | scalc | | openoffice.org | Sun
 Writer | word writer | swriter | | openoffice.org | Sun
