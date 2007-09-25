@@ -1,0 +1,276 @@
+#!/bin/zsh
+#
+# Entombing encrypted storage - a simple commandline tool
+#
+# Copyright (C) 2007 Denis "Jaromil" Rojo <jaromil@dyne.org>
+#
+# thanks to Asbesto Molesto for suggesting the perfect name for this tool:
+#
+# TOMB
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published 
+# by the Free Software Foundation; either version 3 of the License,
+# or (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# Please refer to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to:
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+if [ -r /lib/dyne/utils.sh ]; then
+  source /lib/dyne/utils.sh
+else
+  # standard output message routines
+  # it's always useful to wrap them, in case we change behaviour later
+  notice() { echo "[*] $1"; }
+  act() { echo " .  $1"; }
+  error() { echo "[!] $1"; }
+fi
+func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
+
+PATH=/usr/bin:/usr/sbin:/bin:/sbin   
+
+############################
+### main()
+###
+
+notice "tomb  -  encrypted storage tool"
+act "(c)2007 by Jaromil - RASTASOFT.org"
+act "invoked with args \"$*\" "
+act "running on `date`"
+
+OPTS=`getopt -o hvp:o:s:m:n -n 'tomb' -- "$@"`
+
+while true; do
+    case "$1" in
+	-h)
+	    notice "SYNOPSIS: tomb [options] COMMAND FILE [MOUNTPOINT]"
+            notice "OPTIONS:"
+	    act "-h     print this help"
+	    act "-v     print out the version of this tool"
+	    act "-s     size of the storage file when creating one (in MBytes)"
+            notice "COMMANDS:"
+	    act "create     create a new encrypted storage FILE and keys"
+	    act "mount      mount an existing storage FILE on MOUNTPOINT"
+            act "umount     unmounts a mounted storage MOUNTPOINT"
+
+	    echo; exit 2 ;;
+	-v) exit 2 ;;
+        -s) SIZE=$2; shift 2 ;;
+	--) shift; break ;;
+	*)  CMD=$1; FILE=$2; MOUNT=$3; break ;;
+    esac
+done
+
+act "command: $CMD for file $FILE"
+
+create_crypto() {
+
+    if [ -z $SIZE ]; then
+	error "size is not specified, please use -s option when creating a storage file"
+	exit 0
+    else
+	act "size set to $SIZE MB"
+    fi
+    
+    SIZE_4k=`expr \( $SIZE \* 1000 \) / 4`
+    notice "generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)"
+    act "dd if=/dev/zero of=${FILE} bs=4k count=$SIZE_4k"
+#   now with progress bar!
+    dd if=/dev/zero bs=4k count=${SIZE_4k} | cbar -s ${SIZE_4k} -bl 4k -of ${FILE} -de -nb -np
+    
+    if [ $? = 0 -a -e ${FILE} ]; then
+	act "OK: `ls -l ${FILE}`"
+    else
+	error "Error creating the nest file ${FILE} : (dd if=/dev/zero of=${FILE} bs=4k count=$SIZE_4k)"
+	sleep 4
+	exit 0
+    fi
+
+    mkdir -p /tmp/tomb
+
+    loadmod dm-crypt
+    loadmod aes-i586
+
+    nstloop=`losetup -f` # get the number for next loopback device
+    losetup -f ${FILE}   # allocates the next loopback for our file
+
+    act "Generating secret key..."
+    
+    dd if=/dev/urandom bs=1 count=1024 | strings | cbar -s 32 -bl 1 -of /tmp/tomb/secret -de -nb -np
+    clear
+    notice "Setup your secret key file ${FILE}.gpg"
+	# here user is prompted for password
+    gpg -o "${FILE}.gpg" --no-options --openpgp -c -a /tmp/tomb/secret
+    while [ $? = 2 ]; do
+	gpg -o "${FILE}.gpg" --no-options --openpgp -c -a /tmp/tomb/secret
+    done
+    
+    act "formatting Luks mapped device"
+        # dm-crypt only supports sha1
+        # but we can use aes-cbc-essiv with sha256 for better security
+        # see http://clemens.endorphin.org/LinuxHDEncSettings
+    cryptsetup --batch-mode --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${nstloop} /tmp/tomb/secret
+    
+    act "formatting Ext3 filesystem"
+    
+    cryptsetup --key-file /tmp/tomb/secret --batch-mode --cipher aes luksOpen ${nstloop} tomb.tmp
+
+    rm -f /tmp/tomb/secret
+
+    cryptsetup luksDump ${nstloop}
+
+    mkfs.ext3 -F -j -L "dyne:nest" /dev/mapper/tomb.tmp
+
+    if [ $? = 0 ]; then
+	act "OK, encrypted storage succesfully formatted with Ext3 filesystem"
+    else
+	act "error formatting storage file with Ext3 filesystem"
+    fi
+
+    cryptsetup luksClose tomb.tmp
+    losetup -d ${nstloop}
+
+    notice "done creating $FILE encrypted storage (using Luks dm-crypt AES/SHA256)"
+}
+
+mount_crypto() {
+
+    notice "mounting $FILE on mountpoint $MOUNT"
+    if [ -z $MOUNT ]; then
+	error "you need to specify a MOUNTPOINT for the mount command"
+	exit 0
+    fi
+    if ! [ -x $MOUNT ]; then
+	error "mountpoint $MOUNT doesn't exist"
+	exit 0
+    fi
+
+    act "mounting $FILE on mountpoint $MOUNT over loopback device"
+    nstloop=`losetup -f`
+    losetup -f ${FILE}
+    
+    act "check if nest is a an encrypted Luks device"
+    cryptsetup isLuks ${nstloop}
+    if [ $? = 0 ]; then # it's a LUKS encrypted nest, see cryptsetup(1)
+	
+                # check if key file is present
+	if ! [ -r "${FILE}.gpg" ]; then
+	    error "secret encryption key is not present for this nest"
+	    error "copy it in ${FILE}.gpg"
+	    losetup -d ${nstloop}
+	    sleep 5
+	    return
+	fi
+	
+	loadmod dm-crypt
+	loadmod aes-i586
+	
+	mapper="tomb.`date +%s`"
+	
+	notice "Password is required for file ${FILE}"
+	for c in 1 2 3 4 5; do
+	    
+	    dialog --backtitle "This file is encrypted for privacy protection" --title "Security check" \
+		--insecure --passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+	    
+	    cat /var/run/.scolopendro \
+		| gpg --passphrase-fd 0 --no-tty --no-options -d "${FILE}.gpg" 2>/dev/null | grep -v passphrase \
+		| cryptsetup --key-file - luksOpen ${nstloop} ${mapper}
+	    
+	    rm -f /var/run/.scolopendro
+	    
+	    if [ -r /dev/mapper/${mapper} ]; then
+		break;  # password was correct
+	    else
+		dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
+	    fi
+	    
+	done
+	
+	if ! [ -r /dev/mapper/${mapper} ]; then
+	    error "failure mounting the encrypted file"
+	    ls /dev
+	    ls /var
+	    tail /var/log/messages
+	    losetup -d ${nstloop}
+	    sleep 5
+	    return
+	fi
+	
+	act "encrypted storage filesystem check"
+	fsck.ext3 -p -C0 /dev/mapper/${mapper}
+        
+	mount -t ext3 /dev/mapper/${mapper} ${MOUNT}
+
+	notice "encrypted storage $FILE succesfully mounted on $MOUNT"
+	append_line /var/run/tombs "${MOUNT} ${mapper} ${nstloop}"
+
+    else
+	
+	error "$FILE is not a valid Luks encrypted storage file"
+
+    fi
+}
+
+umount_crypto() {
+
+    if [ -z $FILE ]; then
+	error "must specify the mountpoint to be unmounted"
+	exit 0
+    fi
+
+    if ! [ -r /var/run/tombs ]; then
+	error "tomb mount table not present in /var/run/tombs"
+	exit 0
+    fi
+
+    tomb=`cat /var/run/tombs | grep ${FILE}`
+    act "unmounting: ${tomb}"
+    mount=`echo ${tomb} | awk '{print $1}'`
+    mapper=`echo ${tomb} | awk '{print $2}'`
+    nstloop=`echo ${tomb} | awk '{print $3}'`
+
+    if ! [ -r /dev/mapper/${mapper} ]; then
+	error "${mapper} not present in /dev/mapper"
+	exit 0
+    fi
+
+    umount ${mount}
+    if ! [ $? = 0 ]; then
+	error "error occurred in umount ${mount}"
+	exit 0
+    fi
+
+    cryptsetup luksClose ${mapper}
+    if ! [ $? = 0 ]; then
+	error "error occurred in cryptsetup luksClose ${mapper}"
+	exit 0
+    fi
+
+    losetup -d ${nstloop}
+    if ! [ $? = 0 ]; then
+	error "error occurred in losetup -d ${nstloop}"
+	exit 0
+    fi
+
+    if [ $? = 1 ]; then
+       notice "crypt storage ${mapper} unmounted from $FILE"
+    fi
+}
+	
+
+case "$CMD" in
+    create)   create_crypto ;;
+    mount)    mount_crypto  ;;
+    umount)   umount_crypto ;;
+    unmount)  umount_crypto ;;
+    *) error "command \"$CMD\" not recognized"
+	act "try -h for help"
+	;;
+esac
