@@ -1,10 +1,12 @@
 #!/bin/zsh
 #
 # Entombing encrypted storage - a simple commandline tool
+# (designed for the dyne:bolic operating system, still portable)
 #
-# Copyright (C) 2007 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# Copyleft (C) 2007 Denis Jaromil Rojo
 #
-# thanks to Asbesto Molesto for suggesting the perfect name for this tool:
+# thanks to Gabriele "Asbesto Molesto" Zaverio
+# for suggesting the perfect name for this tool:
 #
 # TOMB
 #
@@ -21,9 +23,14 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, write to:
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# in case you like to port this tool to any other operating system
+# please notice us if you succeed, or if you have difficulties you
+# cannot overcome: http://dyne.org/hackers_contact.php
 
 if [ -r /lib/dyne/utils.sh ]; then
   source /lib/dyne/utils.sh
+  source /lib/dyne/dialog.sh
 else
   # standard output message routines
   # it's always useful to wrap them, in case we change behaviour later
@@ -49,12 +56,13 @@ OPTS=`getopt -o hvp:o:s:m:n -n 'tomb' -- "$@"`
 while true; do
     case "$1" in
 	-h)
-	    notice "SYNOPSIS: tomb [options] COMMAND FILE [MOUNTPOINT]"
+	    notice "SYNOPSIS: tomb [options] COMMAND [FILE|PARTITION] [MOUNTPOINT|NAME]"
             notice "OPTIONS:"
 	    act "-h     print this help"
 	    act "-v     print out the version of this tool"
 	    act "-s     size of the storage file when creating one (in MBytes)"
             notice "COMMANDS:"
+            act "format     format a PARTITION with NAME and generate keys"
 	    act "create     create a new encrypted storage FILE and keys"
 	    act "mount      mount an existing storage FILE on MOUNTPOINT"
             act "umount     unmounts a mounted storage MOUNTPOINT"
@@ -69,6 +77,65 @@ done
 
 act "command: $CMD for file $FILE"
 
+if [ -z $FILE ]; then
+    error "first argument missing, see -h for help"
+    exit 0
+fi
+
+format_crypto() {
+    notice "formatting partition $FILE as an encrypted storage"
+    ask_yesno 20 "Proceed erasing all data contained in the partition:\n `fdisk -l | grep ${FILE}`"
+    if ! [ $? = 1 ]; then
+	act "operation aborted."
+	exit 0
+    fi
+
+    mkdir -p /tmp/tomb
+
+    loadmod dm-crypt
+    loadmod aes-i586
+
+    act "Generating secret key..."
+    key="`basename ${FILE}`"
+    mkdir -p ${HOME}/.tomb
+    
+    dd if=/dev/urandom bs=1 count=1024 | strings | cbar -s 32 -bl 1 -of /tmp/tomb/secret -de -nb -np
+    clear
+    notice "Setup your secret key file ${key}.gpg"
+	# here user is prompted for password
+    gpg -o "${HOME}/.tomb/${key}.gpg" --no-options --openpgp -c -a /tmp/tomb/secret
+    while [ $? = 2 ]; do
+	gpg -o "${HOME}/.tomb/${key}.gpg" --no-options --openpgp -c -a /tmp/tomb/secret
+    done
+    
+    act "formatting Luks partition"
+        # dm-crypt only supports sha1
+        # but we can use aes-cbc-essiv with sha256 for better security
+        # see http://clemens.endorphin.org/LinuxHDEncSettings
+    cryptsetup --batch-mode --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${FILE} /tmp/tomb/secret
+    
+    act "formatting Ext3 filesystem"
+    
+    cryptsetup --key-file /tmp/tomb/secret --batch-mode --cipher aes luksOpen ${FILE} tomb.tmp
+
+    rm -f /tmp/tomb/secret
+
+    cryptsetup luksDump ${FILE}
+
+    mkfs.ext3 -F -j /dev/mapper/tomb.tmp
+
+    if [ $? = 0 ]; then
+	act "OK, encrypted partition succesfully formatted with Ext3 filesystem"
+    else
+	act "error formatting ${FILE} Ext3 filesystem"
+    fi
+
+    cryptsetup luksClose tomb.tmp
+
+    notice "done formatting $FILE encrypted partition (using Luks dm-crypt AES/SHA256)"
+    act "encrypted key stored in file ${HOME}/${key}.gpg"
+}
+    
 create_crypto() {
 
     if [ -z $SIZE ]; then
@@ -140,6 +207,20 @@ create_crypto() {
 }
 
 mount_crypto() {
+    if ! [ -r $FILE ]; then
+	error "file or partition $FILE does not exists"
+	exit 0
+    fi
+    # check if its a file or partition
+    file ${FILE} | grep block
+    if [ $? = 0 ]; then
+	mount_crypto_partition
+    else
+	mount_crypto_file
+    fi
+}
+
+mount_crypto_file() {
 
     notice "mounting $FILE on mountpoint $MOUNT"
     if [ -z $MOUNT ]; then
@@ -218,6 +299,84 @@ mount_crypto() {
     fi
 }
 
+mount_crypto_partition() {
+
+    notice "mounting partition $FILE on mountpoint $MOUNT"
+    if [ -z $MOUNT ]; then
+	error "you need to specify a MOUNTPOINT for the mount command"
+	exit 0
+    fi
+    if ! [ -x $MOUNT ]; then
+	error "mountpoint $MOUNT does not exist"
+	exit 0
+    fi
+
+    act "check if nest is a an encrypted Luks device"
+    cryptsetup isLuks ${FILE}
+
+    if [ $? = 0 ]; then
+	
+        # check if key file is present
+        key=`basename ${FILE}`
+	if [ -r ${HOME}/.tomb/${key}.gpg ]; then
+	    enc_key=${HOME}/.tomb/${key}.gpg
+	else
+	    error "secret encryption key for partition ${FILE} not found in ${HOME}/.tomb/${key}.gpg"
+	    error "we cannot decrypt files from partition ${FILE}. sorry."
+	    exit 0
+	fi
+		
+	act "secret encryption key found in ${enc_key}"
+
+	loadmod dm-crypt
+	loadmod aes-i586
+	
+	mapper="tomb.${key}.`date +%s`"
+	
+	notice "Password is required to unlock the partition"
+	for c in 1 2 3 4 5; do
+	    
+	    dialog --backtitle "This file is encrypted for privacy protection" --title "Security check" \
+		--insecure --passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+	    
+	    cat /var/run/.scolopendro \
+		| gpg --passphrase-fd 0 --no-tty --no-options -d ${enc_key} 2>/dev/null | grep -v passphrase \
+		| cryptsetup --key-file - luksOpen ${FILE} ${mapper}
+	    
+	    rm -f /var/run/.scolopendro
+	    
+	    if [ -r /dev/mapper/${mapper} ]; then
+		break;  # password was correct
+	    else
+		dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
+	    fi
+	    
+	done
+	
+	if ! [ -r /dev/mapper/${mapper} ]; then
+	    error "failure mounting the encrypted file"
+	    ls /dev
+	    ls /var
+	    tail /var/log/messages
+	    sleep 5
+	    return
+	fi
+	
+	act "encrypted storage filesystem check"
+	fsck.ext3 -p -C0 /dev/mapper/${mapper}
+        
+	mount -t ext3 /dev/mapper/${mapper} ${MOUNT}
+
+	notice "encrypted partition $FILE succesfully mounted on $MOUNT"
+	append_line /var/run/tombs "${MOUNT} ${mapper} ${FILE}"
+
+    else
+	
+	error "$FILE is not a valid Luks encrypted partition"
+
+    fi
+}
+
 umount_crypto() {
 
     if [ -z $FILE ]; then
@@ -253,10 +412,14 @@ umount_crypto() {
 	exit 0
     fi
 
-    losetup -d ${nstloop}
-    if ! [ $? = 0 ]; then
-	error "error occurred in losetup -d ${nstloop}"
-	exit 0
+    echo ${nstloop} | grep loop 1>/dev/null 2>/dev/null
+    # if it's a loopback then we need to do losetup -d
+    if [ $? = 0 ]; then
+	losetup -d ${nstloop}
+	if ! [ $? = 0 ]; then
+	    error "error occurred in losetup -d ${nstloop}"
+	    exit 0
+	fi
     fi
 
     if [ $? = 1 ]; then
@@ -267,6 +430,7 @@ umount_crypto() {
 
 case "$CMD" in
     create)   create_crypto ;;
+    format)   format_crypto ;;
     mount)    mount_crypto  ;;
     umount)   umount_crypto ;;
     unmount)  umount_crypto ;;
