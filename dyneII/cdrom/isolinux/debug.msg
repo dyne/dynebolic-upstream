@@ -1,10 +1,12 @@
 
-To debug dyne:bolic boot process you can activate the 'interactive'
-option by sending this parameter to the kernel.
+To debug dyne:bolic boot process you can activate interactive
+prompt for loading kernel modules.
 
-At the "boot:" prompt below, type:
+At the "boot:" prompt below, type "linux modules_prompt=true"
+or "linux modules_deny=comma,separated,list" to give a list
+of modules that should not be loaded. These options can be made
+permanent by placing the setting inside the dyne.cfg file.
 
- boot: linux interactive=true
 
 In case your mouse and/or keyboard don't work, try:
 

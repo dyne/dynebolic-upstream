@@ -1,0 +1,6 @@
+default linux
+prompt 1
+timeout 100
+label linux
+      kernel /2618ck1d.krn
+      append load initrd=/initrd.gz root=/dev/ram0 rw load_ramdisk=1 prompt_ramdisk=0 ramdisk_start=0 ramdisk_size=34000 max_loop=64 vga=791
