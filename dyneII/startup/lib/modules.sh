@@ -181,50 +181,56 @@ mount_sdk_modules() {
 
 
 mount_dyne_modules() {
-
+    
     if ! [ -x ${DYNE_SYS_MNT}/modules ]; then
-      act "no dyne modules found in ${DYNE_SYS_MNT}"
-      return
+	act "no dyne modules found in ${DYNE_SYS_MNT}"
+	return
     fi
-	
+    
   # flag to control whether to call ldconfig at the end
-  NEWLIBPATH=false
+    NEWLIBPATH=false
+    
+    modvols=`grep mod /boot/volumes | awk '{print $3}'`
+    if [ "$modvols" != "" ]; then
 
+	for moddock in ${(f)modvols}; do
 
-    for mod in `find ${DYNE_SYS_MNT}/modules/ -name '*.dyne'`; do
+	    for mod in `find ${moddock}/dyne/modules/ -name '*.dyne'`; do
 	  # squashed .dyne module
-	    
+		
 	  # get the name without path nor .dyne suffix
-	  mod_name=`basename ${mod} .dyne`
-
-          if [ -r /opt/${mod_name}/VERSION ]; then
-            act "module ${mod_name} is already mounted, skipping.." 
-            continue
-          fi
-	    
-	  mkdir -p /opt/${mod_name}
-
-	  mount -t squashfs -o loop,ro,suid ${mod} /opt/${mod_name}
-          if [ $? != 0 ]; then #mount failed
-            error "failed mounting ${mod_name}"
-            continue
-          fi  
-	    
-	  add_module_path ${mod_name}
-
-	  act "${mod_name} mounted in /opt"
-	    
-     done
-
+		mod_name=`basename ${mod} .dyne`
+		
+		if [ -r /opt/${mod_name}/VERSION ]; then
+		    act "module ${mod_name} is already mounted, skipping.." 
+		    continue
+		fi
+		
+		mkdir -p /opt/${mod_name}
+		
+		mount -t squashfs -o loop,ro,suid ${mod} /opt/${mod_name}
+		if [ $? != 0 ]; then #mount failed
+		    error "failed mounting ${mod_name}"
+		    continue
+		fi  
+		
+		add_module_path ${mod_name}
+		
+		act "${mod_name} mounted in /opt"
+		
+	    done
+	done
+    fi
+    
   # now source all the new paths
-  source /boot/dynenv.modules
-
-
-  if [ x$NEWLIBPATH = xtrue ]; then
-    ld_regenerate_cache
-  fi
-  
-
+    source /boot/dynenv.modules
+    
+    
+    if [ x$NEWLIBPATH = xtrue ]; then
+	ld_regenerate_cache
+    fi
+    
+    
 }
 
 

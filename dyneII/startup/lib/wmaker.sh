@@ -895,7 +895,7 @@ dyne_startx() {
 
 
   # enable local connections to running X
-  (sleep 5; xhost "+`hostname`")&
+  (sleep 5; xhost "+localhost"; xhost "+`hostname`")&
 
 
   # and the window manager

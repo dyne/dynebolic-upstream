@@ -472,6 +472,7 @@ append_line() { # args:   file    new-line
     # and we are done
 }
 
+
 cleandir() {
     DIR=${1}
     act "cleaning all files in ${DIR}"

@@ -94,28 +94,6 @@ mount -t sysfs  sysfs  /sys
 
 mount -t devpts devpts /dev/pts
 
-# check if an usb controller is present
-if [ "`dmesg | grep 'USB hub found'`" ]; then
-
-   notice "USB controller detected"
-
-   # mount the usb device filesystem
-   mount /proc/bus/usb
- 
-   # start loading the usb storage
-   loadmod usb-storage
-
-   sync
- 
-   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
-     act "waiting for the kernel to scan usb devices"
-     while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
-         echo -n "."
-         sleep 1 # wait that the kernel scans before we scan
-     done
-   fi
-  
-fi
 
 
 
@@ -130,6 +108,22 @@ act "launching device filesystem daemon"
 #         or 'autodetect'
 # the modules need to be provided in ramdisk, pack them using dynesdk:
 # dynesdk -m pcmcia,pcmcia_core,yenta_socket,ide-cs mkinitrd
+
+kmods_found=false
+
+FULL_MODULES=/lib/modules/linux-`uname -r`.kmods
+if [ -r ${FULL_MODULES} ]; then
+	notice "full kernel modules: this is an autonomous ramdisk"
+	mkdir -p /lib/modules/`uname -r`
+	udevstart # populate /dev/loop
+	mount -o loop ${FULL_MODULES} /lib/modules/`uname -r`
+	act "kernel modules autodetection"
+	for am in `pcimodules`; do
+	    modprobe ${am}
+	done
+	kmods_found=true
+fi
+
 CFG_MODULES="`get_config modules_ramdisk`"
 if [ $CFG_MODULES ]; then
     notice "load kernel modules available to ramdisk"
@@ -153,6 +147,29 @@ if [ $CFG_MODULES ]; then
 
     done
 
+fi
+
+# check if an usb controller is present
+if [ "`dmesg | grep 'USB hub found'`" ]; then
+
+   notice "USB controller detected"
+
+   # mount the usb device filesystem
+   mount /proc/bus/usb
+ 
+   # start loading the usb storage
+   loadmod usb-storage
+
+   sync
+ 
+   if [ "`dmesg | grep '^usb-storage: waiting'`" ]; then
+     act "waiting for the kernel to scan usb devices"
+     while [ -z `dmesg | grep '^usb-storage: device scan complete'` ]; do
+         echo -n "."
+         sleep 1 # wait that the kernel scans before we scan
+     done
+   fi
+  
 fi
 
 
@@ -218,19 +235,20 @@ scan_dock_updates
 KRN=`uname -r`
 
 act "searching for kernel modules..."
-kmods_found=false
+if [ $kmods_found = "false" ]; then
 
 # first the harddisks
-scan_docked_kmods hdisk
-
-if [ "$kmods_found" = "false" ]; then
-  scan_docked_kmods dvd
+    scan_docked_kmods hdisk
+    
+    if [ "$kmods_found" = "false" ]; then
+	scan_docked_kmods dvd
+    fi
+    
+    if [ "$kmods_found" = "false" ]; then
+	scan_docked_kmods cdrom
+    fi
+    
 fi
-
-if [ "$kmods_found" = "false" ]; then
-  scan_docked_kmods cdrom
-fi
-
 
 
 ###############################################
@@ -756,6 +774,14 @@ done
 if [ -e /etc/rc.local ]; then
   source /etc/rc.local
 fi
+# source also rc.local files found in docks
+rclocals=`grep rcl /boot/volumes | awk '{print $3}'`
+if [ "$rclocals" != "" ]; then
+    for rcl in ${(f)rclocals}; do
+	source ${rcl}/dyne/rc.local
+    done
+fi
+
 
 notice "boot sequence completed on `date`"
 logger -p syslog.info   "kernel:`uname -a`"

@@ -37,6 +37,7 @@ add_volume() {
       if [ -x ${PFX}/${MNT}/${DOCK}/tmp ]; then FLAGS="$FLAGS tmp"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
       if [ -r ${PFX}/${MNT}/${DOCK}/update/VERSION ]; then FLAGS="$FLAGS upd"; fi
+      if [ -x ${PFX}/${MNT}/${DOCK}/modules ]; then FLAGS="$FLAGS mod"; fi
   fi
   # samba mounts wont contain a dyne directory, so we check the root
   if ! [ $FLAGS ]; then  # we do it in case nothing was found so far
@@ -48,6 +49,7 @@ add_volume() {
       if [ -r ${PFX}/${MNT}/linux-${KRN}.kmods ]; then FLAGS="$FLAGS krn"; fi
       if [ -x ${PFX}/${MNT}/tmp ]; then FLAGS="$FLAGS tmp"; fi
       if [ -r ${PFX}/${MNT}/rc.local ]; then FLAGS="$FLAGS rcl"; fi
+      if [ -x ${PFX}/${MNT}/modules ]; then FLAGS="$FLAGS mod"; fi
       # no update for rooted docks, mostly online mounted 
   fi
 

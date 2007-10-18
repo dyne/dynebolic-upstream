@@ -2,6 +2,5 @@
 <shortcuts-theme name="dynebolic">
 	<shortcut command="launchterm" keys="Alt+x"/>
 	<shortcut command="xfce4-popup-menu" keys="Control+Escape"/>
-	<shortcut command="xfrun4" keys="Alt+F2"/>
 	<shortcut command="xkill" keys="Control+Alt+Escape"/>
 </shortcuts-theme>

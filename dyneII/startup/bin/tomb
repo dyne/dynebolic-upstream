@@ -47,9 +47,8 @@ PATH=/usr/bin:/usr/sbin:/bin:/sbin
 ###
 
 notice "tomb  -  encrypted storage tool"
-act "(c)2007 by Jaromil - RASTASOFT.org"
-act "invoked with args \"$*\" "
-act "running on `date`"
+#act "invoked with args \"$*\" "
+#act "running on `date`"
 
 OPTS=`getopt -o hvp:o:s:m:n -n 'tomb' -- "$@"`
 
@@ -59,27 +58,60 @@ while true; do
 	    notice "SYNOPSIS: tomb [options] COMMAND [FILE|PARTITION] [MOUNTPOINT|NAME]"
             notice "OPTIONS:"
 	    act "-h     print this help"
-	    act "-v     print out the version of this tool"
+	    act "-v     print out the version information for this tool"
 	    act "-s     size of the storage file when creating one (in MBytes)"
             notice "COMMANDS:"
             act "format     format a PARTITION with NAME and generate keys"
 	    act "create     create a new encrypted storage FILE and keys"
 	    act "mount      mount an existing storage FILE on MOUNTPOINT"
             act "umount     unmounts a mounted storage MOUNTPOINT"
-
 	    echo; exit 2 ;;
-	-v) exit 2 ;;
+	-v)
+	    act "(c)2007 by Denis Rojo <jaromil@dyne.org> as part of dyne:bolic"
+	    act "thanks to Gabriele \"Asbesto Molesto\" Zaverio"
+	    act "for suggesting the perfect name for this tool"
+	    echo
+	    act " TOMB"
+	    echo
+	    act "This source code is free software; you can redistribute it and/or"
+	    act "modify it under the terms of the GNU Public License as published"
+	    act "by the Free Software Foundation; either version 3 of the License,"
+	    act "or (at your option) any later version."
+	    echo
+	    act "This source code is distributed in the hope that it will be useful,"
+	    act "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+	    act "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+	    act "Please refer to the GNU Public License for more details."
+	    echo
+	    act "You should have received a copy of the GNU Public License along with"
+	    act "this source code; if not, write to:"
+	    act "Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA."
+	    echo
+	    act "in case you like to port this tool to any other operating system"
+	    act "please notice us if you succeed, or if you have difficulties you"
+	    act "cannot overcome: http://dyne.org"
+	    echo; exit 2 ;;
         -s) SIZE=$2; shift 2 ;;
 	--) shift; break ;;
 	*)  CMD=$1; FILE=$2; MOUNT=$3; break ;;
     esac
 done
 
+if [ -z $CMD ]; then
+    error "first argument missing, use -h for help"
+    exit 0
+fi
+
 act "command: $CMD for file $FILE"
 
-if [ -z $FILE ]; then
-    error "first argument missing, see -h for help"
-    exit 0
+tombdir=${HOME}/.tomb
+tombtab=${tombdir}/fstab
+if ! [ -r ${tombtab} ]; then
+    act "creating tomb filesystem tab in your home"
+    mkdir -p ${HOME}/.tomb
+    echo "# entombed filesystem information, see man tomb" >          ${tombtab}
+    echo "# format here is similar to the system wide fstab" >>       ${tombtab}
+    echo "# <file system> <mount point> <type> <options> <key>" >>    ${tombtab}
 fi
 
 format_crypto() {
@@ -133,7 +165,9 @@ format_crypto() {
     cryptsetup luksClose tomb.tmp
 
     notice "done formatting $FILE encrypted partition (using Luks dm-crypt AES/SHA256)"
-    act "encrypted key stored in file ${HOME}/${key}.gpg"
+    act "encrypted key stored in file ${tombdir}/${key}.gpg"
+    append_line ${tombtab} \
+	"${FILE} ${tombdir}/`basename ${FILE}` aes-cbc-essiv:sha256 none ${tombdir}/${key}.gpg"
 }
     
 create_crypto() {
@@ -212,10 +246,12 @@ mount_crypto() {
 	exit 0
     fi
     # check if its a file or partition
-    file ${FILE} | grep block
+    file ${FILE} | grep block > /dev/null
     if [ $? = 0 ]; then
+	act "$FILE is a partition"
 	mount_crypto_partition
     else
+	act "$FILE is a loopback file"
 	mount_crypto_file
     fi
 }
@@ -301,14 +337,30 @@ mount_crypto_file() {
 
 mount_crypto_partition() {
 
-    notice "mounting partition $FILE on mountpoint $MOUNT"
-    if [ -z $MOUNT ]; then
-	error "you need to specify a MOUNTPOINT for the mount command"
-	exit 0
+    file=`basename $FILE`
+    grep -e "${file}" ${tombtab}
+    if [ $? = 1 ]; then
+	error "entombed partition $file is not found in ${tombtab}"
+	error "aborting operation."
+	exit 1
     fi
+
+
+    if [ -z $MOUNT ]; then
+	mount=`grep "^${file}" ${tombtab} | awk '{print $2}'`
+	if ! [ -x $mount ]; then
+	    error "you need to specify a MOUNTPOINT for the mount command"
+	    exit 1
+	else
+	    MOUNT=$mount
+	fi
+    fi
+
+    notice "mounting entombed partition $file on mountpoint $MOUNT"
+
     if ! [ -x $MOUNT ]; then
 	error "mountpoint $MOUNT does not exist"
-	exit 0
+	exit 1
     fi
 
     act "check if nest is a an encrypted Luks device"
@@ -317,11 +369,10 @@ mount_crypto_partition() {
     if [ $? = 0 ]; then
 	
         # check if key file is present
-        key=`basename ${FILE}`
-	if [ -r ${HOME}/.tomb/${key}.gpg ]; then
-	    enc_key=${HOME}/.tomb/${key}.gpg
+	if [ -r ${tombdir}/${file}.gpg ]; then
+	    enc_key=${tombdir}/${file}.gpg
 	else
-	    error "secret encryption key for partition ${FILE} not found in ${HOME}/.tomb/${key}.gpg"
+	    error "secret encryption key for partition ${FILE} not found in ${tombdir}/${file}.gpg"
 	    error "we cannot decrypt files from partition ${FILE}. sorry."
 	    exit 0
 	fi
@@ -331,7 +382,7 @@ mount_crypto_partition() {
 	loadmod dm-crypt
 	loadmod aes-i586
 	
-	mapper="tomb.${key}.`date +%s`"
+	mapper="tomb.${file}.`date +%s`"
 	
 	notice "Password is required to unlock the partition"
 	for c in 1 2 3 4 5; do
@@ -368,7 +419,8 @@ mount_crypto_partition() {
 	mount -t ext3 /dev/mapper/${mapper} ${MOUNT}
 
 	notice "encrypted partition $FILE succesfully mounted on $MOUNT"
-	append_line /var/run/tombs "${MOUNT} ${mapper} ${FILE}"
+	touch ${tombdir}/mtab
+	echo "${FILE} ${MOUNT} ${mapper}" >> ${tombdir}/mtab
 
     else
 	
@@ -384,20 +436,17 @@ umount_crypto() {
 	exit 0
     fi
 
-    if ! [ -r /var/run/tombs ]; then
-	error "tomb mount table not present in /var/run/tombs"
-	exit 0
-    fi
-
-    tomb=`cat /var/run/tombs | grep ${FILE}`
+    tomb=`cat ${tombdir}/mtab | grep ${FILE}`
     act "unmounting: ${tomb}"
-    mount=`echo ${tomb} | awk '{print $1}'`
-    mapper=`echo ${tomb} | awk '{print $2}'`
-    nstloop=`echo ${tomb} | awk '{print $3}'`
+    file=`echo ${tomb} | awk '{print $1}'`
+    mount=`echo ${tomb} | awk '{print $2}'`
+    mapper=`echo ${tomb} | awk '{print $3}'`
+    loop=`echo ${tomb} | awk '{print $4}'`
 
     if ! [ -r /dev/mapper/${mapper} ]; then
-	error "${mapper} not present in /dev/mapper"
-	exit 0
+	error "tomb doesn't seems to be mounted:"
+	error "${mapper} is not present in /dev/mapper"
+	exit 1
     fi
 
     umount ${mount}

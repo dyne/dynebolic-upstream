@@ -162,7 +162,7 @@ init_network() {
   fi  
 
   for d in `iterate $DAEMONS`; do
-  
+
     if [ $d = "ssh" ]; then 
       act "starting Secure Shell daemon"
       touch /var/log/lastlog
