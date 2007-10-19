@@ -40,12 +40,13 @@ source /lib/dyne/modules.sh
 source /lib/dyne/dialog.sh
 
 PACKAGE="dyne:OS SDK"
-VERSION="2.4"
+VERSION="2.5"
 if [ -z $DYNESDK ]; then
   PFX="$DYNE_SYS_MNT/SDK" # you can change it to static path where dynesdk resides
 else
   PFX=${DYNESDK}
 fi
+
 
 # get the SDK system version
 if [ -r ${PFX}/cdrom/dyne/VERSION ]; then
@@ -79,7 +80,9 @@ if ! [ -x /lib/dyne ]; then
   exit 0
 fi
 
-OPTS=`getopt -o hvp:o:s:m:n -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o hvKp:o:s:m: -n 'dynesdk' -- "$@"`
+
+FULL_RAMDISK=no
 
 #eval set -- "$OPTS"
 
@@ -92,9 +95,9 @@ while true; do
 	    act "-v     print out the version of this tool"
 	    act "-p     path to the SDK directory (default $DYNE_SYS_MNT/SDK)"
             act "-m     additional modules to add in ramdisk"
-            act "-n     include current net modules in ramdisk (for netboot)"
             act "-o     filename of the iso to generate (default dyne-VER.iso)"
             act "-s     sign generated iso with gpg ID"
+	    act "-K     pack all kernel modules into the ramdisk"
 	    act "define kernel version in \$KRN (current is `uname -r`)"
             notice "MODULE DEVELOPMENT COMMANDS:"
 	    act "mksdk      create an SDK environment inside the harddisk dock"
@@ -102,7 +105,7 @@ while true; do
             act "devel      extracts a module in SDK/modules and mount it RW"
 	    act "squash     packs one or all the mounted modules in SDK/cdrom"
 	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
-            
+
 	    notice "CORE DEVELOPMENT COMMANDS:"
 	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
 	    act "mkusr      packs the dyne.sys in the SDK/cdrom"
@@ -111,8 +114,8 @@ while true; do
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=$2; shift 2 ;;
+	-K) FULL_RAMDISK="yes"; shift 1 ;;
 	-m) ADD_RAMDISK_MODULES=$2; shift 2 ;;
-        -n) ADD_NETWORK_MODULES="yes"; shift 1 ;;
         -o) OUTPUT=$2; shift 2 ;;
         -s) SIGN=$2; shift 2 ;;
 	--) shift; break ;;
@@ -404,11 +407,12 @@ mkinitrd() {
     act "creating the ramdisk filesystem"
     cp -ra /etc .
 
-    cp -ra /lib .
-    rm -rf lib/firmware
-    rm -rf lib/modules
-    ln -sf /usr/lib/firmware lib/firmware
-    
+    mkdir lib
+    cp -dp /lib/* lib/ 2>/dev/null 1>/dev/null
+    cp -ra /lib/security lib/
+    cp -ra /lib/udev lib/
+    cp -ra /lib/dyne lib
+
     cp -ra /bin .
     cp -ra /sbin .
     mkdir -p boot dev proc root sys usr mnt home tmp
@@ -433,6 +437,7 @@ mkinitrd() {
     rm -f etc/X11/XF86Config
     rm -f etc/X11/xorg.conf
     rm -f etc/HOSTNAME
+    rm -f etc/hostname
     rm -f etc/NETWORK
     rm -f etc/LANGUAGE
     rm -f etc/auto.removable
@@ -568,7 +573,7 @@ EOF
     mkdir -p var/cache/samba var/cache/union
     mkdir -p var/local var/lock var/tmp
     mkdir -p var/run var/log var/lib/rpm
-    mkdir -p var/spool/cups
+    mkdir -p var/spool/incron var/spool/cups
     mkdir -p var/log/icecast
     chown nobody:nogroup var/log/icecast
 
@@ -642,69 +647,92 @@ EOF
     ######## KERNEL MODULES
 
 
-    act "setup boot kernel modules for ${KRN}"
-    echo -n ":: "
-    mkdir -p boot/modules/${KRN}
-    for m in `iterate $SUPPORTED_FS`; do
-	M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
-        if [ ${M} ]; then
-	  cp ${M} boot/modules/${KRN}/
-          echo -n "${m} "
-          bzip2 -9 boot/modules/${KRN}/${m}.ko
-        else
-          echo
-          error "module ${m} not found in ${MODDIR}/${KRN}/"
-        fi
-    done
-    # also the samba and usb-storage modules
-    cp `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
-    bzip2 -9 boot/modules/${KRN}/smbfs.ko
-    echo -n "smbfs "
-    cp `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
-    bzip2 -9 boot/modules/${KRN}/usb-storage.ko
-    echo -n "usb-storage "
-
-    echo
     
-    # copy any additional module specified on commandline
-    if [ $ADD_RAMDISK_MODULES ]; then
-      act "adding extra modules selected on commandline"
-      for m in `iterate $ADD_RAMDISK_MODULES`; do
-    	  M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
-	  if [ -r ${M} ]; then
-	    cp ${M} boot/modules/${KRN}/
-            echo -n "${m} "
-            bzip2 -9 boot/modules/${KRN}/${m}.ko
-	  else
-	    error "module ${m} not found"
-          fi
-      done
-    fi
-    echo
+    act "setup boot kernel modules for ${KRN}"
+    if [ $FULL_RAMDISK = "yes" ]; then
 
-    if [ $ADD_NETWORK_MODULES ]; then
-      act "adding extra network modules for online boot"
-      for m in `lsmod | awk '{print $1}' | grep -v '^Module\|^ppp_\|^slhc'`; do
-        if [ -r ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko ]; then
-          cp -v ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko boot/modules/${KRN}/
-          bzip2 -9 boot/modules/${KRN}/${m}.ko
-        fi
-      done
+	act "including all"
+	mkdir -p lib/modules/${KRN}
+	cp ${PFX}/cdrom/dyne/linux-${KRN}.kmods lib/modules
+
+    else
+        act "minimum needed"
+	echo -n ":: "
+	mkdir -p boot/modules/${KRN}
+	for m in `iterate $SUPPORTED_FS`; do
+	    M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
+            if [ ${M} ]; then
+		cp ${M} boot/modules/${KRN}/
+		echo -n "${m} "
+		bzip2 -9 boot/modules/${KRN}/${m}.ko
+            else
+		echo
+		error "module ${m} not found in ${MODDIR}/${KRN}/"
+            fi
+	done
+    # also the samba and usb-storage modules
+	cp `find ${MODDIR}/${KRN}/ -name "smbfs.ko"` boot/modules/${KRN}/
+	bzip2 -9 boot/modules/${KRN}/smbfs.ko
+	echo -n "smbfs "
+	cp `find ${MODDIR}/${KRN}/ -name "usb-storage.ko"` boot/modules/${KRN}/
+	bzip2 -9 boot/modules/${KRN}/usb-storage.ko
+	echo -n "usb-storage "
+	cp `find ${MODDIR}/${KRN}/ -name "ehci-hcd.ko"` boot/modules/${KRN}/
+	bzip2 -9 boot/modules/${KRN}/ehci-hcd.ko
+	
+	echo
+	
+    # copy any additional module specified on commandline
+	if [ $ADD_RAMDISK_MODULES ]; then
+	    act "adding extra modules selected on commandline"
+	    for m in `iterate $ADD_RAMDISK_MODULES`; do
+    		M=`find ${MODDIR}/${KRN}/ -name "${m}.ko"`
+		if [ -r ${M} ]; then
+		    cp ${M} boot/modules/${KRN}/
+		    echo -n "${m} "
+		    bzip2 -9 boot/modules/${KRN}/${m}.ko
+		else
+		    error "module ${m} not found"
+		fi
+	    done
+	fi
+	echo
+	
+#     if [ $ADD_NETWORK_MODULES ]; then
+#       act "adding extra network modules for online boot"
+#       for m in `lsmod | awk '{print $1}' | grep -v '^Module\|^ppp_\|^slhc'`; do
+#         if [ -r ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko ]; then
+#           cp -v ${MODDIR}/${KRN}/kernel/drivers/net/${m}.ko boot/modules/${KRN}/
+#           bzip2 -9 boot/modules/${KRN}/${m}.ko
+#         fi
+#       done
+#     fi
+
     fi
 
     act "cleaning up from .svn directories"
     for svn in `find . -name '.svn'`; do
       rm -rf ${svn}
     done
-
+    
+    act "calculating ramdisk size:"
+    dirsum .
+    initrd_size=`du -s .| awk '{print $1}'`
+    act "initrd filesystem occupation: ${initrd_size}"
+    ramdisk_size=`echo "${initrd_size}.0 + 100.0" | bc | cut -d. -f1` 
+    
     cd - > /dev/null
     cd $PFX
 
     # setup the name for the ramdisk
     if [ $OUTPUT ]; then INITRD=$OUTPUT; fi
 	     
-    act "generate device file"
-    dd if=/dev/zero of=cdrom/dyne/$INITRD bs=1k count=12000
+    act "generate device file of ${ramdisk_size}K"
+    dd if=/dev/zero bs=1k count=${ramdisk_size} \
+	| cbar -s ${ramdisk_size} -bl 1k -of cdrom/dyne/${INITRD} -de -nb -np
+    # dd if=/dev/zero of=cdrom/dyne/$INITRD bs=1 count=${ramdisk_size}
+    # size was hardcoded to 12000 in d:b 2.5
+
     act "formatting ramdisk filesystem"
     mke2fs -F -m 0 -i 1024 -L ramdisk cdrom/dyne/$INITRD
     act "populating ramdisk static file"
@@ -850,8 +878,8 @@ mkkern() {
 
 	act "calculating module dependencies"
 	depmod -ae ${KRN} -F System.map --basedir ${PFX}/tmp
-
-        act "linking sources and system map"
+        
+	act "linking sources and system map"
         cp System.map ${PFX}/tmp/lib/modules/${KRN}
         rm ${PFX}/tmp/lib/modules/${KRN}/build
         rm ${PFX}/tmp/lib/modules/${KRN}/source
@@ -950,10 +978,6 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
     #    act "using current dyne.sys"
     #    cp -v ${DYNE_SYS_MNT}/dyne.sys ${PFX}/cdrom/dyne/
       fi
-    fi
-    # the KERNEL
-    if ! [ -r $PFX/cdrom/dyne/linux-${KRN} ]; then
-	mkkern
     fi
     # the MODULES
     if ! [ -r $PFX/cdrom/dyne/modules ]; then
