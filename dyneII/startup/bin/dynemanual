@@ -8,7 +8,7 @@ source /lib/dyne/dialog.sh
 man="${DYNE_SYS_MNT}/dynebolic-manual.pdf"
 
 if [ -r ${man} ]; then
-  xpdf ${man} &
+  epdfview ${man} &
 else
   error_dialog "The Manual was not found. Read it online and download it from the website www.dynebolic.org"
 fi

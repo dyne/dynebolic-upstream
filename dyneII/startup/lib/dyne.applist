@@ -332,9 +332,10 @@ End | DEVEL
 
 Begin | XUTILS
 
-QPs | process manager | qps | | http://qps.kldp.net| Mattias Engdegård 
 xKill | kill application | xkill | | http://x.org| X.org 
 xvKbd | touchscreen keyboard | xvkbd | | AUTH | WEB
+HTop | process manager | htop | terminal | http://htop.sf.net | Hisham Muhammad 
+IfTop | network load monitor | iftop | terminal | http://www.ex-parrot.com | Paul Warren
 Search | file search monkey | searchmonkey | | http://searchmonkey.sf.net| Adam Cottrell 
 xrMap | a world atlas | xrmap | | AUTH | WEB
 ical | a calendar organizer | ical | | AUTH | WEB
