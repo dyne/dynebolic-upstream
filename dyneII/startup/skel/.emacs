@@ -207,3 +207,12 @@ This can be slightly disconcerting, but some people may prefer it."
   'mwheel-scroll)
 
 (provide 'mwheel)
+
+(color-theme-dark-laptop)
+(global-font-lock-mode)
+
+(autoload 'tpp-mode "tpp-mode" "TPP mode." t)
+(add-to-list 'auto-mode-alist '("\\.tpp$" . tpp-mode))
+
+(server-start)
+

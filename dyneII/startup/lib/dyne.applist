@@ -343,7 +343,6 @@ FoxCalc | a calculator | calculator | | AUTH | WEB
 xClock | a clock | xclock | | AUTH | WEB
 wMagn | a magnifying lens | wmagnify | | AUTH | WEB
 xFig | a figure editor | xfig | | AUTH | WEB
-xMan | a manual browser| xman | | X.org | x.org
 xFontsel | a font selector | xfontsel | | X.org | x.org
 xVidtune | vidtun (danger) | xvidtune | | X.org | x.org
 xEyes | someone's watching | xeyes | | X.org | x.org

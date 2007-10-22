@@ -851,7 +851,7 @@ dyne_startx() {
     WINDOWMANAGER=`get_config window_manager`
     if ! [ $WINDOWMANAGER ]; then # and no dyne.cfg
       # our default stays WindowMaker
-      WINDOWMANAGER=wmaker
+      WINDOWMANAGER=xfce
     fi
   fi
 
@@ -882,6 +882,10 @@ dyne_startx() {
         WINDOWMANAGER=xfce4-session
       fi
 
+  fi
+
+  if [ $WINDOWMANAGER = alpt ]; then
+      WINDOWMANAGER="fdock | awm"
   fi
 
   # turn off the screensaver
