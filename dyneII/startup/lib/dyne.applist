@@ -60,10 +60,11 @@ Begin | AUDIO
 
 	Begin | PLAY
 
-Xmms | hifi audio player | xmms | 		| www.xmms.org | Xmms team
+Audacious | new audio player | audacious | | audacious-media-player.org | Audacious Media Player team
 Amarok | music jukebox | amarok | 		| amarok.kde.org | Amarok dev team
 StreamTuner | internet radio | streamtuner |    | streamtuner.sf.net | StreamTuner developers
 Timidity | midi player | timidity -ig | 	| timidity WEB | Timidity auth
+Xmms | old audio player | xmms | 		| www.xmms.org | Xmms team
 MikMod | track player | mikmod | terminal 	| mikmod.raphnet.net | MikMod team
 
 	End | PLAY
@@ -91,7 +92,7 @@ PD | pure data signal processing | pd | terminal | pure-data.org | Miller Pucket
 
 	Begin | REC / EDIT
 
-Ardour 2 | multitrack studio | ardour2 | 		| www.ardour.org | Paul Davis
+Ardour 2 | multitrack studio | ardour2 | 	| www.ardour.org | Paul Davis
 Ardour | multitrack studio | ardour | 		| www.ardour.org | Paul Davis
 Audacity | audio editor | audacity | 		| audacity.sf.net | Dominique Mazzoni
 ReZound | sample editor | rezound | 		| rezound.sf.net | rezound auth

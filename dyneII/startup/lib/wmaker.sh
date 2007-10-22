@@ -893,7 +893,7 @@ dyne_startx() {
 
   source /etc/LANGUAGE
 
-  if [ $KEYB ]; then
+  if [ "$KEYB" ]; then
     (sleep 2; /usr/X11R6/bin/setxkbmap $KEYB &)&
   fi
 

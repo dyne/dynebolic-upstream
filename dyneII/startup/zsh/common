@@ -3,7 +3,7 @@
 # by jaromil http://rastasoft.org
 
 export HOSTTYPE="i586"
-export LANG="C"
+# export LANG="C"
 export MACHTYPE="i586-pc-linux-gnu"
 export OSTYPE="linux-gnu"
 export SHELL="/bin/zsh"

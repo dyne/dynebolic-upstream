@@ -506,14 +506,14 @@ is_new_version() {
 '`"
 	o="`echo $o | cut -d- -f1`" # strip dashed codenames
 
-	if [ ${o} -gt ${n} ]; then return 1; fi
-        if [ ${n} -gt ${o} ]; then return 0; fi
+	if [ `echo "$o > $n"|bc` = 1 ]; then return 1; fi
+	if [ `echo "${n} > ${o}"|bc` = 1 ]; then return 0; fi
       
 
     done
 
     # return 1 (not new) if same version 
-    if [ ${o} -eq ${n} ]; then return 1; fi
+    if [ `echo "$o = $n"|bc` = 1 ]; then return 1; fi
 
     return 0
 }

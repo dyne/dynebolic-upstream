@@ -159,6 +159,7 @@ if [ "`dmesg | grep 'USB hub found'`" ]; then
  
    # start loading the usb storage
    loadmod usb-storage
+   loadmod ehci-hcd
 
    sync
  
@@ -441,8 +442,6 @@ source /boot/dynenv
 
 ######## HOME IS MOUNTER HERE
 ############ ALL MEDIA MOUNTED, now MOUNT dyne.sys
-
-ln -s ${DYNE_SYS_MOUNT} /mnt/dyne
 
 ########################################
 ## check if a dock was really found

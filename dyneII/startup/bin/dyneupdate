@@ -9,6 +9,9 @@ source /boot/dynenv
 source /lib/dyne/utils.sh
 source /lib/dyne/dialog.sh
 
+samba=true
+rsync=true
+
 if [ -z $1 ]; then
   notice "usage: dyneupdate host_or_ip"
   exit 0
@@ -36,16 +39,27 @@ smbclient -c 'get VERSION /tmp/VERSION' \
           //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
 
 if [ $? = 1 ]; then
-  error "error updating from ${host}: unreachable or dyne.dock not present"
-  sleep 10
-  exit 1
+  act "no samba shared dock found on host"
+  samba=false
+
+  rsync ${host}::dyne.dock/VERSION /tmp/VERSION
+  if [ $? != 0 ]; then
+      act "no rsync dock modules found on host"
+      error "no shared system on host"
+      rsync=false
+      sleep 10
+      exit 1
+  fi
 fi
 
 source /tmp/VERSION
+rm -f /tmp/VERSION
 
 host_sys_ver=${DYNE_SYS_VER}
 host_initrd_ver=${DYNE_INITRD_VER}
 act "${host} runs a dyne OS version sys:${host_sys_ver} initrd:${host_initrd_ver}"
+if [ "$samba" = "true" ]; then act "samba connection open"; fi
+if [ "$rsync" = "true" ]; then act "rsync connection open"; fi
 
 source ${DYNE_SYS_MNT}/VERSION
 my_sys_ver=${DYNE_SYS_VER}
@@ -58,32 +72,44 @@ touch /tmp/update.actions
 is_new_version ${my_sys_ver} ${host_sys_ver}
 if [ $? = 0 ]; then
    act "sys is newer, updating"
-   mkdir -p ${DYNE_SYS_MNT}/update 
-   echo "sys dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+   echo "sys dyne.sys ${host_sys_ver}" >> /tmp/update.actions
 #   smbclient -c 'get dyne.sys ${DYNE_SYS_MNT}/update' \
 #             //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
 fi
 
-smbclient -c 'get SDK/cdrom/dyne/VERSION /tmp/VERSION' \
-          //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+if [ "$samba" = "true" ]; then
+    smbclient -c 'get SDK/cdrom/dyne/VERSION /tmp/VERSION' \
+        //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
+else
+    rsync ${host}::dyne.dock/SDK/cdrom/dyne/VERSION /tmp/VERSION
+fi
 
 if [ $? = 0 ]; then
-   source /tmp/VERSION
-   host_sys_ver=${DYNE_SYS_VER}
-   host_initrd_ver=${DYNE_INITRD_VER}
-   act "${host} has a dyne:SDK version sys:$host_sys_ver initrd:$host_initrd_ver"
-   echo "is_new_version ${my_sys_ver} ${host_sys_ver}"
-   if [ $? = 0 ]; then
-      act "SDK sys is newer, updating"
-      mkdir -p ${DYNE_SYS_MNT}/update 
-      echo "sdk dyne.sys ${my_sys_ver} ${host_sys_ver}" >> /tmp/update.actions
+    source /tmp/VERSION
+    host_sdk_sys_ver=${DYNE_SYS_VER}
+    host_sdk_initrd_ver=${DYNE_INITRD_VER}
+    act "${host} has a dyne:SDK version sys:$host_sdk_sys_ver initrd:$host_sdk_initrd_ver"
+    is_new_version ${my_sys_ver} ${host_sdk_sys_ver}
+    if [ $? = 0 ]; then
+	is_new_version ${host_sys_ver} ${host_sdk_sys_ver}
+	if [ $? = 0 ]; then
+	    act "SDK on host is newer, updating"
+	    sed -i -e 's/^sys.*//g' /tmp/update.actions
+	    echo "sdk dyne.sys ${host_sdk_sys_ver}" >> /tmp/update.actions
 #      smbclient -c 'get SDK/cdrom/dyne/dyne.sys ${DYNE_SYS_MNT}/update' \
 #                //${host}/dyne.dock -N 2>/dev/null 1>/dev/null
 #      sleep 10
-   fi
+	fi
+    fi
 fi
 
-mods="`smbclient -c 'ls modules/*' //${host}/dyne.dock -N 2>/dev/null | grep dyne`"
+if [ "$samba" = "true" ]; then
+    mods="`smbclient -c 'ls modules/*' //${host}/dyne.dock -N 2>/dev/null`"
+    mods=`echo ${mods} | awk '/dyne/ { if($2=="R") print $1 " " $3; else print $1 " " $2 }'`
+else
+    mods="`rsync 10.66.66.72::dyne.dock/modules/`"
+    mods=`echo ${mods} | awk '/dyne$/ {print $5 " " $2}'`
+fi
 
 if [ $? = 0 ]; then
    nmods=`echo ${mods} | wc -l`
@@ -103,7 +129,7 @@ for m in ${(f)mods}; do
   tag=`echo ${m} | awk '{print $1}'`
   if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
   size=`echo ${m} | awk '{ if($2=="R") print $3; else print $2}'`
-  size=`echo "${size}/1024"|bc`
+  size="`echo ${size}/1024|bc`"
   echo "${tag} \"${size} KB\" ${host}"  >> /tmp/dialogarg
 done
 
@@ -116,13 +142,34 @@ for i in ${(f)inst}; do
   echo "mod $i" >> /tmp/update.actions
 done
 
-acts=`cat /tmp/update.actions`
+acts=`cat /tmp/update.actions `
 
-ask_yesno 10 "confirm updating from ${host}:\n$acts"
+ask_yesno 10 "confirm updating from ${host}:\n\n$acts"
 if [ $? = 1 ]; then
   echo "update"
-fi
 
-for a in ${(f)acts}; do
-  act "${a}"
-done
+  mkdir -p $DYNE_SYS_MNT/update
+
+  for a in ${(f)acts}; do
+      act "${a}"
+      echo ${a} | grep '^mod'
+      if [ $? = 0 ]; then
+	  mkdir -p $DYNE_SYS_MNT/update/modules
+	  mod="`echo ${a}|awk '{print $2}'`"
+	  if [ "$rsync" = "true" ]; then
+	      rsync -P "${host}::dyne.dock/modules/`echo ${a}|awk '{print $2}'`" $DYNE_SYS_MNT/update/modules/
+	  fi
+      fi
+      echo ${a} | grep '^sys|^sdk'
+      if [ $? = 0 ]; then
+	  sys="`echo ${a}|awk '{print $2}'`"
+	  if [ "$rsync" = "true" ]; then
+	      cp ${DYNE_SYS_MNT}/dyne.sys $DYNE_SYS_MNT/update/
+	  fi
+	  # TODO QUAA
+      fi
+  done
+  
+else
+    error "aborted"
+fi
