@@ -17,12 +17,14 @@ if [ -z $1 ]; then
   exit 0
 fi
 
-if ! [ "$2" = "xterm" ]; then
-
-  xterm -fn "-*-fixed-medium-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x30 \
-        -bg black -fg green -e "dyneupdate $1 xterm"
-  exit 0
-
+if [ ${DISPLAY} ]; then
+    if ! [ "$2" = "xterm" ]; then
+	
+	xterm -fn "-*-fixed-medium-*-*-*-18-*-*-*-*-*-*-*" -geometry 76x30 \
+            -bg black -fg green -e "dyneupdate $1 xterm"
+	exit 0
+	
+    fi
 fi
 
 
@@ -117,26 +119,48 @@ if [ $? = 0 ]; then
    updmods=""
    for m in ${(f)mods}; do
      tag=`echo ${m} | awk '{print $1}'`
-     if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
+#     uncomment this to exclude existing modules from update
+#     if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
      updmods+="${tag} "
    done
    updnmods=`echo $updmods | wc -w`
 fi 
 
+if [ -r /tmp/install_modules ]; then rm -f /tmp/install_modules; fi
 if [ -r /tmp/dialogarg ]; then rm -f /tmp/dialogarg; fi
-echo "--separate-output --checklist \"${updnmods} new modules found, choose which to install:\" 20 60 ${updnmods}" > /tmp/dialogarg 
+
+
+c=0
+touch /tmp/dialogarg
 for m in ${(f)mods}; do
   tag=`echo ${m} | awk '{print $1}'`
-  if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
+#  if [ -r ${DYNE_SYS_MNT}/modules/${tag} ]; then continue; fi
   size=`echo ${m} | awk '{ if($2=="R") print $3; else print $2}'`
   size="`echo ${size}/1024|bc`"
   echo "${tag} \"${size} KB\" ${host}"  >> /tmp/dialogarg
+  c=`expr $c + 1`
+#   if [ `echo "$c > 6"|bc` = 1 ]; then
+#       echo "--separate-output --checklist \"${updnmods} new modules found, choose which to install:\" 20 60 ${c}" \
+#  	  > /tmp/dialogarg2
+#       cat /tmp/dialogarg >> /tmp/dialogarg2
+#       dynedialog --file /tmp/dialogarg2 2> /tmp/install_modules
+#       inst="${inst} `cat /tmp/install_modules | awk '{print $1}'`"
+#       rm -f /tmp/install_modules
+#       rm -f /tmp/dialogarg
+#       rm -f /tmp/dialogarg2
+#       c=0
+#  fi
 done
-
-if [ -r /tmp/install_modules ]; then rm -f /tmp/install_modules; fi
-dynedialog --file /tmp/dialogarg 2> /tmp/install_modules
-inst=`cat /tmp/install_modules | awk '{print $1}'`
-rm -f /tmp/install_modules
+if [ `echo "$c > 0"|bc` = 1 ]; then
+    echo "--separate-output --checklist \"${updnmods} new modules found, choose which to install:\" 20 60 ${c}" \
+	> /tmp/dialogarg2
+    cat /tmp/dialogarg >> /tmp/dialogarg2
+    dynedialog --file /tmp/dialogarg2 2> /tmp/install_modules
+    inst="${inst} `cat /tmp/install_modules | awk '{print $1}'`"
+    rm -f /tmp/install_modules
+    rm -f /tmp/dialogarg
+    rm -f /tmp/dialogarg2
+fi
 
 for i in ${(f)inst}; do
   echo "mod $i" >> /tmp/update.actions
@@ -160,16 +184,28 @@ if [ $? = 1 ]; then
 	      rsync -P "${host}::dyne.dock/modules/`echo ${a}|awk '{print $2}'`" $DYNE_SYS_MNT/update/modules/
 	  fi
       fi
-      echo ${a} | grep '^sys|^sdk'
-      if [ $? = 0 ]; then
-	  sys="`echo ${a}|awk '{print $2}'`"
+      echo ${a} | grep '^sys'
+      if [ $? = 0 ]; then # upate .sys from dock
+	  echo ${a} | grep '^sdk'
+
+	  if [ $? = 0; then # or from sdk if there is one
+	      act "updating dyne.sys from remote SDK"
+	      sys_update=SDK/cdrom/dyne/dyne.sys
+	  else
+	      act "updating dyne.sys from remote dock"
+	      sys_update=dyne.sys
+	  fi
+
 	  if [ "$rsync" = "true" ]; then
 	      cp ${DYNE_SYS_MNT}/dyne.sys $DYNE_SYS_MNT/update/
+	      rsync -P ${host}::dyne.dock/${sys_update} ${DYNE_SYS_MNT}/update/
 	  fi
-	  # TODO QUAA
+
       fi
   done
-  
+
+  notice "update download!"
+  act "now reboot to complete."
 else
     error "aborted"
 fi
