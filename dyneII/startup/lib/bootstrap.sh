@@ -418,9 +418,9 @@ append_line /boot/dynenv "export DYNE_SYS_DEV=${DYNE_SYS_DEV}"
 append_line /boot/dynenv "export DYNE_SYS_MEDIA=${DYNE_SYS_MEDIA}"
 append_line /boot/dynenv "export DYNE_SYS_MNT=${DYNE_SYS_MNT}"
 
-# create a useful link to the dock
+# create useful links to the dock
 ln -s ${DYNE_SYS_MNT} /lib/dyne/configure/Dyne
-
+ln -s ${DYNE_SYS_MNT} /mnt/dyne
 
 }
 ##########################################

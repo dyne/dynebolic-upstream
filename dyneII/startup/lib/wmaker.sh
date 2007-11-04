@@ -82,6 +82,8 @@ check_apps_present() {
   source /lib/dyne/zsh/common
   # load dyne modules paths
   source /boot/dynenv.modules
+  # load dyne env
+  source /boot/dynenv
 
   if [ $1 ]; then
     APPS=$1
@@ -98,7 +100,12 @@ check_apps_present() {
   echo "# automatically generated at boot" >> /boot/dyne.apps
   echo >> $APPS
 
-  LINE=`cat /lib/dyne/dyne.applist`
+  if [ -r $DYNE_SYS_MNT/applist ]; then
+    # read the applist in the dock
+    LINE=`cat $DYNE_SYS_MNT/applist`
+  else
+    LINE=`cat /lib/dyne/dyne.applist`
+  fi
   for l in ${(f)LINE}; do
     check_app_entry $l $APPS
   done
