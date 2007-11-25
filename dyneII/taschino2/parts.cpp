@@ -63,19 +63,11 @@ void analyze(int num) {
      check if the partition is writable
      check if the partition has some space
      check if the partition has allready a config */
-  snprintf(tmp,512,"%s/dynebol.nst",parts[num].path);
+  snprintf(tmp,512,"%s/dyne/dyne.nst",parts[num].path);
   tmpfd = open(tmp,O_RDONLY);
   if(tmpfd>0) {
     close(tmpfd);
     parts[num].has_nest = true;;
-  } else {
-    /* check also the new nest path */
-    snprintf(tmp,512,"%s/dyne/dynebol.nst",parts[num].path);
-    tmpfd = open(tmp,O_RDONLY);
-    if(tmpfd>0) {
-      close(tmpfd);
-      parts[num].has_nest = true;
-    }
   }
   snprintf(tmp,512,"%s/.dyne_test_writable",parts[num].path);
   tmpfd = open(tmp,O_CREAT|O_EXCL,S_IRWXU);
@@ -197,19 +189,19 @@ int scan_parts() {
     } // for cycle thru partitions found by scandir
   } // for cycle thru harddisks
 
-  usbfound = chdir("/mnt/usb");
-  if(usbfound<0) perror("can't scan /mnt/usb");
-  else {
-    sync();
-    c++;
-    snprintf(parts[c].path,255,"/mnt/usb");
-    parts[c].num = c;
-    parts[c].support = USB;
+  /* scan for usb hotplugged storage */
+  usbfound = scandir("/mnt", &hdlist, usb_selector, alphasort);
+  if(usbfound<0) perror("can't scan /mnt");
+
+  for(c=0;c<usbfound;c++) {
     
-    analyze(c);
-    
+    snprintf(parts[parts_found].path,255,"/mnt/%s",hdlist[c]->d_name);
+    parts[parts_found].num = parts_found;
+    parts[parts_found].support = USB;
+    analyze(parts_found);
+
     parts_found++;
-  }
+  } // to cycle thru partitions found by scandir
 
   scanned = true;
   return parts_found;
