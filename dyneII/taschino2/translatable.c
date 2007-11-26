@@ -22,16 +22,11 @@ gchar *s = N_("taschino :: nest on HARDDISK storage");
 gchar *s = N_("Select the partition where\n"
               "you want to create the NEST");
 gchar *s = N_("how many MEGABYTES should your nest occupy?");
-gchar *s = N_("By securing you will generate an encrypted\n"
-              "nest and you will need to set a passphrase\n"
-              "20 characters long, to be used at every boot.");
 gchar *s = N_("Nest your home and settings on  a harddisk partition");
 gchar *s = N_("taschino :: nest on USB storage");
-gchar *s = N_("no usb storage device found");
+gchar *s = N_("Select where\n"
+              "you want to create the NEST");
 gchar *s = N_("how many MEGABYTES should your nest occupy?");
-gchar *s = N_("By securing you will generate an encrypted\n"
-              "nest and you will need to set a passphrase\n"
-              "20 characters long, to be used at every boot.");
 gchar *s = N_("Nest your home and settings on a usb storage key");
 gchar *s = N_("taschino :: an error occurred!");
 gchar *s = N_("a mysterious error occurred\n"

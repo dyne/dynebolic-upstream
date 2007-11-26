@@ -733,13 +733,14 @@ you want to create the NEST</property>
 		  <property name="spacing">0</property>
 
 		  <child>
-		    <widget class="GtkLabel" id="label_usb">
+		    <widget class="GtkLabel" id="label30">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">no usb storage device found</property>
+		      <property name="label" translatable="yes">Select where
+you want to create the NEST</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
-		      <property name="wrap">False</property>
+		      <property name="wrap">True</property>
 		      <property name="selectable">False</property>
 		      <property name="xalign">0.5</property>
 		      <property name="yalign">0.5</property>
@@ -752,7 +753,21 @@ you want to create the NEST</property>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
-		      <property name="expand">True</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkOptionMenu" id="option_nest_usb">
+		      <property name="border_width">5</property>
+		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
+		      <property name="history">-1</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
 		      <property name="fill">False</property>
 		    </packing>
 		  </child>

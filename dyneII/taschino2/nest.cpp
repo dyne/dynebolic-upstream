@@ -33,14 +33,14 @@
 #include <taschino.h>
 
 static GtkOptionMenu *options_hd;
+static GtkOptionMenu *options_usb;
 static GtkRange *hscale_hd;
 static GtkRange *hscale_usb;
-static GtkLabel *label_usb;
 
 static int selection = -1;
 static int selection_usb = -1;
 
-void select_nest(int *num) {
+void select_nest_hd(int *num) {
   int max = 1024; // MAX size for a nest
   int available;
 
@@ -57,44 +57,55 @@ void select_nest(int *num) {
      (gtk_adjustment_new(32, 32, max, 1, 0, 0) ) );
 }
 
+void select_nest_usb(int *num) {
+  int max = 1024; // MAX size for a nest
+  int available;
+
+  if(scan_parts()<*num) return;
+  selection_usb = *num;
+  fprintf(stderr,"USB selected %i : %s\n", 
+	  selection_usb, parts[selection_usb].label);
+
+  available = ( parts[selection_usb].fs.f_bavail * (parts[selection_usb].fs.f_bsize/1024) ) /1000;
+  if(available<max) max = available;
+
+  gtk_range_set_adjustment
+    (hscale_usb,GTK_ADJUSTMENT
+     (gtk_adjustment_new(32, 32, max, 1, 0, 0) ) );
+}
+
 void scan_nest_usb() {
+  GtkMenu *menu;
+  GtkWidget *item;
   int c = 0;
-  /* take only the first usb partition
-     anyway only /rem/usb is checked, hardcoded in parts.cpp */
-  label_usb = (GtkLabel*)glade_xml_get_widget(gui, "label_usb");
+  int avail = 0;
 
-
-  for(c=0;c<=scan_parts();c++) {
-    if(parts[c].support != USB) continue;
-
-      selection_usb = c;
-      if(parts[c].no_space) {
-	gtk_label_set_text(label_usb,"you don't have enough space (minimum 32MB)");
-	break;
-      }
-      if(parts[c].no_write) {
-	gtk_label_set_text(label_usb,"can't write on usb storage device");
-	break;
-      }
-      if(parts[c].has_nest) {
-	gtk_label_set_text(label_usb,"device allready contains a nest!");
-	break;
-      }
-      if(parts[c].has_error) {
-	gtk_label_set_text(label_usb,parts[c].error);
-	break;
-      }
-      //    debug_parts(c);
-      gtk_label_set_text(label_usb,parts[c].label);
-      hscale_usb = (GtkRange*)glade_xml_get_widget(gui,"hscale_nest_usb_size");
-      gtk_range_set_adjustment
-	(hscale_usb,GTK_ADJUSTMENT
-	 (gtk_adjustment_new(32,32,
-			     (parts[c].fs.f_bavail *
-			      (parts[c].fs.f_bsize/1024))/1000,1,0,0)));
-      break;
-
+  options_usb = (GtkOptionMenu*)glade_xml_get_widget(gui,"option_nest_usb");
+  hscale_usb = (GtkRange*)glade_xml_get_widget(gui,"hscale_nest_usb_size");
+  menu = (GtkMenu*)gtk_menu_new();
+  gtk_menu_set_title(menu,"choose from available usb storage");
+  
+    for(c=0;c<scan_parts();c++) {
+    if( parts[c].has_error
+	|| parts[c].no_space
+	|| parts[c].no_write
+	|| parts[c].support != USB) continue;
+    item = gtk_menu_item_new_with_label(parts[c].label);
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
+    g_signal_connect_swapped(G_OBJECT(item), "activate",
+			     G_CALLBACK(select_nest_usb),
+			     (gpointer)&parts[c].num);
+    avail++;
+    // default selection on first entry
+    if(avail==1) select_nest_usb(&c);
   }
+  if(!avail) {
+    item = gtk_menu_item_new_with_label("no available partitions found");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
+  }
+
+  gtk_option_menu_set_menu(options_usb,(GtkWidget*)menu);
 
 }
 
@@ -117,11 +128,11 @@ void scan_nest_hd() {
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu),item);
     g_signal_connect_swapped(G_OBJECT(item), "activate",
-			     G_CALLBACK(select_nest),
+			     G_CALLBACK(select_nest_hd),
 			     (gpointer)&parts[c].num);
     avail++;
     // default selection on first entry
-    if(avail==1) select_nest(&c);
+    if(avail==1) select_nest_hd(&c);
   }
   if(!avail) {
     item = gtk_menu_item_new_with_label("no available partitions found");
@@ -143,7 +154,6 @@ void apply_nest(int sel) {
   char mesg[512];
   
   pid_t proc;
-  int res;
 
   debug_parts(sel);
 
@@ -187,14 +197,21 @@ void apply_nest(int sel) {
   exit(1);
 }
 void apply_nest_usb(GtkWidget *widget, gpointer *data) {
-  if(selection_usb<0)
+  if(selection_usb<0) {
     error("no USB device detected");
-  else if(parts[selection_usb].no_space
-	  || parts[selection_usb].no_write
-	  || parts[selection_usb].has_error
-	  || parts[selection_usb].has_nest)
-    error("%s",gtk_label_get_text(label_usb));
-  else {
+  } else if(parts[selection_usb].no_space) {
+    error("you don't have enough space (minimum 32MB)");
+    return;
+  } else if(parts[selection_usb].no_write) {
+    error("can't write on harddisk partition (NT filesystem?)");
+    return;
+  } else if(parts[selection_usb].has_error) {
+    error("%s",parts[selection_usb].error);
+    return;
+  } else if(parts[selection_usb].has_nest) {
+    error("the harddisk allready contains a nest!");
+    return;
+  } else {
     sprintf(nest_size,"hscale_nest_usb_size");
     sprintf(nest_crypt,"usb_encrypt_toggle");
     apply_nest(selection_usb);

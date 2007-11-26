@@ -194,14 +194,27 @@ int scan_parts() {
   if(usbfound<0) perror("can't scan /mnt");
 
   for(c=0;c<usbfound;c++) {
-    
-    snprintf(parts[parts_found].path,255,"/mnt/%s",hdlist[c]->d_name);
-    parts[parts_found].num = parts_found;
-    parts[parts_found].support = USB;
-    analyze(parts_found);
 
-    parts_found++;
-  } // to cycle thru partitions found by scandir
+    snprintf(tmp,255,"/mnt/%s",hdlist[c]->d_name);
+    partfound = scandir(tmp,&partlist,part_selector,alphasort);
+
+    if(partfound<0) perror("error scanning usb partitions");
+
+    for(cc=0;cc<partfound;cc++) { // cycle thru partitions
+
+      snprintf(parts[parts_found].path,255,"/mnt/%s/%s",
+	       hdlist[c]->d_name,
+	       partlist[cc]->d_name);
+
+      parts[parts_found].num = parts_found;
+      
+      parts[parts_found].support = USB;
+      
+      analyze(parts_found);
+
+      parts_found++;
+    } // to cycle thru partitions found by scandir
+  } // for cycle thru usb
 
   scanned = true;
   return parts_found;
