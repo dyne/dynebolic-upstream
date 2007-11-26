@@ -27,6 +27,7 @@ init_firewire() {
     loadmod raw1394
     loadmod video1394
     loadmod dv1394
+    ln -s /dev/raw/raw1394 /dev/raw1394
   fi
 
 }
