@@ -12,44 +12,44 @@ Begin | VIDEO
 
 	Begin | PLAY
 
-MPlayer | versatile video player | gmplayer |  		| mplayerhq.hu | Arpad
-Xine | multimedia player | xine |  				| xinehq.de | Xine team
-Mp4Player | darwin stream player | gmp4player |  			| mpeg4ip.sf.net | Cisco
-TVtime | television viewer | tvtime | 					| tvtime.sf.net | Billy Biggs 
-XawTV | camera viewer | xawtv | 					| bytesex.org | Gerd Knorr 
+MPlayer       | versatile video player | gmplayer   | | mplayerhq.hu   | Arpad
+Xine 	      | multimedia player      | xine 	    | | xinehq.de      | Xine team
+Mp4Player     | darwin stream player   | gmp4player | | mpeg4ip.sf.net | Cisco
+TVtime 	      | television viewer      | tvtime     | | tvtime.sf.net  | Billy Biggs 
+XawTV 	      | camera viewer 	       | xawtv 	    | | bytesex.org    | Gerd Knorr 
 
 	End | PLAY
 
 	Begin | PERFORM
 
-FreeJ | free the veejay! | freej | terminal 		| freej.dyne.org | Jaromil
-Bomb | visual plasma music | bomb | 			| bomb WEB | Scott Draves
-Xaos | fractal zoomer/morpher | xaos -driver x11 | 	| xaos WEB | Jan Hubicka
-Gephex | modular video jockey | gephex | 		| gephex.sf.net | Gephex team
-Veejay | remote control OSC/PD | veejay | 		| veejay.sf.net | Niels Elburg
-EffecTV | realtime video effects | effectv | 		| effectv.sf.net | Fukuchi Kentaro
+FreeJ   | free the veejay!       | freej            | terminal | freej.dyne.org | Jaromil
+Bomb 	| visual plasma music 	 | bomb             | 	       | bomb WEB 	| Scott Draves
+Xaos 	| fractal zoomer/morpher | xaos -driver x11 | 	       | xaos WEB   	| Jan Hubicka
+Gephex 	| modular video jockey 	 | gephex 	    | 	       | gephex.sf.net 	| Gephex team
+Veejay 	| remote control OSC/PD  | veejay 	    | 	       | veejay.sf.net 	| Niels Elburg
+EffecTV | realtime video effects | effectv 	    | 	       | effectv.sf.net | Fukuchi Kentaro
 
 	End | PERFORM
 
 	Begin | REC / EDIT
 
-Kino | DV recorder and editor | kino | runonce 	| kino.sf.net | Kino author
-Avidemux | simple video cutter | avidemux2 | runonce 	| fixounet.free.fr/avidemux | Mean 'fixounet'
-LiVES | linux video editing system | lives | runonce 	| lives.sf.net | Gabriel "Salsaman" Finch
-JahShaka | video effect integrator | jahshaka | runonce | jahshaka.org | JahShaka
-Cinelerra | multitrack non-linear editor | cinelerra | 	| heroinevirtual.com | Heroine Warrior
-xVidCap | desktop movie capture | xvidcap | 	| xvidcap WEB | xvidcap author
-Ksubtile | subtitle editor | ksubtile | 		| ksubtile.sf.net | Tom Deblauwe
-DVDStyler | dvd mastering | dvdstyler | | www.dvdstyler.de | Alex Thuering
-Transcode | video transcoder | gtranscode | 		| transcode WEB | transcode author
-Seven Gnomes | video file indexer | seven-gnomes | 	| www.roxton.kiev.ua/sevengnomes.html | Peter 'Roxton' Semiletov
+Kino         | DV recorder and editor       | kino	   | runonce | kino.sf.net		 | Kino author
+Avidemux     | simple video cutter 	    | avidemux2    | runonce | fixounet.free.fr/avidemux | Mean 'fixounet'
+LiVES 	     | linux video editing system   | lives 	   | runonce | lives.sf.net 		 | Gabriel "Salsaman" Finch
+JahShaka     | video effect integrator 	    | jahshaka 	   | runonce | jahshaka.org 		 | JahShaka
+Cinelerra    | multitrack non-linear editor | cinelerra    | 	     | heroinevirtual.com 	 | Heroine Warrior
+xVidCap      | desktop movie capture 	    | xvidcap 	   | 	     | xvidcap WEB 		 | xvidcap author
+Ksubtile     | subtitle editor 		    | ksubtile 	   | 	     | ksubtile.sf.net 		 | Tom Deblauwe
+DVDStyler    | dvd mastering 		    | dvdstyler    | 	     | www.dvdstyler.de 	 | Alex Thuering
+Transcode    | video transcoder 	    | gtranscode   | 	     | transcode WEB 		 | transcode author
+Seven Gnomes | video file indexer 	    | seven-gnomes | 	     | www.roxton.kiev.ua/sevengnomes.html | Peter 'Roxton' Semiletov
 
 	End | REC / EDIT
 
 	Begin | STREAM
 
-Mp4Live | mpeg4 darwin source | mp4live | terminal 		| mpeg4ip.sf.net | Cisco
-Palantir | multipart jpeg | palantir | man 			| palantir WEB | David Santinoli
+Mp4Live   | mpeg4 darwin source    | mp4live   | terminal | mpeg4ip.sf.net | Cisco
+Palantir  | multipart jpeg 	   | palantir  | man 	  | palantir WEB   | David Santinoli
 HasciiCam | (h)ascii 4 the masses! | hasciicam | terminal | ascii.dyne.org | Jaromil
 
 	End | STREAM
@@ -60,73 +60,74 @@ Begin | AUDIO
 
 	Begin | PLAY
 
-Audacious | new audio player | audacious | | audacious-media-player.org | Audacious Media Player team
-Amarok | music jukebox | amarok | 		| amarok.kde.org | Amarok dev team
-StreamTuner | internet radio | streamtuner |    | streamtuner.sf.net | StreamTuner developers
-Timidity | midi player | timidity -ig | 	| timidity WEB | Timidity auth
-Xmms | old audio player | xmms | 		| www.xmms.org | Xmms team
-MikMod | track player | mikmod | terminal 	| mikmod.raphnet.net | MikMod team
+Audacious   | new audio player | audacious    |          | audacious-media-player.org | Audacious team
+Amarok 	    | music jukebox    | amarok       |		 | amarok.kde.org 	      | Amarok dev team
+StreamTuner | internet radio   | streamtuner  | 	 | streamtuner.sf.net 	      | StreamTuner developers
+Timidity    | midi player      | timidity -ig |          | timidity WEB 	      | Timidity auth
+Xmms 	    | old audio player | xmms 	      |	         | www.xmms.org 	      | Xmms team
+MikMod 	    | track player     | mikmod       | terminal | mikmod.raphnet.net 	      | MikMod team
 
 	End | PLAY
 
 	Begin | PERFORM
 
-Hydrogen | drum machine | hydrogen | 		| hydrogen.sf.net | Comix
-Mixxx | Live audio mixer | mixxx | 		| mixxx.sf.net | Mixxx
-Jamin | equalizer | jamin | 			| jamin.sf.net | Jamin author
-FreqTweak | spectral manipulation | freqtweak | | freqtweak.sf.net | F. auth
-Jack Rack | ladspa effects rack | jack-rack | 	| jack-rack.sf.net | Jack auth
-FreeWheeling | live sampling | fweelin | 	| freewheeling.sf.net | JP Mercury
-Aldrin | modular tracker | aldrin | | http://trac.zeitherrschaft.org/aldrin | Leonard 'paniq' Ritter
-SooperLooper | live looping | slgui | 		| essej.net/sooperlooper | Jesse Chappell
-OpenCubic | MOD player | ocp | | http://www.cubic.org/player | Dirk Jagdmann
-SoundTracker | fast tracker | soundtracker | 	| soundtracker.cx? | A. Koenig
-CheeseTracker | music tracker | cheesetracker_qt | | cheesetracker.sf.net | Juan Linietsky
-Seq24 | midi sequencer | seq24 | 		| seq24.sf.net | seq24 auth
-ZynAddSubFx | realtime synthesizer | zynaddsubfx | | zynaddsubfx.sf.net | ??
-TerminatorX | filescratch turntables | terminatorX | | terminatorX.cx | A. Koenig
-GDam | remote multiple DJ | gdam 		| gdam WEB | gdam auth
-PD | pure data signal processing | pd | terminal | pure-data.org | Miller Puckette
+Hydrogen      | drum machine           | hydrogen         |          | hydrogen.sf.net                       | Comix
+Mixxx 	      | live audio mixer       | mixxx     	  | 	     | mixxx.sf.net 			     | Mixxx
+Jamin 	      | equalizer  	       | jamin 		  | 	     | jamin.sf.net 			     | Jamin author
+FreqTweak     | spectral manipulation  | freqtweak 	  | 	     | freqtweak.sf.net			     | F. auth
+Jack Rack     | ladspa effects rack    | jack-rack 	  | 	     | jack-rack.sf.net                      | Jack auth
+FreeWheeling  | live sampling  	       | fweelin 	  | 	     | freewheeling.sf.net                   | JP Mercury
+Aldrin 	      | modular tracker        | aldrin 	  | 	     | http://trac.zeitherrschaft.org/aldrin | Leonard 'paniq' Ritter
+SooperLooper  | live looping 	       | slgui 		  | 	     | essej.net/sooperlooper 		     | Jesse Chappell
+OpenCubic     | MOD player 	       | ocp 		  | 	     | http://www.cubic.org/player 	     | Dirk Jagdmann
+SoundTracker  | fast tracker 	       | soundtracker 	  | 	     | soundtracker.cx? 		     | A. Koenig
+CheeseTracker | music tracker 	       | cheesetracker_qt | 	     | cheesetracker.sf.net 		     | Juan Linietsky
+Seq24 	      | midi sequencer 	       | seq24 		  | 	     | seq24.sf.net 			     | seq24 auth
+ZynAddSubFx   | realtime synthesizer   | zynaddsubfx 	  | 	     | zynaddsubfx.sf.net 		     | ??
+TerminatorX   | filescratch turntables | terminatorX 	  | 	     | terminatorX.cx 			     | A. Koenig
+GDam 	      | remote multiple DJ     | gdam 		  | 	     | gdam WEB 			     | gdam auth
+Pure Data     | signal processing      | pd 		  | terminal | pure-data.org 			     | Miller Puckette
 
 	End | PERFORM
 
 	Begin | REC / EDIT
 
-Ardour 2 | multitrack studio | ardour2 | 	| www.ardour.org | Paul Davis
-Ardour | multitrack studio | ardour | 		| www.ardour.org | Paul Davis
-Audacity | audio editor | audacity | 		| audacity.sf.net | Dominique Mazzoni
-ReZound | sample editor | rezound | 		| rezound.sf.net | rezound auth
-RoseGarden | midi editor | rosegarden | 	| rosegardenmusic.com | fervent software
-TimeMachine | realtime recorder | timemachine | | plugin.org.uk | plugin.org.uk
+Ardour 2    | multitrack studio | ardour2     | | www.ardour.org      | Paul Davis
+Ardour 	    | multitrack studio | ardour      | | www.ardour.org      | Paul Davis
+Audacity    | audio editor 	| audacity    | | audacity.sf.net     | Dominique Mazzoni
+ReZound     | sample editor 	| rezound     | | rezound.sf.net      | rezound auth
+RoseGarden  | midi editor 	| rosegarden  | | rosegardenmusic.com | fervent software
+TimeMachine | realtime recorder | timemachine | | plugin.org.uk       | plugin.org.uk
 
 	End | REC / EDIT
 
 	Begin | STREAM
 
-MuSE | your online radio | muse | 			| muse.dyne.org | Jaromil
-Icecast | edit configuration | nedit /etc/icecast.xml | | icecast.org | xiph.org
-Icecast | start streaming server | icecast -c /etc/icecast.xml | terminal | icecast.org | xiph.org
-Icecast | administration interface | links -g http://admin:hackme@localhost:8000/ | browser | icecast.org | xiph.org
+MuSE     | online radio mixer       | muse                                         | 	      | muse.dyne.org | Jaromil
+DarkSnow | online radio streamer    | darksnow                                     |          | darksnow.radiolibre.org | Akos Maroi and Rafael Diniz
+Icecast  | server configuration     | nedit /etc/icecast.xml 			   |          | icecast.org   | xiph.org
+Icecast  | start streaming server   | icecast -c /etc/icecast.xml 		   | terminal | icecast.org   | xiph.org
+Icecast  | administration interface | links -g http://admin:hackme@localhost:8000/ | browser  | icecast.org   | xiph.org
 
 	End | STREAM
 
-Volume | | volumemixer | | www.alsa-project.org | Alsa Project
-Jack | | qjackctl | 				| jackit.sf.net | Jack author
-Midi | | alsa-patch-bay | 			| alsa-project.org | Alsa Project
+Volume | | volumemixer    | | www.alsa-project.org | Alsa Project
+Jack   | | qjackctl    	  | | jackit.sf.net 	   | Jack author
+Midi   | | alsa-patch-bay | | alsa-project.org 	   | Alsa Project
 
 End | AUDIO
 
 Begin | IMAGE
 
-Gimp | image manipulator | gimp | 		| gimp.org | Gimp team
-InkScape | vectorial graphics | inkscape | 	| inkscape.sf.net | Inkscape auth
-Blender | 3d editor and game engine | blender | | blender3d.org | Blender foundation
-Gphoto | connect photo camera | gtkam | 	| gphoto.sf.net | Gphoto developers
-XSane | scan paper images | xsane | 		| www.xsane.org | XSane
-Glito | fractal generator IFS | glito | 	| emmanuel.debanne.free.fr/glito | Emmanuel Debanne
-GQview | image file browser | gqview | 		| gqview.sf.net | GQView author
-ImageMagick | image conversion | display | 	| www.imagemagick.org | ImageMagick Studio LLC
-xSG | desktop screen grab | xsg | | xsg.sf.net 	| xSG auth
+Gimp        | image manipulator		| gimp     | | gimp.org                       | Gimp team
+InkScape    | vectorial graphics        | inkscape | | inkscape.sf.net 		      | Inkscape auth
+Blender     | 3d editor and game engine | blender  | | blender3d.org   		      | Blender foundation
+Gphoto 	    | connect photo camera 	| gtkam    | | gphoto.sf.net   		      | Gphoto developers
+XSane 	    | scan paper images    	| xsane    | | www.xsane.org                  | XSane
+Glito 	    | fractal generator IFS 	| glito    | | emmanuel.debanne.free.fr/glito | Emmanuel Debanne
+GQview 	    | image file browser 	| gqview   | | gqview.sf.net 		      | GQView author
+ImageMagick | image conversion 		| display  | | www.imagemagick.org 	      | ImageMagick Studio LLC
+xSG 	    | desktop screen grab 	| xsg 	   | | xsg.sf.net 		      | xSG auth
 
 End | IMAGE
 
@@ -134,13 +135,13 @@ End | IMAGE
 
 Begin | TEXT
 
-AbiWord | word processor | abiword | 		| www.abisource.com | Abisource community
-Scribus | desktop publisher | scribus | 	| www.scribus.net | scribus auth
-Lyx | document processor | lyx | | www.lyx.org 	| lyx developers
-Ted | rich text editor | Ted | 			| Ted WEB | Ted auth
-Bluefish | html editor | bluefish -s | 		| bluefish.org | bluefish auth
-Nedit | plain text editor | nedit | 		| nedit WEB | nedit auth
-Nano | console text editor | nano | terminal 	| www.nano-editor.org | Nano developers
+AbiWord  | word processor      | abiword     |		| www.abisource.com   | Abisource community
+Scribus  | desktop publisher   | scribus     | 	 	| www.scribus.net     | scribus auth
+Lyx 	 | document processor  | lyx 	     | 	 	| www.lyx.org 	      | lyx developers
+Ted 	 | rich text editor    | Ted 	     | 	 	| Ted WEB 	      | Ted auth
+Bluefish | html editor 	       | bluefish -s | 		| bluefish.org 	      | bluefish auth
+Nedit 	 | plain text editor   | nedit 	     | 		| nedit WEB 	      | nedit auth
+Nano 	 | console text editor | nano 	     | terminal | www.nano-editor.org | Nano developers
 
 End | TEXT
 
@@ -150,86 +151,86 @@ Begin | NET
 
 	Begin | WWW
 
-Firefox | Web browser | firefox /lib/dyne/welcome.html | 	| mozilla.org/firefox | Mozilla foundation
-Links 2 | slick web browser | links -g /lib/dyne/welcome.html | | links WEB | Twibright Labs
-Links | console web browser | links /lib/dyne/welcome.html | terminal | links WEB | Twibright Labs
-Lynx | console web browser | lynx /lib/dyne/welcome.html | terminal | lynx WEB | lynx auth
-Nvu | Web page creator | nvu | | www.mozilla.org | Mozilla foundation
+Firefox | Web browser         | firefox /lib/dyne/welcome.html  |	   | mozilla.org/firefox | Mozilla foundation
+Links 2 | slick web browser   | links -g /lib/dyne/welcome.html | 	   | links WEB 		 | Twibright Labs
+Links 	| console web browser | links /lib/dyne/welcome.html 	| terminal | links WEB 		 | Twibright Labs
+Lynx 	| console web browser | lynx /lib/dyne/welcome.html 	| terminal | lynx WEB 		 | lynx auth
+Nvu 	| Web page creator    | nvu  				| 	   | www.mozilla.org 	 | Mozilla foundation
 
 	End | WWW
 
 	Begin | EMAIL
 
-Thunderbird | e-mail client | thunderbird | 	| mozilla.org | Mozilla foundation
-Sylpheed | simple e-mail client| sylpheed | 	| sylpheed WEB | sylpheed auth
-Gpa | encryption privacy assistant | gpa | 	| gnupg.org | gpa auth
-Mutt | advanced e-mail client | mutt | terminal | mutt.org | Michael R. Elkins, Jeremy Blosser
+Thunderbird | e-mail client                | thunderbird | 	    | mozilla.org  | Mozilla foundation
+Sylpheed    | simple e-mail client	   | sylpheed    | 	    | sylpheed WEB | sylpheed auth
+Gpa 	    | encryption privacy assistant | gpa 	 | 	    | gnupg.org    | gpa auth
+Mutt 	    | advanced e-mail client 	   | mutt 	 | terminal | mutt.org     | Michael R. Elkins, Jeremy Blosser
 
 	End | EMAIL
 
         Begin | PHONE
 
-Ekiga | video conferencing | ekiga | www.ekiga.net | Ekiga |  Damien Sandras
-Kiax | voice over ip | kiax | 		| kiax.sf.net | Kiax team
-Iaxcomm | voice over ip | iaxcomm | 	| iaxclient.sf.net/iaxcomm | Michael Van Donselaar
+Ekiga 	| video conferencing | ekiga   | www.ekiga.net | Ekiga                    |  Damien Sandras
+Kiax 	| voice over ip      | kiax    | 	       | kiax.sf.net 		  | Kiax team
+Iaxcomm | voice over ip      | iaxcomm | 	       | iaxclient.sf.net/iaxcomm | Michael Van Donselaar
 
 	End | PHONE
 
 	Begin | SHARE
 
-KTorrent | p2p bittorrent client | ktorrent | 	| KTorrent.org | KTorrent developers
-Nicotine | p2p soulseek fileshare | nicotine | 	| nicotine.thegraveyard.org | Hyriand
-Gnutella | p2p gnutella filesharing | gtk-gnutella | user | gtk-gnutella.sf.net | gnutella auth
-Lopster | p2p gnutella filesharing | lopster | | lopster.sf.net | lopster auth
-MLdonkey | p2p edonkey filesharing | mldonkey+gui | | mldonkey.sf.net | mldonk au
-The Circle | p2p serverless | circle | | thecircle WEBN | thecircle auth
-Bittorrent | p2p file download | bittorrent | | bittorrent.org | Bram Cohen
+KTorrent   | p2p bittorrent client    | ktorrent     |	    | KTorrent.org              | KTorrent devs
+Nicotine   | p2p soulseek fileshare   | nicotine     | 	    | nicotine.thegraveyard.org | Hyriand
+Gnutella   | p2p gnutella filesharing | gtk-gnutella | user | gtk-gnutella.sf.net 	| gnutella auth
+Lopster    | p2p gnutella filesharing | lopster      | 	    | lopster.sf.net	 	| lopster auth
+MLdonkey   | p2p edonkey filesharing  | mldonkey+gui | 	    | mldonkey.sf.net 		| mldonk au
+The Circle | p2p serverless 	      | circle 	     | 	    | thecircle WEBN 		| thecircle auth
+Bittorrent | p2p file download 	      | bittorrent   | 	    | bittorrent.org 		| Bram Cohen
 
 	End | SHARE
 
 	Begin | CHAT
 
-XChat | irc chat | xchat | user | xchat WEB | xchat auth
-Pidgin | instant messaging | pidgin | user | pidgin.im | Sean Egan & co.
-Kiax | phone over internet | kiax | | kiax.sf.net | Kiax team
-OpenMash | audio/video conferenceu | mash-start | | openmash.org | mash auth
-KPhone | SIP web phone | kphone | | kphone WEB | kphone auth
-Nsdr | multicast session directory | nsdr | | openmash.org | mash auth
-Irssi | console irc chat | irssi | terminal | irssi WEB | irssi auth
-Silc | encrypted irc chat | silc | terminal | silc WEB | silc auth
+XChat    | irc chat		       | xchat      | user     | xchat WEB    | xchat auth
+Pidgin 	 | instant messaging   	       | pidgin     | user     | pidgin.im    | Sean Egan & co.
+Kiax   	 | phone over internet         | kiax       | 	       | kiax.sf.net  | Kiax team
+OpenMash | audio/video conference      | mash-start | 	       | openmash.org | mash auth
+KPhone 	 | SIP web phone 	       | kphone     | 	       | kphone WEB   | kphone auth
+Nsdr 	 | multicast session directory | nsdr 	    | 	       | openmash.org | mash auth
+Irssi 	 | console irc chat  	       | irssi 	    | terminal | irssi WEB    | irssi auth
+Silc 	 | encrypted irc chat	       | silc 	    | terminal | silc WEB     | silc auth
 
 	End | CHAT
 
 	Begin | FTP
 
-GFtp | graphical ftp client | gftp | | gftp WEB | gftp auth
-NCFtp | console ftp client | ncftp | terminal | ncftp WEB | ncftp author
-LFtp | advanced ftp client | lftp | terminal | lcftp WEB | lftp auth
+GFtp  | graphical ftp client | gftp  |          | gftp WEB  | gftp auth
+NCFtp | console ftp client   | ncftp | terminal | ncftp WEB | ncftp author
+LFtp  | advanced ftp client  | lftp  | terminal | lcftp WEB | lftp auth
 
 	End | FTP
 
 	Begin | VNC
 
-VncViewer | vnc client | vncviewer | | vnc WEB | vnc auth
-SshVncViewer | vnc client over ssl/ssh | ssl_vncviewer | | vnc WEB | vnc auth
-VncServer | vnc server | x11vnc -display :0 | terminal | vnc WEB | vnc auth
-Vnc2Swf | desktop movie recorder | vnc2swf | 		| http://www.unixuser.org/~euske/vnc2swf/ | Yusuke Shinyama
-RDesktop | remote desktop client | rdesktop | man | rdesktop WEB | AUTH
+VncViewer    | vnc client             | vncviewer          |          | vnc WEB                                 | vnc auth
+SshVncViewer | secure vnc client      | ssl_vncviewer 	   | 	      | vnc WEB 				| vnc auth
+VncServer    | vnc server      	      | x11vnc -display :0 | terminal | vnc WEB 				| vnc auth
+Vnc2Swf      | desktop movie recorder | vnc2swf 	   | 	      | http://www.unixuser.org/~euske/vnc2swf/ | Yusuke Shinyama
+RDesktop     | remote desktop client  | rdesktop 	   | man      | rdesktop WEB 				| AUTH
 
 	End | VNC
 
 	Begin | TOOLS
 
-Nmap | network scanner | xnmap | | www.insecure.org/nmap | Insecure.org
-Traceroute | net path finder | mtr | | http://www.bitwizard.nl/mtr | BitWizard
-Guarddog | personal firewall | guarddog | | http://www.simonzone.com/software/guarddog | Simon Edwards
-WireShark | network analyzer | wireshark | | http://www.wireshark.org | Gerald Combs
-FWBuilder | firewall builder | fwbuilder | | fwbuilder WEB | AUTH
-Ethereal | network analyzer | ethereal | | ethereal WEB | AUTH
-Ettercap | multipurpose sniffer | ettercap | | ettercap WEB | AUTH
-IPTraf | network traffic monitor | xiptraf | | iptraf WEB | AUTH
-HPing | packet forger | hping | | hping WEB | Antirez
-Minicom | serial terminal | minicom | terminal | minicom WEB | AUTH
+Nmap       | network scanner         | xnmap     |          | www.insecure.org/nmap			 | Insecure.org
+Traceroute | net path finder   	     | mtr   	 | 	    | http://www.bitwizard.nl/mtr		 | BitWizard
+Guarddog   | personal firewall 	     | guarddog  | 	    | http://www.simonzone.com/software/guarddog | Simon Edwards
+WireShark  | network analyzer  	     | wireshark | 	    | http://www.wireshark.org                   | Gerald Combs
+FWBuilder  | firewall builder  	     | fwbuilder | 	    | fwbuilder WEB 				 | AUTH
+Ethereal   | network analyzer  	     | ethereal  | 	    | ethereal WEB 				 | AUTH
+Ettercap   | multipurpose sniffer    | ettercap  | 	    | ettercap WEB 				 | AUTH
+IPTraf 	   | network traffic monitor | xiptraf 	 | 	    | iptraf WEB 				 | AUTH
+HPing 	   | packet forger   	     | hping 	 | 	    | hping WEB 				 | Antirez
+Minicom    | serial terminal 	     | minicom 	 | terminal | minicom WEB 				 | AUTH
 
 	End | TOOLS
 
