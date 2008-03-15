@@ -1,7 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/zsh
 #
 # Entombing encrypted storage - a simple commandline tool
-# (designed for the dyne:bolic operating system, still portable)
 #
 # Copyleft (C) 2007 Denis Jaromil Rojo
 #
@@ -28,17 +27,127 @@
 # please notice us if you succeed, or if you have difficulties you
 # cannot overcome: http://dyne.org/hackers_contact.php
 
-if [ -r /lib/dyne/utils.sh ]; then
-  source /lib/dyne/utils.sh
-  source /lib/dyne/dialog.sh
-else
-  # standard output message routines
-  # it's always useful to wrap them, in case we change behaviour later
-  notice() { echo "[*] $1"; }
-  act() { echo " .  $1"; }
-  error() { echo "[!] $1"; }
-fi
+# standard output message routines
+# it's always useful to wrap them, in case we change behaviour later
+notice() { echo "[*] $1"; }
+act() { echo " .  $1"; }
+error() { echo "[!] $1"; }
 func() { if [ $DEBUG ]; then echo "[D] $1"; fi }
+
+# user interface (just to ask the password)
+ask_password() {
+
+    attempt=$1
+
+    which dialog 1>/dev/null 2>/dev/null
+    if [ $? = 0 ]; then # use dialog
+
+	if [ $1 = 1 ]; then # first attempt
+
+	    dialog --backtitle "This file is encrypted for privacy protection" \
+		--title "Security check" --insecure \
+		--passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+	    
+	else
+	    
+	    dialog --sleep 3 --infobox \
+		"password invalid, `expr 5 - $attempt` attempts left" 10 30
+	    
+	fi
+
+    else # use readline
+
+	if [ $1 = 1 ]; then # first attempt
+	    
+	    echo -n "type password... "
+	    read -s scolopendro
+	    echo $scolopendro > /var/run/.scolopendro
+	    unset scolopendro
+	    echo "ok, trying to mount."
+
+
+	else
+	
+	    echo "password invalid, `expr 6 - $attempt` attempts left"
+	    echo -n "type password... "
+	    read -s scolopendro
+	    echo $scolopendro > /var/run/.scolopendro
+	    unset scolopendro
+	    echo "ok, trying to mount."
+
+	fi
+
+    fi
+}
+
+# checks if a file is writable
+# differs from -w coz returns true if does not exist but can be created
+is_writable() { # arg: filename
+
+  file=$1
+  writable=false
+
+  if [ -r $file ]; then # file exists
+
+    if [ -w $file ]; then writable=true; fi
+
+  else # file does not exist
+
+    touch $file 1>/dev/null 2>/dev/null
+    if [ $? = 0 ]; then
+      writable=true
+      rm $file
+    fi 
+
+  fi
+
+  if [ x$writable = xtrue ]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+# appends a new line to a text file, if not duplicate
+# it sorts alphabetically the original order of line entries
+# defines the APPEND_FILE_CHANGED variable if file changes
+append_line() { # args:   file    new-line
+
+    # first check if the file is writable
+    # this also creates the file if doesn't exists
+    if [ `is_writable $1` = false ]; then
+      error "file $1 is not writable"
+      error "can't insert line: $2"
+      return
+    fi
+
+    tempfile="`basename $1`.append.tmp"
+
+    # create a temporary file and add the line there
+    cp $1 /tmp/$tempfile
+    echo "$2" >> /tmp/$tempfile
+
+    # sort and uniq the temp file to temp.2
+    cat /tmp/$tempfile | sort | uniq > /tmp/${tempfile}.2
+
+    SIZE1="`ls -l /tmp/$tempfile | awk '{print $5}'`"
+    SIZE2="`ls -l /tmp/${tempfile}.2 | awk '{print $5}'`"
+    if [ $SIZE != $SIZE ]; then
+      # delete the original
+      rm -f $1
+      # replace it
+      cp -f /tmp/${tempfile}.2 $1
+      # signal the change
+      APPEND_FILE_CHANGED=true
+    fi
+
+    # remove the temporary files
+    rm -f /tmp/$tempfile
+    rm -f /tmp/${tempfile}.2
+     
+    # and we are done
+}
+
 
 PATH=/usr/bin:/usr/sbin:/bin:/sbin   
 
@@ -115,24 +224,21 @@ if ! [ -r ${tombtab} ]; then
 fi
 
 format_crypto() {
-    notice "formatting partition $FILE as an encrypted storage"
-    ask_yesno 20 "Proceed erasing all data contained in the partition:\n `fdisk -l | grep ${FILE}`"
-    if ! [ $? = 1 ]; then
-	act "operation aborted."
-	exit 0
-    fi
+    notice "Formatting partition $FILE as an encrypted storage"
+    act "give it a name:"
+    read -s fsname
 
+    act "  `fdisk -l | grep ${FILE}`"
     mkdir -p /tmp/tomb
 
-    loadmod dm-crypt
-    loadmod aes-i586
+    modprobe dm-crypt
+    modprobe aes-i586
 
     act "Generating secret key..."
     key="`basename ${FILE}`"
     mkdir -p ${HOME}/.tomb
     
-    dd if=/dev/urandom bs=1 count=1024 | strings | cbar -s 32 -bl 1 -of /tmp/tomb/secret -de -nb -np
-    clear
+    cat /dev/urandom | strings | dd bs=1 count=256 of=/tmp/tomb/secret
     notice "Setup your secret key file ${key}.gpg"
 	# here user is prompted for password
     gpg -o "${HOME}/.tomb/${key}.gpg" --no-options --openpgp -c -a /tmp/tomb/secret
@@ -144,9 +250,12 @@ format_crypto() {
         # dm-crypt only supports sha1
         # but we can use aes-cbc-essiv with sha256 for better security
         # see http://clemens.endorphin.org/LinuxHDEncSettings
-    cryptsetup --batch-mode --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${FILE} /tmp/tomb/secret
-    
-    act "formatting Ext3 filesystem"
+    cryptsetup --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${FILE} /tmp/tomb/secret
+    if ! [ $? = 0 ]; then
+	act "operation aborted."
+	exit 0
+    fi
+   
     
     cryptsetup --key-file /tmp/tomb/secret --batch-mode --cipher aes luksOpen ${FILE} tomb.tmp
 
@@ -154,7 +263,7 @@ format_crypto() {
 
     cryptsetup luksDump ${FILE}
 
-    mkfs.ext3 -F -j /dev/mapper/tomb.tmp
+    mkfs.ext3 -F -L "${fsname}" -j /dev/mapper/tomb.tmp
 
     if [ $? = 0 ]; then
 	act "OK, encrypted partition succesfully formatted with Ext3 filesystem"
@@ -183,7 +292,7 @@ create_crypto() {
     notice "generating file of ${SIZE}Mb (${SIZE_4k} blocks of 4Kb)"
     act "dd if=/dev/zero of=${FILE} bs=4k count=$SIZE_4k"
 #   now with progress bar!
-    dd if=/dev/zero bs=4k count=${SIZE_4k} | cbar -s ${SIZE_4k} -bl 4k -of ${FILE} -de -nb -np
+    dd if=/dev/zero bs=4k count=${SIZE_4k} of=${FILE}
     
     if [ $? = 0 -a -e ${FILE} ]; then
 	act "OK: `ls -l ${FILE}`"
@@ -195,15 +304,15 @@ create_crypto() {
 
     mkdir -p /tmp/tomb
 
-    loadmod dm-crypt
-    loadmod aes-i586
+    modprobe dm-crypt
+    modprobe aes-i586
 
     nstloop=`losetup -f` # get the number for next loopback device
     losetup -f ${FILE}   # allocates the next loopback for our file
 
     act "Generating secret key..."
     
-    dd if=/dev/urandom bs=1 count=1024 | strings | cbar -s 32 -bl 1 -of /tmp/tomb/secret -de -nb -np
+    cat /dev/urandom | strings | dd bs=1 count=256 of=/tmp/tomb/secret
     clear
     notice "Setup your secret key file ${FILE}.gpg"
 	# here user is prompted for password
@@ -216,8 +325,12 @@ create_crypto() {
         # dm-crypt only supports sha1
         # but we can use aes-cbc-essiv with sha256 for better security
         # see http://clemens.endorphin.org/LinuxHDEncSettings
-    cryptsetup --batch-mode --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${nstloop} /tmp/tomb/secret
-    
+    cryptsetup --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat ${nstloop} /tmp/tomb/secret
+    if ! [ $? = 0 ]; then
+	act "operation aborted."
+	exit 0
+    fi
+ 
     act "formatting Ext3 filesystem"
     
     cryptsetup --key-file /tmp/tomb/secret --batch-mode --cipher aes luksOpen ${nstloop} tomb.tmp
@@ -285,38 +398,34 @@ mount_crypto_file() {
 	    return
 	fi
 	
-	loadmod dm-crypt
-	loadmod aes-i586
+	modprobe dm-crypt
+	modprobe aes-i586
 	
 	mapper="tomb.`date +%s`"
 	
 	notice "Password is required for file ${FILE}"
 	for c in 1 2 3 4 5; do
 	    
-	    dialog --backtitle "This file is encrypted for privacy protection" --title "Security check" \
-		--insecure --passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+	    ask_password $c
 	    
 	    cat /var/run/.scolopendro \
-		| gpg --passphrase-fd 0 --no-tty --no-options -d "${FILE}.gpg" 2>/dev/null | grep -v passphrase \
+		| gpg --passphrase-fd 0 --no-tty --no-options \
+		      -d "${FILE}.gpg" 2>/dev/null \
+		| grep -v passphrase \
 		| cryptsetup --key-file - luksOpen ${nstloop} ${mapper}
 	    
 	    rm -f /var/run/.scolopendro
 	    
 	    if [ -r /dev/mapper/${mapper} ]; then
 		break;  # password was correct
-	    else
-		dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
 	    fi
 	    
 	done
 	
 	if ! [ -r /dev/mapper/${mapper} ]; then
 	    error "failure mounting the encrypted file"
-	    ls /dev
-	    ls /var
 	    tail /var/log/messages
 	    losetup -d ${nstloop}
-	    sleep 5
 	    return
 	fi
 	
@@ -337,8 +446,8 @@ mount_crypto_file() {
 
 mount_crypto_partition() {
 
-    file=`basename $FILE`
-    grep -e "${file}" ${tombtab}
+    key=`basename $FILE`
+    grep -e "^${FILE}" ${tombtab}
     if [ $? = 1 ]; then
 	error "entombed partition $file is not found in ${tombtab}"
 	error "aborting operation."
@@ -347,7 +456,7 @@ mount_crypto_partition() {
 
 
     if [ -z $MOUNT ]; then
-	mount=`grep "^${file}" ${tombtab} | awk '{print $2}'`
+	mount=`grep "^${FILE}" ${tombtab} | awk '{print $2}'`
 	if ! [ -x $mount ]; then
 	    error "you need to specify a MOUNTPOINT for the mount command"
 	    exit 1
@@ -356,7 +465,7 @@ mount_crypto_partition() {
 	fi
     fi
 
-    notice "mounting entombed partition $file on mountpoint $MOUNT"
+    notice "mounting entombed partition $FILE on mountpoint $MOUNT"
 
     if ! [ -x $MOUNT ]; then
 	error "mountpoint $MOUNT does not exist"
@@ -369,48 +478,42 @@ mount_crypto_partition() {
     if [ $? = 0 ]; then
 	
         # check if key file is present
-	if [ -r ${tombdir}/${file}.gpg ]; then
-	    enc_key=${tombdir}/${file}.gpg
+	if [ -r ${tombdir}/${key}.gpg ]; then
+	    enc_key=${tombdir}/${key}.gpg
 	else
-	    error "secret encryption key for partition ${FILE} not found in ${tombdir}/${file}.gpg"
+	    error "secret encryption key for partition ${FILE} not found in ${tombdir}/${key}.gpg"
 	    error "we cannot decrypt files from partition ${FILE}. sorry."
 	    exit 0
 	fi
 		
 	act "secret encryption key found in ${enc_key}"
 
-	loadmod dm-crypt
-	loadmod aes-i586
+	modprobe dm-crypt
+	modprobe aes-i586
 	
-	mapper="tomb.${file}.`date +%s`"
+	mapper="tomb.${key}.`date +%s`"
 	
-	notice "Password is required to unlock the partition"
+	notice "Password is required to unlock the encryption key"
 	for c in 1 2 3 4 5; do
 	    
-	    dialog --backtitle "This file is encrypted for privacy protection" --title "Security check" \
-		--insecure --passwordbox "Enter password:" 10 30 2> /var/run/.scolopendro
+	    ask_password $c
 	    
 	    cat /var/run/.scolopendro \
-		| gpg --passphrase-fd 0 --no-tty --no-options -d ${enc_key} 2>/dev/null | grep -v passphrase \
+		| gpg --passphrase-fd 0 --no-tty --no-options \
+		      -d ${enc_key} 2>/dev/null \
 		| cryptsetup --key-file - luksOpen ${FILE} ${mapper}
 	    
 	    rm -f /var/run/.scolopendro
 	    
 	    if [ -r /dev/mapper/${mapper} ]; then
 		break;  # password was correct
-	    else
-		dialog --sleep 3 --infobox "password invalid, `expr 5 - $c` attempts left" 10 30
 	    fi
 	    
 	done
 	
 	if ! [ -r /dev/mapper/${mapper} ]; then
 	    error "failure mounting the encrypted file"
-	    ls /dev
-	    ls /var
-	    tail /var/log/messages
-	    sleep 5
-	    return
+	    return # this exits
 	fi
 	
 	act "encrypted storage filesystem check"
