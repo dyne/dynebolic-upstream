@@ -197,6 +197,84 @@ mount -o bind,rw /dev/shm/tmp  /tmp
 chmod a+rwx /tmp
 chmod +t    /tmp
  
+#### if network boot is configured...
+# at this point all modules should be loaded in order to have
+# the network card recognized. put needed modules in /boot or in a dock
+BOOT_NETWORK="`get_config network_boot`" # "iface ip_address netmask gateway dns" or "dhcp"
+if [ $BOOT_NETWORK ]; then
+
+    if [ "`ifconfig -a | grep eth`" ]; then
+
+	notice "Network booting is configured"
+
+        IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
+        IP=`echo $BOOT_NETWORK      | cut -d, -f2`
+        if [ "`echo $IP | grep -iE 'pump|dhcp|auto'`" ]; then
+          act "autodetect network configuration (DHCP)"
+          pump -i ${IFACE}
+        else
+          act "configuring interface ${IFACE} with ip ${IP}"
+          ifconfig ${IFACE} ${IP}
+        fi
+
+
+#### FTP DOWNLOAD
+
+	DOCK_FTP=`get_config dock_download_ftp` # remote_host remote_dyne_dir local_destination_dir
+	if [ $DOCK_FTP ]; then
+	    REMOTE_HOST="`echo $DOCK_FTP |awk '{ print $1 }'`"
+	    REMOTE_DIR="`echo $DOCK_FTP  |awk '{ print $2 }'`"
+	    LOCAL_DIR="`echo $DOCK_FTP   |awk '{ print $3 }'`"
+	    notice "Configured to download a dock from ftp://${REMOTE_HOST}/${REMOTE_DIR}"
+	    act "will save the dock in $LOCAL_DIR"
+	    ncftpget -R $REMOTE_HOST $LOCAL_DIR $REMOTE_DIR
+	fi
+
+
+
+#### RSYNC UPDATE
+
+	DOCK_RSYNC=`get_config dock_update_rsync` # rsync.host::module/dyne local_destination_dir
+	if [ $DOCK_RSYNC ]; then
+	    REMOTE_RSYNC="`echo $DOCK_RSYNC |awk '{ print $1 }'`"
+	    LOCAL_DIR="`echo $DOCK_RSYNC    |awk '{ print $2 }'`"
+	    notice "Upgrading the system from rsync://$REMOTE_RSYNC"
+	    act "will save the dock in $LOCAL_DIR"
+	    rsync -Pr ${REMOTE_RSYNC} ${LOCAL_DIR}
+	fi
+
+
+#### SAMBA REMOTE DOCKING
+
+	DOCK_SAMBA=`get_config dock_mount_samba` # network_address (public access)
+	if [ $DOCK_SAMBA ]; then
+	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
+	    mkdir -p /mnt/smbdock
+	    loadmod smbfs
+            sync
+	    mount -t smbfs -o ro,guest,ttl=10000,sock=IPTOS_LOWDELAY,TCP_NODELAY //${DOCK_SAMBA}/dyne.dock /mnt/smbdock
+	    if [ $? != 0 ]; then # mount failed
+		error "mount failed, remote dock aborted"
+	    else
+		if ! [ -r "/mnt/smbdock/dyne.sys" ]; then
+		    error "no dyne system found on ${DOCK_SAMBA}"
+		    umount /mnt/smbdock
+		else
+		    DYNE_SYS_MEDIA=samba
+		    DYNE_SYS_MNT=/mnt/smbdock
+		    DYNE_SYS_DEV=${DOCK_SAMBA}
+                    add_volume samba ${DOCK_SAMBA} smbdock smbfs
+		fi
+	    fi
+	fi
+
+
+
+    else
+	error "Can't find any network device: network boot is aborted"
+    fi
+fi
+
 
 #########################################
 ## scan all volumes by default
@@ -302,88 +380,6 @@ fi
 
 
 
-
-#### if network boot is configured...
-# at this point all modules should be loaded in order to have
-# the network card recognized. put needed modules in /boot or in a dock
-BOOT_NETWORK="`get_config network_boot`" # "iface ip_address netmask gateway dns" or "dhcp"
-if [ $BOOT_NETWORK ]; then
-
-    if [ "`ifconfig -a | grep eth`" ]; then
-
-	notice "Network booting is configured"
-
-        IFACE=`echo $BOOT_NETWORK   | cut -d, -f1`
-        IP=`echo $BOOT_NETWORK      | cut -d, -f2`
-        if [ "`echo $IP | grep -iE 'pump|dhcp|auto'`" ]; then
-          act "autodetect network configuration (DHCP)"
-          pump -i ${IFACE}
-        else
-          act "configuring interface ${IFACE} with ip ${IP}"
-          ifconfig ${IFACE} ${IP}
-        fi
-
-
-
-
-#### FTP DOWNLOAD
-
-	DOCK_FTP=`get_config dock_download_ftp` # remote_host remote_dyne_dir local_destination_dir
-	if [ $DOCK_FTP ]; then
-	    REMOTE_HOST="`echo $DOCK_FTP |awk '{ print $1 }'`"
-	    REMOTE_DIR="`echo $DOCK_FTP  |awk '{ print $2 }'`"
-	    LOCAL_DIR="`echo $DOCK_FTP   |awk '{ print $3 }'`"
-	    notice "Configured to download a dock from ftp://${REMOTE_HOST}/${REMOTE_DIR}"
-	    act "will save the dock in $LOCAL_DIR"
-	    ncftpget -R $REMOTE_HOST $LOCAL_DIR $REMOTE_DIR
-	fi
-
-
-
-#### RSYNC UPDATE
-
-	DOCK_RSYNC=`get_config dock_update_rsync` # rsync.host::module/dyne local_destination_dir
-	if [ $DOCK_RSYNC ]; then
-	    REMOTE_RSYNC="`echo $DOCK_RSYNC |awk '{ print $1 }'`"
-	    LOCAL_DIR="`echo $DOCK_RSYNC    |awk '{ print $2 }'`"
-	    notice "Upgrading the system from rsync://$REMOTE_RSYNC"
-	    act "will save the dock in $LOCAL_DIR"
-	    rsync -Pr ${REMOTE_RSYNC} ${LOCAL_DIR}
-	fi
-
-
-
-
-#### SAMBA REMOTE DOCKING
-
-	DOCK_SAMBA=`get_config dock_mount_samba` # network_address (public access)
-	if [ $DOCK_SAMBA ]; then
-	    notice "Configured to mount samba dock from ${DOCK_SAMBA}"
-	    mkdir -p /mnt/smbdock
-	    loadmod smbfs
-            sync
-	    mount -t smbfs -o ro,guest,ttl=10000,sock=IPTOS_LOWDELAY,TCP_NODELAY //${DOCK_SAMBA}/dyne.dock /mnt/smbdock
-	    if [ $? != 0 ]; then # mount failed
-		error "mount failed, remote dock aborted"
-	    else
-		if ! [ -r "/mnt/smbdock/dyne.sys" ]; then
-		    error "no dyne system found on ${DOCK_SAMBA}"
-		    umount /mnt/smbdock
-		else
-		    DYNE_SYS_MEDIA=samba
-		    DYNE_SYS_MNT=/mnt/smbdock
-		    DYNE_SYS_DEV=${DOCK_SAMBA}
-                    add_volume samba ${DOCK_SAMBA} smbdock smbfs
-		fi
-	    fi
-	fi
-
-
-
-    else
-	error "Can't find any network device: network boot is aborted"
-    fi
-fi
 
 #### if /usr is not already mounted then let's go looking for a system
 #### this control lets have dyne:bolic run from a partition

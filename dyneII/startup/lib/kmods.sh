@@ -6,28 +6,14 @@ source /lib/dyne/utils.sh
 
 scan_docked_kmods() {
 
-  if   [ "$1" = "hdisk" ]; then
-
-    kmods=`cat /boot/volumes | grep '^hdisk' | grep krn`
-
-  elif [ "$1" = "dvd" ]; then
-
-    kmods=`cat /boot/volumes | grep '^dvd' | grep krn`
-
-  elif [ "$1" = "cdrom" ]; then
-
-    kmods=`cat /boot/volumes | grep '^cdrom' | grep krn`
-
-  else
-
-    return
-
-  fi
+  kmods=`cat /boot/volumes | grep krn`
 
   for k in ${(f)kmods}; do
 
     kpath="`echo ${k} | awk '{print $3}'`/dyne/linux-${KRN}.kmods"
-
+    if ! [ -r $kpath ]; then # try without dyne/ for samba
+      kpath="`echo ${k} | awk '{print $3}'`/linux-${KRN}.kmods"
+    fi
     if ! [ -r $kpath ]; then continue; fi
 
     if [ "$kmods_found" = "true" ]; then break; fi
