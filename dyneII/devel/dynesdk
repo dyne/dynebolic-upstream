@@ -42,9 +42,17 @@ source /lib/dyne/dialog.sh
 PACKAGE="dyne:OS SDK"
 VERSION="2.5"
 if [ -z $DYNESDK ]; then
-  PFX="$DYNE_SYS_MNT/SDK" # you can change it to static path where dynesdk resides
+    # using export DYNESDK you can change this to what you like
+    PFX="$DYNE_SYS_MNT/SDK"
 else
   PFX=${DYNESDK}
+fi
+
+if [ -z $DYNESDK_GIT ]; then
+    # using export DYNESDK_GIT you can change this to what you like
+    DYNEGIT="$PFX/git/dyneII/"
+else
+    DYNEGIT=${DYNESDK_GIT}
 fi
 
 
@@ -586,59 +594,59 @@ EOF
     chown nobody:nogroup var/log/icecast
 
   
-    if [ -x $PFX/git/startup ]; then
+    if [ -x $DYNEGIT/startup ]; then
 	act "setup startup files from subversion repository"
-	cp -vf $PFX/git/startup/rc.*     etc/
-	cp -vf $PFX/git/startup/zshenv   etc/
-	cp -vf $PFX/git/startup/inittab  etc/
-        for f in `ls -A $PFX/git/startup/bin/ | grep -v .git`; do
-          cp -raf ${PFX}/startup/bin/${f}       bin
+	cp -vf $DYNEGIT/startup/rc.*     etc/
+	cp -vf $DYNEGIT/startup/zshenv   etc/
+	cp -vf $DYNEGIT/startup/inittab  etc/
+        for f in `ls -A $DYNEGIT/startup/bin/ | grep -v .git`; do
+          cp -raf ${DYNEGIT}/startup/bin/${f}       bin
         done
 
-        if [ -x ${PFX}/git/startup/lib ]; then
+        if [ -x ${DYNEGIT}/startup/lib ]; then
           # blank all lib/dyne
           rm -rf lib/dyne/*
 
-	  for f in `ls $PFX/git/startup/lib/`; do
-	    cp -raf ${PFX}/git/startup/lib/${f}       lib/dyne/
+	  for f in `ls $DYNEGIT/startup/lib/`; do
+	    cp -raf ${DYNEGIT}/startup/lib/${f}       lib/dyne/
 	  done
 
           mkdir -p lib/dyne/zsh
-	  for f in `ls $PFX/git/startup/zsh/`; do
-	    cp -af ${PFX}/git/startup/zsh/${f}        lib/dyne/zsh/
+	  for f in `ls $DYNEGIT/startup/zsh/`; do
+	    cp -af ${DYNEGIT}/startup/zsh/${f}        lib/dyne/zsh/
 	  done
 
           mkdir -p lib/dyne/xdg
-	  for f in `ls $PFX/git/startup/xdg/`; do
+	  for f in `ls $DYNEGIT/startup/xdg/`; do
 	    cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
 	  done
 
           mkdir -p lib/dyne/skel
-	  for f in `ls -A $PFX/git/startup/skel/ | grep -v .git`; do
-	    cp -raf ${PFX}/git/startup/skel/${f}	lib/dyne/skel/
+	  for f in `ls -A $DYNEGIT/startup/skel/ | grep -v .git`; do
+	    cp -raf ${DYNEGIT}/startup/skel/${f}	lib/dyne/skel/
 	  done
 
           mkdir -p lib/dyne/hotplug
           rm -f lib/dyne/hotplug/debug # no debug by default
-          for f in `ls $PFX/git/startup/hotplug/`; do
-            cp -raf ${PFX}/git/startup/hotplug/${f} lib/dyne/hotplug/
+          for f in `ls $DYNEGIT/startup/hotplug/`; do
+            cp -raf ${DYNEGIT}/startup/hotplug/${f} lib/dyne/hotplug/
           done
 
           mkdir -p lib/dyne/udev
-          for f in `ls $PFX/git/startup/udev/`; do
-            cp -raf ${PFX}/git/startup/udev/${f}	lib/dyne/udev/
+          for f in `ls $DYNEGIT/startup/udev/`; do
+            cp -raf ${DYNEGIT}/startup/udev/${f}	lib/dyne/udev/
           done
           
           mkdir -p lib/dyne/configure
-	  for f in `ls $PFX/git/startup/configure/`; do
-	    cp -af ${PFX}/git/startup/configure/${f}  lib/dyne/configure/
-            cp -f  ${PFX}/git/startup/configure/.DirIcon lib/dyne/configure/
+	  for f in `ls $DYNEGIT/startup/configure/`; do
+	    cp -af ${DYNEGIT}/startup/configure/${f}  lib/dyne/configure/
+            cp -f  ${DYNEGIT}/startup/configure/.DirIcon lib/dyne/configure/
 	  done
         fi
 
 	mkdir -p etc/WindowMaker
-	for f in `ls $PFX/git/startup/GNUstep/`; do
-	  cp -af  ${PFX}/git/startup/GNUstep/${f}   etc/WindowMaker/
+	for f in `ls $DYNEGIT/startup/GNUstep/`; do
+	  cp -af  ${DYNEGIT}/startup/GNUstep/${f}   etc/WindowMaker/
         done
 
         # delete all backup files
@@ -774,7 +782,7 @@ mkusr() {
     notice "preparing the /usr squashed filesystem"
 
     # copy the current dynesdk inside the new system
-    cp -v $PFX/git/devel/dynesdk /usr/sbin/dynesdk
+    cp -v $DYNEGIT/devel/dynesdk /usr/sbin/dynesdk
 
     ask_yesno 10 \
 "Would you like to download an up-to-date device ID database from internet?"
