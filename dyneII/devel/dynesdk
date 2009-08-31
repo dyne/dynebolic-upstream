@@ -2,7 +2,7 @@
 #
 # dyne:bolic software development kit - the commandline tool
 #
-# Copyright (C) 2003-2007 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# Copyright (C) 2003-2009 Denis "Jaromil" Rojo <jaromil@dyne.org>
 #
 # with contributions and testing by:
 #      2004          Alex "Smilzo" Gnoli    <smilzo@sfrajone.org>
@@ -12,7 +12,7 @@
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
-# by the Free Software Foundation; either version 2 of the License,
+# by the Free Software Foundation; either version 3 of the License,
 # or (at your option) any later version.
 #
 # This source code is distributed in the hope that it will be useful,
@@ -136,6 +136,15 @@ check_sw() {
     fi
 }
 
+check_sw git
+if [ $? = 0 ]; then
+    error "GIT is not found on the system"
+    error "you need the devel.dyne module"
+    error "freely available on ftp.dyne.org/dynebolic"
+    error "or included in your DVD distribution"
+    exit 0
+fi
+
 if [ "`whoami`" != root ]; then
     error "you must be ROOT on your machine to use the dyne SDK"
     exit 0
@@ -195,52 +204,51 @@ mksdk() {
   ask_yesno 10 "Download dyne:II ramdisk skeleton files from online repository?"
   if [ $? = 1 ]; then
     act "checking out skeleton, please wait while downloading"
-    if [ -x startup ]; then
-      svn update startup
+    if [ -x git ]; then
+	cd git;
+	git stash; git pull --rebase; git stash apply
+	cd -;
     else
-      svn co svn://code.dyne.org/dynebolic/dyneII/startup
-    fi
-    if [ -x cdrom ]; then
-      svn update cdrom
-    else
-      svn co svn://code.dyne.org/dynebolic/dyneII/cdrom
-    fi
-    if [ -x devel ]; then
-      svn update devel
-    else
-      svn co svn://code.dyne.org/dynebolic/dyneII/devel
+	git clone git://code.dyne.org/dynebolic.git git
     fi
   fi
 
-  ask_yesno 10 \
-"I can uncompress dyne.sys, it will occupy approx 2Gb
+  if ! [ -x sys ]; then
+      
+      ask_yesno 10 \
+	  "I can uncompress dyne.sys, it will occupy approx 2Gb
  this way your /usr will become writable.\n
  You should do it only if you really need: it will make
  it harder to merge your modifications with upgrades to
  the main dyne core.\n\n
  Do you want to uncompress the dyne.sys ?"
-
-  if [ $? = 1 ]; then
-    mkdir tmp
-    mkdir sys
-    act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne.sys"
-    act "please wait, this operation requires long time..."
-    mount -o loop ${DYNE_SYS_MNT}/dyne.sys tmp
-    cp -rau tmp/* sys/
-    umount tmp
-    rm -r tmp
+      
+      if [ $? = 1 ]; then
+	  mkdir tmp
+	  mkdir sys
+	  act "uncompressing usr binaries from ${DYNE_SYS_MNT}/dyne.sys"
+	  act "please wait, this operation requires long time..."
+	  mount -o loop ${DYNE_SYS_MNT}/dyne.sys tmp
+	  cp -rau tmp/* sys/
+	  umount tmp
+	  rm -r tmp
+      fi
+      
+  else
+      act "SDL/sys directory found"
+      act "dyne.sys /usr filesystem is already uncompressed, skypping"
   fi
-
+  
   ask_yesno 10 \
-"I can download the kernel sources, it will occupy approx 100MB
+      "I can download the kernel sources, it will occupy approx 100MB
  this way you will be able to recompile the dyne:II kernel.\n
  You should do it only if you really need: compiling a kernel
  requires deep knowledge of Linux and in case you do anything
  wrong it might break your system.\n\n
  Do you want to download the dyne:II kernel sources ?"
   if [ $? = 1 ]; then
-    act "downloading dyne:II kernel source and modules"
-    rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
+      act "downloading dyne:II kernel source and modules"
+      rsync -P -r rsync.dyne.org::dynebolic-dev-anon/dyneII/kernel/ kernel
   fi
 
   if ! [ -x cdrom/isolinux/boot.cat ]; then
@@ -356,7 +364,7 @@ squashone() {
     fi
 
     # make the list of files to exclude
-    EXCL="`find ${PFX}/modules/${MOD}/ -name .svn`"
+    EXCL="`find ${PFX}/modules/${MOD}/ -name .git`"
 
     $MKSQUASHFS "${PFX}/modules/${MOD}" "${PFX}/cdrom/dyne/modules/${MOD}.dyne" "-e" "${EXCL}"
     chmod a+r   ${PFX}/cdrom/dyne/modules/${MOD}.dyne
@@ -578,59 +586,59 @@ EOF
     chown nobody:nogroup var/log/icecast
 
   
-    if [ -x $PFX/startup/.svn ]; then
+    if [ -x $PFX/git/startup ]; then
 	act "setup startup files from subversion repository"
-	cp -vf $PFX/startup/rc.*     etc/
-	cp -vf $PFX/startup/zshenv   etc/
-	cp -vf $PFX/startup/inittab  etc/
-        for f in `ls -A $PFX/startup/bin/ | grep -v .svn`; do
+	cp -vf $PFX/git/startup/rc.*     etc/
+	cp -vf $PFX/git/startup/zshenv   etc/
+	cp -vf $PFX/git/startup/inittab  etc/
+        for f in `ls -A $PFX/git/startup/bin/ | grep -v .git`; do
           cp -raf ${PFX}/startup/bin/${f}       bin
         done
 
-        if [ -x ${PFX}/startup/lib ]; then
+        if [ -x ${PFX}/git/startup/lib ]; then
           # blank all lib/dyne
           rm -rf lib/dyne/*
 
-	  for f in `ls $PFX/startup/lib/`; do
-	    cp -raf ${PFX}/startup/lib/${f}       lib/dyne/
+	  for f in `ls $PFX/git/startup/lib/`; do
+	    cp -raf ${PFX}/git/startup/lib/${f}       lib/dyne/
 	  done
 
           mkdir -p lib/dyne/zsh
-	  for f in `ls $PFX/startup/zsh/`; do
-	    cp -af ${PFX}/startup/zsh/${f}        lib/dyne/zsh/
+	  for f in `ls $PFX/git/startup/zsh/`; do
+	    cp -af ${PFX}/git/startup/zsh/${f}        lib/dyne/zsh/
 	  done
 
           mkdir -p lib/dyne/xdg
-	  for f in `ls $PFX/startup/xdg/`; do
+	  for f in `ls $PFX/git/startup/xdg/`; do
 	    cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
 	  done
 
           mkdir -p lib/dyne/skel
-	  for f in `ls -A $PFX/startup/skel/ | grep -v .svn`; do
-	    cp -raf ${PFX}/startup/skel/${f}	lib/dyne/skel/
+	  for f in `ls -A $PFX/git/startup/skel/ | grep -v .git`; do
+	    cp -raf ${PFX}/git/startup/skel/${f}	lib/dyne/skel/
 	  done
 
           mkdir -p lib/dyne/hotplug
           rm -f lib/dyne/hotplug/debug # no debug by default
-          for f in `ls $PFX/startup/hotplug/`; do
-            cp -raf ${PFX}/startup/hotplug/${f} lib/dyne/hotplug/
+          for f in `ls $PFX/git/startup/hotplug/`; do
+            cp -raf ${PFX}/git/startup/hotplug/${f} lib/dyne/hotplug/
           done
 
           mkdir -p lib/dyne/udev
-          for f in `ls $PFX/startup/udev/`; do
-            cp -raf ${PFX}/startup/udev/${f}	lib/dyne/udev/
+          for f in `ls $PFX/git/startup/udev/`; do
+            cp -raf ${PFX}/git/startup/udev/${f}	lib/dyne/udev/
           done
           
           mkdir -p lib/dyne/configure
-	  for f in `ls $PFX/startup/configure/`; do
-	    cp -af ${PFX}/startup/configure/${f}  lib/dyne/configure/
-            cp -f  ${PFX}/startup/configure/.DirIcon lib/dyne/configure/
+	  for f in `ls $PFX/git/startup/configure/`; do
+	    cp -af ${PFX}/git/startup/configure/${f}  lib/dyne/configure/
+            cp -f  ${PFX}/git/startup/configure/.DirIcon lib/dyne/configure/
 	  done
         fi
 
 	mkdir -p etc/WindowMaker
-	for f in `ls $PFX/startup/GNUstep/`; do
-	  cp -af  ${PFX}/startup/GNUstep/${f}   etc/WindowMaker/
+	for f in `ls $PFX/git/startup/GNUstep/`; do
+	  cp -af  ${PFX}/git/startup/GNUstep/${f}   etc/WindowMaker/
         done
 
         # delete all backup files
@@ -710,9 +718,12 @@ EOF
 
     fi
 
-    act "cleaning up from .svn directories"
+    act "cleaning up from .revision directories"
     for svn in `find . -name '.svn'`; do
       rm -rf ${svn}
+    done
+    for git in `find . -name '.git'`; do
+      rm -rf ${git}
     done
     
     act "calculating ramdisk size:"
@@ -763,7 +774,7 @@ mkusr() {
     notice "preparing the /usr squashed filesystem"
 
     # copy the current dynesdk inside the new system
-    cp -v $PFX/devel/dynesdk /usr/sbin/dynesdk
+    cp -v $PFX/git/devel/dynesdk /usr/sbin/dynesdk
 
     ask_yesno 10 \
 "Would you like to download an up-to-date device ID database from internet?"
@@ -995,7 +1006,7 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
     fi
     
     act "proceeding to pack the ISO image $ISO"
-    $MKISOFS -o $PFX/$ISO -J -R -udf -m '.svn' \
+    $MKISOFS -o $PFX/$ISO -J -R -udf -m '.git' \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
 	    $PFX/cdrom/
