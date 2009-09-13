@@ -111,13 +111,14 @@ while true; do
 	    act "mksdk      create an SDK environment inside the harddisk dock"
             act "mount      mount all unmounted SDK/modules in /opt"
             act "devel      extracts a module in SDK/modules and mount it RW"
-	    act "squash     packs one or all the mounted modules in SDK/cdrom"
-	    act "mkiso      packs the SDK/cdrom directory into a bootable iso"
+	    act "squash     pack one or all the mounted modules in SDK/cdrom"
+	    act "mkiso      pack the SDK/cdrom directory into a bootable iso"
 
 	    notice "CORE DEVELOPMENT COMMANDS:"
-	    act "mkinitrd   packs the initrd.gz into the SDK/cdrom"
-	    act "mkusr      packs the dyne.sys in the SDK/cdrom"
-            act "mkkern     packs the kernel and modules in the SDK/cdrom"
+	    act "mkinitrd   pack the initrd.gz into the SDK/cdrom"
+	    act "mkusr      pack the dyne.sys in the SDK/cdrom"
+            act "mkkern     pack the kernel and modules in the SDK/cdrom"
+	    act "mkkern-src clean and pack kernel sources a new module"
 
 	    echo; exit 2 ;;
 	-v) exit 2 ;;
@@ -917,34 +918,46 @@ mkkern() {
         act "kernel modules linux-${KRN}.kmods are already present in ${PFX}/cdrom/dyne"
     fi
 
-    # and the kernel sources
-    if ! [ -r $PFX/modules/kernel-src-${krnverabbr}/VERSION ]; then
-      if [ -r ./MAINTAINERS ]; then # we are in the kernel source tree
 
-        act "making kernel source clean"
-        make clean
-        act "packing kernel sources in $krnverabbr (please wait patiently)"
-        mkdir -p $PFX/modules/kernel-src-${krnverabbr}
-        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/etc
-        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src
-        mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}
-        cp -ar . $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}/
-        cat << EOF > $PFX/modules/kernel-src-${krnverabbr}/VERSION
+}
+
+mkkern-src() {
+    notice "creating a .dyne module of current kernel sources"
+    # and the kernel sources
+    if [ -r $PFX/modules/kernel-src-${krnverabbr}/VERSION ]; then
+	error "kernel source module already present in"
+	error "$PFX/modules/kernel-src-${krnverabbr}"
+	error "delete that for explicit substitution. operation aborted."
+	exit 0
+    fi
+
+    if ! [ -r ./MAINTAINERS ]; then
+	error "mkkern-src must be invoked inside the linux kernel source"
+	error "enter your kernel source tree and execute this command inside"
+	exit 0
+    fi
+ # we are in the kernel source tree
+    
+    act "making kernel source clean"
+    make clean
+    act "packing kernel sources in $krnverabbr (please wait patiently)"
+    mkdir -p $PFX/modules/kernel-src-${krnverabbr}
+    mkdir -p $PFX/modules/kernel-src-${krnverabbr}/etc
+    mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src
+    mkdir -p $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}
+    cp -ar . $PFX/modules/kernel-src-${krnverabbr}/src/linux-${KRN}/
+    cat << EOF > $PFX/modules/kernel-src-${krnverabbr}/VERSION
 name		Linux kernel sources
 desc		packed the `date +%D` on `hostname`
 version		${KRN}
 url		http://kernel.org
 packager	${USER}
 EOF
- 
-        notice "kernel sources packages in ${PFX}/modules/kernel-src-${krnverabbr}"
-        act    "launch 'dynesdk squash kernel-src-${krnverabbr}' to squash the module"
-
-      fi
-    fi
-
+    
+    notice "kernel sources packages in ${PFX}/modules/kernel-src-${krnverabbr}"
+    act    "launch 'dynesdk squash kernel-src-${krnverabbr}' to squash the module"
+    
 }
-
 mkiso() {
     notice "making the dyneII ISO"
     echo "# Forged on `date` " \
@@ -1048,6 +1061,7 @@ case "$CMD" in
     mkinitrd) mkinitrd ;;
     mkusr)    mkusr    ;;
     mkkern)   mkkern   ;;
+    mkkern-src) mkkern-src ;;
 
     *) error "command \"$CMD\" not recognized"
        act "try -h for help"
