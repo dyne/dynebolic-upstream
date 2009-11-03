@@ -609,17 +609,17 @@ EOF
           rm -rf lib/dyne/*
 
 	  for f in `ls $DYNEGIT/startup/lib/`; do
-	    cp -raf ${DYNEGIT}/startup/lib/${f}       lib/dyne/
+	      cp -raf ${DYNEGIT}/startup/lib/${f}       lib/dyne/
 	  done
 
           mkdir -p lib/dyne/zsh
 	  for f in `ls $DYNEGIT/startup/zsh/`; do
-	    cp -af ${DYNEGIT}/startup/zsh/${f}        lib/dyne/zsh/
+	      cp -af ${DYNEGIT}/startup/zsh/${f}        lib/dyne/zsh/
 	  done
 
           mkdir -p lib/dyne/xdg
 	  for f in `ls $DYNEGIT/startup/xdg/`; do
-	    cp -raf ${PFX}/startup/xdg/${f}	lib/dyne/xdg/
+	      cp -raf ${DYNEGIT}/startup/xdg/${f}	lib/dyne/xdg/
 	  done
 
           mkdir -p lib/dyne/skel
