@@ -837,10 +837,10 @@ mkkern() {
     # retrieve the version of the kernel source we are in
     # it is stored in the Makefile..
 
-    KRN=`cat Makefile | awk'
+    KRN=`cat Makefile | awk '
     BEGIN { krn="" }
-    /^VERSION/      { krn = krn $3 }
-    /^PATCHLEVEL/   { krn = krn $3 }
+    /^VERSION/      { krn = krn $3 "." }
+    /^PATCHLEVEL/   { krn = krn $3 "."}
     /^SUBLEVEL/     { krn = krn $3 }
     /^EXTRAVERSION/ { krn = krn $3 }
     END { print krn }'`-dyne
@@ -853,7 +853,6 @@ mkkern() {
     act "due to isolinux restrictions on filesystems (8.3 names)"
     act "your kernel filename is: $krnfile"
 
-    if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 
 	act "searching for kernel image bytecode in current kernel tree: ./arch/`uname -i`/boot/bzImage"
 
@@ -889,9 +888,6 @@ mkkern() {
 		
 	fi
 
-    else
-            act "kernel $krnfile is already present in ${PFX}/cdrom/dyne/"
-    fi
 
     if ! [ -r ${PFX}/cdrom/dyne/${krnfile} ]; then
 	error "compile your kernel sources in $PFX/kernel"
