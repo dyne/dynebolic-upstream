@@ -828,6 +828,23 @@ mkusr() {
 }
 
 mkkern() {
+    # check we are in the kernel source
+    if ! [ -r Makefile ]; then
+	    error "run this command from the top directory of the Linux kernel source"
+	    exit 1;
+    fi
+
+    # retrieve the version of the kernel source we are in
+    # it is stored in the Makefile..
+
+    KRN=`cat Makefile | awk'
+    BEGIN { krn="" }
+    /^VERSION/      { krn = krn $3 }
+    /^PATCHLEVEL/   { krn = krn $3 }
+    /^SUBLEVEL/     { krn = krn $3 }
+    /^EXTRAVERSION/ { krn = krn $3 }
+    END { print krn }'`-dyne
+
     notice "packing the kernel version $KRN"
 
     # compose the kernel file name removing all . or -
@@ -885,7 +902,6 @@ mkkern() {
     fi
 
     # now the modules, if they are not squashed
-
     modpack="$PFX/cdrom/dyne/linux-${KRN}.kmods"
     krnverabbr="`echo $krnfile | cut -d. -f1`"
     
