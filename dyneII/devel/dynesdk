@@ -2,13 +2,14 @@
 #
 # dyne:bolic software development kit - the commandline tool
 #
-# Copyright (C) 2003-2009 Denis "Jaromil" Rojo <jaromil@dyne.org>
+# Copyright (C) 2003-2010 Denis "Jaromil" Roio <jaromil@dyne.org>
 #
 # with contributions and testing by:
-#      2004          Alex "Smilzo" Gnoli    <smilzo@sfrajone.org>
-#                    Pierluigi "Newmark" Maori <newmark@dyne.org>
-#      2006          Aymeric Mansoux <aym3ric@goto10.org>
+#      2004          Alex Gnoli            <smilzo@sfrajone.org>
+#                    Pierluigi Maori       <newmark@dyne.org>
+#      2006          Aymeric Mansoux       <aym3ric@goto10.org>
 #                    Antonios Galanopoulos <anton@goto10.org>
+#      2010          Alessio Piffero       <fruity@freaknet.org>
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -68,7 +69,7 @@ ISO=dyne-${DYNE_SYS_VER}.iso
 # generate the default name of the ramdisk
 INITRD=initrd
 
-# degine KRN for version of the kernel
+# define KRN for version of the kernel
 if [ -z $KRN ]; then KRN=`uname -r`; fi
 
 # define MODDIR for path to kernel modules
@@ -106,7 +107,7 @@ while true; do
             act "-o     filename of the iso to generate (default dyne-VER.iso)"
             act "-s     sign generated iso with gpg ID"
 	    act "-K     pack all kernel modules into the ramdisk"
-	    act "define kernel version in \$KRN (current is `uname -r`)"
+	    act "       define kernel version in \$KRN (current is `uname -r`)"
             notice "MODULE DEVELOPMENT COMMANDS:"
 	    act "mksdk      create an SDK environment inside the harddisk dock"
             act "mount      mount all unmounted SDK/modules in /opt"
@@ -188,11 +189,11 @@ fi
 	
 # if those are missing, the iso can't be packed
 if [ -z $MKISOFS ]; then
-    check_sw "mkisofs";
+    check_sw mkisofs;
     if [ $RET ]; then MKISOFS=$RET; fi
 fi
 if [ -z $MKSQUASHFS ]; then
-    check_sw "mksquashfs";
+    check_sw mksquashfs;
     if [ $RET ]; then MKSQUASHFS=$RET; fi
 fi
 
@@ -920,7 +921,7 @@ mkkern() {
         ln -sf /opt/kernel-src-${krnverabbr}/src/linux-${KRN} ${PFX}/tmp/lib/modules/${KRN}/source
 	
 	act "packing modules in ${modpack}"
-	$MKSQUASHFS ${PFX}/tmp/lib/modules/${KRN} $modpack -root-owned
+	$MKSQUASHFS ${PFX}/tmp/lib/modules/${KRN} $modpack -all-root
 	chmod a+r $modpack
 	chmod -x  $modpack
         rm -rf ${PFX}/tmp
@@ -1029,15 +1030,36 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
       cp -rav ${DYNE_SYS_MNT}/modules ${PFX}/cdrom/dyne/
     fi 
     # the CONFIG
-    if [ -r $PFX/startup/dyne.cfg ]; then
-      act "updating dyne configuration from development subversion"
-      cp -a $PFX/startup/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
-    fi
+#    if [ -r $PFX/startup/dyne.cfg ]; then
+#      act "updating dyne configuration from development subversion"
+#      cp -a $PFX/startup/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
+#    fi
     if ! [ -r $PFX/cdrom/dyne/dyne.cfg ]; then
       act "copying dyne configuration from current dock"
       cp -a ${DYNE_SYS_MNT}/dyne.cfg ${PFX}/cdrom/dyne/dyne.cfg
     fi
-    
+
+    # create the boot configurations
+    kernfile=`ls $PFX/cdrom/dyne/*.krn`
+    echo "configuring to boot from kernel $kernfile"
+    rm -f $PFX/cdrom/isolinux/isolinux.cfg
+    cat <<EOF > $PFX/cdrom/isolinux/isolinux.cfg
+default linux
+
+prompt 1
+timeout 100
+f1 boot.msg
+f2 debug.msg
+f3 vesa.msg
+f4 thincl.msg
+f5 license.msg
+
+label linux
+	display boot.msg
+	kernel /dyne/$kernfile
+	append initrd=/dyne/initrd.gz root=/dev/ram0 rw load_ramdisk=1 prompt_ramdisk=0 ramdisk_start=0 max_loop=64 vga=791
+EOF
+
     act "proceeding to pack the ISO image $ISO"
     $MKISOFS -o $PFX/$ISO -J -R -udf -m '.git' \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
