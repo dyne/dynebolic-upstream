@@ -1041,6 +1041,7 @@ if you say NO we'll just use the current dyne.sys in your dock (recommended if y
 
     # create the boot configurations
     kernfile=`ls $PFX/cdrom/dyne/*.krn`
+    kernfile=`basename $kernfile`
     echo "configuring to boot from kernel $kernfile"
     rm -f $PFX/cdrom/isolinux/isolinux.cfg
     cat <<EOF > $PFX/cdrom/isolinux/isolinux.cfg
