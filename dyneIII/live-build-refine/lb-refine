@@ -55,7 +55,7 @@ ARGS=$@[@]
 # CHECK FOR BINARIES:
 # sudo, unsquashfs, Xephyr
 
-OPTS=`getopt -o hvKp:o:s:m: -n 'dynesdk' -- "$@"`
+OPTS=`getopt -o X:hv -n "$BINFILE" -- "$@"`
 
 while true; do
     case "$1" in
@@ -66,12 +66,14 @@ while true; do
 	    act "edit   edit an open livecd iso"
 	    act "pack   squash an open livecd iso"
             notice "options:"
+	    act "-x RES nest graphical session at RES (ie: 1024x768)"
 	    act "-h     print this help"
 	    act "-v     print out the version of this tool"
 #	    act "-p     path to the SDK directory (def. same as iso)"
 
 
 	    echo; exit 2 ;;
+	-X) XRES=${2}; shift 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=${2}; shift 2 ;;
 	--) shift; break ;;
@@ -215,13 +217,19 @@ start_xephyr() {
 	error "Xephyr already running, operation aborted."
 	return 1
     fi
+    act "to launch the graphical session use:"
+    act "export DISPLAY=localhost:0"
+    act "xfce4-session (or what have you)"
+    notice "now don't mind the error about fonts, but login with user and password"
     
     return 0
 }
 
 edit_iso() {
 
-    start_xephyr $ARG2
+    if [ $XRES ]; then
+        start_xephyr $XRES
+    fi
 
     # bind dev and proc if needed
     mount | grep "$PFX/$FILE/dev/pts" > /dev/null
@@ -244,13 +252,12 @@ edit_iso() {
 
     cp /etc/resolv.conf $PFX/$FILE/etc/resolv.conf
     notice "jumping into the live system"
-    act "to launch the graphical session use:"
-    act "export DISPLAY=localhost:0"
-    act "xfce4-session (or what have you)"
-    notice "now don't mind the error about fonts, but login with user and password"
+    act "default login is luther, password luther"
     chroot $PFX/$FILE /bin/login
 
-    killall Xephyr
+    if [ $XRES ]; then
+        killall Xephyr
+    fi
     umount $PFX/$FILE/dev/pts
     umount $PFX/$FILE/proc
     umount $PFX/$FILE/var/run
