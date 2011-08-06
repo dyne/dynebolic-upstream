@@ -1,0 +1,343 @@
+#!/bin/sh
+
+# source for log_*_msg() functions, see LP: #272301
+. /scripts/functions
+
+#
+# Standard initramfs preamble
+#
+prereqs()
+{
+	# Make sure that cryptroot is run last in local-top
+	for req in /scripts/local-top/*; do
+		script=${req##*/}
+		if [ $script != cryptroot ]; then
+			echo $script
+		fi
+	done
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+
+#
+# Helper functions
+#
+message()
+{
+	if [ -p /dev/.initramfs/usplash_outfifo ] && [ -x /sbin/usplash_write ]; then
+		usplash_write "TEXT-URGENT $@"
+	else
+		echo "$@" >&2
+	fi
+	return 0
+}
+
+udev_settle()
+{
+	# Wait for udev to be ready, see https://launchpad.net/bugs/85640
+	if [ -x /sbin/udevadm ]; then
+		/sbin/udevadm settle --timeout=30
+	elif [ -x /sbin/udevsettle ]; then
+		/sbin/udevsettle --timeout=30
+	fi
+	return 0
+}
+
+parse_options()
+{
+	local cryptopts
+	cryptopts="$1"
+
+	if [ -z "$cryptopts" ]; then
+		return 1
+	fi
+
+	# Defaults
+	cryptcipher=aes-cbc-essiv:sha256
+	cryptsize=256
+	crypthash=ripemd160
+	crypttarget=cryptroot
+	cryptsource=""
+	cryptlvm=""
+	cryptkeyscript=""
+	cryptkey="" # This is only used as an argument to an eventual keyscript
+	crypttries=3
+
+	local IFS=" ,"
+	for x in $cryptopts; do
+		case $x in
+		hash=*)
+			crypthash=${x#hash=}
+			;;
+		size=*)
+			cryptsize=${x#size=}
+			;;
+		cipher=*)
+			cryptcipher=${x#cipher=}
+			;;
+		target=*)
+			crypttarget=${x#target=}
+			;;
+		source=*)
+			cryptsource=${x#source=}
+			if [ ${cryptsource#UUID=} != $cryptsource ]; then
+				cryptsource="/dev/disk/by-uuid/${cryptsource#UUID=}"
+			elif [ ${cryptsource#LABEL=} != $cryptsource ]; then
+				cryptsource="/dev/disk/by-label/${cryptsource#LABEL=}"
+			fi
+			;;
+		lvm=*)
+			cryptlvm=${x#lvm=}
+			;;
+		keyscript=*)
+			cryptkeyscript=${x#keyscript=}
+			;;
+		key=*)
+			if [ "${x#key=}" != "none" ]; then
+				cryptkey=${x#key=}
+			fi
+			;;
+		tries=*)
+			crypttries="${x#tries=}"
+			case "$crypttries" in
+			  *[![:digit:].]*)
+				crypttries=3
+				;;
+			esac
+			;;
+		esac
+	done
+
+	if [ -z "$cryptsource" ]; then
+		message "cryptsetup: source parameter missing"
+		return 1
+	fi
+	return 0
+}
+
+activate_vg()
+{
+	local vg
+	vg="${1#/dev/mapper/}"
+
+	# Sanity checks
+	if [ ! -x /sbin/lvm ] || [ "$vg" = "$1" ]; then
+		return 1
+	fi
+
+	# Make sure that the device contains at least one dash
+	if [ "${vg%%-*}" = "$vg" ]; then
+		return 1
+	fi
+
+	# Split volume group from logical volume.
+	vg=$(echo ${vg} | sed -e 's#\(.*\)\([^-]\)-[^-].*#\1\2#')
+
+	# Reduce padded --'s to -'s
+	vg=$(echo ${vg} | sed -e 's#--#-#g')
+
+	lvm vgchange -ay ${vg}
+	return $?
+}
+
+activate_evms()
+{
+	local dev module
+	dev="${1#/dev/evms/}"
+
+	# Sanity checks
+	if [ ! -x /sbin/evms_activate ] || [ "$dev" = "$1" ]; then
+		return 1
+	fi
+
+	# Load modules used by evms
+	for module in dm-mod linear raid0 raid1 raid10 raid5 raid6; do
+		modprobe -q $module
+	done
+
+	# Activate it
+	/sbin/evms_activate
+	return $?
+}
+
+setup_mapping()
+{
+	local opts count cryptcreate cryptremove NEWROOT
+	opts="$1"
+
+	if [ -z "$opts" ]; then
+		return 0
+	fi
+
+	parse_options "$opts" || return 1
+
+	if [ -n "$cryptkeyscript" ] && [ ! -x "$cryptkeyscript" ]; then
+		message "cryptsetup: error - script \"$cryptkeyscript\" missing"
+		return 1
+	fi
+
+	# The same target can be specified multiple times
+	# e.g. root and resume lvs-on-lvm-on-crypto
+	if [ -e "/dev/mapper/$crypttarget" ]; then
+		return 0
+	fi
+
+	modprobe -q dm_crypt
+
+	# Make sure the cryptsource device is available
+	if [ ! -e $cryptsource ]; then
+		activate_vg $cryptsource
+		activate_evms $cryptsource
+	fi
+
+	# If the encrypted source device hasn't shown up yet, give it a
+	# little while to deal with removable devices
+
+	# the following lines below have been taken from
+	# /usr/share/initramfs-tools/scripts/local, as suggested per
+	# https://launchpad.net/bugs/164044
+	if [ ! -e "$cryptsource" ]
+	then
+		log_begin_msg "Waiting for encrypted source device..."
+
+		# Default delay is 180s
+		if [ -z "${ROOTDELAY}" ]; then
+			slumber=180
+		else
+			slumber=${ROOTDELAY}
+		fi
+		if [ -x /sbin/usplash_write ]; then
+			/sbin/usplash_write "TIMEOUT ${slumber}" || true
+		fi
+
+		slumber=$(( ${slumber} * 10 ))
+		while [ ! -e "$cryptsource" ]
+		do
+			/bin/sleep 0.1
+			slumber=$(( ${slumber} - 1 ))
+			[ ${slumber} -gt 0 ] || break
+		done
+
+		if [ ${slumber} -gt 0 ]; then
+			log_end_msg 0
+		else
+			log_end_msg 1 || true
+		fi
+		if [ -x /sbin/usplash_write ]; then
+			/sbin/usplash_write "TIMEOUT 15" || true
+		fi
+	fi
+	udev_settle
+
+	# We've given up, but we'll let the user fix matters if they can
+	while [ ! -e "${cryptsource}" ]; do
+		echo "	Check cryptopts=source= bootarg cat /proc/cmdline"
+		echo "	or missing modules, devices: cat /proc/modules ls /dev"
+		panic -r "ALERT!  ${cryptsource} does not exist.  Dropping to a shell!"
+	done
+
+	# Prepare commands
+	if /sbin/cryptsetup isLuks $cryptsource > /dev/null 2>&1; then
+		cryptcreate="/sbin/cryptsetup -T 1 luksOpen $cryptsource $crypttarget"
+	else
+		cryptcreate="/sbin/cryptsetup -T 1 -c $cryptcipher -s $cryptsize -h $crypthash create $crypttarget $cryptsource"
+	fi
+	cryptremove="/sbin/cryptsetup remove $crypttarget"
+	NEWROOT="/dev/mapper/$crypttarget"
+
+	# Try to get a satisfactory password $crypttries times
+	count=0
+	while [ $crypttries -le 0 ] || [ $count -lt $crypttries ]; do
+		count=$(( $count + 1 ))
+
+		if [ $count -gt 1 ]; then
+			sleep 3
+		fi
+
+		if [ $crypttries -gt 0 ] && [ $count -gt $crypttries ]; then
+			message "cryptsetup: maximum number of tries exceeded for $crypttarget"
+			return 1
+		fi
+
+		if [ -z "$cryptkeyscript" ]; then
+			cryptkeyscript="/lib/cryptsetup/askpass"
+			cryptkey="Unlocking the disk $cryptsource ($crypttarget)\nEnter passphrase: "
+		fi
+
+
+		if ! crypttarget="$crypttarget" cryptsource="$cryptsource" \
+		     $cryptkeyscript "$cryptkey" | $cryptcreate --key-file=- ; then
+			message "cryptsetup: cryptsetup failed, bad password or options?"
+			continue
+		fi
+
+		if [ ! -e "$NEWROOT" ]; then
+			message "cryptsetup: unknown error setting up device mapping"
+			return 1
+		fi
+
+		FSTYPE=''
+		eval $(fstype < "$NEWROOT")
+
+		# See if we need to setup lvm on the crypto device
+		if [ "$FSTYPE" = "lvm" ] || [ "$FSTYPE" = "lvm2" ]; then
+			if [ -z "$cryptlvm" ]; then
+				message "cryptsetup: lvm fs found but no lvm configured"
+				return 1
+			elif ! activate_vg "/dev/mapper/$cryptlvm"; then
+				# disable error message, LP: #151532
+				#message "cryptsetup: failed to setup lvm device"
+				return 1
+			fi
+
+			NEWROOT="/dev/mapper/$cryptlvm"
+			eval $(fstype < "$NEWROOT")
+		fi
+
+		if [ -z "$FSTYPE" ] || [ "$FSTYPE" = "unknown" ]; then
+			message "cryptsetup: unknown fstype, bad password or options?"
+			$cryptremove
+			continue
+		fi
+
+		message "cryptsetup: $crypttarget setup successfully"
+		break
+	done
+
+	udev_settle
+	return 0
+}
+
+#
+# Begin real processing
+#
+
+# Do we have any kernel boot arguments?
+found=''
+for opt in $(cat /proc/cmdline); do
+	case $opt in
+	cryptopts=*)
+		found=yes
+		setup_mapping "${opt#cryptopts=}"
+		;;
+	esac
+done
+
+if [ -n "$found" ]; then
+	exit 0
+fi
+
+# Do we have any settings from the /conf/conf.d/cryptroot file?
+if [ -r /conf/conf.d/cryptroot ]; then
+	while read mapping <&3; do
+		setup_mapping "$mapping"
+	done 3< /conf/conf.d/cryptroot
+fi
+
+exit 0

@@ -1,0 +1,13 @@
+#! /bin/sh
+
+case $1 in
+prereqs)
+	exit 0
+	;;
+esac
+
+mkdir -p /dev/.initramfs/varrun
+pidof mount.ntfs >> /dev/.initramfs/varrun/sendsigs.omit
+pidof mount.ntfs-3g >> /dev/.initramfs/varrun/sendsigs.omit
+
+exit 0

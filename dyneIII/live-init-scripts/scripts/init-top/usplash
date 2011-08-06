@@ -1,0 +1,38 @@
+#!/bin/sh
+
+OPTION=USPLASH
+PREREQ="framebuffer console_setup brltty"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+SPLASH=false
+VERBOSE=true
+
+for x in $(cat /proc/cmdline); do
+	case $x in
+	splash*)
+		SPLASH=true
+		;;
+	nosplash*)
+		SPLASH=false
+	        ;;
+	esac
+done
+
+if [ $SPLASH = "true" ]; then
+	# Tell Upstart about usplash, so that it can synthesise a job.
+	# Relative paths are resolved relative to /dev/.initramfs; if we use
+	# an absolute path here, then we'll have trouble unlinking it later
+	# because our filesystem namespace will have gone away.
+	/sbin/usplash -p -c -t 60 --background --pidfile usplash.pid
+fi

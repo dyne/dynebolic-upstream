@@ -1,0 +1,59 @@
+#!/bin/sh
+
+#set -e
+
+# initramfs-tools header
+
+PREREQ=""
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+# live-initramfs header
+
+. /scripts/live-functions
+
+log_begin_msg "Possibly disabling update-initramfs (useless on a live CD)..."
+
+# live-initramfs script
+
+chroot /root dpkg-divert --add --rename --quiet \
+	/usr/sbin/update-initramfs
+
+# Running off a USB disk or other writable media.
+if [ -w /root/cdrom ] && \
+   ! grep -q '^[^ ]* /root/cdrom [^ ]* [^ ]*\<ro\>' /proc/mounts
+then
+
+cat > /root/usr/sbin/update-initramfs << 'EOF'
+#!/bin/sh
+
+update-initramfs.distrib "$@"
+cp /initrd.img /cdrom/live/initrd.gz
+cp /vmlinuz /cdrom/live/vmlinuz
+exit 0
+EOF
+
+else
+
+cat > /root/usr/sbin/update-initramfs << EOF
+#!/bin/sh
+
+echo "update-initramfs is disabled since running on read-only media"
+exit 0
+EOF
+
+fi
+
+chmod 0755 /root/usr/sbin/update-initramfs
+
+log_end_msg

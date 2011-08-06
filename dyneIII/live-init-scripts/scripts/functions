@@ -1,0 +1,368 @@
+# -*- shell-script -*-
+
+_log_msg()
+{
+	if [ "$quiet" = "y" ]; then return; fi
+	echo "$@"
+}
+
+log_success_msg()
+{
+	_log_msg "Success: $@"
+}
+
+log_failure_msg()
+{
+	_log_msg "Failure: $@"
+}
+
+log_warning_msg()
+{
+	_log_msg "Warning: $@"
+}
+
+log_begin_msg()
+{
+	if [ -x /sbin/usplash_write ]; then
+		/sbin/usplash_write "TEXT $@"
+	fi
+	_log_msg "Begin: $@ ..."
+}
+
+log_end_msg()
+{
+	if [ -x /sbin/usplash_write ]; then
+		/sbin/usplash_write "SUCCESS ok"
+	fi
+	_log_msg "Done."
+}
+
+# Add failure hook
+add_mountroot_fail_hook()
+{
+	mkdir -p /tmp/mountroot-fail-hooks.d
+	ln -s "$0" /tmp/mountroot-fail-hooks.d/"$1"
+}
+
+# Run failure hooks.
+# When a failure hook exits "1", it has not done anything to correct the
+# system.  Exiting "0" means that something has been attempted to resolve
+# the lack of a root filesystem.
+# Hooks are run in lexigraphical order, and are responsible for removing
+# themselves if they should not re-run in a later cycle.  When one exits
+# "0", the stack is stopped, so the caller can return to the main rootfs
+# wait loop.
+try_failure_hooks()
+{
+	local hook
+
+	# Disable usplash so text from hooks can be seen
+	if [ -x /sbin/usplash_write ]; then
+		/sbin/usplash_write "QUIT"
+	fi
+	chvt 1
+
+	for hook in /tmp/mountroot-fail-hooks.d/*; do
+		if [ -x ${hook} ] && ${hook} mountfail; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+panic()
+{
+	if [ -x /sbin/usplash_write ]; then
+		/sbin/usplash_write "QUIT"
+	fi
+	chvt 1
+
+	# Disallow console access
+	if [ -n "${panic}" ]; then
+		sleep ${panic}
+		reboot
+	fi
+
+	modprobe i8042
+	modprobe atkbd
+	echo $@
+	PS1='(initramfs) ' /bin/sh -i </dev/console >/dev/console 2>&1
+}
+
+maybe_break()
+{
+	if [ "${break}" = "$1" ]; then
+		panic "Spawning shell within the initramfs"
+	fi
+}
+
+render()
+{
+	eval "echo -n \${$@}"
+}
+
+set_initlist()
+{
+	unset initlist
+	for si_x in ${initdir}/*; do
+		# skip empty dirs without warning
+		[ "${si_x}" = "${initdir}/*" ] && return
+
+		# only allow variable name chars
+		case ${si_x#${initdir}/} in
+		*[![:alnum:]_]*)
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: not alphanumeric or '_' file"
+			continue
+			;;
+		esac
+
+		# skip non executable scripts
+		if [ ! -x ${si_x} ]; then
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: not executable"
+			continue
+		fi
+
+		# skip directories
+		if [ -d ${si_x} ]; then
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: a directory"
+			continue
+		fi
+
+		initlist="${initlist} ${si_x#${initdir}/}"
+	done
+}
+
+reduce_satisfied()
+{
+	deplist="$(render array_${1})"
+	unset tmpdeplist
+	for rs_y in ${deplist}; do
+		# check if there are alternatives
+		case ${rs_y} in
+		*\|*)
+			OLD_IFS="$IFS"
+			IFS="|"
+			for rs_z in ${rs_y}; do
+				IFS="$OLD_IFS"
+				# only allow variable name chars
+				case ${rs_z} in
+				*[![:alnum:]_]*)
+						IFS="|"
+						continue
+						;;
+				esac
+				# skip non executable scripts
+				if [ ! -x ${initdir}/${rs_z} ]; then
+					IFS="|"
+					continue
+				fi
+				# skip directories
+				if [ -d ${initdir}/${rs_z} ]; then
+					IFS="|"
+					continue
+				fi
+				tmpdeplist="${tmpdeplist} ${rs_z}"
+				break
+			done
+			IFS="$OLD_IFS"
+			;;
+		*)
+			case ${rs_y} in
+			*[![:alnum:]_]*)
+				continue
+				;;
+			esac
+			if [ ! -x ${initdir}/${rs_y} ]; then
+				continue
+			fi
+			if [ -d ${initdir}/${rs_y} ]; then
+				continue
+			fi
+			tmpdeplist="${tmpdeplist} ${rs_y}"
+			;;
+		esac
+	done
+	deplist=${tmpdeplist}
+	for rs_x in ${runlist}; do
+		pop_list_item ${rs_x} ${deplist}
+		deplist=${tmppop}
+	done
+	eval array_${1}=\"${deplist}\"
+}
+
+get_prereqs()
+{
+	set_initlist
+	for gp_x in ${initlist}; do
+		tmp=$(${initdir}/${gp_x} prereqs)
+		eval array_${gp_x}=\"${tmp}\"
+	done
+}
+
+count_unsatisfied()
+{
+	set -- ${@}
+	return ${#}
+}
+
+# Removes $1 from initlist
+pop_list_item()
+{
+	item=${1}
+	shift
+	set -- ${@}
+	unset tmppop
+	# Iterate
+	for pop in ${@}; do
+		if [ ${pop} = ${item} ]; then
+			continue
+		fi
+		tmppop="${tmppop} ${pop}"
+	done
+
+}
+
+# This function generates the runlist, so we clear it first.
+reduce_prereqs()
+{
+	unset runlist
+	set -- ${initlist}
+	i=$#
+	# Loop until there's no more in the queue to loop through
+	while [ ${i} -ne 0 ]; do
+		oldi=${i}
+		for rp_x in ${initlist}; do
+			reduce_satisfied ${rp_x}
+			count_unsatisfied $(render array_${rp_x})
+			cnt=${?}
+			if [ ${cnt} -eq 0 ]; then
+				runlist="${runlist} ${rp_x}"
+				pop_list_item ${rp_x} ${initlist}
+				initlist=${tmppop}
+				i=$((${i} - 1))
+			fi
+		done
+		if [ ${i} -eq ${oldi} ]; then
+			panic "PANIC: Circular dependancy.  Exiting."
+		fi
+	done
+}
+
+call_scripts()
+{
+	for cs_x in ${runlist}; do
+		if [ x"$1" = "xoptional" ]; then
+			option=$(sed '/^OPTION=/!d;$d;s/^OPTION=//;s/[[:space:]]*$//' "${initdir}/${cs_x}")
+			[ -z "${option}" ] || eval test -n \"\${$option}\" -a \"\${$option}\" != \"n\" || continue
+		fi
+
+		# mkinitramfs verbose output
+		if [ "${verbose}" = "y" ]; then
+			echo "Calling hook ${cs_x}"
+		fi
+		${initdir}/${cs_x}
+		# allow boot scripts to modify exported boot paramaters
+		if [ -e /conf/param.conf ]; then
+			. /conf/param.conf
+		fi
+	done
+}
+
+run_scripts()
+{
+	initdir=${1}
+	[ ! -d ${initdir} ] && return
+	get_prereqs
+	reduce_prereqs
+	call_scripts $2
+}
+
+# Load custom modules first
+load_modules()
+{
+	if [ -e /conf/modules ]; then
+		cat /conf/modules | while read m; do
+			# Skip empty lines
+			if [ -z "$m" ];  then
+				continue
+			fi
+			# Skip comments - d?ash removes whitespace prefix
+			com=$(printf "%.1s" "${m}")
+			if [ "$com" = "#" ]; then
+				continue
+			fi
+			modprobe $m
+		done
+	fi
+}
+
+# lilo compatibility
+parse_numeric() {
+	case $1 in
+	"")
+		return
+		;;
+	/*)
+		return
+		;;
+	*:*)
+		minor=${1#*:}
+		major=${1%:*}
+		;;
+	*)
+		value=$(( 0x${1} ))
+		minor=$(( ${value} % 256 ))
+		major=$(( ${value} / 256 ))
+		;;
+	esac
+
+	mknod -m 600 /dev/root b ${major} ${minor}
+	ROOT=/dev/root
+}
+
+configure_networking()
+{
+	# networking already configured thus bail out
+	[ -n "${DEVICE}" ] && [ -e /tmp/net-"${DEVICE}".conf ] && return 0
+
+	# support ip options see linux sources Documentation/nfsroot.txt
+	case ${IPOPTS} in
+	none|off)
+		# Do nothing
+		;;
+	""|on|any)
+		# Bring up device
+		ipconfig -t 60 ${DEVICE}
+		;;
+	dhcp|bootp|rarp|both)
+		ipconfig -t 60 -c ${IPOPTS} -d ${DEVICE}
+		;;
+	*)
+		ipconfig -t 60 -d $IPOPTS
+
+		# grab device entry from ip option
+		NEW_DEVICE=${IPOPTS#*:*:*:*:*:*}
+		if [ "${NEW_DEVICE}" != "${IPOPTS}" ]; then
+			NEW_DEVICE=${NEW_DEVICE%:*}
+		else
+			# wrong parse, possibly only a partial string
+			NEW_DEVICE=
+		fi
+		if [ -n "${NEW_DEVICE}" ]; then
+			DEVICE="${NEW_DEVICE}"
+		fi
+		;;
+	esac
+
+	# source ipconfig output
+	if [ -n "${DEVICE}" ]; then
+		# source specific bootdevice
+		. /tmp/net-${DEVICE}.conf
+	else
+		# source any interface as not exaclty specified
+		. /tmp/net-*.conf
+	fi
+}

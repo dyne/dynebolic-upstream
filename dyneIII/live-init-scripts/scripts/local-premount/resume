@@ -1,0 +1,130 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+if [ -z "${resume}" ]; then
+	exit 0
+fi
+
+if [ -e /conf/page_size.conf ]; then
+	. /conf/page_size.conf
+else
+	PAGE_SIZE=4096 # fallback
+fi
+export PAGE_SIZE
+
+case $resume in
+LABEL=*)
+	resume="${resume#LABEL=}"
+
+	# support any / in LABEL= path (escape to \x2f)
+	case "${resume}" in
+	*[/]*)
+		if [ -x "$(command -v sed)" ]; then
+			resume="$(echo ${resume} | sed 's,/,\\x2f,g')"
+		else
+			if [ "${resume}" != "${resume#/}" ]; then
+				resume="\x2f${resume#/}"
+			fi
+			if [ "${resume}" != "${resume%/}" ]; then
+				resume="${resume%/}\x2f"
+			fi
+			IFS='/'
+			newresume=
+			for s in $resume; do
+				if [ -z "${newresume}" ]; then
+					newresume="${s}"
+				else
+					newresume="${newresume}\\x2f${s}"
+				fi
+			done
+			unset IFS
+			resume="${newresume}"
+		fi
+	esac
+	resume="/dev/disk/by-label/${resume}"
+	;;
+UUID=*)
+	resume="/dev/disk/by-uuid/${resume#UUID=}"
+	;;
+esac
+
+. ./scripts/functions
+
+if [ ! -e "${resume}" ] || ! /sbin/blkid -p "${resume}" >/dev/null 2>&1; then
+	log_begin_msg "Waiting for resume device..."
+
+	# Default delay is 5s
+	if [ -z "${RESUMEDELAY}" ]; then
+		slumber=5
+	else
+		slumber=${RESUMEDELAY}
+	fi
+	if [ -x /sbin/usplash_write ]; then
+		/sbin/usplash_write "TIMEOUT ${slumber}" || true
+	fi
+
+	slumber=$(( ${slumber} * 10 ))
+	while [ ! -e "${resume}" ] || ! /sbin/blkid -p "${resume}" >/dev/null 2>&1; do
+		/bin/sleep 0.1
+		slumber=$(( ${slumber} - 1 ))
+		[ ${slumber} -gt 0 ] || break
+	done
+
+	if [ ${slumber} -gt 0 ]; then
+		log_end_msg 0
+	else
+		log_end_msg 1 || true
+		exit
+	fi
+fi
+
+magic=SWAPSPACE2S1SUSPEND
+if [ -n "${resume_offset}" ]; then
+	offset=$(($PAGE_SIZE * $resume_offset + 4076))
+else
+	offset=4076
+fi
+str=$(dd if=$resume bs=1 skip=$offset count=19 2>/dev/null)
+magic_found=
+
+if [ "$str" = "$magic" ]; then
+	magic_found=yes
+fi
+
+if [ -n "$magic_found" -a -x /sbin/usplash_write ]; then
+	# Force usplash to finish drawing before attempting resume.
+	# The screen can sometimes become corrupted if usplash is
+	# interrupted by the resume.
+	/sbin/usplash_write "PROGRESS 0" \
+		"TEXT-URGENT Waking up.  Please wait..." \
+		"INPUTCHAR" || true
+	read ignored < /dev/.initramfs/usplash_outfifo
+fi
+
+# hardcode path, uswsusp ships an resume binary too
+if [ -n "${resume_offset}" ]; then
+	/bin/resume ${resume} ${resume_offset} >/dev/null 2>&1
+else
+	/bin/resume ${resume} >/dev/null 2>&1
+fi
+
+# Not reached if resume is successful
+
+if [ -n "$magic_found" -a -x /sbin/usplash_write ]; then
+	/sbin/usplash_write "FAILURE failed!" \
+		"TEXT-URGENT Attempting normal startup." || true
+fi

@@ -1,0 +1,27 @@
+#!/bin/sh -e
+# initramfs nfs-top script for udev
+
+PREREQ=""
+
+# Output pre-requisites
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case "$1" in
+    prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+
+# Each call to udevsettle can take up to three minutes
+if [ -x /sbin/usplash_write ]; then
+    /sbin/usplash_write "TIMEOUT 360"
+    trap "/sbin/usplash_write 'TIMEOUT 15'" 0
+fi
+
+# We need to wait for the network card drivers to be loaded
+/sbin/udevadm settle

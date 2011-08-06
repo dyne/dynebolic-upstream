@@ -1,0 +1,44 @@
+#!/bin/sh
+
+#set -e
+
+# initramfs-tools header
+
+PREREQ=""
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+# live-initramfs header
+
+if [ ! -e /root/var/lib/dpkg/info/gnome-panel-data.list ] || [ -n "${NOGNOMEPANEL}" ]
+then
+	exit 0
+fi
+
+. /scripts/live-functions
+
+log_begin_msg "Configuring gnome-panel-data"
+
+# live-initramfs script
+
+if chroot /root laptop-detect > /dev/null 2>&1
+then
+	live-reconfigure /root gnome-panel-data
+fi
+
+if [ -n "${USERNAME}" ]
+then
+	chroot /root sudo -u "${USERNAME}" gconftool-2 -s -t bool /apps/panel/global/disable_lock_screen true
+fi
+
+log_end_msg

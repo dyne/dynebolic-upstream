@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#set -e
+
+# initramfs-tools header
+
+PREREQ=""
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+# live-initramfs header
+
+. /scripts/live-functions
+
+log_begin_msg "Disabling unnecessary KDE services..."
+
+# live-initramfs script
+
+rm -f /root/usr/share/services/kded/kwalletd.desktop
+rm -f /root/usr/share/kde4/services/kwalletd.desktop
+rm -f /root/usr/share/autostart/kab2kabc.desktop
+rm -f /root/usr/share/autostart/kabcdistlistupdater.desktop
+rm -f /root/usr/share/autostart/korgac.desktop
+rm -f /root/usr/share/autostart/printer-applet.desktop
+rm -f /root/usr/share/autostart/nepomukserver.desktop
+rm -f /root/usr/share/kde4/services/kded/kpackagekitd.desktop
+rm -f /root/usr/share/kde4/services/kded/susefreespacenotifier.desktop
+rm -f /root/usr/share/kde4/services/plasma-runner-contacts.desktop  # starts akonadi
+rm -f /root/etc/xdg/autostart/update-notifier-kde.desktop
+
+log_end_msg
