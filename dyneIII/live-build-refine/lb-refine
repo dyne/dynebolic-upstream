@@ -55,7 +55,7 @@ ARGS=$@[@]
 # CHECK FOR BINARIES:
 # sudo, unsquashfs, Xephyr
 
-OPTS=`getopt -o X:hv -n "$BINFILE" -- "$@"`
+OPTS=`getopt -o X:o:hv -n "$BINFILE" -- "$@"`
 
 while true; do
     case "$1" in
@@ -67,6 +67,7 @@ while true; do
 	    act "pack   squash an open livecd iso"
             notice "options:"
 	    act "-x RES nest graphical session at RES (ie: 1024x768)"
+	    act "-o PFX name prefix for the output file or directory"
 	    act "-h     print this help"
 	    act "-v     print out the version of this tool"
 #	    act "-p     path to the SDK directory (def. same as iso)"
@@ -74,6 +75,7 @@ while true; do
 
 	    echo; exit 2 ;;
 	-X) XRES=${2}; shift 2 ;;
+	-o) OUTFILE=${2}; shift 2 ;;
 	-v) exit 2 ;;
 	-p) PFX=${2}; shift 2 ;;
 	--) shift; break ;;
@@ -164,7 +166,13 @@ open_iso() {
 	return 1
     fi
 
-    dest=${PFX}/${FILE%%\.*}
+    # setup the name for the output directory
+    if [ -z $OUTFILE ]; then
+	dest=${PFX}/${FILE%%\.*}
+    else
+	dest=${OUTFILE}
+    fi
+
     if [ -x $dest ]; then
 	rmdir $dest 2>/dev/null # delete if empty
 	if [ $? != 0 ]; then
@@ -175,10 +183,16 @@ open_iso() {
 
     notice "Opening $PFX/$FILE ..."
 
-    loop_mount_iso # defines ISOLOOP, to be removed later
+    loop_mount_iso $PFX/$FILE # defines $ISOLOOP, to be removed later
+
+    if [ $? != 0 ]; then
+	error "loop mount failed"
+	return 1
+    fi
 
     if ! [ -x $ISOLOOP/live ]; then
 	error "ISO doesn't contains a live/ directory, is this a live-build system?"
+	umount $ISOLOOP
 	rmdir $ISOLOOP
 	return 1
     fi
@@ -278,6 +292,10 @@ pack_iso() {
     umount $PFX/$FILE/dev/pts 2> /dev/null
     umount $PFX/$FILE/proc  2>  /dev/null
     umount $PFX/$FILE/tmp 2>   /dev/null
+    # cleanup tmp
+    rm -rf $PFX/$FILE/tmp/*
+
+    # cleanup dns
     rm -f $PFX/$FILE/etc/resolv.conf
     echo "nameserver 8.8.8.8" \
 	> $PFX/$FILE/etc/resolv.conf
@@ -296,7 +314,7 @@ pack_iso() {
     act "`ls -lh $PFX/$FILE.squashfs`"
 	# stat $PFX/$FILE.squashfs
 
-    loop_mount_iso "$PFX/${FILE}.iso" # defines ISOLOOP, to be removed later
+    loop_mount_iso "$PFX/${FILE}.iso" # defines $ISOLOOP, to be unset later
     if [ $? != 0 ]; then
 	error "loop mount failed, operation aborted."
 	return 1
@@ -314,12 +332,18 @@ pack_iso() {
     mount -o bind $kernel $ISOLOOP/live/vmlinuz
     mount -o bind $initrd $ISOLOOP/live/initrd.img
 
-    isofile=$PFX/$FILE-`date +%s`.iso
+    if [ -z $OUTFILE ]; then
+	isofile=$PFX/$FILE-`date +%s`.iso
+    else
+	isofile=${OUTFILE}.iso
+    fi
+
     act "making bootable iso in $isofile"
-    genisoimage -r -V "$FILE" -cache-inodes -J -l \
+    genisoimage -r -V "$OUTFILE" -cache-inodes -J -l \
 	-b isolinux/isolinux.bin -c isolinux/boot.cat \
 	-no-emul-boot -boot-load-size 4 -boot-info-table \
 	-input-charset iso8859-1 -udf -o $isofile $ISOLOOP
+
 # omissis: -R -udf 
     if [ $? != 0 ]; then
 	error "an error occurred in genisoimage, operation aborted."

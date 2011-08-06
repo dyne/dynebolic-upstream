@@ -54,12 +54,27 @@ sudo grub-install --no-floppy --root-directory=${MNT} ${DEVICE}
   
 # create grub config
 cat <<EOF> /tmp/live-usb-grub.cfg
-menuentry "dyne:bolic 3.0" {
-        loopback loop /${ISO}
-        linux (loop)/live/vmlinuz boot=live iso-scan/filename=/${ISO} fromiso=/dev/sda1/${ISO} noeject noprompt --
-        initrd (loop)/live/initrd.img
+insmod part_msdos
+insmod loopback
+insmod iso9660
+
+set menu_color_normal=white/blue
+set_menu_color_highlight=blue/light-gray
+
+menuentry "dyne:bolic 3.0" --class gnu-linux --class gnu --class os {
+	iso_path=/${ISO}
+	export iso_path
+	search --set --file \$iso_path
+        loopback loop \$iso_path
+	root=(loop)
+        linux /live/vmlinuz boot=live iso-scan/filename=\$iso_path fromiso=/dev/sdb1\$iso_path noeject noprompt --
+        initrd /live/initrd.img
 }
 EOF
+# needs our own modified initrd scripts/live to support VFAT usb sticks
+# TODO: test if we can remove or substitute fromiso code in them...
+#       also add some goodies to grub
+
 sudo mv /tmp/live-usb-grub.cfg ${MNT}/boot/grub/grub.cfg
 
 # umount
