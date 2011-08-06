@@ -44,10 +44,10 @@ static GtkWidget *wg;
 static GladeXML *gui;
 
 static char *www_rastasoft = "http://rastasoft.org";
-static char *www_dyne = "http://dyne.org";
-static char *www_freaknet = "http://freaknet.org";
+static char *www_gnu = "http://www.gnu.org";
 static char *www_europe = "http://www.peopleshareit.eu";
-static char *www_morecredits = "http://dynebolic.org/index.php?show=authors";
+static char *www_puredyne = "http://www.puredyne.org";
+static char *www_lulz = "http://dynebolic.org";
 
 void goto_url(GtkWidget *widget, gpointer *data) {
 	pid_t proc;
@@ -108,10 +108,11 @@ int main(int argc, char **argv) {
     
   // credits
   CONNECT_ARG("rastasoft_button","clicked",goto_url,www_rastasoft);
-  CONNECT_ARG("dyne_button","clicked",goto_url,www_dyne);
+  CONNECT_ARG("puredyne_button","clicked",goto_url,www_puredyne);
   CONNECT_ARG("eu_button","clicked",goto_url,www_europe);
-  CONNECT_ARG("morecredits_button","clicked",goto_url,www_morecredits);
-  
+  CONNECT_ARG("gnu_button","clicked",goto_url,www_gnu);
+  CONNECT_ARG("morecredits_button","clicked",goto_url,www_lulz);
+
   gtk_main();
 
   exit(1);
