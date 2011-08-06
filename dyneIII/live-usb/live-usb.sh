@@ -5,26 +5,25 @@
 
 # ripped from a tutorial/script by Panticz
 # maintained for dyneIII by Jaromil
-# GNU GPL v3
+# FWIW, GNU GPL v3
 
 # some documentation links:
 
 # http://www.panticz.de/MultiBootUSB
-# https://bugs.launchpad.net/ubuntu/+bug/94204
-# http://debianforum.de/forum/viewtopic.php?f=32&t=111249
-# http://michael-prokop.at/blog/2009/05/25/boot-an-iso-via-grub2/
-# https://wiki.edubuntu.org/Grub2
-# http://wiki.ubuntuusers.de/GRUB_2/Konfiguration?highlight=cd
+# http://tails.boum.org/todo/usb_install_and_upgrade/
 
 
 if [ -z $1 ]; then
-    echo "usage: $0 /dev/sdX (device)"
+    echo "usage: $0 /dev/sdX live-image.iso"
+    echo "/dev/sdX device is not a partition"
     exit 1
 fi
 
 DEVICE=${1}
 VOLUME=dyneIII
 MNT=/mnt/1
+ISO=`basename ${2}`
+ISOPATH=`dirname ${2}`
 
 if ! [ -r $DEVICE ]; then
     echo "error: device $DEVICE not found"
@@ -47,7 +46,7 @@ echo "device correctly mounted:"
 mount | grep "${DEVICE}"
 
 echo "starting to copy ISO file..."
-sudo rsync -P /srv/iso/dyneIII-shareit.iso ${MNT}
+sudo rsync -P ${ISOPATH}/${ISO} ${MNT}
 
 echo "installing grub..."
 # install grub2 on usb pen
@@ -56,8 +55,8 @@ sudo grub-install --no-floppy --root-directory=${MNT} ${DEVICE}
 # create grub config
 cat <<EOF> /tmp/live-usb-grub.cfg
 menuentry "dyne:bolic 3.0" {
-        loopback loop /dyneIII-shareit.iso
-        linux (loop)/live/vmlinuz boot=live iso-scan/filename=/dyneII-shareit.iso noeject noprompt --
+        loopback loop /${ISO}
+        linux (loop)/live/vmlinuz boot=live iso-scan/filename=/${ISO} fromiso=/dev/sda1/${ISO} noeject noprompt --
         initrd (loop)/live/initrd.img
 }
 EOF
