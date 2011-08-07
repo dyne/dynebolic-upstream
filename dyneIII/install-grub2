@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# small script to add a dynebolic iso to grub2
+# tested on ubuntu and debian
+# no need to repartition
+# doesn't changes data on HD
+
+# FWIW, copyleft by Jaromil, GNU GPL v3
+
 if [ -z $1 ]; then
     echo "usage: $0 full_path_to.iso"
     exit 1
@@ -22,7 +29,7 @@ menuentry "dyne:bolic 3.0" --class gnu-linux --class gnu --class os {
 	search --set --file $ISOPATH
         loopback loop $ISOPATH
 	root=(loop)
-        linux /live/vmlinuz boot=live iso-scan/filename=$ISOPATH fromiso=/dev/sda6$ISOPATH noeject noprompt --
+        linux /live/vmlinuz boot=live iso-scan/filename=$ISOPATH noeject noprompt --
         initrd /live/initrd.img
 }
 EOF
