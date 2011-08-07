@@ -1423,11 +1423,13 @@ check_dev ()
 	devname="${2}"
 	skip_uuid_check="${3}"
 
+
+	# fixed by Jaromil to support FAT usb partitions
+	is_supported_fs vfat
+
 	# support for fromiso=.../isofrom=....
 	if [ -n "$FROMISO" ]
 	then
-		# fixes by Jaromil to support FAT usb partitions
-		is_supported_fs vfat
 		mkdir -p /isofrom
 		ISO_DEVICE="$(echo $FROMISO | sed 's|\(/dev/[a-z]*[0-9]*\).*|\1|')"
 		mount "$ISO_DEVICE" /isofrom
