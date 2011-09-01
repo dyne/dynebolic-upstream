@@ -1,0 +1,24 @@
+0fPREREQUISITES FOR RUNNING PUREDYNE07                                            09F207
+
+You must have at least 256 megabytes of RAM and a Pentium III or more 
+in order to have fun with this system and the tools included. You can 
+always try with less but you will not be able to do much realtime audio 
+and video with it. 
+
+More info at  0fhttp://dynebolic.org/07
+
+
+
+Yah bless!
+
+
+
+
+
+
+
+
+
+
+
+Press F1control and F then 1 for the help index, or ENTER to boot.

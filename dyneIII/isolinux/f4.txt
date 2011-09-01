@@ -1,0 +1,24 @@
+0fADDITIONAL BOOT METHODS07                                                       09F407
+
+0fAvailable boot methods:07
+
+0fmemtest07
+  Start memtest to scan your RAM for errors.
+0ffloppy07, 0fdisk107 or 0fdisk207
+  Boot from the floppy, first or second hard disk.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Press F1control and F then 1 for the help index, or ENTER to 

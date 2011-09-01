@@ -1,0 +1,24 @@
+0fSPECIAL BOOT PARAMETERS07                                                       09F807
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Press F1control and F then 1 for the help index, or ENTER to 

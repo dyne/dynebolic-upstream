@@ -1,0 +1,24 @@
+0fBOOT METHODS07                                                                  09F307
+
+0fAvailable boot methods:07
+
+0flive07
+  Start the live system -- this is the default LH_MEDIA method.
+0flivefailsafe07
+  Start the live system in fail-safe mode.
+
+
+
+
+
+
+
+To use one of these boot methods, type it at the prompt, optionally
+followed by any boot parameters. For example:
+  boot: live acpi=off
+
+If unsure, you should use the default boot method, with no special
+parameters, by simply pressing enter at the boot prompt.
+
+
+Press F1control and F then 1 for the help index, or ENTER to 
