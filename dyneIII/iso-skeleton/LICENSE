@@ -1,0 +1,31 @@
+Puredyne is a collection of free software, incorporating
+the work of many other authors and contributors.
+
+Puredyne is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+More info: http://puredyne.goto10.org/
+
+Puredyne is based on Ubuntu.
+
+Ubuntu is Copyright (C) 2004-2010 Canonical Ltd., and
+incorporates the work of many other original authors and
+contributors.
+
+The system is freely redistributable. After installation,
+the exact distribution terms for each package are
+described in the corresponding file
+/usr/share/doc/*packagename*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+
+More info: http://www.ubuntu.com/
+
+Puredyne is built using Debian live-helper.
+
+This system was built with Debian live-helper-2.0~a3-1.
+
+More info: http://debian-live.alioth.debian.org/
+

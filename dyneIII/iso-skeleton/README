@@ -1,0 +1,51 @@
+
+                                                           *
+                                                               .  *
+                              ,--.                       *        .
+   ,---. --.,--.--.--.,---. ,-'  |--. ,--.--,--, ,---.      *
+  | .-. |  ||  |  .--' .-.:' .-. |\  '  /       \ .-. :   *   
+  | '-' '  ''  '  |      --. `-' | \   ' |  ||  |   --.     .
+  |   -' `----' --'   `----'`---' -'  /  `--''--'`----'
+  `--' http://puredyne.goto10.org`---'                   * 
+                                                     .
+
+
+You are currently running a USB, CD or DVD version of Puredyne.
+
+Puredyne is aimed at creative people, looking for tools outside 
+the standard. It provides the best experimental creative 
+applications alongside a solid set of graphic, audio and video 
+tools in a fast, minimal package. For everything from sound art 
+to innovative filmmaking.
+
+Puredyne is optimised for use in realtime audio and video 
+processing. It distinguishes itself by offering a low latency 
+kernel and the high responsiveness needed by artists working in 
+this field.
+
+Puredyne is based on Ubuntu and Debian-Live. All packages 
+provided by Puredyne can be used if you are running this flavour 
+of GNU/Linux. Use, share, copy, modify, join the development team 
+or fork :) 
+
+
+HOW-TO BOOT IN PUREDYNE?
+------------------------
+
+At this moment, Puredyne works on many intel based machines. To 
+boot from insert the live medium (USB, CD, DVD) into your computer
+and (re)boot your computer. In most cases, your computer will 
+automatically boots into Puredyne. If not please make sure your 
+BIOS settings allows you to boot on USB, CD or DVD. Mac user will
+probably have to hold the 'c' key while booting on CD/DVD.
+
+LICENSE
+-------
+
+Puredyne is a collection of free and open source software and has 
+been produced using only free software. Please see LICENSE for 
+details. For complete information, sources and detailed licenses 
+of the Puredyne toolkit please visit our dev page at launchpad: 
+https://launchpad.net/puredyne
+
+:*
