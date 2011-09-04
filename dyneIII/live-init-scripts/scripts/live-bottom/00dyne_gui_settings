@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# Original script by Denis Roio <jaromil@dyne.org>
+# dyne:III live-boot script
+# by Denis Roio <jaromil@dyne.org>
+# GNU GPL v3
 
-PREREQ="blacklist udev"
+PREREQ=""
 
 prereqs()
 {
@@ -31,31 +33,34 @@ fi
 
 # superseded by command line
 for ARGUMENT in $(cat /proc/cmdline); do
-	case "${ARGUMENT}" in
-		textonly)
-			TEXTONLY=yes
-			really_export TEXTONLY
-			log_success_msg "Text-only mode selected"
-			;;
-		xdriver=*)
-			XDRIVER="${ARGUMENT#xdriver=}"
-			really_export XDRIVER
-			log_success_msg "XDriver set to ${XDRIVER}"
-			;;
-	esac
-done
+    case "${ARGUMENT}" in
+	textonly)
+	    TEXTONLY=Yes
+	    NOXAUTOLOGIN=yes
+	    NOXAUTOCONFIG=yes
+	    really_export TEXTONLY
+	    really_export NOXAUTOLOGIN
+	    really_export NOXAUTOCONFIG
+	    echo "Text-only mode selected"
+	    ;;
 
-# this is what adds parameters to boot
-touch /live.vars
-if [ -n "$textonly" ];
-then
-    echo "TEXT ONLY MODE SELECTED"
-    echo "TEXTONLY=Yes" >> /live.vars
-fi
-if [ -n "$xdriver" ];
-then
-    echo "XDRIVER MANUALLY SET TO: ${xdriver}"
-    echo "XDRIVER=${xdriver}" >> /live.vars
-fi
+	xdriver=*)
+	XDRIVER="${ARGUMENT#xdriver=}"
+	really_export XDRIVER
+	echo "XDriver manually set to ${XDRIVER}"
+	;;
+
+	access=*)
+	ACCESS=${ARGUMENT}
+	really_export ACCESS
+	;;
+
+	braille)
+	    ACCESS="braille=ask"
+	    really_export ACCESS
+	    ;;
+
+    esac
+done
 
 

@@ -69,6 +69,7 @@ remove_applet ()
 add_sudoers_file ()
 {
 
+mkdir -p /root/etc/sudoers.d
 cat <<EOF > /root/etc/sudoers.d/a11y-sudo
 # TO allow accessibility in GTK to work with sudo.
 Defaults        env_keep = "ORBIT_SOCKETDIR XDG_SESSION_COOKIE GTK_MODULES"

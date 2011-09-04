@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# Original script by Denis Roio <jaromil@dyne.org>
+# dyne:III live-boot script
+# by Denis Roio <jaromil@dyne.org>
+# GNU GPL v3
 
 PREREQ="blacklist udev"
 
@@ -18,7 +20,7 @@ prereqs)
 esac
 
 . /scripts/live-helpers
-
+. /scripts/live-functions
 
 # we operate on boot type local
 bootconf=$(egrep '^BOOT=' /conf/initramfs.conf | tail -1)
@@ -61,7 +63,7 @@ check_dyne() {
 	    continue
 	fi
 	if [ -r "/dyne/${DYNE_ISO}" ]; then
-	    echo "ISO found in ${dev}"
+	    log_success_msg "ISO ${DYNE_ISO} found in ${dev}"
 	    # this is what adds parameters to boot
 	    touch /conf/param.conf
 	    echo "export FROMISO=${dev}/${DYNE_ISO}" >> /conf/param.conf

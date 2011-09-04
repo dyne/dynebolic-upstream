@@ -27,7 +27,7 @@ fi
 
 . /scripts/live-functions
 
-log_begin_msg "Live session user already created, no need to create at every boot!"
+log_begin_msg "Live session user is luther:luther"
 USERNAME="luther"
 really_export USERNAME
 

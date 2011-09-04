@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# Original script by Denis Roio <jaromil@dyne.org>
+# dyne:III live-boot script
+# by Denis Roio <jaromil@dyne.org>
+# GNU GPL v3
 
-PREREQ="blacklist udev"
+PREREQ=""
 
 prereqs()
 {
