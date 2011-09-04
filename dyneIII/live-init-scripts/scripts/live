@@ -352,6 +352,10 @@ Arguments ()
 				UNIONTYPE="${ARGUMENT#union=}"
 				export UNIONTYPE
 				;;
+			volatile=*)
+				VOLATILE="${ARGUMENT#volatile=}"
+				export VOLATILE
+				;;
 		esac
 	done
 
@@ -913,7 +917,7 @@ do_httpmount ()
 	then
 		if [ -d "${alt_mountpoint}" ]
 		then
-		        umount "${alt_mountpoint}"
+			umount "${alt_mountpoint}"
 			rmdir "${alt_mountpoint}"
 		fi
 		umount "${mountpoint}"
@@ -1574,7 +1578,7 @@ check_dev ()
 				ISO_DEVICE=$(dirname ${ISO_DEVICE})
 				[ -b "$ISO_DEVICE" ] && break
 				i=$(($i -1))
-		        done
+			done
 		fi
 
 		if [ "$ISO_DEVICE" = "/" ]
@@ -1841,6 +1845,10 @@ mountroot ()
 	run_scripts /scripts/live-premount
 	log_end_msg
 
+	if [ "${VOLATILE}" = "premount" ]; then
+	    PS1='(volatile) ' /bin/sh -i </dev/console >/dev/console 2>&1
+	fi
+
 	# Needed here too because some things (*cough* udev *cough*)
 	# changes the timeout
 
@@ -1992,8 +2000,13 @@ mountroot ()
 		umount "${rootmnt}/dev"
 	fi
 
+	if [ -n "${VOLATILE}" ]; then
+	    PS1='(volatile) ' /bin/sh -i </dev/console >/dev/console 2>&1
+	fi
+
 	exec 1>&6 6>&-
 	exec 2>&7 7>&-
 	kill ${tailpid}
 	[ -w "${rootmnt}/var/log/" ] && cp live-boot.log "${rootmnt}/var/log/" 2>/dev/null
+
 }
