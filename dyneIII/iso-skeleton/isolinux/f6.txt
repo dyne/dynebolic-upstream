@@ -21,4 +21,5 @@ For example:
   boot: install vga=771 noapic nolapic
 
 
-Press F1control and F then 1 for the help index, or ENTER to 
+Press F1control and F then 1 for the help index, or type 'menu' 
+

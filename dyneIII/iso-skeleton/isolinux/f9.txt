@@ -5,20 +5,23 @@ If you have problems running this CD/DVD don't you worry!
 We will try our best to help. Good starting places for help are 
 the dynebolic website:
 
-http://dynebolic.org
+ http://dynebolic.org
 
 and our realtime communication infrastructure / irc channel
 
-http://hinezumi.im
+ http://dyne.org
 
-See also our other projects at http://dyne.org
+See also our other projects at
 
-
-
-
+ http://dyne.org
 
 
 
 
 
-Press F1control and F then 1 for the help index, or ENTER to boot.
+
+
+
+
+Press F1control and F then 1 for the help index, or type 'menu' 
+

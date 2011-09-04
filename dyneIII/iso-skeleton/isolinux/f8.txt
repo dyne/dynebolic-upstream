@@ -6,6 +6,9 @@
 
 
 
+   THIS SPACE WAS LEFT INTENTIONALLY BLANK
+
+                              :^)
 
 
 
@@ -18,7 +21,4 @@
 
 
 
-
-
-
-Press F1control and F then 1 for the help index, or ENTER to 
+Press F1control and F then 1 for the help index, or type 'menu' 

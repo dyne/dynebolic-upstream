@@ -21,4 +21,5 @@ For example:
   boot: install aic7xxx.aic7xxx=no_probe
 
 
-Press F1control and F then 1 for the help index, or ENTER to 
+Press F1control and F then 1 for the help index, or type 'menu' 
+
