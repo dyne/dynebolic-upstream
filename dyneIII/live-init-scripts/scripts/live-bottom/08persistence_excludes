@@ -24,7 +24,7 @@ case "${1}" in
 		;;
 esac
 
-# live-initramfs header
+# live-boot header
 
 if [ -z "${PERSISTENT}" ] || [ -n "${NOPERSISTENT}" ] || [ -z "${PERSISTENCE_IS_ON}" ] || [ ! -f /root/etc/live-persistence.binds ]
 then
@@ -33,7 +33,7 @@ fi
 
 . /scripts/live-functions
 
-# live-initramfs script
+# live-boot script
 
 dirs="$(sed -e '/^ *$/d' -e '/^#.*$/d' /root/etc/live-persistence.binds | tr '\n' '\0')"
 if [ -z "${dirs}" ]

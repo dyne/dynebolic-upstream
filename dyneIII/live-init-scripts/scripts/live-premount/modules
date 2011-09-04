@@ -18,9 +18,9 @@ case "${1}" in
 		;;
 esac
 
-# live-initramfs script
+# live-boot script
 
-# The following modprobe entry is a workaround to live-initramfs not
+# The following modprobe entry is a workaround to live-boot not
 # finding the root filesytem.
 #
 # See also:

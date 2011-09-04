@@ -5,13 +5,11 @@
 log_wait_msg ()
 {
 	# Print a message and wait for enter
-	if [ -x /sbin/usplash_write ]
+	if [ -x /bin/plymouth ] && plymouth --ping
 	then
-		/sbin/usplash_write "INPUTENTER ${@}"
-		read nunya < /dev/.initramfs/usplash_outfifo
-	else if [ -x /sbin/splashy_update ] ; then
-		/sbin/splashy_update "getstring ${@}" | read nunya
-	fi ; fi
+		plymouth message --text="$@"
+		plymouth watch-keystroke | read nunya
+	fi
 
 	_log_msg "Waiting: ${@} ... \n"
 }
@@ -35,7 +33,7 @@ lang2locale() {
 	langpart="${1%%_*}"
 	if [ "$1" != "C" ]; then
 		# Match the language code with 3rd field in languagelist
-		line=$(grep -v "^#" /usr/share/live-initramfs/languagelist | cut -f1,3,6 -d\; | grep -v ';C$' | grep "^$langpart;")
+		line=$(grep -v "^#" /usr/share/live-boot/languagelist | cut -f1,3,6 -d\; | grep -v ';C$' | grep "^$langpart;")
 		if [ -n "$line" ]; then
 			if [ "$(echo "$line" | grep -c '')" -gt 1 ]; then
 				# More than one match; try matching the
@@ -78,7 +76,7 @@ panic() {
 	DEB_3="\033[1;31m\`. \`'\`  \033[0m"
 	DEB_4="\033[1;31m  \`-    \033[0m"
 
-	LIVELOG="\033[1;37m/live.log\033[0m"
+	LIVELOG="\033[1;37m/live-boot.log\033[0m"
 	DEBUG="\033[1;37mdebug\033[0m"
 
 	# Reset redirections to avoid buffering
@@ -92,7 +90,7 @@ panic() {
 	printf "     ${DEB_3}\n"
 	printf "     ${DEB_4}  This Debian Live image failed to boot.\n\n"
 
-	printf "  Please file a bug against the 'live-initramfs' package or email the Debian\n"
+	printf "  Please file a bug against the 'live-boot' package or email the Debian\n"
 	printf "  Live mailing list at <debian-live@lists.debian.org>, making sure to note the\n"
 	printf "  exact version, name and distribution of the image you were attempting to boot.\n\n"
 
@@ -101,9 +99,9 @@ panic() {
 	printf "  extremely useful when diagnosing issues.\n\n"
 
 	if [ -n "${panic}" ]; then
-		printf "  live-initramfs will now restart your system. "
+		printf "  live-boot will now restart your system. "
 	else
-		printf "  live-initramfs will now start a shell. "
+		printf "  live-boot will now start a shell. "
 	fi
 	printf "The error message was:\n\n    "
 

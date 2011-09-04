@@ -19,7 +19,7 @@ case "${1}" in
 		;;
 esac
 
-# live-initramfs header
+# live-boot header
 
 . /scripts/live-functions
 
@@ -30,7 +30,7 @@ fi
 
 log_begin_msg "Configuring fstab"
 
-# live-initramfs script
+# live-boot script
 
 # Create a fake fstab only if it doesn't exist or if its the debootstrap template
 if [ ! -f "${FSTAB}" ] || grep -qs 'UNCONFIGURED FSTAB FOR BASE SYSTEM' "${FSTAB}"
@@ -66,7 +66,7 @@ then
 			continue
 		fi
 
-		/lib/udev/blkid -o udev ${device%%[0-9]*} 2>/dev/null | grep -q "^ID_FS_USAGE=raid" && continue
+		/sbin/blkid -o udev -p ${device%%[0-9]*} | grep -q "^ID_FS_USAGE=raid" && continue
 
 		magic=$(/bin/dd if="${device}" bs=4086 skip=1 count=1 2>/dev/null | /bin/dd bs=10 count=1 2>/dev/null) || continue
 

@@ -18,7 +18,7 @@ case "${1}" in
 		;;
 esac
 
-# live-initramfs script
+# live-boot script
 
 # make sure all harddisk devices are read-only
 # this is important for forensic investigations

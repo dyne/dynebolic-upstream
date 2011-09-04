@@ -18,7 +18,7 @@ case "${1}" in
 		;;
 esac
 
-# live-initramfs header
+# live-boot header
 
 if [ -n "${NOACCESSIBILITY}" ]
 then
@@ -35,7 +35,7 @@ fi
 
 log_begin_msg "Configuring accessibility options"
 
-# live-initramfs script
+# live-boot script
 
 gconf_version=$(chroot /root /usr/bin/dpkg-query -W --showformat='${Version}' gconf2 2>/dev/null) || gconf_version=""
 
@@ -57,12 +57,24 @@ remove_applet ()
 	local line_no prior_line next_line
 
 	line_no="$(grep -n "<string>$1</string>" /root/usr/share/gconf/defaults/05_panel-default-setup.entries | cut -f 1 -d :)"
+	[ "$line_no" ] || return
 	prior_line="$((line_no-1))"
 	next_line="$((line_no+1))"
 
 	sed -i -n "${prior_line},${next_line}!p" /root/usr/share/gconf/defaults/05_panel-default-setup.entries
 
 	chroot /root update-gconf-defaults
+}
+
+add_sudoers_file ()
+{
+
+cat <<EOF > /root/etc/sudoers.d/a11y-sudo
+# TO allow accessibility in GTK to work with sudo.
+Defaults        env_keep = "ORBIT_SOCKETDIR XDG_SESSION_COOKIE GTK_MODULES"
+EOF
+
+	chmod 0440 /root/etc/sudoers.d/a11y-sudo
 }
 
 case ${ACCESS} in
@@ -89,7 +101,7 @@ case ${ACCESS} in
 		gct -s -t string /desktop/gnome/applications/at/visual/exec orca
 		gct -s -t bool /apps/gksu/disable-grab true
 		gct -s -t string /desktop/gnome/applications/window_manager/default /usr/bin/metacity
-		sed -i -e 's/# Host alias specification/Defaults\tenv_keep = "ORBIT_SOCKETDIR XDG_SESSION_COOKIE GTK_MODULES"\n\n# Host alias specification/g' /root/etc/sudoers
+		add_sudoers_file
 
 		if [ -x /root/usr/bin/orca ]
 		then
@@ -108,19 +120,12 @@ case ${ACCESS} in
 		gct -s -t bool /desktop/gnome/interface/accessibility true
 		gct -s -t bool /desktop/gnome/applications/at/visual/startup true
 		gct -s -t string /desktop/gnome/applications/at/visual/exec orca
+		gct -s -t string /apps/empathy/conversation/theme classic
 		gct -s -t bool /apps/gksu/disable-grab true
 		gct -s -t string /desktop/gnome/applications/window_manager/default /usr/bin/metacity
-		sed -i -e 's/# Host alias specification/Defaults\tenv_keep = "ORBIT_SOCKETDIR XDG_SESSION_COOKIE GTK_MODULES"\n\n# Host alias specification/g' /root/etc/sudoers
+		add_sudoers_file
 
 		remove_applet fast_user_switch
-		if [ -x /root/usr/bin/pulse-session ]
-		then
-			touch /root/home/$USERNAME/.pulse_a11y_nostart
-			chroot /root chown $USERNAME.$USERNAME /home/$USERNAME/.pulse_a11y_nostart
-			mkdir -p /root/home/$USERNAME/.pulse
-			echo "autospawn = no" > /root/home/$USERNAME/.pulse/client.conf
-			chroot /root chown -R $USERNAME.$USERNAME /home/$USERNAME/.pulse
-		fi
 		if [ -x /root/usr/bin/orca ]
 		then
 			mkdir -p /root/home/$USERNAME/.orca
@@ -135,7 +140,8 @@ case ${ACCESS} in
 		gct -s -t string /desktop/gnome/applications/at/visual/exec orca
 		gct -s -t bool /apps/gksu/disable-grab true
 		gct -s -t string /desktop/gnome/applications/window_manager/default /usr/bin/metacity
-		sed -i -e 's/# Host alias specification/Defaults\tenv_keep = "ORBIT_SOCKETDIR XDG_SESSION_COOKIE GTK_MODULES"\n\n# Host alias specification/g' /root/etc/sudoers
+		gct -s -t string /apps/empathy/conversation/theme classic
+		add_sudoers_file
 
 		if [ -x /root/usr/bin/orca ]
 		then
@@ -145,15 +151,6 @@ case ${ACCESS} in
 			echo "orca.settings.enableBraille = True" >> /root/home/${USERNAME}/.orca/user-settings.py
 			laptop_detect
 			chroot /root chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.orca
-		fi
-
-		if [ -x /root/usr/bin/pulse-session ]
-		then
-			touch /root/home/$USERNAME/.pulse_a11y_nostart
-			chroot /root chown $USERNAME.$USERNAME /home/$USERNAME/.pulse_a11y_nostart
-			mkdir -p /root/home/$USERNAME/.pulse
-			echo "autospawn = no" > /root/home/$USERNAME/.pulse/client.conf
-			chroot /root chown -R $USERNAME.$USERNAME /home/$USERNAME/.pulse
 		fi
 
 		remove_applet fast_user_switch
