@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# Original script by Denis Roio <jaromil@dyne.org>
+
+PREREQ="blacklist udev"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /scripts/live-helpers
+. /scripts/live-functions
+
+# we operate on boot type local
+bootconf=$(egrep '^BOOT=' /conf/initramfs.conf | tail -1)
+if [ "$bootconf" != "BOOT=local" ]
+then
+    # Not a local boot : nothing to do
+    exit 0
+fi
+
+
+# superseded by command line
+for ARGUMENT in $(cat /proc/cmdline); do
+	case "${ARGUMENT}" in
+		textonly)
+			TEXTONLY=yes
+			really_export TEXTONLY
+			log_success_msg "Text-only mode selected"
+			;;
+		xdriver=*)
+			XDRIVER="${ARGUMENT#xdriver=}"
+			really_export XDRIVER
+			log_success_msg "XDriver set to ${XDRIVER}"
+			;;
+	esac
+done
+
+# this is what adds parameters to boot
+touch /live.vars
+if [ -n "$textonly" ];
+then
+    echo "TEXT ONLY MODE SELECTED"
+    echo "TEXTONLY=Yes" >> /live.vars
+fi
+if [ -n "$xdriver" ];
+then
+    echo "XDRIVER MANUALLY SET TO: ${xdriver}"
+    echo "XDRIVER=${xdriver}" >> /live.vars
+fi
+
+

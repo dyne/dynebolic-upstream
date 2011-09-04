@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Original script by Denis Roio <jaromil@dyne.org>
+
+PREREQ="blacklist udev"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /scripts/live-helpers
+. /scripts/live-functions
+
+USERNAME=luther; really_export USERNAME
+USERFULLNAME="Luther Blissett"; really_export USERFULLNAME
+HOSTNAME=dynebolic; really_export HOSTNAME
+
