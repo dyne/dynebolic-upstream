@@ -1,0 +1,91 @@
+#!/bin/sh
+
+# Original script by Denis Roio <jaromil@dyne.org>
+
+PREREQ="blacklist udev"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /scripts/live-helpers
+
+
+# we operate on boot type local
+bootconf=$(egrep '^BOOT=' /conf/initramfs.conf | tail -1)
+if [ "$bootconf" != "BOOT=local" ]
+then
+    # Not a local boot : nothing to do
+    exit 0
+fi
+
+
+# superseded by command line
+for ARGUMENT in $(cat /proc/cmdline); do
+	case "${ARGUMENT}" in
+		dyneiso=*)
+			DYNE_ISO="${ARGUMENT#dyneiso=}"
+			;;
+	esac
+done
+
+# dyneiso not configured, nothing to do
+if [ -z $DYNE_ISO ]; then exit 0; fi
+
+echo "Scanning local storage for dyne:III ISO file $DYNE_ISO..."
+mkdir -p /dyne
+
+check_dyne() {
+    sysdev="${1}"
+    devname=$(sys2dev "${sysdev}")
+
+    # no partitions, skip checking
+    if ! [ -r "${devname}1" ]; then return 1; fi
+
+    for dev in $(ls ${devname}[0-9]);
+    do
+	echo "Opening ${devname} ... "
+	mount -o ro "${dev}" /dyne
+	if [ $? != 0 ];
+	then
+	    echo "cannot mount partition, skipping."
+	    continue
+	fi
+	if [ -r "/dyne/${DYNE_ISO}" ]; then
+	    echo "ISO found in ${dev}"
+	    # this is what adds parameters to boot
+	    touch /conf/param.conf
+	    echo "export FROMISO=${dev}/${DYNE_ISO}" >> /conf/param.conf
+	    return 0
+	else
+	    echo "not found."
+	fi
+    done
+    return 1
+}
+
+res=1
+# removable-usb
+for sysblock in $(echo /sys/block/* | tr ' ' '\n' | grep -vE "/(loop|ram|dm-|fd)")
+do
+    for dev in $(subdevices "${sysblock}")
+    do
+	if check_dyne "${dev}"
+	then
+	    echo "Booting $DYNE_ISO"
+	    res=0 #success
+	fi
+    done
+done
+
+umount /dyne
+return $res
