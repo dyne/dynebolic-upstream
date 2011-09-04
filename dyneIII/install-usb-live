@@ -46,7 +46,7 @@ echo "device correctly mounted:"
 mount | grep "${DEVICE}"
 
 echo "starting to copy ISO file..."
-sudo rsync -P ${ISOPATH}/${ISO} ${MNT}
+sudo rsync --inplace -P ${ISOPATH}/${ISO} ${MNT}
 
 echo "installing grub..."
 # install grub2 on usb pen
@@ -61,13 +61,14 @@ insmod iso9660
 set menu_color_normal=white/blue
 set_menu_color_highlight=blue/light-gray
 
-menuentry "dyne:bolic 3.0" --class gnu-linux --class gnu --class os {
+menuentry "dyne:III" --class gnu-linux --class gnu --class os {
 	iso_path=/${ISO}
 	export iso_path
 	search --set --file \$iso_path
         loopback loop \$iso_path
 	root=(loop)
-        linux /live/vmlinuz boot=live iso-scan/filename=\$iso_path fromiso=/dev/sdb1\$iso_path noeject noprompt --
+        gfxpayload=1024x768
+        linux /live/vmlinuz boot=live dyneiso=\$iso_path noeject  --
         initrd /live/initrd.img
 }
 EOF

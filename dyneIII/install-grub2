@@ -25,11 +25,11 @@ cat <<EOF > /etc/grub.d/35_dynebolic
 #!/bin/sh
 exec tail -n +3 \$0
 # This file adds a grub entry to boot into a dynebolic iso
-menuentry "dyne:bolic 3.0" --class gnu-linux --class gnu --class os {
+menuentry "dyne:III - live dynebolic system" --class gnu-linux --class gnu --class os {
 	search --set --file $ISOPATH
         loopback loop $ISOPATH
 	root=(loop)
-        linux /live/vmlinuz boot=live iso-scan/filename=$ISOPATH noeject noprompt --
+        linux /live/vmlinuz boot=live dyneiso=$ISOPATH noeject noprompt --
         initrd /live/initrd.img
 }
 EOF
