@@ -1,8 +1,10 @@
 #!/bin/zsh
 #
-# dyne:bolic software development kit
+# dyne:bolic software development kit, third edition.
+# also known as dyne:III SDK
 #
-# Copyright (C) 2011 Denis Roio <jaromil@dyne.org>
+# The dyne:SDK is
+# Copyright (C) 2001-2011 by Denis Roio <jaromil@dyne.org>
 #
 # This source code is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Public License as published 
@@ -46,7 +48,11 @@ PACKAGE="dyne:OS SDK"
 VERSION="3.0"
 DATE_SUFFIX="`date +%F_%H-%M-%S`"
 
-if [ $DYNESDK ]; then PFX=${DYNESDK}; fi
+if [ $DYNESDK ]; then
+    SDK=${DYNESDK}
+else
+    SDK=`pwd`
+fi
 
 notice "$PACKAGE version $VERSION   Software Development Kit by \
 $fg_bold[black]$bg[green]RAS$bg[yellow]TAS$bg[red]OFT$fg_no_bold[white]$bg[black]"
@@ -66,19 +72,16 @@ OPTS=`getopt -o X:o:hv -n "$BINFILE" -- "$@"`
 while true; do
     case "$1" in
 	-h)
-	    notice "synopsis: $BINFILE [options] command [iso | dir]"
+	    notice "synopsis: $BINFILE [options] command [subcommand]"
 	    notice "commands:"
 	    act "create open a livecd ISO into an new SDK dir"
-	    act "enter  chroot into an SDK system"
-	    act "pack   squash an open SDK into a live ISO"
-	    act "inject insert components into an ISO (initrd, etc.)"
+	    act "enter  chroot into an SDK system (use -X for graphical)"
+	    act "pack   squash and bake SDK components into a live ISO"
             notice "options:"
 	    act "-x RES nest graphical session at RES (ie: 1024x768)"
-	    act "-o PFX name prefix for the output file or directory"
+	    act "-o     name for the output file or directory"
 	    act "-h     print this help"
 	    act "-v     print out the version of this tool"
-#	    act "-p     path to the SDK directory (def. same as iso)"
-
 
 	    echo; exit 2 ;;
 	-X) XRES=${2}; shift 2 ;;
@@ -92,20 +95,10 @@ done
 
 act "$BINFILE $ARGS"
 
-if [ $ARG1 ]; then
-    if [ -z $PFX ]; then 
-	export PFX=`dirname $ARG1`;
-    fi
-    export FILE=`basename $ARG1`
-fi
 
 # setup the name for the output directory
 if [ -z $OUTFILE ]; then
-    if [ "$ARG1" = "." ]; then
-	dest="dyneIII"
-    else
-	dest=${PFX}/${FILE%%\.*}
-    fi
+    dest="dyneIII"
 else
     dest=${OUTFILE}
 fi
@@ -214,14 +207,14 @@ create_sdk() {
 	exit 1
     fi
 
-    if ! [ -r $PFX/$FILE ]; then
-	error "$PFX/$FILE not found"
+    if ! [ -r $ARG1 ]; then
+	error "$ARG1 not found"
 	return 1
     fi
 
-    notice "Creating dyne:SDK from $PFX/$FILE into $dest"
+    notice "Creating dyne:SDK from $ARG1 into $dest"
 
-    loop_mount_iso $PFX/$FILE # defines $ISOLOOP, to be removed by loop_umount_iso
+    loop_mount_iso $ARG1 # defines $ISOLOOP, to be removed by loop_umount_iso
     if [ $? != 0 ]; then
 	error "loop mount failed"
 	return 1
@@ -262,7 +255,7 @@ create_sdk() {
 	act "init ram already existing, skipped"
     fi
 
-    notice "dyne:SDK succesfully created using $FILE in $dest"
+    notice "dyne:SDK succesfully created using $ARG1 in $dest"
 
     loop_umount_iso
 
@@ -294,8 +287,8 @@ start_xephyr() {
 
 enter_sys() {
 
-    if ! [ $ARG1 ]; then
-	error "argument missing: unsquashed directory"
+    if ! [ -r ./squashfs-root ]; then
+	error "Invalid SDK: squashfs-root directory not found."
 	exit 1
     fi
 
@@ -304,17 +297,17 @@ enter_sys() {
     fi
 
     # bind dev and proc if needed
-    mount | grep "$PFX/$FILE/dev/pts" > /dev/null
+    mount | grep "${SDK}/squashfs-root/dev/pts" > /dev/null
     if [ $? != 0 ]; then
-	mount -o bind /dev/pts $PFX/$FILE/dev/pts
+	mount -o bind /dev/pts ${SDK}/squashfs-root/dev/pts
     fi
-    mount | grep "$PFX/$FILE/proc" > /dev/null
+    mount | grep "${SDK}/squashfs-root/proc" > /dev/null
     if [ $? != 0 ]; then
-	mount -o bind /proc $PFX/$FILE/proc
+	mount -o bind /proc ${SDK}/squashfs-root/proc
     fi
-    mount | grep "$PFX/$FILE/var/run" > /dev/null
+    mount | grep "${SDK}/squashfs-root/var/run" > /dev/null
     if [ $? != 0 ]; then
-	mount -o bind /var/run $PFX/$FILE/var/run
+	mount -o bind /var/run ${SDK}/squashfs-root/var/run
     fi
 
     # mount | grep "$PFX/$FILE/tmp" > /dev/null
@@ -322,17 +315,17 @@ enter_sys() {
     # 	mount -o bind /tmp $PFX/$FILE/tmp
     # fi
 
-    cp /etc/resolv.conf $PFX/$FILE/etc/resolv.conf
+    cp /etc/resolv.conf ${SDK}/squashfs-root/etc/resolv.conf
     notice "jumping into the live system"
     act "default login is luther, password luther"
-    chroot $PFX/$FILE /bin/login
+    chroot ${SDK}/squashfs-root /bin/login
 
     if [ $XRES ]; then
         killall Xephyr
     fi
-    umount $PFX/$FILE/dev/pts
-    umount $PFX/$FILE/proc
-    umount $PFX/$FILE/var/run
+    umount ${SDK}/squashfs-root/dev/pts
+    umount ${SDK}/squashfs-root/proc
+    umount ${SDK}/squashfs-root/var/run
 
     # umount $PFX/$FILE/tmp
 }
@@ -341,56 +334,53 @@ pack_iso() {
 
     if [ $UID != 0 ]; then return 1; fi
 
-    if ! [ $ARG1 ]; then
-	error "argument missing: SDK directory"
-	exit 1
-    fi
-
-    SDK=$ARG1
-    if [ "$SDK" = "." ]; then SDK=`pwd`; fi
-	
-
-    # check if its a valid SDK
-    if ! [ "$ARG2" ]; then
-	if ! [ -x ${SDK}/squashfs-root ]; then
-	    error "${SDK} doesn't seems to be a dyne:SDK"
-	    return 1
-	fi
-	if ! [ -x ${SDK}/iso-skeleton ]; then
-	    error "${SDK} doesn't seems to be a dyne:SDK"
-	    return 1
-	fi
-	if ! [ -x ${SDK}/initramfs ]; then
-	    error "${SDK} doesn't seems to be a dyne:SDK"
-	    return 1
-	fi
-	notice "packing ${SDK} into ISO $dest"
-    else
-	case $ARG2 in
-	    initrd)
-		act "packing initrams only"
-		if ! [ -x ${SDK}/initramfs ]; then
-		    error "${SDK} doesn't contains an initramfs, aborting."
-		    return 1
-		fi
-		;;
-	    
-	    squashfs)
-		act "packing squashfs only"
-		if ! [ -x ${SDK}/squashfs-root ]; then
-		    error "${SDK} doesn't contains a squashfs-root, aborting."
-		    return 1
-		fi
-		;;
-	    *)
-		error "pack option not recognized: $ARG2"
+    case $ARG1 in
+	init*)
+	    if [ -x ${SDK}/initramfs ]; then
+		notice "Packing initrd into iso-skeleton/live/initrd.img"
+		op=init
+	    else
+		error "initramfs not found in current SDK, operation aborted."
 		return 1
-	esac
-    fi
+	    fi
+	    ;;
+	iso*)
+	    if [ -x ${SDK}/iso-skeleton ]; then
+		notice "Packing the ISO into $dest"
+		op=iso
+	    else
+		error "iso-skeleton not found in current SDK, operation aborted."
+		return 1
+	    fi
+	    ;;
+	squash*)
+	    if [ -x ${SDK}/squashfs-root ]; then
+		notice "Packing the squashfs root into iso-skeleton/live/filesystem.squashfs"
+		op=root
+	    else
+		error "squashfs-root not found in current SDK, operation aborted."
+		return 1
+	    fi
+	    ;;
+	*)
+	    if  [ -x ${SDK}/iso-skeleton ] && \
+		[ -x ${SDK}/squashfs-root ] && \
+		[ -x ${SDK}/initramfs ]; then	    
+		notice "No argument specified: packing everything into an ISO."
+		act "output ISO is named: $dest"
+		op=all
+	    else
+		error "SDK seems incomplete, please specify what you want to pack."
+		return 1
+	    fi
+	    ;;
+    esac
 
+    # error 
+    res=1
 
-    # skip if initrd only
-    if [ "$ARG2" != "initrd" ]; then
+    # SQUASHFS ROOT
+    if [ "$op" = "root" ] || [ "$op" = "all" ]; then
 	
     # make sure nothing is mounted
 	umount $SDK/squashfs-root/dev/pts 2> /dev/null
@@ -404,31 +394,24 @@ pack_iso() {
 	echo "nameserver 8.8.8.8" \
 	    > $SDK/squashfs-root/etc/resolv.conf
 	
-    # pack the squashfs-root if it wasn't done already
-	if ! [ -r $SDK/iso-skeleton/live/filesystem.squashfs ]; then
 	# first update live-scripts from code-repo
-	    if [ -x $SDK/code-repo/dyneIII/live-init-scripts ]; then
-		cp $SDK/code-repo/dyneIII/live-init-scripts/init \
-		    $SDK/squashfs-root/usr/share/initramfs-tools/
-		rsync --delete --inplace -ri \
-		    $SDK/code-repo/dyneIII/live-init-scripts/scripts/* \
-		    $SDK/squashfs-root/usr/share/initramfs-tools/scripts/
-	    fi
-	    mksquashfs $SDK/squashfs-root $SDK/iso-skeleton/live/filesystem.squashfs -noappend
-	    if [ $? != 0 ]; then
-		error "mksquash failed, operation aborted."
-		return 1
-	    fi
-	else
-	    act "using existing iso-skeleton/live/filesystem.squashfs - delete it to force re-squashing."
+	if [ -x $SDK/code-repo/dyneIII/live-init-scripts ]; then
+	    cp $SDK/code-repo/dyneIII/live-init-scripts/init \
+		$SDK/squashfs-root/usr/share/initramfs-tools/
+	    rsync --delete --inplace -ri \
+		$SDK/code-repo/dyneIII/live-init-scripts/scripts/* \
+		$SDK/squashfs-root/usr/share/initramfs-tools/scripts/
 	fi
-	
+	mksquashfs $SDK/squashfs-root $SDK/iso-skeleton/live/filesystem.squashfs -noappend
+	if [ $? != 0 ]; then
+	    error "mksquash failed, operation aborted."
+	    return 1
+	else
+	    res=0; # success
+	fi
     fi
 
-    if [ "$ARG2" = "squashfs" ]; then 
-	act "squashfs succesfully packed into iso-skeleton."
-	return 0;
-    fi
+    if [ "$op" = "init" ] || [ "$op" = "all" ]; then 
 
     # pack the initramfs if not present
 #    if ! [ -r $SDK/iso-skeleton/live/initrd.img ]; then
@@ -458,159 +441,40 @@ pack_iso() {
 	cd -
  #   fi
 
-    if [ "$ARG2" = "initrd" ]; then
-	cp -v $SDK/iso-skeleton/live/initrd.img initrd.img_${DATE_SUFFIX}
-	act "initrd succesfully packed into SDK."
-	return 0
-    fi
-
-    # update ISO skeleton from latest code repository if present in SDK
-    if [ -x $SDK/code-repo ]; then
-	rsync --inplace -ri $SDK/code-repo/dyneIII/iso-skeleton/* $SDK/iso-skeleton/
-    fi
-
-    notice "succesfully squashed the filesystem for SDK $SDK"
-    act "`ls -lh $SDK/iso-skeleton/live/filesystem.squashfs`"
-	# stat $PFX/$FILE.squashfs
-
-    act "making bootable iso in $isofile"
-    genisoimage -r -V "$FILE%%\.*" -cache-inodes -J -l \
-	-b isolinux/isolinux.bin -c isolinux/boot.cat \
-	-no-emul-boot -boot-load-size 4 -boot-info-table \
-	-input-charset iso8859-1 -udf -o ${SDK}/$dest_${DATE_SUFFIX}.iso ${SDK}/iso-skeleton
-
-# omissis: -R -udf 
-    if [ $? != 0 ]; then
-	error "an error occurred in genisoimage, operation aborted."
-	res=1
-    else
-	notice "iso file packed succesfully"
-	ls -lh ${SDK}/$dest_${DATE_SUFFIX}.iso
+	act "initrd succesfully packed around the iso-skeleton"
 	res=0
     fi
 
-    return $res
-}
-
-inject_init() {
-    if ! [ $ARG2 ]; then
-	error "need 2 arguments: file to inject and scripts dir or initrd file"
-	error "arg1 can be an ISO or compressed initrd, arg2 live-init-scripts or an initrd"
-	error "all arguments should be a full path to the file, not just the file or dir names."
-	error "example 1: inject an INITRD with LIVE-SCRIPTS"
-	error "example 2: inject an ISO with an INITRD"
-	return 1
-    fi
+    if [ "$op" = "iso" ] || [ "$op" = "all" ]; then
+	notice "baking a bootable ISO in $dest"
 
 
-    file ${PFX}/${FILE} | grep 'ISO' > /dev/null
-    if [ $? = 0 ]; then
-
-	loop_mount_iso ${PFX}/${FILE}
-	if [ $? = 1 ]; then
-	    error "error accessing ISO"
-	    return 1
+    # update ISO skeleton from latest code repository if present in SDK
+	if [ -x $SDK/code-repo ]; then
+	    act "updating latest source from code-repo"
+	    rsync --inplace -ri $SDK/code-repo/dyneIII/iso-skeleton/* $SDK/iso-skeleton/
 	fi
+	act "starting genisoimage..."
 
-	file $ARG2 | grep 'gzip.*Unix' > /dev/null
-	if [ $? = 0 ]; then
-	    inject_initrd=true
-	    notice "injecting ISO image with a new initrd"
-	    
-	    mount -o bind $ARG2 $ISOLOOP/live/initrd.img
-	    if [ $? != 0 ]; then
-		error "error binding initrd in ISO loop $ISOLOOP"
-		loop_umount_iso
-		return 1
-	    fi
-	    	    
-	elif [ -x ${ARG2}/isolinux ]; then
+	isofile=${dest}.iso
 
-	    notice "injecting ISO image with a new DVD skeleton"
-		
-	    rsync --exclude=boot.cat --inplace -ir \
-		${ARG2}/isolinux/* $ISOLOOP/isolinux/
-		
-	else
-
-	    error "Unrecognized injected object: $ARG2"
-	    error "Operation aborted."
-	    return 1
-
-	fi
-
-	if [ -z $OUTFILE ]; then
-	    isofile=$PFX/$FILE_${DATE_SUFFIX}.iso
-	else
-	    isofile=${OUTFILE}.iso
-	fi
-	
-	act "making bootable iso in $isofile"
-	genisoimage -r -V "$OUTFILE" -cache-inodes -J -l \
+	genisoimage -r -V "$dest" -cache-inodes -J -l \
 	    -b isolinux/isolinux.bin -c isolinux/boot.cat \
 	    -no-emul-boot -boot-load-size 4 -boot-info-table \
-	    -input-charset iso8859-1 -udf -o $isofile $ISOLOOP
+	    -input-charset iso8859-1 -udf -o ${isofile} ${SDK}/iso-skeleton
 	
+# omissis: -R -udf 
 	if [ $? != 0 ]; then
 	    error "an error occurred in genisoimage, operation aborted."
 	    res=1
 	else
-	    notice "ISO file packed succesfully. Summary:"
-	    ls -lh ${PFX}/${FILE}*
+	    notice "iso file packed succesfully:"
+	    ls -lh ${isofile}
+	    file ${isofile}
 	    res=0
 	fi
-
-        # cleanup
-	if [ "$inject_initrd" = "true" ]; then
-	    umount $ISOLOOP/live/initrd.img
-	fi
-
-	loop_umount_iso
-	
-	return $res
-	
     fi
-	    
-
-    file ${PFX}/${FILE} | grep 'gzip.*Unix' > /dev/null
-    if [ $? = 0 ]; then
-	notice "injecting initrd image with dynebolic scripts"
-	
-	# second argument should be a directory with live scripts
-	if ! [ -r $ARG2/init ]; then
-	    error "live init script not found in $ARG2"
-	    error "operation aborted."
-	    return 1
-	fi
-	if ! [ -x $ARG2/scripts ]; then
-	    error "live init scripts directory not found in $ARG2"
-	    error "operation aborted."
-	    return 1
-	fi
-
-	initrd_temp=`safe_dir dyne_inject`
-	if [ "$initrd_temp" = "-1" ]; then
-	    error "error creating temp dir"
-	    return 1
-	fi
-
-	cd $initrd_temp
-	gunzip < ${PFX}/${FILE} | cpio -i
-	cp -v $ARG2/init $ARG2/README .
-	rsync --inplace -ir $ARG2/scripts/* scripts/
-
-	find | cpio -H newc -o | gzip -9 > ${PFX}/${FILE}_${DATE_SUFFIX}
-	cd -
-#	rm -rf $initrd_temp
-	act "temporary initrd leftover in: $initrd_temp"
-	notice "initrd succesfully injected, summary:"
-	ls ${PFX}/${FILE}*
-	return 0
-    fi
-
-    error "file type not recognized: ${PFX}/${FILE}"
-    error "injection aborted."
-    return 1
+    return $res
 }
     
     
