@@ -278,8 +278,8 @@ start_xephyr() {
 	return 1
     fi
     act "to launch the graphical session use:"
-    act "export DISPLAY=localhost:0"
-    act "xfce4-session (or what have you)"
+    act "export DISPLAY=localhost:1"
+    act "gnome-session (or another window manager)"
     notice "now don't mind the error about fonts, but login with user and password"
     
     return 0
