@@ -43,7 +43,33 @@ done
 # dyneiso not configured, nothing to do
 if [ -z $DYNE_ISO ]; then exit 0; fi
 
+
 echo "Scanning local storage for dyne:III ISO file $DYNE_ISO..."
+# Load USB modules
+num_block=$(ls -l /sys/block | wc -l)
+for module in vfat ntfs sd_mod uhci-hcd ehci-hcd ohci-hcd usb-storage
+do
+    modprobe -q -b ${module}
+done
+modprobe ntfs
+modprobe vfat
+
+udevadm trigger
+udevadm settle
+
+# For some reason, udevsettle does not block in this scenario,
+# so we sleep for a little while.
+#
+# See https://bugs.launchpad.net/ubuntu/+source/casper/+bug/84591
+for timeout in 5 4 3 2 1
+do
+    sleep 1
+    if [ $(ls -l /sys/block | wc -l) -gt ${num_block} ]
+    then
+	break
+    fi
+done
+
 mkdir -p /dyne
 
 check_dyne() {
@@ -66,10 +92,11 @@ check_dyne() {
 	    log_success_msg "ISO ${DYNE_ISO} found in ${dev}"
 	    # this is what adds parameters to boot
 	    touch /conf/param.conf
-	    echo "export FROMISO=${dev}/${DYNE_ISO}" >> /conf/param.conf
+	    echo "export FROMISO=${dev}${DYNE_ISO}" >> /conf/param.conf
 	    return 0
 	else
 	    echo "not found."
+	    umount /dyne
 	fi
     done
     return 1
