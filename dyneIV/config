@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+## configuration file for dynebolic blend -- Beowulf release
+
+arch="amd64"
+
+base_packages+=(
+	bash-completion
+	dnsutils
+	grub-pc-bin
+	$grubversion
+	iw
+	ncurses-term
+	net-tools
+	usbutils
+	util-linux-locales
+	whois
+
+# Dyne bolic related
+	dbus
+	jackd1
+	luajit
+	openbox
+	xorg
+	zsh
+)
+
+
+
+purge_packages=(
+	devuan-baseconf
+	debian-keyring
+	elinks
+	elinks-data
+	git
+	git-core
+	git-man
+	liberror-perl
+	libfsplib0
+	libtre5
+	openntpd
+	openssh-server
+	openssh-sftp-server
+	tmux
+	intel-microcode
+	iucode-tool
+	amd64-microcode
+)
+
+
+
+custom_deb_packages+=(
+
+
+)
