@@ -1,0 +1,66 @@
+#!/usr/bin/env zsh
+## configuration file for devuan-desktop-live blend
+
+vars+=(username userpass default_shell mkefi grubversion hookscripts)
+arrs+=(custom_deb_packages)
+
+blend_name="dynebolic-desktop"
+
+release="beowulf"
+version="3.0.0"
+
+username="devuan"
+userpass="devuan"
+default_shell="/bin/bash"
+
+arch="amd64"
+
+# comment to disable:
+#hookscripts="yes"
+
+# uncomment to create uefi-bootable iso
+MKEFI=1
+efi_work="$BLENDPATH/${release}/efi-files"
+
+#grubversion="grub-pc"
+grubversion="grub-efi-amd64"
+
+# Uncomment for amd64
+base_packages+=(grub-efi-amd64-bin grub-efi-ia32-bin)
+
+mirror="http://pkgmaster.devuan.org/merged"
+section="main contrib"
+
+
+#base_packages_option=(--no-install-recommends)
+#extra_packages_option=(--no-install-recommends)
+
+### common package sets for dyne:bolic are defined in the config file
+
+source "$BLENDPATH/config"
+
+### desktop-only packages
+base_packages+=(
+    acpi-support-base
+    acpi-fakekey
+    gparted
+    laptop-detect
+    lvm2
+    mdadm
+)
+
+
+extra_packages+=(
+    task-desktop
+    task-laptop
+    refractainstaller-base
+    refractasnapshot-base
+    yad
+    refractainstaller-gui
+    refractasnapshot-gui
+    libgtk3-perl    #need to add this for graphical debconf
+)
+
+## image_name depends on release and version
+
+image_name="${blend}_${release}_${version}_${arch}"
