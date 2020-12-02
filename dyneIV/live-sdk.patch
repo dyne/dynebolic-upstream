@@ -6,7 +6,7 @@ index cc3c7c9..1eba3a9 100755
  		"devuan-minimal-live"    "$R/blends/devuan-minimal-live/devuan-minimal-live.blend"
  		"heads"          "$R/../heads.blend"
  		"decode"         "$R/../decode.blend"
-+		"dynebolic"      "$R/../dynebolic/dyneIV/dynebolic-desktop.blend"
++		"dynebolic"      "$R/blends/dynebolic/desktop.blend"
  	)
  
  	oslib="${os_map[$os]}"
