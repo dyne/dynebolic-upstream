@@ -41,10 +41,11 @@ purge_packages=(
 	openssh-server
 	openssh-sftp-server
 	tmux
-	intel-microcode
 	iucode-tool
-	amd64-microcode
 )
+
+#	amd64-microcode
+#	intel-microcode
 
 
 
