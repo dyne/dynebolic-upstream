@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# download the stage4 from jenkins builds
+#
 
 if ! [ -r live-sdk ]; then
 	git clone --recursive https://git.devuan.org/devuan-sdk/live-sdk
