@@ -3,6 +3,7 @@ cat << EOF > /etc/apt/sources.list.d/linux-libre.list
 deb https://mirror.cyberbits.eu/linux-libre/freesh/ freesh main
 EOF
 wget -O - https://jxself.org/gpg.asc | sudo apt-key add -
-apt update
-apt install linux-libre-4.19
-apt remove linux-image
+apt -q -y update
+apt install -q -y linux-libre-4.19
+oldk=`dpkg -l | awk '/linux-image.*-??-amd64 / {print $2}'`
+apt remove -q -y $oldk
