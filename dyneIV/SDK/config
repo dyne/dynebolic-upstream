@@ -14,6 +14,10 @@ base_packages+=(
 	usbutils
 	util-linux-locales
 	whois
+	sed
+	less
+	grep
+	coreutils
 
 # Dyne bolic related
 	dbus
