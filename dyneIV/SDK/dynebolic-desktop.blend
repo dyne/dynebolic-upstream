@@ -49,13 +49,15 @@ blend_postinst() {
 
 	notice "executing $blend_name postinst"
 
+	edit_initramfs
+
 	[[ -n "$MKEFI" ]] && {
 		iso_make_efi
 		iso_write_grub_cfg
 	}
 
 	pushd "$strapdir"
-		sudo rsync -avx --no-o --no-g "$blend_release_path"/rootfs-overlay/* . || { zerr; return 1; }
+		sudo rsync -avx --no-o --no-g "$blend_release_path"/../../devuan-desktop-live/beowulf/rootfs-overlay/* . || { zerr; return 1; }
 
 		# add some basic files to /dev
 sudo mknod -m 622 dev/console c 5 1
