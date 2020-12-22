@@ -21,7 +21,7 @@ base_packages+=(
 
 # Dyne bolic related
 	dbus
-	jackd1
+	jackd2
 	luajit
 	openbox
 	xorg
