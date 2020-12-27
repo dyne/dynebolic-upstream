@@ -349,6 +349,7 @@ blend_finalize() {
 
 	cat <<EOF | sudo tee ${strapdir}/finalize >/dev/null
 #!/bin/sh
+. /etc/profile
 
 ## permissions
 for i in cdrom floppy audio dip video plugdev netdev lpadmin scanner; do
@@ -413,6 +414,23 @@ sed -i 's/pkgmaster/deb/g' /etc/apt/sources.list
 apt-get update
 apt-get clean
 updatedb
+
+# Add repository for cadence and catia
+# https://kx.studio/Repositories
+sudo apt-get install apt-transport-https
+wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_10.0.3_all.deb
+dpkg -i kxstudio-repos_10.0.3_all.deb
+rm kxstudio-repos_10.0.3_all.deb
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes cadence catia carla
+
+# Allow realtime audio applications (for running jack)
+echo "@audio - rtprio 98" >> /etc/security/limits.conf
+echo "@audio - memlock unlimited" >> /etc/security/limits.conf
+
+# Run cadence at startup
+ln -s /usr/share/applications/cadence.desktop /etc/xdg/autostart/
 EOF
 	chroot-script -d finalize || zerr
 }
