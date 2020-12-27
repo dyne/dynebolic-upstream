@@ -21,7 +21,7 @@ base_packages+=(
 
 # Dyne bolic related
 	dbus
-	jackd1
+	jackd2
 	luajit
 	openbox
 	xorg
@@ -46,6 +46,8 @@ purge_packages=(
 	openssh-sftp-server
 	tmux
 	iucode-tool
+	xfce4
+	libreoffice
 )
 
 #	amd64-microcode
