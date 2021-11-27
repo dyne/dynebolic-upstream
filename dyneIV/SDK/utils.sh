@@ -2,8 +2,8 @@
 
 # small utils ripped from livesdk and zuper
 
-act() { print " .  $*" }
-notice() { print "[*] $*" }
+act() { print && print " .  $*" && print }
+notice() { print && print "[*] $*" && print }
 
 devprocsys() {
 	watdo="$1"
