@@ -12,12 +12,12 @@ fi
 cd live-sdk
 sed -i 's/firmware-linux//' config
 git apply ../live-sdk.patch
-mkdir blends/dynebolic
+mkdir -p blends/dynebolic
 cp ../dynebolic-desktop.blend blends/dynebolic/desktop.blend
 cp ../desktop-config ../config blends/dynebolic/
 zsh -f -c 'source sdk && load devuan dynebolic && \
-	release=beowulf && \
-    version=3.0.0 && \
+	release=chimaera && \
+	version=4.0.0 && \
 	bootstrap_complete_base'
 cd -
 
