@@ -2,8 +2,7 @@
 # Copyright (c) 2020 Dyne.org Foundation
 # dynebolic is written and maintained by Denis "Jaromil" Roio <jaromil@dyne.org>
 #
-# This file is part of dynebolic
-# dynebolic-desktop.blend is maintained by danyspin97
+# This file is part of dynebolic, contributed by danyspin97
 #
 # Based in part upon on 'devuan-desktop-live.blend', which is:
 #     Copyright (c) 2017 Dyne.org Foundation
@@ -57,7 +56,7 @@ blend_postinst() {
 	}
 
 	pushd "$strapdir"
-		sudo rsync -avx --no-o --no-g "$blend_release_path"/../../devuan-desktop-live/beowulf/rootfs-overlay/* . || { zerr; return 1; }
+		sudo rsync -avx --no-o --no-g "$blend_release_path"/../../devuan-desktop-live/chimaera/rootfs-overlay/* . || { zerr; return 1; }
 
 		# add some basic files to /dev
 sudo mknod -m 622 dev/console c 5 1

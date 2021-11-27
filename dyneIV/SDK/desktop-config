@@ -6,8 +6,8 @@ arrs+=(custom_deb_packages)
 
 blend_name="dynebolic-desktop"
 
-release="beowulf"
-version="3.0.0"
+release="chimaera"
+version="4.0.0"
 
 username="devuan"
 userpass="devuan"
@@ -28,7 +28,7 @@ grubversion="grub-efi-amd64"
 # Uncomment for amd64
 base_packages+=(grub-efi-amd64-bin grub-efi-ia32-bin)
 
-mirror="http://pkgmaster.devuan.org/merged"
+mirror="http://deb.devuan.org/merged"
 section="main contrib"
 
 
