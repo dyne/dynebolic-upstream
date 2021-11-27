@@ -16,8 +16,8 @@ mkdir blends/dynebolic
 cp ../dynebolic-desktop.blend blends/dynebolic/desktop.blend
 cp ../desktop-config ../config blends/dynebolic/
 zsh -f -c 'source sdk && load devuan dynebolic && \
-	release=beowulf && \
-    version=3.0.0 && \
+	release=chimaera && \
+	version=4.0.0 && \
 	build_iso_dist'
 cd -
 
