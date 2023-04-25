@@ -1,6 +1,6 @@
 # Bootstrap base system in stages
 
-Requires: `mmdebstrap uidmap`
+Requires: `mmdebstrap`
 
 ## Stage 1
 
