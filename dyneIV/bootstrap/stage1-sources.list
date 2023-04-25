@@ -1,0 +1,3 @@
+deb http://deb.devuan.org/merged daedalus main
+deb-src http://deb.devuan.org/merged daedalus main
+
