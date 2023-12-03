@@ -94,7 +94,6 @@ toast:
 	    --locales="" themes="" fonts=""								\
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
 	    "boot/grub/grub.cfg=grub-embed.cfg"
-
 	cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
     mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
     mcopy -vi efiboot.img												\
@@ -111,6 +110,17 @@ toast:
 		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
 		C12A7328-F81F-11D2-BA4B-00A0C93EC93B							\
 		staging/efiboot.img staging
+
+qemu:
+	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso -m 2048 -smp	\
+	4 -device intel-hda -device hda-duplex -device						\
+	nec-usb-xhci,id=usb -chardev										\
+	spicevmc,name=usbredir,id=usbredirchardev1 -device					\
+	usb-redir,chardev=usbredirchardev1,id=usbredirdev1 -chardev			\
+	spicevmc,name=usbredir,id=usbredirchardev2 -device					\
+	usb-redir,chardev=usbredirchardev2,id=usbredirdev2 -chardev			\
+	spicevmc,name=usbredir,id=usbredirchardev3 -device					\
+	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
 
 clean:
 	rm -rf ROOT staging
