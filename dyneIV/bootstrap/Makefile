@@ -11,6 +11,7 @@ all: base linux-libre live-boot xorg shrink squash
 
 # dependencies needed to build a live system
 deps:
+	dpkg -i devuan-keyring_2023.05.28_all.deb
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools
