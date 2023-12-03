@@ -14,7 +14,8 @@ deps:
 	dpkg -i devuan-keyring_2023.05.28_all.deb
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
+    squashfs-tools-ng
 
 base:
 	 mmdebstrap \
@@ -56,7 +57,7 @@ xorg:
 
 squash:
 	@echo "Squash ROOT in compressed form"
-	mv ROOT/boot .
+	-[ -r ROOT/boot ] && mv ROOT/boot .
 	cd ROOT && tar c * | tar2sqfs -c zstd ../dynebolic.squash
 
 shrink:
@@ -65,8 +66,8 @@ shrink:
 	rm -rvf ROOT/usr/share/help/*
 	rm -rvf ROOT/usr/share/info/*
 	rm -rvf ROOT/usr/share/doc/*
-	find ROOT/ -type d -name '__pycache__' -exec rm -rvf {} \;
-	find ROOT/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
+	-find ROOT/ -type d -name '__pycache__' -exec rm -rvf {} \;
+	-find ROOT/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
 	rm -rvf ROOT/var/tmp/*
 	chroot ROOT apt-get clean
 
