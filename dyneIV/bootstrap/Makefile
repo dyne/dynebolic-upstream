@@ -25,8 +25,8 @@ base:
 linux-libre:
 	@echo "Install linux-libre"
 	@wget https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/freesh-archive-keyring_1.1_all.deb
-	@cp freesh-archive-keyring_1.1_all.deb ROOT/
-	chroot ROOT dpkg -i /freesh-archive-keyring_1.1_all.deb
+	@mv freesh-archive-keyring_1.1_all.deb ROOT/
+	chroot ROOT dpkg -i /freesh-archive-keyring_1.1_all.deb && rm -f ROOT/freesh-archive-keyring_1.1_all.deb
 	chroot ROOT apt-get update
 	chroot ROOT apt-get -q -y install linux-libre-6.1*
 
@@ -42,7 +42,7 @@ lxqt:
 
 squash:
 	@echo "Squash ROOT in compressed form"
-	cd ROOT & tar c ./ | tar2sqfs -c zstd dynebolic.squash
+	cd ROOT && tar c * | tar2sqfs -c zstd ../dynebolic.squash
 
 shrink:
 	rm -rvf ROOT/usr/share/gtk-doc/*
