@@ -4,7 +4,7 @@ VARIANT ?= apt
 # essential, minbase
 FORMAT ?= dir
 
-all: base linux-libre xorg lxqt
+all: base linux-libre
 
 base:
 	 mmdebstrap \
@@ -43,6 +43,17 @@ lxqt:
 squash:
 	@echo "Squash ROOT in compressed form"
 	cd ROOT & tar c ./ | tar2sqfs -c zstd dynebolic.squash
+
+shrink:
+	rm -rvf ROOT/usr/share/gtk-doc/*
+	rm -rvf ROOT/usr/share/man/*
+	rm -rvf ROOT/usr/share/help/*
+	rm -rvf ROOT/usr/share/info/*
+	rm -rvf ROOT/usr/share/doc/*
+	find ROOT/ -type d -name '__pycache__' -exec rm -rvf {} \;
+	find ROOT/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
+	rm -rvf ROOT/var/tmp/*
+	chroot ROOT apt-get clean
 
 clean:
 	rm -rf ROOT
