@@ -1,6 +1,6 @@
 # Bootstrap base system in stages
 
-Requires: `mmdebstrap`
+Requires: `mmdebstrap squashfs-tools-ng`
 
 ## Stage 1
 

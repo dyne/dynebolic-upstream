@@ -18,12 +18,13 @@ base:
 		--hook-dir=/usr/share/mmdebstrap/hooks/eatmydata \
 		--hook-dir=/usr/share/mmdebstrap/hooks/file-mirror-automount \
 		--include='devuan-keyring' \
-		--include='ca-certificates locales apt-transport-https curl' \
+		--include='ca-certificates locales apt-transport-https curl apt-utils' \
 		--comp=main --arch=${ARCH} \
 	daedalus ROOT http://deb.devuan.org/merged
 
 linux-libre:
 	@echo "Install linux-libre"
+	@wget https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/freesh-archive-keyring_1.1_all.deb
 	@cp freesh-archive-keyring_1.1_all.deb ROOT/
 	chroot ROOT dpkg -i /freesh-archive-keyring_1.1_all.deb
 	chroot ROOT apt-get update
@@ -37,7 +38,7 @@ xorg:
 
 lxqt:
 	@echo "Install LXQT"
-	chroot ROOT apt-get -q -y install lxqt
+	chroot ROOT apt-get -q -y --no-install-recommends install lxqt
 
 squash:
 	@echo "Squash ROOT in compressed form"
