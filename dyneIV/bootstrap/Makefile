@@ -33,18 +33,27 @@ VARIANT ?= apt
 # essential, minbase
 FORMAT ?= dir
 
-all: base linux-libre live-boot xorg shrink squash
+UID := $(shell id -u)
+
+FREESH ?= freesh-archive-keyring_1.1_all.deb
+
+all: bootstrap locale kernel live-boot xorg shrink squash iso
+
+need-root:
+ifneq (${UID}, 0)
+	@echo "Run as root." && exit 1
+endif
 
 # dependencies needed to build a live system
-deps:
+install-deps: need-root
 	dpkg -i devuan-keyring_2023.05.28_all.deb
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
     squashfs-tools-ng pv schroot
 
-base: SCONF := /etc/schroot/chroot.d/dynebolic.conf
-base:
+bootstrap: SCONF := /etc/schroot/chroot.d/dynebolic.conf
+bootstrap: need-root
 	 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
@@ -60,32 +69,40 @@ base:
 		--comp=main --arch=${ARCH} \
 	daedalus ROOT http://deb.devuan.org/merged
 	-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
-	-[ -r ${SCONF} ] || { cp schroot.conf ${SCONF} \
-		 && echo "directory=$PWD/ROOT" >> ${SCONF}
+	-[ -r ${SCONF} ] || cp schroot.conf ${SCONF} \
+	 && echo "directory=$PWD/ROOT" >> ${SCONF}
 
-linux-libre:
-	@echo "Install linux-libre"
-	schroot -c dyne -u root wget https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/freesh-archive-keyring_1.1_all.deb
-	chroot ROOT dpkg -i /freesh-archive-keyring_1.1_all.deb && rm -f ROOT/freesh-archive-keyring_1.1_all.deb
+locale: need-root
+	@echo "Setup language locale to en_US.UTF-8"
+	@chroot ROOT locale-gen --purge en_US.UTF-8
+	@chroot ROOT echo -e \
+			'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\nLC_ALL="en_US.UTF-8\n"' \
+			> /etc/default/locale
+	@chroot ROOT sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+	@chroot ROOT dpkg-reconfigure --frontend=noninteractive locales
+	@chroot ROOT update-locale LANG=en_US.UTF-8
+
+kernel: need-root
+	@echo "Install Linux Libre"
+	chroot ROOT curl https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/${FREESH} --output ${FREESH}
+	chroot ROOT dpkg -i /${FREESH} && rm -f ROOT/${FREESH}
 	chroot ROOT apt-get update
 	chroot ROOT apt-get -q -y install linux-libre-6.1*
 
-live-boot:
+live-boot: PASSWD := $$5$$luq0zWiAzvJ7EBty$M78Ke44.HWFItMwVwCvPqjO2uDqoOggw.VLzaPmV.a1
+live-boot: need-root
+	@echo "Setup Live Boot"
 	chroot ROOT apt-get -q -y install mount live-boot zstd direnv \
 		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
-	chroot ROOT echo 'root:luther' | chpasswd
-	chroot ROOT locale-gen --purge en_US.UTF-8
-	chroot ROOT echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' \
-				> /etc/default/locale
+	chroot ROOT echo "root:${PASSWD}" | chpasswd -e
+	chroot ROOT	useradd -m -u 1000 -p "${PASSWD}" -s /bin/bash luther
 	chroot ROOT echo "dynebolic" > /etc/hostname
 	chroot ROOT update-initramfs -k all -c
 
-xorg:
+xorg: need-root
 	@echo "Install X11"
-	chroot ROOT apt-get -q -y install xserver-xorg-core xserver-xorg	\
-		xinit xterm xnest xserver-xorg-video-dummy openbox				\
-		python3-xdg xserver-xephyr x11vnc x11-utils mesa-utils			\
-		desktop-base devuan-baseconf deepsea-icon-theme
+	cp install-xorg.sh ROOT/
+	chroot ROOT sh /install-xorg.sh && rm -f /install-xorg.sh
 	chroot ROOT echo "exec openbox-session" > /etc/X11/xinitrc
 
 #	@echo " install headless driver"
@@ -97,16 +114,11 @@ desktop:
 	sudo chroot ROOT sh desktop.sh
 	sudo rm -f ROOT/desktop.sh
 
-schroot:
-	schroot -c dyne -u root -d /root
+chroot:
+	@echo "Entering ROOT"
+	@schroot -c dyne -u root -d /root
 
-squash:
-	@echo "Squash ROOT to dynebolic.squash"
-	-[ -r ROOT/boot ] && mv -v ROOT/boot .
-	sh squash.sh
-	-[ -r boot ] && mv -f boot ROOT/
-
-shrink:
+shrink: need-root
 	rm -rvf ROOT/usr/share/gtk-doc/*
 	rm -rvf ROOT/usr/share/man/*
 	rm -rvf ROOT/usr/share/help/*
@@ -118,7 +130,13 @@ shrink:
 	chroot ROOT apt-get autoremove
 	chroot ROOT apt-get clean
 
-toast:
+squash: need-root
+	@echo "Squash ROOT to dynebolic.squash"
+	-[ -r ROOT/boot ] && mv -v ROOT/boot .
+	sh squash.sh
+	-[ -r boot ] && mv -f boot ROOT/
+
+iso:
 	mkdir -p staging/EFI/BOOT
 	mkdir -p staging/boot/grub/x86_64-efi
 	mkdir -p staging/isolinux
@@ -169,18 +187,6 @@ qemu:
 	spicevmc,name=usbredir,id=usbredirchardev3 -device					\
 	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
 
-clean:
-	rm -rf ROOT staging
-
-# > dynebolic-stage1.tar
-# @ls -lh dynebolic-stage1.tar
-# @echo "Squashing filesystem..."
-# @rm -f dynebolic-stage1.squash
-# cat dynebolic-stage1.tar | tar2sqfs -q -c zstd dynebolic-stage1.squash
-# @ls -lh dynebolic-stage1.squash
-# @rm -f dynebolic-stage1.tar
-
-#		--hook-dir=/usr/share/mmdebstrap/hooks/no-merged-usr \
-
-#		--include freesh-archive-keyring_1.1_all.deb \
-
+clean: need-root
+	@echo "Deleting everything."
+	@rm -rf ROOT staging *.squash *.iso
