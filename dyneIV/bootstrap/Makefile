@@ -41,8 +41,9 @@ deps:
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv
+    squashfs-tools-ng pv schroot
 
+base: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 base:
 	 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
@@ -58,17 +59,19 @@ base:
 		--include='ca-certificates locales apt-transport-https curl apt-utils' \
 		--comp=main --arch=${ARCH} \
 	daedalus ROOT http://deb.devuan.org/merged
+	-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
+	-[ -r ${SCONF} ] || { cp schroot.conf ${SCONF} \
+		 && echo "directory=$PWD/ROOT" >> ${SCONF}
 
 linux-libre:
 	@echo "Install linux-libre"
-	@wget https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/freesh-archive-keyring_1.1_all.deb
-	@mv freesh-archive-keyring_1.1_all.deb ROOT/
+	schroot -c dyne -u root wget https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/freesh-archive-keyring_1.1_all.deb
 	chroot ROOT dpkg -i /freesh-archive-keyring_1.1_all.deb && rm -f ROOT/freesh-archive-keyring_1.1_all.deb
 	chroot ROOT apt-get update
 	chroot ROOT apt-get -q -y install linux-libre-6.1*
 
 live-boot:
-	chroot ROOT apt-get -q -y install mount live-boot zstd \
+	chroot ROOT apt-get -q -y install mount live-boot zstd direnv \
 		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
 	chroot ROOT echo 'root:luther' | chpasswd
 	chroot ROOT locale-gen --purge en_US.UTF-8
@@ -79,23 +82,28 @@ live-boot:
 
 xorg:
 	@echo "Install X11"
-
 	chroot ROOT apt-get -q -y install xserver-xorg-core xserver-xorg	\
-		xinit xterm xnest xserver-xorg-video-dummy openbox x11vnc		\
-		x11-utils mesa-utils desktop-base devuan-baseconf deepsea-icon-theme
-
-	@echo " install headless driver"
+		xinit xterm xnest xserver-xorg-video-dummy openbox				\
+		python3-xdg xserver-xephyr x11vnc x11-utils mesa-utils			\
+		desktop-base devuan-baseconf deepsea-icon-theme
 	chroot ROOT echo "exec openbox-session" > /etc/X11/xinitrc
 
+#	@echo " install headless driver"
 #	cp -f xorg-headless.conf ROOT/etc/X11/xorg.conf.d/10-headless.conf
 
+desktop:
+	xhost + local:
+	sudo cp desktop.sh ROOT/
+	sudo chroot ROOT sh desktop.sh
+	sudo rm -f ROOT/desktop.sh
 
-squash: SIZE := $(shell du -sk ROOT | cut -f 1)
+schroot:
+	schroot -c dyne -u root -d /root
+
 squash:
 	@echo "Squash ROOT to dynebolic.squash"
 	-[ -r ROOT/boot ] && mv -v ROOT/boot .
-	tar c ROOT | pv -p -s ${SIZE}k \
-		| tar2sqfs -r ROOT -x -f -q -c zstd dynebolic.squash
+	sh squash.sh
 	-[ -r boot ] && mv -f boot ROOT/
 
 shrink:
