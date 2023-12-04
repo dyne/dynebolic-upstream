@@ -1,5 +1,31 @@
+# Copyright (C) 2023 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-# Run as root
+# Use this makefile as root
+
+# sudo make
+
+# [optional] sudo chroot ROOT (r/w)
+# [optional] squashfuse dynebolic.squash /mnt (r/o)
+# [optional] sudo chroot /mnt (r/o)
+# [optional] umount /mnt
+
+# make toast
+# ls -lh dynebolic.iso
 
 ARCH ?= amd64
 MODE ?= root
@@ -15,7 +41,7 @@ deps:
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng
+    squashfs-tools-ng pv
 
 base:
 	 mmdebstrap \
@@ -42,23 +68,35 @@ linux-libre:
 	chroot ROOT apt-get -q -y install linux-libre-6.1*
 
 live-boot:
-	chroot ROOT apt-get -q -y install mount live-boot zstd
+	chroot ROOT apt-get -q -y install mount live-boot zstd \
+		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
+	chroot ROOT echo 'root:luther' | chpasswd
+	chroot ROOT locale-gen --purge en_US.UTF-8
+	chroot ROOT echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' \
+				> /etc/default/locale
+	chroot ROOT echo "dynebolic" > /etc/hostname
 	chroot ROOT update-initramfs -k all -c
 
 xorg:
 	@echo "Install X11"
-	chroot ROOT apt-get -q -y install xserver-xorg-core xserver-xorg xinit xterm xnest xserver-xorg-video-dummy openbox
+
+	chroot ROOT apt-get -q -y install xserver-xorg-core xserver-xorg	\
+		xinit xterm xnest xserver-xorg-video-dummy openbox x11vnc		\
+		x11-utils mesa-utils desktop-base devuan-baseconf deepsea-icon-theme
+
 	@echo " install headless driver"
-	@cp xorg-headless.conf ROOT/etc/X11/xorg.conf.d/10-headless.conf
+	chroot ROOT echo "exec openbox-session" > /etc/X11/xinitrc
 
-# lxqt:
-# 	@echo "Install LXQT"
-# 	chroot ROOT apt-get -q -y --no-install-recommends install lxqt
+#	cp -f xorg-headless.conf ROOT/etc/X11/xorg.conf.d/10-headless.conf
 
+
+squash: SIZE := $(shell du -sk ROOT | cut -f 1)
 squash:
-	@echo "Squash ROOT in compressed form"
-	-[ -r ROOT/boot ] && mv ROOT/boot .
-	cd ROOT && tar c * | tar2sqfs -c zstd ../dynebolic.squash
+	@echo "Squash ROOT to dynebolic.squash"
+	-[ -r ROOT/boot ] && mv -v ROOT/boot .
+	tar c ROOT | pv -p -s ${SIZE}k \
+		| tar2sqfs -r ROOT -x -f -q -c zstd dynebolic.squash
+	-[ -r boot ] && mv -f boot ROOT/
 
 shrink:
 	rm -rvf ROOT/usr/share/gtk-doc/*
@@ -69,6 +107,7 @@ shrink:
 	-find ROOT/ -type d -name '__pycache__' -exec rm -rvf {} \;
 	-find ROOT/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
 	rm -rvf ROOT/var/tmp/*
+	chroot ROOT apt-get autoremove
 	chroot ROOT apt-get clean
 
 toast:
@@ -78,14 +117,14 @@ toast:
 	mkdir -p staging/live
 	-[ -r dynebolic.squash ] && mv dynebolic.squash staging/live/filesystem.squashfs
 	[ -r staging/live/filesystem.squashfs ] || exit 1
-	cp boot/vmlinuz-* staging/live/vmlinuz
-	cp boot/initrd.img-* staging/live/initrd
-	cp isolinux.cfg staging/isolinux/
-	cp grub.cfg staging/boot/grub/
-	cp grub.cfg staging/EFI/BOOT
-	cp /usr/lib/ISOLINUX/isolinux.bin staging/isolinux/
-	cp /usr/lib/syslinux/modules/bios/* staging/isolinux/
-	cp -r /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
+	cp -f ROOT/boot/vmlinuz-* staging/live/vmlinuz
+	cp -f ROOT/boot/initrd.img-* staging/live/initrd
+	cp -f isolinux.cfg staging/isolinux/
+	cp -f grub.cfg staging/boot/grub/
+	cp -f grub.cfg staging/EFI/BOOT
+	cp -f /usr/lib/ISOLINUX/isolinux.bin staging/isolinux/
+	cp -f /usr/lib/syslinux/modules/bios/* staging/isolinux/
+	cp -rf /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
 	grub-mkstandalone -O i386-efi --modules="part_gpt part_msdos fat iso9660" \
 		 --locales="" --themes="" --fonts=""						\
 		--output="staging/EFI/BOOT/BOOTIA32.EFI"					\
