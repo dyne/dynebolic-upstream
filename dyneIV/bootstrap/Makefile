@@ -55,7 +55,7 @@ endef
 # second expansion is needed to get the value of
 # $(installs) after the whole file was preprocessed
 .SECONDEXPANSION:
-all: bootstrap $${installs} shrink squash iso
+all: bootstrap apt-proxy $${installs} shrink squash iso
 
 install: $${installs}
 
@@ -90,11 +90,11 @@ bootstrap: need-root
 		--hook-dir=/usr/share/mmdebstrap/hooks/eatmydata \
 		--hook-dir=/usr/share/mmdebstrap/hooks/file-mirror-automount \
 		--include='devuan-keyring' \
-		--include='ca-certificates locales apt-transport-https curl apt-utils' \
+		--include='ca-certificates locales apt-transport-https curl apt-utils netcat-openbsd' \
 		--comp=main --arch=${ARCH} \
 	 daedalus dyneIV-bootstrap-${ARCH}.tar http://deb.devuan.org/merged; \
 	fi
-	if [ -r ROOT ]; then \
+	@if [ -r ROOT ]; then \
 	 echo "ROOT found, delete to rewind at start."; \
 	else \
 	 mkdir -p ROOT && cd ROOT && sudo tar xf ../${OUTFILE}-${ARCH}.tar; \
@@ -102,7 +102,6 @@ bootstrap: need-root
 
 # setup a local apt-proxy cache
 apt-proxy: need-root
-	@chroot ROOT apt-get install -q -y netcat-openbsd
 	@echo 'Acquire::http::ProxyAutoDetect "/etc/apt/detect-http-proxy.sh";'\
 		> ROOT/etc/apt/apt.conf.d/30detectproxy
 	@cp detect-http-proxy.sh ROOT/etc/apt/ && chmod +x detect-http-proxy.sh
