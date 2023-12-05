@@ -28,10 +28,15 @@
 # ls -lh dynebolic.iso
 
 ARCH ?= amd64
-MODE ?= root
+MODE ?= unshare
 VARIANT ?= apt
+FORMAT ?= tar
+
+# ARCH ?= amd64
+# MODE ?= root
+# VARIANT ?= apt
+
 # essential, minbase
-FORMAT ?= dir
 
 UID := $(shell id -u)
 PWD := $(shell pwd)
@@ -66,14 +71,15 @@ development-deps: need-root
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot
+    squashfs-tools-ng pv schroot uidmap
 
+bootstrap: OUTFILE ?= dyneIV-bootstrap
 bootstrap: need-root
-	@if [ -r ROOT ]; then echo "Bootstrap found in ROOT"; \
+	@if [ -r ${OUTFILE}-${ARCH}.tar ]; then \
+	 echo "Bootstrap found: ${OUTFILE}-${ARCH}.tar "; \
 	else \
-	 echo "Bootstrap a new system in ROOT" \
-	 mkdir -p ROOT; \
-	 mmdebstrap \
+	 echo "Bootstrap a new system: dyneIV-bootstrap-${ARCH}.tar"; \
+	 UNSHARE_USERS=1 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
 		--aptopt='APT::Install-Suggests "false"' \
@@ -86,8 +92,25 @@ bootstrap: need-root
 		--include='devuan-keyring' \
 		--include='ca-certificates locales apt-transport-https curl apt-utils' \
 		--comp=main --arch=${ARCH} \
-	 daedalus ROOT http://deb.devuan.org/merged; \
+	 daedalus dyneIV-bootstrap-${ARCH}.tar http://deb.devuan.org/merged; \
 	fi
+	if [ -r ROOT ]; then \
+	 echo "ROOT found, delete to rewind at start."; \
+	else \
+	 mkdir -p ROOT && cd ROOT && sudo tar xf ../${OUTFILE}-${ARCH}.tar; \
+	fi
+
+# setup a local apt-proxy cache
+apt-proxy: need-root
+	@chroot ROOT apt-get install -q -y netcat-openbsd
+	@echo 'Acquire::http::ProxyAutoDetect "/etc/apt/detect-http-proxy.sh";'\
+		> ROOT/etc/apt/apt.conf.d/30detectproxy
+	@cp detect-http-proxy.sh ROOT/etc/apt/ && chmod +x detect-http-proxy.sh
+	@chroot ROOT apt-get update -q -y
+	@echo "--"
+	@echo "-- Add this line to your apt-cache-ng conf:"
+	@echo "-- Remap-devuan: deb.devuan.org packages.devuan.org /merged; http://packages.devuan.org/merged/"
+	@echo "--\n"
 
 installs += install-locale
 install-locale: need-root
