@@ -72,7 +72,7 @@ bootstrap: need-root
 	@if [ -r ROOT ]; then echo "Bootstrap found in ROOT"; \
 	else \
 	 echo "Bootstrap a new system in ROOT" \
-	 mkdir -p ROOT
+	 mkdir -p ROOT; \
 	 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
