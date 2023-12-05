@@ -118,6 +118,7 @@ install-locale: need-root
 
 installs += install-kernel-libre
 install-kernel-libre: need-root
+	@cp freesh-archive-keyring_1.1_all.deb ROOT/usr/src/
 	$(call chroot-script,install-kernel-libre.sh)
 
 installs += install-users
