@@ -127,13 +127,20 @@ installs += install-live-boot
 install-live-boot: need-root
 	$(call chroot-script,install-live-boot.sh)
 
-installs += install-xorg
-install-xorg: need-root
-	$(call chroot-script,install-xorg.sh)
+## bare system is complete here
 
 installs += install-utilities
 install-utilities: need-root
 	$(call chroot-script,install-utilities.sh)
+
+installs += install-xorg
+install-xorg: need-root
+	$(call chroot-script,install-xorg.sh)
+
+installs += install-audio
+install-audio: need-root
+	$(call chroot-script,install-audio.sh)
+
 
 #	@echo " install headless driver"
 #	cp -f xorg-headless.conf ROOT/etc/X11/xorg.conf.d/10-headless.conf
@@ -175,9 +182,9 @@ shrink: need-root
 
 squash: need-root
 	$(info Squash ROOT to dynebolic.squash)
-	-[ -r ROOT/boot ] && mv -v ROOT/boot .
-	sh squash.sh
-	-[ -r boot ] && mv -f boot ROOT/
+	@-[ -r ROOT/boot ] && rm -rf boot && mv -v ROOT/boot .
+	@sh squash.sh
+	@-[ -r boot ] && mv -f boot ROOT/
 
 iso:
 	$(info Toast the ISO file to dynebolic.iso)
