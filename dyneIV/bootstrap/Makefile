@@ -55,7 +55,7 @@ endef
 # second expansion is needed to get the value of
 # $(installs) after the whole file was preprocessed
 .SECONDEXPANSION:
-all: bootstrap apt-proxy $${installs} shrink squash iso
+all: bootstrap $${installs} shrink squash iso
 
 install: $${installs}
 
