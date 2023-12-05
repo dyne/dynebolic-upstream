@@ -6,4 +6,7 @@ xserver-xephyr x11-utils \
 openbox python3-xdg \
 mesa-utils desktop-base devuan-baseconf xdm devuan-xdm-config-override \
 deepsea-icon-theme mate-desktop-environment mate-desktop-environment-extras \
-engrampa atril brisk-mate-applet
+engrampa atril mate-applet-brisk-menu
+
+# fallback wm is openbox
+echo "exec openbox-session" > /etc/X11/xinitrc
