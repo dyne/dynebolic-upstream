@@ -98,6 +98,7 @@ bootstrap: need-root
 	 echo "ROOT found, delete to rewind at start."; \
 	else \
 	 mkdir -p ROOT && cd ROOT && sudo tar xf ../${OUTFILE}-${ARCH}.tar; \
+	 chroot ROOT apt-get update -q -y; \
 	fi
 
 # setup a local apt-proxy cache
