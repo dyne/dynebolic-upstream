@@ -34,26 +34,44 @@ VARIANT ?= apt
 FORMAT ?= dir
 
 UID := $(shell id -u)
+PWD := $(shell pwd)
 
-FREESH ?= freesh-archive-keyring_1.1_all.deb
+define chroot-script
+	@if ! [ -r "${1}" ]; then echo "Install script not found: ${1}"; exit 1; fi
+	@echo "--"
+	@echo "-- Exec ${1}"
+	@cp    "${1}" ROOT/
+	@chroot ROOT sh "/${1}"
+	@rm -f "ROOT/${1}"
+	@echo "-- Done ${1}"
+	@echo "--\n"
+endef
 
-all: bootstrap locale kernel live-boot xorg shrink squash iso
+# second expansion is needed to get the value of
+# $(installs) after the whole file was preprocessed
+.SECONDEXPANSION:
+all: bootstrap $${installs} shrink squash iso
+
+install: $${installs}
 
 need-root:
 ifneq (${UID}, 0)
 	@echo "Run as root." && exit 1
 endif
 
-# dependencies needed to build a live system
-install-deps: need-root
+# local system dependencies needed to build a live system
+development-deps: need-root
+	$(info Install all development dependencies)
 	dpkg -i devuan-keyring_2023.05.28_all.deb
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
     squashfs-tools-ng pv schroot
 
-bootstrap: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 bootstrap: need-root
+	@if [ -r ROOT ]; then echo "Bootstrap found in ROOT"; \
+	else \
+	 echo "Bootstrap a new system in ROOT" \
 	 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
@@ -67,76 +85,79 @@ bootstrap: need-root
 		--include='devuan-keyring' \
 		--include='ca-certificates locales apt-transport-https curl apt-utils' \
 		--comp=main --arch=${ARCH} \
-	daedalus ROOT http://deb.devuan.org/merged
-	-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
-	-[ -r ${SCONF} ] || cp schroot.conf ${SCONF} \
-	 && echo "directory=$PWD/ROOT" >> ${SCONF}
+	 daedalus ROOT http://deb.devuan.org/merged; \
+	fi
 
-locale: need-root
-	@echo "Setup language locale to en_US.UTF-8"
-	@chroot ROOT locale-gen --purge en_US.UTF-8
-	@chroot ROOT echo -e \
-			'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\nLC_ALL="en_US.UTF-8\n"' \
-			> /etc/default/locale
-	@chroot ROOT sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
-	@chroot ROOT dpkg-reconfigure --frontend=noninteractive locales
-	@chroot ROOT update-locale LANG=en_US.UTF-8
+installs += install-locale
+install-locale: need-root
+	$(call chroot-script,install-locale.sh)
 
-kernel: need-root
-	@echo "Install Linux Libre"
-	chroot ROOT curl https://linux-libre.fsfla.org/pub/linux-libre/freesh/pool/main/f/freesh-archive-keyring/${FREESH} --output ${FREESH}
-	chroot ROOT dpkg -i /${FREESH} && rm -f ROOT/${FREESH}
-	chroot ROOT apt-get update
-	chroot ROOT apt-get -q -y install linux-libre-6.1*
+installs += install-kernel-libre
+install-kernel-libre: need-root
+	$(call chroot-script,install-kernel-libre.sh)
 
-live-boot: PASSWD := $$5$$luq0zWiAzvJ7EBty$M78Ke44.HWFItMwVwCvPqjO2uDqoOggw.VLzaPmV.a1
-live-boot: need-root
-	@echo "Setup Live Boot"
-	chroot ROOT apt-get -q -y install mount live-boot zstd direnv \
-		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
-	chroot ROOT echo "root:${PASSWD}" | chpasswd -e
-	chroot ROOT	useradd -m -u 1000 -p "${PASSWD}" -s /bin/bash luther
-	chroot ROOT echo "dynebolic" > /etc/hostname
-	chroot ROOT update-initramfs -k all -c
+installs += install-users
+install-users: need-root
+	$(call chroot-script,install-users.sh)
 
-xorg: need-root
-	@echo "Install X11"
-	cp install-xorg.sh ROOT/
-	chroot ROOT sh /install-xorg.sh && rm -f /install-xorg.sh
-	chroot ROOT echo "exec openbox-session" > /etc/X11/xinitrc
+installs += install-live-boot
+install-live-boot: need-root
+	$(call chroot-script,install-live-boot.sh)
+
+installs += install-xorg
+install-xorg: need-root
+	$(call chroot-script,install-xorg.sh)
+
+installs += install-utilities
+install-utilities: need-root
+	$(call chroot-script,install-utilities.sh)
 
 #	@echo " install headless driver"
 #	cp -f xorg-headless.conf ROOT/etc/X11/xorg.conf.d/10-headless.conf
 
 desktop:
+	$(info Launch the Desktop)
 	xhost + local:
 	sudo cp desktop.sh ROOT/
 	sudo chroot ROOT sh desktop.sh
 	sudo rm -f ROOT/desktop.sh
 
+chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 chroot:
-	@echo "Entering ROOT"
+	@-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
+	@-if ! [ -r ${SCONF} ]; then \
+		cp schroot.conf ${SCONF} && echo "directory=${PWD}/ROOT" >> ${SCONF}; fi
+	$(info Enter ROOT)
 	@schroot -c dyne -u root -d /root
 
+bwrap:
+	@command -v bwrap || exit 1
+	xhost + local:
+	bwrap --bind ROOT / --proc /proc --dev /dev --unshare-user --share-net \
+		--uid 0 --gid 0 bash
+
 shrink: need-root
-	rm -rvf ROOT/usr/share/gtk-doc/*
-	rm -rvf ROOT/usr/share/man/*
-	rm -rvf ROOT/usr/share/help/*
-	rm -rvf ROOT/usr/share/info/*
-	rm -rvf ROOT/usr/share/doc/*
+	$(info Shrink the system)
 	-find ROOT/ -type d -name '__pycache__' -exec rm -rvf {} \;
 	-find ROOT/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
-	rm -rvf ROOT/var/tmp/*
-	chroot ROOT apt-get autoremove
-	chroot ROOT apt-get clean
+	@rm -rvf ROOT/tmp/* ROOT/var/tmp/*
+	@chroot ROOT apt-get autoremove
+	@chroot ROOT apt-get clean
+
+# rm -rvf ROOT/usr/share/gtk-doc/*
+# rm -rvf ROOT/usr/share/man/*
+# rm -rvf ROOT/usr/share/help/*
+# rm -rvf ROOT/usr/share/info/*
+# rm -rvf ROOT/usr/share/doc/*
 
 squash: need-root
-	@echo "Squash ROOT to dynebolic.squash"
+	$(info Squash ROOT to dynebolic.squash)
 	-[ -r ROOT/boot ] && mv -v ROOT/boot .
 	sh squash.sh
 	-[ -r boot ] && mv -f boot ROOT/
 
 iso:
+	$(info Toast the ISO file to dynebolic.iso)
 	mkdir -p staging/EFI/BOOT
 	mkdir -p staging/boot/grub/x86_64-efi
 	mkdir -p staging/isolinux
@@ -177,6 +198,7 @@ iso:
 		staging/efiboot.img staging
 
 qemu:
+	$(info Launch QEMU emulator on ISO)
 	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso -m 2048 -smp	\
 	4 -device intel-hda -device hda-duplex -device						\
 	nec-usb-xhci,id=usb -chardev										\
@@ -188,5 +210,5 @@ qemu:
 	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
 
 clean: need-root
-	@echo "Deleting everything."
+	$(info Delete everything)
 	@rm -rf ROOT staging *.squash *.iso
