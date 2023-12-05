@@ -9,4 +9,15 @@ deepsea-icon-theme mate-desktop-environment mate-desktop-environment-extras \
 engrampa atril mate-applet-brisk-menu
 
 # fallback wm is openbox
+mkdir -p /etc/X11
 echo "exec openbox-session" > /etc/X11/xinitrc
+# xdm logs into mate
+cat <<EOF > /etc/X11/xsessionrc
+wireplumber &
+
+pipewire &
+
+pipewire-pulse &
+
+mate-session
+EOF
