@@ -14,4 +14,6 @@ apt-get install -y -q \
  zsh fzf tmux htop iotop suckless-tools git \
  software-properties-common apt-transport-https jq mosh direnv \
  mtr-tiny pwgen silversearcher-ag liblnk-utils vbetool \
- net-tools bash-completion bsdextrautils tree
+ net-tools bash-completion bsdextrautils tree less \
+ iputils-ping pciutils usbutils rsyslog man-db file \
+ ifupdown ethtool isc-dhcp-client isc-dhcp-common nmap smbclient
