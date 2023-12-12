@@ -41,17 +41,33 @@ bwrap:
 iso: ## 📀 Toast the stage3: create the ISO image
 	make -C iso
 
+qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu:
 	$(info Launch QEMU emulator on ISO)
-	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso -m 2048 -smp	\
-	4 -device intel-hda -device hda-duplex -device						\
-	nec-usb-xhci,id=usb -chardev										\
+	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}		\
+	--boot once=d -m 2048 -smp 4 -device intel-hda -device hda-duplex	\
+	-device nec-usb-xhci,id=usb -chardev								\
 	spicevmc,name=usbredir,id=usbredirchardev1 -device					\
 	usb-redir,chardev=usbredirchardev1,id=usbredirdev1 -chardev			\
 	spicevmc,name=usbredir,id=usbredirchardev2 -device					\
 	usb-redir,chardev=usbredirchardev2,id=usbredirdev2 -chardev			\
 	spicevmc,name=usbredir,id=usbredirchardev3 -device					\
 	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
+
+qemu-persistence: NBD ?= 14
+qemu-persistence: need-suid
+	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
+	$(info Creating persistence qcow2 file for Qemu)
+	modprobe nbd
+	qemu-img create -f qcow2 persistence.qcow2 10G
+	qemu-nbd -c /dev/nbd${NBD} persistence.qcow2
+	parted -s /dev/nbd${NBD} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
+	mkfs.ext4 -L persistence /dev/nbd${NBD}p1
+	mkdir -p mnt && mount /dev/nbd${NBD}p1 mnt \
+	  && echo "/ union" > mnt/persistence.conf \
+	  && umount mnt
+	qemu-nbd -d /dev/nbd${NBD}
+	chmod a+rw persistence.qcow2
 
 clean: ## 🧹 Cleanup all results and restart
 	@make -C bootstrap clean
