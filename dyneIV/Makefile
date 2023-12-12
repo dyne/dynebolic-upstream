@@ -41,18 +41,27 @@ bwrap:
 iso: ## 📀 Toast the stage3: create the ISO image
 	make -C iso
 
+QEMU_CONF ?= -device intel-hda -device hda-duplex -device	\
+nec-usb-xhci,id=usb -chardev								\
+spicevmc,name=usbredir,id=usbredirchardev1 -device			\
+usb-redir,chardev=usbredirchardev1,id=usbredirdev1 -chardev	\
+spicevmc,name=usbredir,id=usbredirchardev2 -device			\
+usb-redir,chardev=usbredirchardev2,id=usbredirdev2 -chardev	\
+spicevmc,name=usbredir,id=usbredirchardev3 -device			\
+usb-redir,chardev=usbredirchardev3,id=usbredirdev3
+
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu:
 	$(info Launch QEMU emulator on ISO)
-	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}		\
-	--boot once=d -m 2048 -smp 4 -device intel-hda -device hda-duplex	\
-	-device nec-usb-xhci,id=usb -chardev								\
-	spicevmc,name=usbredir,id=usbredirchardev1 -device					\
-	usb-redir,chardev=usbredirchardev1,id=usbredirdev1 -chardev			\
-	spicevmc,name=usbredir,id=usbredirchardev2 -device					\
-	usb-redir,chardev=usbredirchardev2,id=usbredirdev2 -chardev			\
-	spicevmc,name=usbredir,id=usbredirchardev3 -device					\
-	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
+	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}	\
+	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
+
+qemu-uefi: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-uefi:
+	$(info Launch QEMU emulator on ISO using UEFI BIOS)
+	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
+	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
+	${QEMU_CONF}
 
 qemu-persistence: NBD ?= 14
 qemu-persistence: need-suid
@@ -79,6 +88,6 @@ development-deps: need-suid ##🛠️ Install development dependencies
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot uidmap
+    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf
 
 #	dpkg -i devuan-keyring_2023.05.28_all.deb
