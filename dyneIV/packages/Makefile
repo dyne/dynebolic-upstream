@@ -20,7 +20,7 @@
 SRC=$(shell dirname $(shell pwd))
 
 .SECONDEXPANSION:
-all: stage3 install-desktop install-utilities shrink pack-stage3
+all: stage3 install-all-packages apply-all-patches shrink pack-stage3
 
 include ${SRC}/config.mk
 
@@ -35,13 +35,12 @@ pack-stage3: need-suid
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
 	@cd ${ROOT} && tar cf ${SRC}/${STAGE3} *
 
-installs += install-desktop
-install-desktop: need-suid
+install-all-packages: need-suid
 	$(call install-packages,desktop-mate)
-
-installs += install-cli
-install-utilities: need-suid
 	$(call install-packages,cli-utils)
+
+apply-all-patches: need-suid
+	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
 # installs += install-xorg
 # install-xorg: need-suid

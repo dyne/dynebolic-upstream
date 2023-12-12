@@ -40,6 +40,15 @@ define install-packages
 	@echo "-- Done ${1}\n--"
 endef
 
+define apply-patch
+	$(if $(wildcard ${ROOT}/${1}),,$(error Patch target file not found: ${1}))
+	$(if $(wildcard ${2}),,$(error Patch file not found: ${2}))
+	@echo "-- Patch ${1}\n--"
+	cp ${2} ${ROOT}/apply.patch
+	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
+	rm ${ROOT}/apply-patch
+endef
+
 shrink: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found))
 	$(info Shrink the system)

@@ -1,0 +1,3 @@
+20a21,22
+> grep ' nox' /proc/cmdline && exit 0
+>
