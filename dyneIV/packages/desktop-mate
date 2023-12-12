@@ -1,36 +1,47 @@
 # Recipe by Antofox
 
-remmina
-transmission-gtk
-sudo
-gtk2-engines-murrine
-gtk2-engines-pixbuf
-sound-theme-freedesktop
-numix-gtk-theme
-system-config-printer
-numix-icon-theme-circle
-
-bash-completion 
-apt-xapian-index 
-synaptic 
-chromium  
-
-bluez
-bluez-alsa-utils
+# ============================================================================
+# Xorg
+# ============================================================================
+xorg
+xinit
+xterm
+x11-utils
+xserver-xorg
+xserver-xorg-core
+xserver-xephyr
+xserver-xorg-input-all
+xserver-xorg-input-wacom
+xserver-xorg-video-all
+xserver-xorg-video-dummy
+xserver-xorg-video-fbdev
+xserver-xorg-video-intel
+xserver-xorg-video-qxl
+xserver-xorg-video-vesa
+mesa-utils
+# xserver-xorg-legacy
+# xserver-xorg-video-amdgpu
+# xserver-xorg-video-ati
+# xserver-xorg-video-nouveau
+# xserver-xorg-video-radeon
+# xserver-xorg-video-vmware
 
 # ============================================================================
-# LightDM
+# DM
 # ============================================================================
-lightdm
+xdm
+devuan-xdm-config-override
+# desktop-base
+# devuan-baseconf
+# lightdm
 # lightdm-gtk-greeter-settings
 # lightdm-gtk-greeter
 # lightdm-autologin-greeter
 
-
 # ============================================================================
 # MATE section
 # ============================================================================
-
+debian-mate-default-settings
 mate-applet-appmenu
 mate-applet-brisk-menu
 mate-applets
@@ -38,6 +49,7 @@ mate-calc
 mate-control-center
 mate-desktop
 mate-desktop-environment-core
+# mate-desktop-environment-extras
 mate-hud
 mate-icon-theme
 mate-indicator-applet
@@ -59,9 +71,6 @@ mate-utils
 mate-window-buttons-applet
 mate-window-menu-applet
 mate-window-title-applet
-engrampa
-debian-mate-default-settings
-pluma
 caja-admin 
 caja-actions 
 caja-mediainfo 
@@ -69,7 +78,30 @@ caja-rename
 caja-seahorse 
 caja-wallpaper
 caja-open-terminal
+engrampa
+pluma
+atril
+eom
+mozo
 
+# ============================================================================
+# Openbox
+# ============================================================================
+openbox
+python3-xdg
+
+# ============================================================================
+# Theme
+# ============================================================================
+gtk2-engines-murrine
+gtk2-engines-pixbuf
+sound-theme-freedesktop
+numix-gtk-theme
+system-config-printer
+numix-icon-theme-circle
+# deepsea-icon-theme
+bluez
+bluez-alsa-utils
 
 # ============================================================================
 # Ayatana
@@ -85,25 +117,3 @@ ayatana-indicator-printers
 ayatana-indicator-sound
 ayatana-settings
 ayatana-indicator-display
-
-
-
-# ============================================================================
-# Xorg
-# ============================================================================
-xorg
-xserver-xorg
-xserver-xorg-core
-xserver-xorg-input-all
-xserver-xorg-input-wacom
-#xserver-xorg-legacy
-xserver-xorg-video-all
-#xserver-xorg-video-amdgpu
-#xserver-xorg-video-ati
-xserver-xorg-video-fbdev
-xserver-xorg-video-intel
-#xserver-xorg-video-nouveau
-xserver-xorg-video-qxl
-#xserver-xorg-video-radeon
-xserver-xorg-video-vesa
-#xserver-xorg-video-vmware

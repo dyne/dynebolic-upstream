@@ -1,5 +1,6 @@
 #!/bin/sh
 
+DEBIAN_FRONTEND=noninteractive \
 apt-get -q -y install mount live-boot zstd direnv \
 		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
 
