@@ -20,11 +20,11 @@
 SRC=$(shell dirname $(shell pwd))
 
 .SECONDEXPANSION:
-all: stage3 install-all-packages apply-all-patches shrink pack-stage3
+all: init-stage3 install-all-packages apply-all-patches shrink pack-stage3
 
 include ${SRC}/config.mk
 
-stage3: need-suid
+init-stage3: need-suid
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
 	$(info Open third stage bootstrap)
 	@rm -rf ROOT
@@ -36,8 +36,10 @@ pack-stage3: need-suid
 	@cd ${ROOT} && tar cf ${SRC}/${STAGE3} *
 
 install-all-packages: need-suid
-	$(call install-packages,desktop-mate)
 	$(call install-packages,cli-utils)
+	$(call install-packages,desktop-kde)
+
+# $(call install-packages,desktop-mate)
 
 apply-all-patches: need-suid
 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)

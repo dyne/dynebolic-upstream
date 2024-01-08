@@ -12,6 +12,8 @@ STAGE3 := ${FILEPFX}-stage3-${ARCH}.tar.gz
 UID := $(shell id -u)
 PWD := $(shell pwd)
 
+QEMU_CONF ?= -device intel-hda -device hda-duplex -device nec-usb-xhci,id=usb -chardev spicevmc,name=usbredir,id=usbredirchardev1 -device usb-redir,chardev=usbredirchardev1,id=usbredirdev1 -chardev spicevmc,name=usbredir,id=usbredirchardev2 -device usb-redir,chardev=usbredirchardev2,id=usbredirdev2 -chardev spicevmc,name=usbredir,id=usbredirchardev3 -device	usb-redir,chardev=usbredirchardev3,id=usbredirdev3
+
 need-suid:
 ifneq (${UID}, 0)
 	@echo "Run as root." && exit 1
