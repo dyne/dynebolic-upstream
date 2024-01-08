@@ -1,0 +1,47 @@
+# ============================================================================
+# Xorg
+# ============================================================================
+xorg
+xinit
+xterm
+x11-utils
+xserver-xorg
+xserver-xorg-core
+xserver-xephyr
+xserver-xorg-input-all
+xserver-xorg-input-wacom
+xserver-xorg-video-all
+xserver-xorg-video-dummy
+xserver-xorg-video-fbdev
+xserver-xorg-video-intel
+xserver-xorg-video-qxl
+xserver-xorg-video-vesa
+mesa-utils
+# xserver-xorg-legacy
+# xserver-xorg-video-amdgpu
+# xserver-xorg-video-ati
+# xserver-xorg-video-nouveau
+# xserver-xorg-video-radeon
+# xserver-xorg-video-vmware
+
+# ============================================================================
+# Openbox
+# ============================================================================
+openbox
+python3-xdg
+
+# ============================================================================
+# DM
+# ============================================================================
+sddm
+devuan-xdm-config-override
+
+
+# ============================================================================
+# KDE Plasma
+# ============================================================================
+kde-plasma-desktop
+kdeconnect
+fuse3
+kde-config-flatpack
+kwin-x11
