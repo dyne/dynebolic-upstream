@@ -43,5 +43,5 @@ devuan-xdm-config-override
 kde-plasma-desktop
 kdeconnect
 fuse3
-kde-config-flatpack
+kde-config-flatpak
 kwin-x11
