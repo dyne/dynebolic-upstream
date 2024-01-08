@@ -20,7 +20,7 @@
 SRC=$(shell dirname $(shell pwd))
 
 .SECONDEXPANSION:
-all: init-stage3 install-all-packages apply-all-patches shrink pack-stage3
+all: init-stage3 install-all-packages shrink pack-stage3
 
 include ${SRC}/config.mk
 
