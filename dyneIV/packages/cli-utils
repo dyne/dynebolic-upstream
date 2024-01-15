@@ -6,6 +6,8 @@
 pciutils
 usbutils
 rsyslog
+qemu-guest-agent
+vrms
 
 # ============================================================================
 # Shell
