@@ -44,6 +44,7 @@ kde-plasma-desktop
 kdeconnect
 fuse3
 kde-config-flatpak
+plasma-discover-backend-flatpak #Software Flatpak plugin
 kwin-x11
 kmenuedit # Start-up menu editor for KDE
 plasma-nm # necessary to display network status in desktop toolbar and KDE system settings
