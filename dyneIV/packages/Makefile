@@ -31,9 +31,10 @@ init-stage3: need-suid
 	@mkdir -p ROOT && cd ROOT && sudo tar xf ${SRC}/${STAGE2}
 	@chroot ROOT apt-get update -q -y
 
+pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
 pack-stage3: need-suid
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
-	@cd ${ROOT} && tar cf ${SRC}/${STAGE3} *
+	@cd ${ROOT} && tar cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE3}
 
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
