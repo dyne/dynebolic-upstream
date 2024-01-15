@@ -59,6 +59,10 @@ bootstrap: ## 🚀 Bootstrap the base system: stage1, stage2
 packages: ## 🗿 Install packages: create stage3
 	@make -C packages
 
+upgrade: ## Update packages: install up to latest packages
+	$(call upgrade-packages)
+	@make -C packages install-all-packages
+
 chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 chroot:
 	@-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
