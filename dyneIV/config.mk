@@ -42,6 +42,16 @@ define install-packages
 	@echo "-- Done ${1}\n--"
 endef
 
+define upgrade-packages
+	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
+	@echo "-- Upgrade packages\n--"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get update -q -y" > ${ROOT}/upgrade.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y" > ${ROOT}/upgrade.sh
+	chroot ${ROOT} sh /upgrade.sh
+	rm -f ${ROOT}/upgrade.sh
+	@echo "-- Done\n--"
+endef
+
 define apply-patch
 	$(if $(wildcard ${ROOT}/${1}),,$(error Patch target file not found: ${1}))
 	$(if $(wildcard ${2}),,$(error Patch file not found: ${2}))
