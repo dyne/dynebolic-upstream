@@ -69,9 +69,10 @@ stage2: need-suid
 	$(call chroot-script,install-users.sh)
 	$(call chroot-script,install-live-boot.sh)
 
-pack-stage2: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
+pack-stage2: size := $(shell du -sb ${ROOT} | awk '{print $$1}')
 pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
 	@cd ${ROOT} && tar -cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE2}
 

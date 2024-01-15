@@ -26,7 +26,6 @@ include ${SRC}/config.mk
 
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
-	$(call install-packages,cli-emacs)
 	$(call install-packages,desktop-kde)
 	$(call chroot-script,install-sddm-autologin.sh)
 
@@ -35,5 +34,7 @@ apply-all-patches: need-suid
 
 pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
 pack-stage3: need-suid
+	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
+	$(info Packing Stage3)
 	@cd ${ROOT} && tar cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE3}
