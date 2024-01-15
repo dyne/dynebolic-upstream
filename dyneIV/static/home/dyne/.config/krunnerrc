@@ -1,0 +1,9 @@
+[PlasmaRunnerManager]
+migrated=true
+
+[Plugins]
+appstreamEnabled=false
+calculatorEnabled=false
+desktopsessionsEnabled=false
+shellEnabled=false
+webshortcutsEnabled=false

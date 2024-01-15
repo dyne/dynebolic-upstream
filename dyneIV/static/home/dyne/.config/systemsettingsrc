@@ -1,0 +1,15 @@
+[KFileDialog Settings]
+Recent Files[$e]=icon.svg,file:///usr/share/icons/dynebolic/icon.svg
+Recent URLs[$e]=file:///usr/share/icons/dynebolic/
+detailViewIconSize=16
+
+[MainWindow]
+1280x800 screen: Height=680
+1280x800 screen: Width=1020
+1280x800 screen: XPosition=130
+1280x800 screen: YPosition=52
+MenuBar=Disabled
+RestorePositionForNextInstance=false
+State=AAAA/wAAAAD9AAAAAAAAA/wAAAKoAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAA
+ToolBarsMovable=Disabled
+Virtual-1=Virtual-1
