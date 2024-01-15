@@ -48,6 +48,18 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
+qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-spice: ## 🖥️ Emulate via SPICE (requires client)
+	$(info Launch SPICE server on localhost port 5900)
+	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
+	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
+	${QEMU_CONF} -vga qxl -spice									\
+	port=5900,addr=127.0.0.1,disable-ticketing=on -device			\
+	virtio-serial-pci -device										\
+	virtserialport,chardev=spicechannel0,name=com.redhat.spice.0	\
+	-chardev spicevmc,id=spicechannel0,name=vdagent
+
+
 persist-create: NBD ?= 14
 persist-create: need-suid ## 💾 Create persistance storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
