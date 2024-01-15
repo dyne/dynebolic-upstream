@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Dyne.org Foundation
+# Copyright (C) 2023-2024 Dyne.org Foundation
 #
 # Designed, written and maintained by Denis Roio <jaromil@dyne.org>
 #

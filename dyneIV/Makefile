@@ -1,3 +1,21 @@
+# Copyright (C) 2023-2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
+
+# Use this makefile as root
 
 .PHONY: bootstrap packages iso
 
@@ -11,8 +29,11 @@ include config.mk
 
 ----: ## Quick test on emulator:
 
-sync: ## 📥 Sync latest online development ISO
+sync-iso: ## 📥 Sync latest online development ISO
 	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso dynebolic.iso
+
+sync-stage3: ## 📥 Sync latest online stage3 tarball
+	rsync -PL files.dyne.org::dynebolic/dyneIV-stage3-amd64.tar.gz dyneIV-stage3-amd64.tar.gz
 
 qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-dvd: ## 📀 Emulate DVD boot using qemu
@@ -27,8 +48,8 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
-persistence-create: NBD ?= 14
-persistence-create: need-suid ## 💾 Create persistance storage for qemu
+persist-create: NBD ?= 14
+persist-create: need-suid ## 💾 Create persistance storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
 	$(info Creating persistence qcow2 file for Qemu)
 	modprobe nbd
@@ -42,14 +63,25 @@ persistence-create: need-suid ## 💾 Create persistance storage for qemu
 	qemu-nbd -d /dev/nbd${NBD}
 	chmod a+rw persistence.qcow2
 
-persistence-mount: FILE ?= persistence.qcow2
-persistence-mount: MNT ?= mnt
-persistence-mount: ## 💾 Mount persistance contents in qcow2
+persist-mount: FILE ?= persistence.qcow2
+persist-mount: MNT ?= mnt
+persist-mount: need-suid ## 💾 Mount persistance contents in qcow2
+	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
 	mkdir -p ${MNT}
 	$(call mount-qcow2,${FILE},${MNT})
 
-persistence-umount: MNT ?= mnt
-persistence-umount: ## 💾 Unmount persistance contents
+persist-umount: MNT ?= mnt
+persist-umount: need-suid ## 💾 Unmount persistance contents
+	$(call umount-qcow2,${MNT})
+
+persist-mount: FILE ?= persistence.qcow2
+persist-mount: MNT ?= mnt
+persist-sync: need-suid
+	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
+	mkdir -p ${MNT}
+	$(call mount-qcow2,${FILE},${MNT})
+	rsync -raX ${MNT}/home/dyne/.config usr-config
+	rsync -raX ${MNT}/usr/share/dynebolic usr-share
 	$(call umount-qcow2,${MNT})
 
 _: ##
@@ -99,9 +131,12 @@ bwrap:
 iso: ## 🏁 Toast the final ISO image for release
 	make -C iso
 
-clean: ## 🧹 Cleanup all build results
-	@make -C bootstrap clean
-	@make -C packages clean
+clean: need-suid ## 🧹 Cleanup current ROOT
+	@rm -rf ${ROOT}
+
+reset: need-suid ## 🧹 Reset current ROOT to stage3
+	@rm -rf ${ROOT}
+	@mkdir -p ROOT && cd ROOT && sudo tar xf ${SRC}/${STAGE3}
 
 
 #	dpkg -i devuan-keyring_2023.05.28_all.deb
