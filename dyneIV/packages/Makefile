@@ -27,10 +27,10 @@ include ${SRC}/config.mk
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
 	$(call install-packages,desktop-kde)
-	$(call chroot-script,install-sddm-autologin.sh)
+	rsync -raX ${SRC}/static/* ${ROOT}/
 
-apply-all-patches: need-suid
-	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
+# apply-all-patches: need-suid
+# 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
 pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
 pack-stage3: need-suid
