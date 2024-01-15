@@ -86,14 +86,15 @@ persist-umount: MNT ?= mnt
 persist-umount: need-suid ## 💾 Unmount persistance contents
 	$(call umount-qcow2,${MNT})
 
-persist-mount: FILE ?= persistence.qcow2
-persist-mount: MNT ?= mnt
+persist-sync: FILE ?= persistence.qcow2
+persist-sync: MNT ?= mnt
 persist-sync: need-suid
 	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
 	mkdir -p ${MNT}
 	$(call mount-qcow2,${FILE},${MNT})
-	rsync -raX ${MNT}/home/dyne/.config usr-config
-	rsync -raX ${MNT}/usr/share/dynebolic usr-share
+	rsync -raX ${MNT}/rw/home/dyne/.config/* ${SRC}/static/home/dyne/.config/ \
+		--exclude libaccounts-glib --exclude kdeconnect
+	rsync -raX ${MNT}/rw/usr/share/wallpapers/dyne ${SRC}/static/usr/share/wallpapers/
 	$(call umount-qcow2,${MNT})
 
 _: ##
