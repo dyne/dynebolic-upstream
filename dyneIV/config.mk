@@ -58,7 +58,7 @@ define apply-patch
 	@echo "-- Patch ${1}\n--"
 	cp ${2} ${ROOT}/apply.patch
 	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
-	rm ${ROOT}/apply-patch
+	rm -f ${ROOT}/apply.patch
 endef
 
 define mount-qcow2

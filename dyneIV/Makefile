@@ -113,12 +113,12 @@ chroot:
 	$(info Enter ROOT)
 	@schroot -c dyne -u root -d /root
 
-desktop:
+desktop: need-suid
 	$(info Launch the Desktop)
 	xhost + local:
-	sudo cp desktop.sh ${ROOT}/
-	sudo chroot ${ROOT} sh desktop.sh
-	sudo rm -f ${ROOT}/desktop.sh
+	cp desktop.sh ${ROOT}/
+	chroot ${ROOT} sh desktop.sh
+	rm -f ${ROOT}/desktop.sh
 
 # experimental
 bwrap:
@@ -136,7 +136,11 @@ clean: need-suid ## 🧹 Cleanup current ROOT
 
 reset: need-suid ## 🧹 Reset current ROOT to stage3
 	@rm -rf ${ROOT}
-	@mkdir -p ROOT && cd ROOT && sudo tar xf ${SRC}/${STAGE3}
+	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE3}
+
+reset-stage2: need-suid ## 🧹 Reset current ROOT to stage2
+	@rm -rf ${ROOT}
+	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE2}
 
 
 #	dpkg -i devuan-keyring_2023.05.28_all.deb

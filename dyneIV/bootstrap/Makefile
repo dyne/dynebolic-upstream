@@ -75,11 +75,6 @@ pack-stage2: need-suid
 	$(info Packing Stage2)
 	@cd ${ROOT} && tar -cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE2}
 
-unpack-stage2:
-	$(if $(wildcard ${ROOT}),$(error Cannot overwrite ROOT: ${ROOT}))
-	$(info Unpacking Stage2)
-	@mkdir -p ${ROOT} && tar -C ${ROOT} -xf ${SRC}/${STAGE2}
-
 # setup a local apt-proxy cache
 apt-proxy: need-suid
 	@echo 'Acquire::http::ProxyAutoDetect "/etc/apt/detect-http-proxy.sh";'\
@@ -90,11 +85,3 @@ apt-proxy: need-suid
 	@echo "-- Add this line to your apt-cache-ng conf:"
 	@echo "-- Remap-devuan: deb.devuan.org packages.devuan.org /merged; http://packages.devuan.org/merged/"
 	@echo "--\n"
-
-clean-root: need-suid
-	@rm -rf ${ROOT}
-
-clean: need-suid clean-root
-	$(info Delete bootstrap.)
-	@rm -f ${SRC}/${STAGE1}
-	@rm -f ${SRC}/${STAGE2}
