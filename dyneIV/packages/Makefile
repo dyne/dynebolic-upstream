@@ -20,21 +20,9 @@
 SRC=$(shell dirname $(shell pwd))
 
 .SECONDEXPANSION:
-all: init-stage3 install-all-packages shrink pack-stage3
+all: install-all-packages shrink pack-stage3
 
 include ${SRC}/config.mk
-
-init-stage3: need-suid
-	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
-	$(info Open third stage bootstrap)
-	@rm -rf ROOT
-	@mkdir -p ROOT && cd ROOT && sudo tar xf ${SRC}/${STAGE2}
-	@chroot ROOT apt-get update -q -y
-
-pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
-pack-stage3: need-suid
-	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
-	@cd ${ROOT} && tar cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE3}
 
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
@@ -42,19 +30,10 @@ install-all-packages: need-suid
 	$(call install-packages,desktop-kde)
 	$(call chroot-script,install-sddm-autologin.sh)
 
-# $(call install-packages,desktop-mate)
-
 apply-all-patches: need-suid
 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
-# installs += install-xorg
-# install-xorg: need-suid
-# 	$(call chroot-script,install-xorg.sh)
-
-# installs += install-audio
-# install-audio: need-suid
-# 	$(call chroot-script,install-audio.sh)
-
-clean: need-suid
-	$(info Delete packages.)
-	@rm -f ${SRC}/${STAGE3}
+pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
+pack-stage3: need-suid
+	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
+	@cd ${ROOT} && tar cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE3}
