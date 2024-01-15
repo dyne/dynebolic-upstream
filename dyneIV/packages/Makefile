@@ -39,6 +39,7 @@ pack-stage3: need-suid
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
 	$(call install-packages,desktop-kde)
+	$(call chroot-script,install-sddm-autologin.sh)
 
 # $(call install-packages,desktop-mate)
 
