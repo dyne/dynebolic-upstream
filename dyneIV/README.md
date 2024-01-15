@@ -2,6 +2,24 @@
 
 This folder contains all needed scripts and configurations to build a dyne:IV live bootable image.
 
+## Quick Start
+
+Install Qemu
+```
+apt-get install qemu-system-x86 qemu-utils ovmf
+```
+
+Download the latest ISO
+```
+make sync-iso
+```
+
+Run the ISO in Qemu
+```
+make qemu-usb
+```
+
+
 ## Usage
 
 Root privileges are necessary on the build machine, because many operations require SUID access to devices etc. so please assume all following commands need to be run as root, either using sudo or doas or directly as root user.
@@ -12,7 +30,7 @@ The build will require approximately 6GB of space on your harddisk.
 
 Install all needed tools for development: this target is automated for APT based distros
 ```
-make development-deps
+make development
 ```
 Quick list of dependencies:
 ```
@@ -55,12 +73,12 @@ QEMU (KVM) can be used to run in emulation, also with a virtual harddisk providi
 
 Start the LIVE DVD emulator:
 ```
-make qemu
+make qemu-dvd
 ```
 
 Start the LIVE USB emulator:
 ```
-make qemu-uefi
+make qemu-usb
 ```
 
 Create a persitence file
