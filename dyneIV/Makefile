@@ -27,8 +27,8 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
-persistence: NBD ?= 14
-persistence: need-suid ## 💾 Create persistance storage for qemu
+persistence-create: NBD ?= 14
+persistence-create: need-suid ## 💾 Create persistance storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
 	$(info Creating persistence qcow2 file for Qemu)
 	modprobe nbd
@@ -41,6 +41,16 @@ persistence: need-suid ## 💾 Create persistance storage for qemu
 	  && umount mnt
 	qemu-nbd -d /dev/nbd${NBD}
 	chmod a+rw persistence.qcow2
+
+persistence-mount: FILE ?= persistence.qcow2
+persistence-mount: MNT ?= mnt
+persistence-mount: ## 💾 Mount persistance contents in qcow2
+	mkdir -p ${MNT}
+	$(call mount-qcow2,${FILE},${MNT})
+
+persistence-umount: MNT ?= mnt
+persistence-umount: ## 💾 Unmount persistance contents
+	$(call umount-qcow2,${MNT})
 
 _: ##
 -----: ## Build from source:

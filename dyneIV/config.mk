@@ -61,6 +61,23 @@ define apply-patch
 	rm ${ROOT}/apply-patch
 endef
 
+define mount-qcow2
+	$(if $(wildcard ${1}),,$(error QCOW2 file not found: ${1}))
+	$(if $(wildcard ${2}),,$(error Mountpoint not found: ${2}))
+	@echo "-- Mount ${1} on ${2}\n--"
+	modprobe nbd
+	qemu-nbd --connect=/dev/nbd0 "${1}"
+	mount /dev/nbd0p1 "${2}"
+endef
+
+define umount-qcow2
+	$(if $(wildcard ${1}),,$(error Mountpoint not found: ${1}))
+	@echo "-- Unmount ${1} (QCOW2)\n--"
+	umount "${1}"
+	qemu-nbd --disconnect /dev/nbd0
+endef
+
+
 shrink: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found))
 	$(info Shrink the system)
