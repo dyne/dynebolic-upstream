@@ -43,6 +43,16 @@ define install-packages
 	@echo "-- Done ${1}\n--"
 endef
 
+define remove-paths
+	$(if $(wildcard ${1}),,$(error Path file not found: ${1}))
+	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
+	@echo "-- Remove ${1}\n--"
+	@echo "rm -rf $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/remove.sh
+	chroot ${ROOT} sh /remove.sh
+	rm -f ${ROOT}/remove.sh
+	@echo "-- Done ${1}\n--"
+endef
+
 define upgrade-packages
 	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
 	@echo "-- Upgrade packages\n--"
