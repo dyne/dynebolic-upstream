@@ -1,0 +1,10 @@
+/var/lib/apt
+/var/log/apt
+/var/lib/dpkg
+/var/log/dpkg.log
+/var/log/fsck
+/var/cache/apt
+/var/cache/debconf
+
+# from breeze plasma theme
+/usr/share/wallpapers/Next

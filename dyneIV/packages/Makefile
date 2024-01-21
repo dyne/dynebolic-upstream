@@ -29,6 +29,9 @@ install-all-packages: need-suid
 	$(call install-packages,desktop-kde)
 	rsync -raX ${SRC}/static/* ${ROOT}/
 
+remove-all-paths: need-suid
+	$(call remove-paths,cleanup-filesystem)
+
 # apply-all-patches: need-suid
 # 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
