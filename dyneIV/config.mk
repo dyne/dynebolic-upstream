@@ -2,7 +2,8 @@ FILEPFX ?= dyneIV
 ARCH ?= amd64
 # temporary rootfs in RAM to speed up and avoid ssd usage
 # ROOT ?= /dev/shm/dynebolic-rootfs
-ROOT ?= /home/jrml/devel/dynebolic/dyneIV/ROOT
+ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
+
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.gz
 STAGE3 := ${FILEPFX}-stage3-${ARCH}.tar.gz
