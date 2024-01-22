@@ -22,24 +22,16 @@
 SRC=$(shell pwd)
 
 help:
-	@awk 'BEGIN {FS = ":.*##"; printf "🛟 Usage:\n   make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5)} ' Makefile
+	@echo "✨ Welcome to the Dyne:IV SDK by Dyne.org!"
+	@awk 'BEGIN {FS = ":.*##"; printf "🛟 Usage: make \033[36m<target>\033[0m\n👇🏽 List of targets:\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf " \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5)} ' Makefile
 
 
 include config.mk
 
-----: ## Quick test on emulator:
+----: ## __ Quick test on emulator:
 
-sync-iso: ## 📥 Sync latest online development ISO
+sync-iso: ## 📥 Download latest development ISO
 	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso dynebolic.iso
-
-sync-stage3: ## 📥 Sync latest online stage3 tarball
-	rsync -PL files.dyne.org::dynebolic/dyneIV-stage3-amd64.tar.gz dyneIV-stage3-amd64.tar.gz
-
-qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-dvd: ## 📀 Emulate DVD boot using qemu
-	$(info Launch QEMU emulator on ISO)
-	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}	\
-	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
 
 qemu-usb: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-usb: ## 🖥️ Emulate USB boot using qemu
@@ -48,13 +40,25 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
+_: ##
+-----: ## __ More emulator functions:
+
+sync-stage3: ## 📥 Download latest stage3 tarball (for reset)
+	rsync -PL files.dyne.org::dynebolic/dyneIV-stage3-amd64.tar.gz dyneIV-stage3-amd64.tar.gz
+
+qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-dvd: ## 📀 Emulate DVD boot using qemu
+	$(info Launch QEMU emulator on ISO)
+	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}	\
+	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
+
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-spice: ## 🖥️ Emulate via SPICE (requires client)
-	$(info Launch SPICE server on localhost port 5900)
+qemu-spice: ## 🖥️ Emulate via SPICE  (requires network client)
+	$(info Launch SPICE server on LAN port 5900)
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
 	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF} -vga qxl -spice									\
-	port=5900,addr=127.0.0.1,disable-ticketing=on -device			\
+	port=5900,addr=0.0.0.0,disable-ticketing=on -device			\
 	virtio-serial-pci -device										\
 	virtserialport,chardev=spicechannel0,name=com.redhat.spice.0	\
 	-chardev spicevmc,id=spicechannel0,name=vdagent
@@ -98,7 +102,7 @@ persist-sync: need-suid
 	$(call umount-qcow2,${MNT})
 
 _: ##
------: ## Build from source:
+-----: ## __ Build from sources:
 
 # local system dependencies needed to build a live system
 development: need-suid ## 🛠️ Install development dependencies
@@ -108,18 +112,18 @@ development: need-suid ## 🛠️ Install development dependencies
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf
 
-bootstrap: ## 🚀 Bootstrap the base system: stage1, stage2
+bootstrap: ## 🚀 Build the base system: stage1, stage2
 	@make -C bootstrap
 
-packages: ## 🗿 Install packages: create stage3
+packages: ## 🗿 Build the desktop: create stage3
 	@make -C packages
 
-upgrade: ## Update packages: install up to latest packages
+upgrade: ## 🔝 Update the desktop: install latest packages
 	$(call upgrade-packages)
 	@make -C packages install-all-packages
 
 chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
-chroot:
+chroot: ## 🚪 Enter the current build ROOT via CLI
 	@-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
 	@-if ! [ -r ${SCONF} ]; then \
 		cp schroot.conf ${SCONF} && echo "directory=${ROOT}" >> ${SCONF}; fi
@@ -140,20 +144,25 @@ bwrap:
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
 
-
 iso: ## 🏁 Toast the final ISO image for release
 	make -C iso
 
-clean: need-suid ## 🧹 Cleanup current ROOT
-	@rm -rf ${ROOT}
 
-reset: need-suid ## 🧹 Reset current ROOT to stage3
+_: ##
+-----: ## __ Undo and restart from scratch
+
+reset: need-suid ## ♻️ Reset current ROOT to stage3
+	$(info Restore ROOT from ${STAGE3})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE3}
 
-reset-stage2: need-suid ## 🧹 Reset current ROOT to stage2
+reset-stage2: need-suid ## ♻️ Reset current ROOT to stage2
+	$(info Restore ROOT from ${STAGE2})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE2}
+
+clean: need-suid ## 🧹 Delete ROOT
+	@rm -rf ${ROOT}
 
 
 #	dpkg -i devuan-keyring_2023.05.28_all.deb
