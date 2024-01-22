@@ -23,13 +23,17 @@ all: squash iso
 
 include ${SRC}/config.mk
 
+squash: tmp=$(shell mktemp)
 squash: size := $(if $(wildcard ${ROOT}),$(shell du -sk ${ROOT} | cut -f 1),0)
 squash: need-suid
 	$(info Squash ROOT to dynebolic.squash)
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
-	@tar c ${ROOT} | pv -p -s "${size}k" \
+	@awk '/^#/{next} /^$$/{next} {printf("'"${ROOT}"'%s\n",$$1)}' \
+		exclude-from-iso.txt > ${tmp}
+	@tar --exclude-from=${tmp} -c ${ROOT} | pv -p -s "${size}k" \
 		| tar2sqfs -r ${ROOT} -x -f -q -c zstd dynebolic.squash
 	@-[ -r boot ] && mv -f boot ${ROOT}/
+
 
 iso:
 	$(info Toast the ISO file to dynebolic.iso)
