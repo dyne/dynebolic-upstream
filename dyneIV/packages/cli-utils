@@ -8,6 +8,7 @@ usbutils
 rsyslog
 qemu-guest-agent
 vrms
+dialog
 
 # ============================================================================
 # Shell
