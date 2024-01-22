@@ -27,6 +27,7 @@ include ${SRC}/config.mk
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
 	$(call install-packages,desktop-kde)
+	$(call install-packages,fun-games)
 	rsync -raX ${SRC}/static/* ${ROOT}/
 
 
