@@ -55,14 +55,13 @@ qemu-dvd: ## 📀 Emulate DVD boot using qemu
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-spice: ## 🖥️ Emulate via SPICE  (requires network client)
 	$(info Launch SPICE server on LAN port 5900)
-	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
-	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
-	${QEMU_CONF} -vga qxl -spice									\
-	port=5900,addr=0.0.0.0,disable-ticketing=on -device			\
-	virtio-serial-pci -device										\
-	virtserialport,chardev=spicechannel0,name=com.redhat.spice.0	\
-	-chardev spicevmc,id=spicechannel0,name=vdagent
-
+	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
+	/usr/share/ovmf/OVMF.fd -cdrom dynebolic.iso ${persist} --boot	\
+	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl	\
+	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device	\
+	virtio-serial-pci -device virtio-serial -chardev				\
+	spicevmc,id=vdagent,debug=0,name=vdagent -device				\
+	virtserialport,chardev=vdagent,name=com.redhat.spice.0
 
 persist-create: NBD ?= 14
 persist-create: need-suid ## 💾 Create persistance storage for qemu
