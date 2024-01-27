@@ -51,6 +51,7 @@ kde-config-sddm
 # kde-config-plymouth
 kde-config-cron
 kde-config-mailtransport
+libkf5kdelibs4support5-bin # see https://github.com/dyne/dynebolic/issues/22
 kwin-x11
 kmenuedit # Start-up menu editor for KDE
 plasma-nm # display network status in desktop toolbar and KDE system settings
