@@ -163,5 +163,13 @@ reset-stage2: need-suid ## ♻️ Reset current ROOT to stage2
 clean: need-suid ## 🧹 Delete ROOT
 	@rm -rf ${ROOT}
 
+######
+## Publishing operations (ssh key restricted)
 
-#	dpkg -i devuan-keyring_2023.05.28_all.deb
+publish: date := $(shell date +%Y%m%d)
+publish:
+	rsync -P dyneIV-stage1-amd64.tar dyne.files:/srv/ftp/dynebolic/development/
+	rsync -P dyneIV-stage2-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
+	rsync -P dyneIV-stage3-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
+	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
+	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-latest.iso dyneIV-${date}.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
