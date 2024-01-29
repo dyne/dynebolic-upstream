@@ -29,6 +29,7 @@ install-all-packages: repo := $(shell dirname ${SRC})
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
 	$(call install-packages,desktop-kde)
+	$(call install-packages,creative-multimedia)
 	$(call install-packages,fun-games)
 	mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf dyneIV-SDK && git clone --depth 1 file://${repo} dyneIV-SDK
 	rsync -raX ${SRC}/static/* ${ROOT}/
