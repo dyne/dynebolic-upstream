@@ -9,6 +9,9 @@ rsyslog
 qemu-guest-agent
 vrms
 dialog
+dosfstools
+exfatprogs
+hfsprogs
 
 # ============================================================================
 # Shell
@@ -42,6 +45,19 @@ ncdu
 mc
 nnn
 ranger
+sleuthkit
+scalpel
+partitionmanager
+partimage
+ntfs-3g
+libfsntfs-utils
+disktype
+autopsy
+7zip
+extlinux
+syslinux
+grub2
+grub2-rescueboot
 
 # ============================================================================
 # Network
