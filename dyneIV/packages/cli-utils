@@ -11,6 +11,7 @@ vrms
 dialog
 dosfstools
 exfatprogs
+libmtp-runtime
 
 # ============================================================================
 # Self-devel
@@ -96,6 +97,7 @@ isc-dhcp-client
 isc-dhcp-common
 nmap
 smbclient
+wireless-tools
 
 # ============================================================================
 # Development
