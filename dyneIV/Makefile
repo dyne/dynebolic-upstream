@@ -168,8 +168,6 @@ clean: need-suid ## 🧹 Delete ROOT
 
 publish: date := $(shell date +%Y%m%d)
 publish:
-	rsync -P dyneIV-stage1-amd64.tar dyne.files:/srv/ftp/dynebolic/development/
-	rsync -P dyneIV-stage2-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
-	rsync -P dyneIV-stage3-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
+	rsync -P dyneIV-stage1-amd64.tar dyneIV-stage2-amd64.tar.gz dyneIV-stage3-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
 	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
-	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-latest.iso dyneIV-${date}.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
+	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
