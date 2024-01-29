@@ -171,3 +171,10 @@ publish:
 	rsync -P dyneIV-stage1-amd64.tar dyneIV-stage2-amd64.tar.gz dyneIV-stage3-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
 	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
 	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
+
+rsync-server: tmp := $(shell mktemp)
+rsync-server: here := $(shell pwd)
+rsync-server:
+	cp rsync.conf ${tmp}
+	echo "  path = ${here}" >> ${tmp}
+	rsync --daemon --verbose --no-detach --config ${tmp}
