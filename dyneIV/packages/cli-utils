@@ -11,7 +11,6 @@ vrms
 dialog
 dosfstools
 exfatprogs
-hfsprogs
 
 # ============================================================================
 # Self-devel
@@ -80,7 +79,7 @@ autopsy
 extlinux
 syslinux
 grub2
-grub2-rescueboot
+grml-rescueboot
 
 # ============================================================================
 # Network
