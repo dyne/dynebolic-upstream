@@ -32,7 +32,9 @@ fonts-noto-color-emoji
 fonts-noto-core
 fonts-noto-ui-core
 fonts-noto-mono
-
+fonts-dejavu
+fonts-liberation
+xfonts-scalable
 
 
 # ============================================================================
