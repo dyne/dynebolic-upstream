@@ -28,6 +28,7 @@ install-all-packages: usrsrc := ${SRC}/static/usr/src
 install-all-packages: repo := $(shell dirname ${SRC})
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
+	$(call chroot-script,install-guix.sh)
 	$(call install-packages,desktop-kde)
 	$(call install-packages,creative-multimedia)
 	$(call install-packages,fun-games)
