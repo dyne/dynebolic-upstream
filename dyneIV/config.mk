@@ -28,7 +28,7 @@ define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"
 	@cp    "${1}" ${ROOT}/script.sh
-	@chroot ${ROOT} sh /script.sh
+	@chroot ${ROOT} bash /script.sh
 	@rm -f ${ROOT}/script.sh
 	@echo "-- Done ${1}\n--"
 endef
