@@ -12,6 +12,8 @@ dialog
 dosfstools
 exfatprogs
 libmtp-runtime
+daemonize
+xz-utils
 
 # ============================================================================
 # Self-devel
@@ -34,7 +36,7 @@ pv
 schroot
 uidmap
 qemu-utils
-ovmf                 
+ovmf
 
 # ============================================================================
 # Shell
