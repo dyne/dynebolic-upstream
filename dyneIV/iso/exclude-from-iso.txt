@@ -1,4 +1,11 @@
-# remove package manager
+# .gitignore
+# apt
+# dpkg
+# fsck
+*.log
+# debconf
+
+# --exclude-from
 /var/lib/apt
 /var/log/apt
 /var/lib/dpkg
@@ -6,6 +13,16 @@
 /var/log/fsck
 /var/cache/apt
 /var/cache/debconf
+/usr/share/wallpapers/Next
+/tmp/*
+
+# */apt
+# */dpkg
+# *.log
+# */fsck
+# */debconf
+# */Next
+# /usr**
 
 # from breeze plasma theme
-/usr/share/wallpapers/Next
+# /usr/share/wallpapers/Next
