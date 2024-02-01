@@ -178,3 +178,7 @@ rsync-server:
 	cp rsync.conf ${tmp}
 	echo "  path = ${here}" >> ${tmp}
 	rsync --daemon --verbose --no-detach --config ${tmp}
+
+source-packages:
+	$(call chroot-script,source-packages.sh)
+	@mv ROOT/usr/src/source-packages .
