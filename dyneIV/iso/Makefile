@@ -27,9 +27,12 @@ squash: tempexclude=/tmp/dyneIV-iso-squash
 squash: size := $(if $(wildcard ${ROOT}),$(shell du -sk ${ROOT} | cut -f 1),0)
 squash: need-suid
 	$(info Squash ROOT to dynebolic.squash)
+	@rsync -raX ${SRC}/static/* ${ROOT}/
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
-	@awk '/^#/{next} /^$$/{next} /^*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}'	exclude-from-iso.txt \
-    > ${tempexclude}
+	$(info Exclude paths:)
+	@awk '/^#/{next} /^$$/{next} /^*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' exclude-from-iso.txt | tee ${tempexclude}
+	@rm -rf dynebolic.squash
+	$(info Please wait while compressing the filesystem...)
 	@tar -c --exclude-from=${tempexclude} ${ROOT} | pv -p -s "${size}k" \
     | tar2sqfs -r ${ROOT} -x -f -q -c zstd dynebolic.squash
 	@-[ -r boot ] && mv -f boot ${ROOT}/
@@ -40,8 +43,7 @@ iso:
 	mkdir -p staging/boot/grub/x86_64-efi
 	mkdir -p staging/isolinux
 	mkdir -p staging/live
-	-[ -r dynebolic.squash ] && mv dynebolic.squash staging/live/filesystem.squashfs
-	[ -r staging/live/filesystem.squashfs ] || exit 1
+	rsync -P dynebolic.squash staging/live/filesystem.squashfs
 	cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	cp -f isolinux.cfg staging/isolinux/
