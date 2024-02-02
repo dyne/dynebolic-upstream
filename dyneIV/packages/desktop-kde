@@ -19,19 +19,19 @@ xserver-xorg-video-vesa
 mesa-utils
 spice-vdagent
 # xserver-xorg-legacy
-# xserver-xorg-video-amdgpu
-# xserver-xorg-video-ati
-# xserver-xorg-video-nouveau
-# xserver-xorg-video-radeon
+xserver-xorg-video-amdgpu
+xserver-xorg-video-ati
+xserver-xorg-video-nouveau
+xserver-xorg-video-radeon
 # xserver-xorg-video-vmware
 
 # ============================================================================
 # fonts 
 # ============================================================================
 fonts-noto-color-emoji
-fonts-noto-core
-fonts-noto-ui-core
-fonts-noto-mono
+# fonts-noto-core
+# fonts-noto-ui-core
+# fonts-noto-mono
 fonts-dejavu
 fonts-liberation
 xfonts-scalable
