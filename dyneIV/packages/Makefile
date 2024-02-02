@@ -44,4 +44,4 @@ pack-stage3: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
 	$(info Packing Stage3)
-	@cd ${ROOT} && tar cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE3}
+	@cd ${ROOT} && tar -cf - . | pv -s ${size} | xz -z -9 > ${SRC}/${STAGE3}
