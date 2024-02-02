@@ -70,7 +70,6 @@ devuan-xdm-config-override
 # ============================================================================
 kde-plasma-desktop
 kdeconnect
-fuse3
 # kde-config-flatpak
 # plasma-discover-backend-flatpak
 kde-config-screenlocker

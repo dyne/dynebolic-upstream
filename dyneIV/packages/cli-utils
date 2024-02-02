@@ -60,12 +60,13 @@ less
 man-db
 file
 rsync
-#pandoc
+# pandoc # too big
 
 
 # ============================================================================
 # Filesystem
 # ============================================================================
+fuse3
 ncdu
 mc
 nnn
@@ -100,6 +101,8 @@ isc-dhcp-common
 nmap
 smbclient
 wireless-tools
+opensnitch
+python3-opensnitch-ui
 
 # ============================================================================
 # Development
