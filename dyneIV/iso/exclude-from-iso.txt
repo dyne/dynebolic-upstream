@@ -16,6 +16,9 @@
 /usr/share/wallpapers/Next
 /tmp/*
 
+/usr/bin/apt
+/usr/bin/dpkg
+
 # */apt
 # */dpkg
 # *.log
