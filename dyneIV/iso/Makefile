@@ -23,11 +23,14 @@ all: squash iso
 
 include ${SRC}/config.mk
 
+static-overlay:
+	@rsync -raX ${SRC}/static/* ${ROOT}/
+	@$(call chroot-script,fixperms.sh)
+
 squash: tempexclude=/tmp/dyneIV-iso-squash
 squash: size := $(if $(wildcard ${ROOT}),$(shell du -sk ${ROOT} | cut -f 1),0)
-squash: need-suid
+squash: need-suid static-overlay
 	$(info Squash ROOT to dynebolic.squash)
-	@rsync -raX ${SRC}/static/* ${ROOT}/
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
 	$(info Exclude paths:)
 	@awk '/^#/{next} /^$$/{next} /^*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' exclude-from-iso.txt | tee ${tempexclude}
