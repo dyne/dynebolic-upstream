@@ -44,7 +44,7 @@ _: ##
 -----: ## __ More emulator functions:
 
 sync-stage3: ## 📥 Download latest stage3 tarball (for reset)
-	rsync -PL files.dyne.org::dynebolic/dyneIV-stage3-amd64.tar.gz dyneIV-stage3-amd64.tar.gz
+	rsync -PL files.dyne.org::dynebolic/${STAGE3} ${STAGE3}
 
 qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-dvd: ## 📀 Emulate DVD boot using qemu
@@ -106,10 +106,11 @@ _: ##
 # local system dependencies needed to build a live system
 deps: need-suid ## 🛠️ Install development dependencies
 	$(info Install all development dependencies)
-	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
-    syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget
+	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
+    syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
+    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
+    xz-tools
 
 stage2: ## 🚀 Build the base system: stage1, stage2
 	@make -C bootstrap
@@ -168,7 +169,7 @@ clean: need-suid ## 🧹 Delete ROOT
 
 publish: date := $(shell date +%Y%m%d)
 publish:
-	rsync -P dyneIV-stage1-amd64.tar dyneIV-stage2-amd64.tar.gz dyneIV-stage3-amd64.tar.gz dyne.files:/srv/ftp/dynebolic/development/
+	rsync -P ${STAGE1} ${STAGE2} ${STAGE3} dyne.files:/srv/ftp/dynebolic/development/
 	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
 	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
 
