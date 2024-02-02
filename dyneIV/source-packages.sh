@@ -10,6 +10,9 @@ pushd /usr/src/source-packages
 dpkg-query -f '${source:Package}\n' -W | sort -u | while read p; do
 	# excludes
     [ "$p" == "freesh-archive-keyring" ] && continue
+    [ "$p" == "linux-libre" ] && continue
+    [ "$p" == "linux-libre-6.1" ] && continue
+    [ "$p" == "linux-libre-6.1-headers" ] && continue
 
     mkdir -p $p && chown -R _apt $p
     pushd $p
