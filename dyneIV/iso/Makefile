@@ -33,7 +33,7 @@ squash: need-suid static-overlay
 	$(info Squash ROOT to dynebolic.squash)
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
 	$(info Exclude paths:)
-	@awk '/^#/{next} /^$$/{next} /^*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' exclude-from-iso.txt | tee ${tempexclude}
+	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' exclude-from-iso.txt | tee ${tempexclude}
 	@rm -rf dynebolic.squash
 	$(info Please wait while compressing the filesystem...)
 	@tar -c --exclude-from=${tempexclude} ${ROOT} | pv -p -s "${size}k" \
