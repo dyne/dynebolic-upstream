@@ -15,7 +15,7 @@ pipewire-jack
 pipewire-v4l2
 pipewire-pulse
 
-#  dkms will not function properly if /proc is not mounted.
+#  dkms will not function properly if /proc is not mounted
 # v4l2loopback-dkms
 
 vlc
@@ -70,7 +70,7 @@ weechat
 
 imagemagick
 
-lsp-plugins
+# lsp-plugins
 swh-plugins
 frei0r-plugins
 
