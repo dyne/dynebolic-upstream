@@ -104,20 +104,20 @@ _: ##
 -----: ## __ Build from sources:
 
 # local system dependencies needed to build a live system
-development: need-suid ## 🛠️ Install development dependencies
+deps: need-suid ## 🛠️ Install development dependencies
 	$(info Install all development dependencies)
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf
+    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget
 
-bootstrap: ## 🚀 Build the base system: stage1, stage2
+stage2: ## 🚀 Build the base system: stage1, stage2
 	@make -C bootstrap
 
-packages: ## 🗿 Build the desktop: create stage3
+stage3: ## 🗿 Build the desktop: create stage3
 	@make -C packages
 
-upgrade: ## 🔝 Update the desktop: install latest packages
+upgrade: ## 🔝 Update all packages in stage3
 	$(call upgrade-packages)
 	@make -C packages install-all-packages
 
