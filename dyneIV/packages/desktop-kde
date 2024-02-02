@@ -37,6 +37,21 @@ fonts-liberation
 xfonts-scalable
 
 
+
+# ============================================================================
+# office
+# ============================================================================
+libreoffice-base
+libreoffice-java-common
+libreoffice-writer
+libreoffice-calc
+libreoffice-draw
+libreoffice-plasma
+libreoffice-qt5
+libreoffice-kf5
+libreoffice-style-breeze
+unoconv
+
 # ============================================================================
 # openbox
 # ============================================================================
