@@ -8,7 +8,7 @@ STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.gz
 STAGE3 := ${FILEPFX}-stage3-${ARCH}.tar.gz
 
-.PHONY: check-root chroot-script need-suid chroot desktop bwrap
+.PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap
 
 UID := $(shell id -u)
 PWD := $(shell pwd)
