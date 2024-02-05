@@ -5,7 +5,7 @@ ARCH ?= amd64
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
-STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.gz
+STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.xz
 STAGE3 := ${FILEPFX}-stage3-${ARCH}.tar.xz
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap
@@ -28,7 +28,7 @@ define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"
 	@cp    "${1}" ${ROOT}/script.sh
-	@chroot ${ROOT} bash /script.sh
+	@chroot ${ROOT} bash -e /script.sh
 	@rm -f ${ROOT}/script.sh
 	@echo "-- Done ${1}\n--"
 endef
@@ -38,7 +38,7 @@ define install-packages
 	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
 	@echo "-- Install ${1}\n--"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/install.sh
-	chroot ${ROOT} sh /install.sh
+	chroot ${ROOT} bash -e /install.sh
 	rm -f ${ROOT}/install.sh
 	@echo "-- Done ${1}\n--"
 endef
@@ -48,7 +48,7 @@ define remove-paths
 	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
 	@echo "-- Remove ${1}\n--"
 	@echo "rm -rf $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/remove.sh
-	chroot ${ROOT} sh /remove.sh
+	chroot ${ROOT} bash -e /remove.sh
 	rm -f ${ROOT}/remove.sh
 	@echo "-- Done ${1}\n--"
 endef
@@ -58,7 +58,7 @@ define upgrade-packages
 	@echo "-- Upgrade packages\n--"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get update -q -y" > ${ROOT}/upgrade.sh
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y" > ${ROOT}/upgrade.sh
-	chroot ${ROOT} sh /upgrade.sh
+	chroot ${ROOT} bash -e /upgrade.sh
 	rm -f ${ROOT}/upgrade.sh
 	@echo "-- Done\n--"
 endef

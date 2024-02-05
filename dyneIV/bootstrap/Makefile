@@ -63,18 +63,17 @@ stage2: need-suid
 	@mkdir -p ${ROOT}
 	@tar -C ${ROOT} -xf ${SRC}/${STAGE1}
 	@chroot ${ROOT} apt-get update -q -y
-	$(call chroot-script,install-locale.sh)
 	@cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/
 	$(call chroot-script,install-kernel-libre.sh)
+	$(call chroot-script,install-locale.sh)
 	$(call chroot-script,install-users.sh)
 	$(call chroot-script,install-live-boot.sh)
 
-pack-stage2: size := $(shell du -sb ${ROOT} | awk '{print $$1}')
 pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
-	@cd ${ROOT} && tar -cf - * | pv -s ${size} | gzip - > ${SRC}/${STAGE2}
+	@cd ${ROOT} && tar -cf - * | pv -s `du -sb ${ROOT} | awk '{print $$1}'` |  xz -z -9 > ${SRC}/${STAGE2}
 
 # setup a local apt-proxy cache
 apt-proxy: need-suid

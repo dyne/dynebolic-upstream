@@ -110,7 +110,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
-    xz-tools
+    xz-utils
 
 stage2: ## 🚀 Build the base system: stage1, stage2
 	@make -C bootstrap
@@ -138,9 +138,9 @@ desktop: need-suid
 	rm -f ${ROOT}/desktop.sh
 
 # experimental
+# xhost + local:
 bwrap:
 	@command -v bwrap || exit 1
-	xhost + local:
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-
+DEBIAN_FRONTEND=noninteractive apt-get -q -y install locales-all util-linux-locales
 locale-gen --purge en_US.UTF-8
 echo \
 	 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\nLC_ALL="en_US.UTF-8"\n' \
