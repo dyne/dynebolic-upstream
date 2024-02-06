@@ -43,9 +43,6 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 _: ##
 -----: ## __ More emulator functions:
 
-sync-stage3: ## 📥 Download latest stage3 tarball (for reset)
-	rsync -PL files.dyne.org::dynebolic/${STAGE3} ${STAGE3}
-
 qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-dvd: ## 📀 Emulate DVD boot using qemu
 	$(info Launch QEMU emulator on ISO)
@@ -112,13 +109,13 @@ deps: need-suid ## 🛠️ Install development dependencies
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
     xz-utils
 
-stage2: ## 🚀 Build the base system: stage1, stage2
+bootstrap: ## 🚀 Bootstrap the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
-stage3: ## 🗿 Build the desktop: create stage3
+system: ## 🗿 Install the full system: dyneIV-system
 	@make -C packages
 
-upgrade: ## 🔝 Update all packages in stage3
+upgrade: ## 🔝 Update all system packages
 	$(call upgrade-packages)
 	@make -C packages install-all-packages
 
@@ -155,11 +152,11 @@ iso: ## 🏁 Toast the final ISO image for release
 	make -C iso iso
 
 burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
-	$(if $(wildcard dynebolic.iso,,$(error dynebolic.iso not found.))
-	$(if $(wildcard ${USB},,$(error USB device not found: ${USB}))
+	$(if $(wildcard dynebolic.iso),,$(error dynebolic.iso not found.))
+	$(if $(wildcard ${USB}),,$(error USB device not found: ${USB}))
 	$(info This will delete all contents of device: ${USB})
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-	dd if=dynebolic.iso of=${USB} bs=1M oflag=sync status=progress
+	dd if=dynebolic.iso of=${USB} bs=1M oflag=direct status=progress
 
 _: ##
 -----: ## __ Undo and restart from scratch

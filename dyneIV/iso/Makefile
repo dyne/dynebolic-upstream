@@ -23,18 +23,12 @@ all: squash iso
 
 include ${SRC}/config.mk
 
-static-overlay:
-	@rsync -raX ${SRC}/static/* ${ROOT}/
-	@$(call chroot-script,fixperms.sh)
-
-squash: need-suid prepare-excludes
+squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	@rm -f ${SRC}/${STAGE3}
 	$(info Squashing dynebolic read-only filesystem)
-	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
 	$(info Please wait while compressing the filesystem...)
-	@tar -c --exclude-from=/tmp/dyneIV-excludes \
-		${ROOT} ${SRC}/static \
+	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 	    | tar2sqfs -r ${ROOT} -x -f -q -c xz -X level=9 ${SRC}/${STAGE3}
 

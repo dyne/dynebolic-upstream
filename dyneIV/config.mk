@@ -5,8 +5,8 @@ ARCH ?= amd64
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
-STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.xz
-STAGE3 := ${FILEPFX}-filesystem-${ARCH}.squash
+STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
+STAGE3 := ${FILEPFX}-system-${ARCH}.squash
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 
@@ -29,6 +29,13 @@ prepare-excludes:
 	@rm -f /tmp/dyneIV-excludes
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-from-iso.txt | tee /tmp/dyneIV-excludes
+
+static-overlay: usrsrc := ${SRC}/static/usr/src
+static-overlay: repo := $(shell dirname ${SRC})
+static-overlay:
+	@mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf dyneIV-SDK && git clone --depth 1 file://${repo} dyneIV-SDK
+	@rsync -raX ${SRC}/static/* ${ROOT}/
+	@$(call chroot-script,fixperms.sh)
 
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
