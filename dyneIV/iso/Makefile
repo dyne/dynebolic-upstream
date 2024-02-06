@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Dyne.org Foundation
+# Copyright (C) 2023-2024 Dyne.org Foundation
 #
 # Designed, written and maintained by Denis Roio <jaromil@dyne.org>
 #
@@ -27,23 +27,31 @@ static-overlay:
 	@rsync -raX ${SRC}/static/* ${ROOT}/
 	@$(call chroot-script,fixperms.sh)
 
-squash: need-suid static-overlay prepare-excludes
-	$(info Squash ROOT to dynebolic.squash)
+squash: need-suid prepare-excludes
+	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+	@rm -f ${SRC}/${STAGE3}
+	$(info Squashing dynebolic read-only filesystem)
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
-	@rm -rf dynebolic.squash
 	$(info Please wait while compressing the filesystem...)
-	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-		| pv -p -s `du -sk ${ROOT} | cut -f 1` \
-	    | tar2sqfs -r ${ROOT} -x -f -q -c zstd dynebolic.squash
-	@-[ -r boot ] && mv -f boot ${ROOT}/
+	@tar -c --exclude-from=/tmp/dyneIV-excludes \
+		${ROOT} ${SRC}/static \
+		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+	    | tar2sqfs -r ${ROOT} -x -f -q -c xz -X level=9 ${SRC}/${STAGE3}
 
-iso:
+# mksquashfs ${ROOT} ${SRC}/${STAGE3} \
+# -comp xz -not-reproducible \
+# -mkfs-time now -all-time now -root-time now \
+# -exports -ef ${SRC}/excludes-filesystem.txt -wildcards \
+# -one-file-system -no-xattrs -progress -throttle 80 \
+# -noappend -Xbcj x86
+
+iso: need-suid
 	$(info Toast the ISO file to dynebolic.iso)
 	mkdir -p staging/EFI/BOOT
 	mkdir -p staging/boot/grub/x86_64-efi
 	mkdir -p staging/isolinux
 	mkdir -p staging/live
-	rsync -P dynebolic.squash staging/live/filesystem.squashfs
+	rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
 	cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	cp -f isolinux.cfg staging/isolinux/

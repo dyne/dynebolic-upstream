@@ -28,9 +28,7 @@ SRC=$(shell dirname $(shell pwd))
 # second expansion is needed to get the value of
 # $(installs) after the whole file was preprocessed
 .SECONDEXPANSION:
-all: stage1 stage2 shrink pack-stage2
-
-# shrink close-stage2
+all: stage1 stage2 pack-stage2
 
 include ${SRC}/config.mk
 

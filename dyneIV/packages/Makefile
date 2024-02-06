@@ -20,7 +20,7 @@
 SRC=$(shell dirname $(shell pwd))
 
 .SECONDEXPANSION:
-all: install-all-packages shrink pack-stage3
+all: install-all-packages
 
 include ${SRC}/config.mk
 
@@ -33,14 +33,11 @@ install-all-packages: need-suid
 	$(call install-packages,creative-multimedia)
 	$(call install-packages,fun-games)
 	mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf dyneIV-SDK && git clone --depth 1 file://${repo} dyneIV-SDK
-	rsync -raX ${SRC}/static/* ${ROOT}/
+
 
 
 # apply-all-patches: need-suid
 # 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
-pack-stage3: need-suid prepare-excludes
-	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
-	$(info Packing Stage3)
-	@du -hs ${ROOT} && cd ${ROOT} && tar -c --exclude-from=/tmp/dyneIV-excludes . | xz -v -z -9 -T0 > ${SRC}/${STAGE3}
+
+#  | xz -v -z -9 -T0 > ${SRC}/${STAGE3}

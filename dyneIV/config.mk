@@ -6,9 +6,9 @@ ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.xz
-STAGE3 := ${FILEPFX}-stage3-${ARCH}.tar.xz
+STAGE3 := ${FILEPFX}-filesystem-${ARCH}.squash
 
-.PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap
+.PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 
 UID := $(shell id -u)
 PWD := $(shell pwd)
@@ -95,14 +95,14 @@ define umount-qcow2
 endef
 
 
-shrink: need-suid
-	$(if $(wildcard ${ROOT}),,$(error ROOT not found))
-	$(info Shrink the system)
-	@-find ${ROOT}/ -type d -name '__pycache__' -exec rm -rvf {} \;
-	@-find ${ROOT}/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
-	@rm -rvf ${ROOT}/tmp/* ${ROOT}/var/tmp/*
-	@chroot ${ROOT} apt-get autoremove
-	@chroot ${ROOT} apt-get clean
+# shrink: need-suid
+# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found))
+# 	$(info Shrink the system)
+# 	@-find ${ROOT}/ -type d -name '__pycache__' -exec rm -rvf {} \;
+# 	@-find ${ROOT}/var/log/ -type f -name '*.log' -exec rm -rvf {} \;
+# 	@rm -rvf ${ROOT}/tmp/* ${ROOT}/var/tmp/*
+# 	@chroot ${ROOT} apt-get autoremove
+# 	@chroot ${ROOT} apt-get clean
 
 # rm -rvf ${ROOT}/usr/share/gtk-doc/*
 # rm -rvf ${ROOT}/usr/share/man/*
