@@ -24,17 +24,13 @@ all: install-all-packages
 
 include ${SRC}/config.mk
 
-install-all-packages: usrsrc := ${SRC}/static/usr/src
-install-all-packages: repo := $(shell dirname ${SRC})
+install-all-packages:
 install-all-packages: need-suid
 	$(call install-packages,cli-utils)
 	$(call chroot-script,install-guix.sh)
 	$(call install-packages,desktop-kde)
 	$(call install-packages,creative-multimedia)
 	$(call install-packages,fun-games)
-	mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf dyneIV-SDK && git clone --depth 1 file://${repo} dyneIV-SDK
-
-
 
 # apply-all-patches: need-suid
 # 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)

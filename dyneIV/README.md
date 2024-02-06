@@ -45,20 +45,20 @@ Quick list of dependencies:
 ```
 
 
-### 2. Bootstrap a base image (stage2)
+### 2. Bootstrap a base image
 
 Create a **stage1** and **stage2** archive of the base system using Devuan Daedalus and the Linux Libre kernel by FSFLA.
 
 ```
-make stage2
+make bootstrap
 ```
 
-### 3. Install packages (stage3)
+### 3. Install all system packages
 
 Install all default applications found in dyne:IV. Additional AppImages can be added later also by users, but this step will install a base list of packages from Devuan that we need in the system in any case.
 
 ```
-make stage3
+make system
 ```
 
 Look for `install-*.sh` files inside the `packages` subdir to see the lists, which are simply formatted with one package name per line, supporting comments. Please leave comments if you change them!
@@ -68,7 +68,12 @@ Look for `install-*.sh` files inside the `packages` subdir to see the lists, whi
 Create the bootable live iso that can run from a USB stick or a DVD or even in QEMU.
 
 ```
-make iso
+make squash && make iso
+```
+
+If you want help burning the USB then make sure to know its device and do:
+```
+make burn USB=/dev/sd?
 ```
 
 ## Run in emulation
