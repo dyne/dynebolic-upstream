@@ -73,11 +73,11 @@ stage2: need-suid
 locales:
 	$(call chroot-script,install-locale.sh)
 
-pack-stage2: need-suid
+pack-stage2: need-suid prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
-	@cd ${ROOT} && tar -cf - * | pv -s `du -sb ${ROOT} | awk '{print $$1}'` |  xz -z -9 > ${SRC}/${STAGE2}
+	@du -hs ${ROOT} && cd ${ROOT} && tar -c --exclude-from=/tmp/dyneIV-excludes . | xz -v -z -9 -T0 > ${SRC}/${STAGE2}
 
 # setup a local apt-proxy cache
 apt-proxy: need-suid

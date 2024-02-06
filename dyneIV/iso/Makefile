@@ -27,17 +27,14 @@ static-overlay:
 	@rsync -raX ${SRC}/static/* ${ROOT}/
 	@$(call chroot-script,fixperms.sh)
 
-squash: tempexclude=/tmp/dyneIV-iso-squash
-squash: size := $(if $(wildcard ${ROOT}),$(shell du -sk ${ROOT} | cut -f 1),0)
-squash: need-suid static-overlay
+squash: need-suid static-overlay prepare-excludes
 	$(info Squash ROOT to dynebolic.squash)
 	@-[ -r ${ROOT}/boot ] && rm -rf boot && mv -v ${ROOT}/boot .
-	$(info Exclude paths:)
-	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' exclude-from-iso.txt | tee ${tempexclude}
 	@rm -rf dynebolic.squash
 	$(info Please wait while compressing the filesystem...)
-	@tar -c --exclude-from=${tempexclude} ${ROOT} | pv -p -s "${size}k" \
-    | tar2sqfs -r ${ROOT} -x -f -q -c zstd dynebolic.squash
+	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+		| pv -p -s `du -sk ${ROOT} | cut -f 1` \
+	    | tar2sqfs -r ${ROOT} -x -f -q -c zstd dynebolic.squash
 	@-[ -r boot ] && mv -f boot ${ROOT}/
 
 iso:
