@@ -62,12 +62,16 @@ stage2: need-suid
 	$(info Open first stage bootstrap)
 	@mkdir -p ${ROOT}
 	@tar -C ${ROOT} -xf ${SRC}/${STAGE1}
-	@chroot ${ROOT} apt-get update -q -y
 	@cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/
 	$(call chroot-script,install-kernel-libre.sh)
-	$(call chroot-script,install-locale.sh)
+	@chroot ${ROOT} apt-get update -q -y
+	$(call install-packages,base-packages)
 	$(call chroot-script,install-users.sh)
 	$(call chroot-script,install-live-boot.sh)
+	$(call chroot-script,install-locale.sh)
+
+locales:
+	$(call chroot-script,install-locale.sh)
 
 pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))

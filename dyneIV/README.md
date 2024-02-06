@@ -41,7 +41,7 @@ Quick list of dependencies:
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget xz-tools
+    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget xz-utils
 ```
 
 
