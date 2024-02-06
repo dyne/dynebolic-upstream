@@ -1,33 +1,29 @@
-# .gitignore
-# apt
-# dpkg
-# fsck
-*.log
-# debconf
+# This exclude file is parsed by an awk script to be fed to tar.
+# the format is quite strict:
+# lines starting with / are a full path to the ignored file or dir
+# lines starting with * are a wildcard (unix filesystem style)
+# lines starting with # are.... uh.... guess what? :^)
 
-# --exclude-from
-/var/lib/apt
-/var/log/apt
-/var/lib/dpkg
-/var/log/dpkg.log
-/var/log/fsck
-/var/cache/apt
-/var/cache/debconf
-/usr/share/wallpapers/Next
-/tmp/*
-/var/tmp/*
-__pycache__
+/boot
 
 /usr/bin/apt
 /usr/bin/dpkg
 
-# */apt
-# */dpkg
-# *.log
-# */fsck
-# */debconf
-# */Next
-# /usr**
+/var/lib/apt
+/var/lib/dpkg
+
+/var/log/apt
+/var/log/dpkg.log
+/var/log/fsck
+
+/var/cache/apt
+/var/cache/debconf
 
 # from breeze plasma theme
-# /usr/share/wallpapers/Next
+/usr/share/wallpapers/Next
+
+/tmp/*
+/var/tmp/*
+
+*__pycache__
+*.log

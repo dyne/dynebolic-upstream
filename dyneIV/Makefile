@@ -144,9 +144,22 @@ bwrap:
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
 
-iso: ## 🏁 Toast the final ISO image for release
-	make -C iso
+_: ##
+-----: ## __ Release the live bootable system
 
+
+squash: ## 🗜️  Compress the filesystem with squashfs
+	make -C iso squash
+
+iso: ## 🏁 Toast the final ISO image for release
+	make -C iso iso
+
+burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
+	$(if $(wildcard dynebolic.iso,,$(error dynebolic.iso not found.))
+	$(if $(wildcard ${USB},,$(error USB device not found: ${USB}))
+	$(info This will delete all contents of device: ${USB})
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	dd if=dynebolic.iso of=${USB} bs=1M oflag=sync status=progress
 
 _: ##
 -----: ## __ Undo and restart from scratch
