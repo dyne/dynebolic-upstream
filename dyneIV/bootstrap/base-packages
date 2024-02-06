@@ -1,0 +1,7 @@
+linux-libre
+linux-libre-headers
+locales-all
+util-linux-locales
+sudo
+gnupg1
+dialog
