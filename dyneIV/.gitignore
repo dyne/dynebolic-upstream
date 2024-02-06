@@ -6,3 +6,4 @@ ROOT
 *.squash
 staging
 dyneIV-SDK
+iso/boot
