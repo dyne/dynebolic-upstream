@@ -24,6 +24,12 @@ define check-root
 	$(if $(wildcard ${ROOT}),,$(error "ROOT not found."))
 endef
 
+# use adding to tar  --exclude-from=/tmp/dyneIV-excludes
+prepare-excludes:
+	@rm -f /tmp/dyneIV-excludes
+	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
+		${SRC}/exclude-from-iso.txt | tee /tmp/dyneIV-excludes
+
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"

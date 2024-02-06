@@ -39,9 +39,8 @@ install-all-packages: need-suid
 # apply-all-patches: need-suid
 # 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
 
-pack-stage3: size := $(if $(wildcard ${ROOT}),$(shell du -sb ${ROOT} | awk '{print $$1}'),0)
-pack-stage3: need-suid
+pack-stage3: need-suid prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE3}),$(error Cannot overwrite stage3))
 	$(info Packing Stage3)
-	@cd ${ROOT} && tar -cf - . | pv -s ${size} | xz -z -9 > ${SRC}/${STAGE3}
+	@du -hs ${ROOT} && cd ${ROOT} && tar -c --exclude-from=/tmp/dyneIV-excludes . | xz -v -z -9 -T0 > ${SRC}/${STAGE3}
