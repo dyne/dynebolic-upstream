@@ -75,7 +75,7 @@ pack-stage2: need-suid prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
-	@du -hs ${ROOT} && cd ${ROOT} && tar -c --exclude-from=/tmp/dyneIV-excludes . | xz -v -z -9 -T0 > ${SRC}/${STAGE2}
+	@du -hs ${ROOT} && cd ${ROOT} && tar -c --exclude-from=/tmp/dyneIV-excludes . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE2}
 
 # setup a local apt-proxy cache
 apt-proxy: need-suid
