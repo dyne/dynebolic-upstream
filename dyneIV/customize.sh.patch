@@ -1,0 +1,8 @@
+20c20
+< if ! chroot "$rootdir" dpkg-query --list eatmydata; then
+---
+> if ! chroot "$rootdir" dpkg-query --no-pager --list eatmydata; then
+23c23
+< if ! chroot "$rootdir" dpkg-query --list libeatmydata1; then
+---
+> if ! chroot "$rootdir" dpkg-query --no-pager --list libeatmydata1; then
