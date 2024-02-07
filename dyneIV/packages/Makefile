@@ -19,21 +19,29 @@
 
 SRC=$(shell dirname $(shell pwd))
 
+help:
+	@echo "✨ Packages available for install on your Dyne:IV system"
+	@awk 'BEGIN {FS = ":.*##"; printf "🛟 Usage: make \033[36m<target>\033[0m\n👇🏽 List of targets:\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf " \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5)} ' Makefile
+
+
 .SECONDEXPANSION:
-all: install-all-packages
 
 include ${SRC}/config.mk
 
-install-all-packages:
-install-all-packages: need-suid
-	$(call install-packages,cli-utils)
-	$(call chroot-script,install-guix.sh)
-	$(call install-packages,desktop-kde)
-	$(call install-packages,creative-multimedia)
-	$(call install-packages,fun-games)
+all: need-suid cli-utils desktop-kde creative-multimedia fun-games dyne-software
 
-# apply-all-patches: need-suid
-# 	$(call apply-patch,/etc/init.d/xdm,etc-initd-xdm.patch)
+cli-utils: ##
+	$(call install-packages,cli-utils.txt)
 
+desktop-kde: ##
+	$(call install-packages,desktop-kde.txt)
 
-#  | xz -v -z -9 -T0 > ${SRC}/${STAGE3}
+creative-multimedia: ##
+	$(call install-packages,creative-multimedia.txt)
+
+fun-games: ##
+	$(call install-packages,fun-games.txt)
+
+dyne-software: ##
+	$(call chroot-script,dyne-software.sh)
+
