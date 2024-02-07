@@ -5,8 +5,14 @@
 # sudo find ROOT/etc -printf '%m %p\0' | xargs --null -n1 | grep -v 777 | grep -v 755 | grep -v 644
 
 >&2 echo "Fixing permissions in ROOT folders..."
-chown -R root:root /bin /etc /gnu /home /lib /lib64 \
-	  /media /mnt /opt /root /run /sbin /srv /usr /var
+chown -R root:root /etc /home /lib /lib64 \
+	  /media /mnt /opt /root /run /sbin /srv /var
+
+# chown clears suid & guid permission bits occasionally set under /bin & /usr/bin, only change ownership when not root:root already
+
+find /bin \! -user root -o \! -group root -exec chown root:root '{}' \;
+find /usr \! -user root -o \! -group root -exec chown root:root '{}' \;
+
 chown -R dyne:dyne /home/dyne
 chmod 755 /etc/sddm.conf.d \
 	  /etc/sysctl.d \
