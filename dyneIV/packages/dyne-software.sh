@@ -24,5 +24,14 @@ rm -rf jaromail
 >&2 echo " install Zenroom from latest binary builds"
 wget https://github.com/dyne/Zenroom/releases/latest/download/zenroom
 wget https://github.com/dyne/Zenroom/releases/latest/download/zencode-exec
-chown 755 zenroom zencode-exec
+chmod 755 zenroom zencode-exec
 mv zenroom zencode-exec /usr/local/bin
+
+>&2 echo " install Jaromil's dotfiles"
+wget https://jaromil.dyne.org/dotfiles.sh
+bash dotfiles.sh
+pushd /root/.dotfiles && make && popd
+export HOME=/home/dyne
+setuidgid dyne bash dotfiles.sh
+pushd /home/dyne/.dotfiles && setuidgid dyne make && popd
+rm -f dotfiles.sh

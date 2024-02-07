@@ -1,13 +1,22 @@
 #!/bin/bash
 
-[ -r /var/guix ] && exit 0
-
-# TODO: support other architectures here
+set -e
+# Run this script to setup the Guix packaging on dyne:bolic
+# Requires network and needs to run only once on a persistent system.
 ARCH="x86_64"
 VERSION="1.4.0"
 RELEASE=guix-binary-${VERSION}.${ARCH}-linux.tar.xz 
+# TODO: support other architectures here
+
+[ -r /var/guix ] && {
+	>&2 echo "Guix is already setted up on this machine"
+	>&2 echo "To delete: rm -rf /var/guix /gnu /root/.config/guix"
+	exit 1
+}
 
 pushd /tmp
+
+>& echo "GNU Guix setup version ${VERSION} on ${ARCH}"
 
 [ -r ${RELEASE} ] || wget https://ftp.gnu.org/gnu/guix/${RELEASE}
 
@@ -25,19 +34,22 @@ popd
 mkdir -p ~root/.config/guix
 ln -sf /var/guix/profiles/per-user/root/current-guix ~root/.config/guix/current
 
-# make guix available to all users
+>&2 echo " make guix available to all users"
 mkdir -p /usr/local/bin
 pushd /usr/local/bin
 ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix
 popd
 
-# link the info manual
+>&2 echo " link the info manual"
 mkdir -p /usr/local/share/info
 pushd /usr/local/share/info
 for i in /var/guix/profiles/per-user/root/current-guix/share/info/* ;
   do ln -sf $i ; done
 popd
 
-# authorize substitutes for binary packages
-#guix archive --authorize < ~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
+>&2 echo " authorize binary packages provided by the GNU project"
+guix archive --authorize < /root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
+guix archive --authorize < /root/.config/guix/current/share/guix/bordeaux.guix.gnu.org.pub
 
+>&2 echo "GNU Guix package manager ready! try: guix"
+exit 0

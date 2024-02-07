@@ -50,7 +50,7 @@ qemu-dvd: ## 📀 Emulate DVD boot using qemu
 	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
 
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-spice: ## 🖥️ Emulate via SPICE  (requires network client)
+qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
 	$(info Launch SPICE server on LAN port 5900)
 	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
 	/usr/share/ovmf/OVMF.fd -cdrom dynebolic.iso ${persist} --boot	\
@@ -77,13 +77,13 @@ persist-create: need-suid ## 💾 Create persistance storage for qemu
 
 persist-mount: FILE ?= persistence.qcow2
 persist-mount: MNT ?= mnt
-persist-mount: need-suid ## 💾 Mount persistance contents in qcow2
+persist-mount: need-suid ## 🔍 Mount persistance contents in qcow2
 	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
 	mkdir -p ${MNT}
 	$(call mount-qcow2,${FILE},${MNT})
 
 persist-umount: MNT ?= mnt
-persist-umount: need-suid ## 💾 Unmount persistance contents
+persist-umount: need-suid ## ⏏️ Unmount persistance contents
 	$(call umount-qcow2,${MNT})
 
 persist-sync: FILE ?= persistence.qcow2
@@ -109,11 +109,11 @@ deps: need-suid ## 🛠️ Install development dependencies
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
     xz-utils
 
-bootstrap: ## 🚀 Bootstrap the base system: dyneIV-bootstrap
+bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
 system: ## 🗿 Install the full system: dyneIV-system
-	@make -C packages
+	@make -C packages all
 
 upgrade: ## 🔝 Update all system packages
 	$(call upgrade-packages)
@@ -145,7 +145,7 @@ _: ##
 -----: ## __ Release the live bootable system
 
 
-squash: ## 🗜️  Compress the filesystem with squashfs
+squash: ## 🗜️ Compress the filesystem with squashfs
 	make -C iso squash
 
 iso: ## 🏁 Toast the final ISO image for release
@@ -161,17 +161,17 @@ burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
 _: ##
 -----: ## __ Undo and restart from scratch
 
-reset: need-suid ## ♻️ Reset current ROOT to stage3
+reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
 	$(info Restore ROOT from ${STAGE3})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE3}
 
-reset-stage2: need-suid ## ♻️ Reset current ROOT to stage2
+restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
 	$(info Restore ROOT from ${STAGE2})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE2}
 
-clean: need-suid ## 🧹 Delete ROOT
+clean: need-suid ## 🧹  Delete ROOT
 	@rm -rf ${ROOT}
 
 ######
@@ -179,7 +179,6 @@ clean: need-suid ## 🧹 Delete ROOT
 
 publish: date := $(shell date +%Y%m%d)
 publish:
-	rsync -P ${STAGE1} ${STAGE2} ${STAGE3} dyne.files:/srv/ftp/dynebolic/development/
 	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
 	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
 
