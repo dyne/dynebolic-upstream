@@ -117,7 +117,7 @@ system: ## 🗿 Install the full system: dyneIV-system
 
 upgrade: ## 🔝 Update all system packages
 	$(call upgrade-packages)
-	@make -C packages install-all-packages
+	@make -C packages all
 
 chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 chroot: ## 🚪 Enter the current build ROOT via CLI
