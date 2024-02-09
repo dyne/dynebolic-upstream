@@ -82,4 +82,6 @@ kwin-x11
 kmenuedit # Start-up menu editor for KDE
 plasma-nm # display network status in desktop toolbar and KDE system settings
 gwenview # fast, well featured image viewer that integrates well in KDE
+bluetooth
+bluez
 bluedevil # bluetooth utilities, unable to test in qemu so far
