@@ -1,6 +1,8 @@
 # dyne:bolic IV :: software development kit
 
-This folder contains all needed scripts and configurations to build a dyne:IV live bootable image.
+This is a mirror repository, upstream is on https://git.devuan.org/jaromil/dynebolic
+
+Here are all needed scripts and configurations to build a dyne:IV live bootable image.
 
 ## Quick Start
 
