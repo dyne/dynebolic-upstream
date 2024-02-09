@@ -164,7 +164,8 @@ _: ##
 reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
 	$(info Restore ROOT from ${STAGE3})
 	@rm -rf ${ROOT}
-	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE3}
+	@mkdir -p ${ROOT} && cd ${ROOT} && \
+		unsquashfs -d . ${SRC}/${STAGE3}
 
 restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
 	$(info Restore ROOT from ${STAGE2})
