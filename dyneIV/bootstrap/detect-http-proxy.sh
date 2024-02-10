@@ -1,9 +1,19 @@
 #!/bin/bash
 
 # TODO: allow customization, insert here your apt-cache-ng IP on LAN
-try_proxies=(
-	192.168.1.2:3142
-)
+try_proxies=()
+try_proxies+=('localhost:3142') # try loopback first (running apt-cacher-ng locally)
+#
+# find apt proxies on lan advertised over mdns (apt-cacher-ng publishes automatically)
+# TODO: tidy pipe chain, include IPv6, etc.
+
+if $(command -v avahi-browse 1>/dev/null) ; then
+	mdns_proxies=$(avahi-browse -trp _apt_proxy._tcp | grep -E "^=;" \
+		| grep IPv4 | cut -f8,9 -d';' | tr ';' ':')
+	for proxy in "${mdns_proxies}"; do
+		try_proxies+=("${proxy}")
+	done
+fi
 
 print_msg() {
     # \x0d clears the line so [Working] is hidden
