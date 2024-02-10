@@ -35,6 +35,7 @@ include ${SRC}/config.mk
 stage1: MODE ?= unshare
 stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
+stage1: APT_PROXY_OPT := $(shell ${SRC}/bootstrap/generate-proxy-opt.sh)
 stage1: need-suid
 	@if ! [ -r ${SRC}/${STAGE1} ]; then \
 	echo "Bootstrap a new stage1: ${STAGE1}"; \
@@ -42,7 +43,7 @@ stage1: need-suid
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
 		--aptopt='APT::Install-Suggests "false"' \
-		--aptopt='Acquire::Retries "5"' \
+		--aptopt='Acquire::Retries "5"' ${APT_PROXY_OPT} \
 		--dpkgopt='path-exclude=/usr/share/doc/*' \
 		--essential-hook='echo tzdata tzdata/Areas select Europe | chroot "$$1" debconf-set-selections' \
 		--essential-hook='echo tzdata tzdata/Zones/Europe select Amsterdam | chroot "$$1" debconf-set-selections' \
