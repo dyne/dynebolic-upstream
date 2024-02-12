@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DEPS="gettext gcc g++ qt5-qmake qtbase5-dev libqt5quick5 qtdeclarative5-dev"
+TMP_DEPS="gcc g++ libgcrypt20-dev qt5-qmake qtbase5-dev qtdeclarative5-dev"
 
 # temporary install of needed packages
 DEBIAN_FRONTEND=noninteractive \
-	apt-get install -q -y ${DEPS}
+	apt-get install -q -y ${TMP_DEPS}
 
 pushd /usr/src
 
@@ -57,6 +57,6 @@ tombver=2.10
 }
 
 DEBIAN_FRONTEND=noninteractive \
-	apt-get remove --purge -q -y ${DEPS}
+	apt-get remove --purge -q -y ${TMP_DEPS}
 DEBIAN_FRONTEND=noninteractive \
 	apt-get autoremove -q -y
