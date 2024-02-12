@@ -56,10 +56,9 @@ stage1: need-suid
 	fi
 
 stage2: need-suid
+	$(if $(wildcard ${ROOT}),,$(error Stage 1 bootstrap not completed, ROOT not found in ${ROOT}))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
-	@rm -rf ${ROOT}
 	$(info Open first stage bootstrap)
-	@mkdir -p ${ROOT}
 	@tar -C ${ROOT} -xf ${SRC}/${STAGE1}
 	@cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/
 	$(call chroot-script,install-kernel-libre.sh)
