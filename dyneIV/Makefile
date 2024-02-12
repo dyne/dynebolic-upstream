@@ -162,10 +162,13 @@ _: ##
 -----: ## __ Undo and restart from scratch
 
 reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
-	$(info Restore ROOT from ${STAGE3})
+	$(if $(wildcard ${STAGE3}),,$(error System squash not found: ${STAGE3}))
+	$(if $(wildcard ${STAGE3DEV}),,$(error Development archive not found: ${STAGE3DEV}))
+	$(info Restore ROOT from ${STAGE3} and ${STAGE3DEV})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && \
-		unsquashfs -d . ${SRC}/${STAGE3}
+		unsquashfs -d . ${SRC}/${STAGE3} && \
+		tar xf ${SRC}/${STAGE3DEV}
 
 restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
 	$(info Restore ROOT from ${STAGE2})

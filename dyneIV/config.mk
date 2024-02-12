@@ -6,7 +6,9 @@ ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
-STAGE3 := ${FILEPFX}-system-${ARCH}.squash
+STAGE3    := ${FILEPFX}-system-${ARCH}.squash
+STAGE3DEV := ${FILEPFX}-system-${ARCH}-dev.tar.xz
+DEV_PATHS := /usr/bin/apt /usr/bin/dpkg /var/lib/apt /var/lib/dpkg /var/cache/apt /var/cache/debconf
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 

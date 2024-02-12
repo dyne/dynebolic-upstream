@@ -23,10 +23,6 @@ all: squash iso
 
 include ${SRC}/config.mk
 
-STAGE3DEV := dyneIV-system-amd64-dev.tar.xz
-
-squash: dev-pack := /usr/bin/apt /usr/bin/dpkg /var/lib/apt \
-	/var/lib/dpkg /var/cache/apt /var/cache/debconf
 squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	@rm -f ${SRC}/${STAGE3}
@@ -36,8 +32,8 @@ squash: need-suid static-overlay prepare-excludes
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -x -f -q -c xz -X level=9 ${SRC}/${STAGE3}
 	$(info Saving development package for reset...)
-	tar -c -C ${ROOT} ${dev-pack} \
-		| xz -z -9 > ${SRC}/${STAGE3DEV}
+	tar -c -C ${ROOT} ${DEV_PATHS} \
+		| xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
 iso: need-suid
