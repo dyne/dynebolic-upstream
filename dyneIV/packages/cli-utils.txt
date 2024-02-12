@@ -58,6 +58,7 @@ bsdextrautils
 tree
 less
 man-db
+info
 file
 rsync
 # pandoc # too big
@@ -84,6 +85,7 @@ extlinux
 syslinux
 grub2
 grml-rescueboot
+clonezilla
 
 # ============================================================================
 # Network
