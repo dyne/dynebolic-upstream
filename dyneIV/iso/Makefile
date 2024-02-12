@@ -52,7 +52,6 @@ iso: need-suid
 	@cp -f /usr/lib/ISOLINUX/isolinux.bin staging/isolinux/
 	@cp -f /usr/lib/syslinux/modules/bios/* staging/isolinux/
 	@cp -rf /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
-	@cp -ra grub-theme/* staging/boot/grub/
 	@grub-mkstandalone -O i386-efi \
 		--modules="${grub-mods}" \
 		--locales="" --themes="" --fonts=""	\
