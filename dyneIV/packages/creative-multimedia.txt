@@ -52,8 +52,8 @@ soundkonverter
 kid3
 
 darktable
-
 gimp
+krita
 
 digikam
 inkscape
