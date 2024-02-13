@@ -37,6 +37,8 @@ squash: need-suid static-overlay prepare-excludes
 
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
 iso: need-suid
+	$(info Check grub configuration syntax)
+	grub-script-check grub.cfg
 	$(info Toast the ISO file to dynebolic.iso)
 	@rm -rf staging
 	@mkdir -p staging/EFI/BOOT
@@ -76,7 +78,7 @@ iso: need-suid
 		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
 		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
 		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
-		C12A7328-F81F-11D2-BA4B-00A0C93EC93B							\
+		`uuidgen` \
 		staging/efiboot.img staging
 
 
