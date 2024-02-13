@@ -33,7 +33,7 @@ squash: need-suid static-overlay prepare-excludes
 		| tar2sqfs -r ${ROOT} -x -f -q -c xz -X level=9 ${SRC}/${STAGE3}
 	$(info Saving development package for reset...)
 	tar -c -C ${ROOT} ${DEV_PATHS} \
-		| xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
+		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
 iso: need-suid
