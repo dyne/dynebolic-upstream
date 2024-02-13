@@ -35,7 +35,7 @@ include ${SRC}/config.mk
 stage1: MODE ?= unshare
 stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
-stage1: APT_PROXY_OPT := $(shell ${SRC}/bootstrap/generate-proxy-opt.sh)
+stage1: APT_PROXY_OPT := $(shell APT_PROXY_OVERRIDE="${APT_PROXY_OVERRIDE}" ${SRC}/bootstrap/generate-proxy-opt.sh)
 stage1: need-suid
 	@if ! [ -r ${SRC}/${STAGE1} ]; then \
 	echo "Bootstrap a new stage1: ${STAGE1}"; \

@@ -4,6 +4,10 @@ ARCH ?= amd64
 # ROOT ?= /dev/shm/dynebolic-rootfs
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
+# Configure custom proxy apt cache
+APT_PROXY_OVERRIDE := ""
+#APT_PROXY_OVERRIDE := "127.0.0.2:3142"
+
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
