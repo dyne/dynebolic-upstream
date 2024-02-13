@@ -34,10 +34,11 @@ sync-iso: ## 📥 Download latest development ISO
 	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso dynebolic.iso
 
 qemu-usb: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-usb: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
 qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	$(info Launch QEMU emulator on ISO using UEFI BIOS)
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
-	-cdrom dynebolic.iso ${persist} --boot once=d -m 2048 -smp 4	\
+	-cdrom dynebolic.iso ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
 _: ##
@@ -196,3 +197,30 @@ rsync-server:
 source-packages:
 	$(call chroot-script,source-packages.sh)
 	@mv ROOT/usr/src/source-packages .
+
+######
+## Development operations
+test-hdd-create: FILE ?= hdd.qcow2
+test-hdd-create: NBD ?= 14
+test-hdd-create: need-suid
+	$(if $(wildcard ${FILE}),$(error Cannot overwrite ${FILE}))
+	$(info Creating ${FILE} file for Qemu)
+	modprobe nbd
+	qemu-img create -f qcow2 ${FILE} 10G
+	qemu-nbd -c /dev/nbd${NBD} ${FILE}
+	parted -s /dev/nbd${NBD} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
+	mkfs.ext4 -L hdd /dev/nbd${NBD}p1
+	qemu-nbd -d /dev/nbd${NBD}
+	chmod a+rw ${FILE}
+
+test-hdd-mount: FILE ?= hdd.qcow2
+test-hdd-mount: MNT ?= mnt
+test-hdd-mount: need-suid
+	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
+	mkdir -p ${MNT}
+	$(call mount-qcow2,${FILE},${MNT})
+
+test-hdd-umount: MNT ?= mnt
+test-hdd-umount: need-suid
+	$(call umount-qcow2,${MNT})
+
