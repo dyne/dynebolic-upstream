@@ -12,7 +12,7 @@ STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
 STAGE3DEV := ${FILEPFX}-system-${ARCH}-dev.tar.xz
-DEV_PATHS := /usr/bin/apt /usr/bin/dpkg /var/lib/apt /var/lib/dpkg /var/cache/apt /var/cache/debconf
+DEV_PATHS := usr/bin/apt usr/bin/dpkg var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 
@@ -35,6 +35,7 @@ prepare-excludes:
 	@rm -f /tmp/dyneIV-excludes
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-from-iso.txt | tee /tmp/dyneIV-excludes
+	@bash -c "printf '${ROOT}/%s\n' ${DEV_PATHS}" | tee /tmp/dyneIV-excludes
 
 static-overlay: usrsrc := ${SRC}/static/usr/src
 static-overlay: repo := $(shell dirname ${SRC})
