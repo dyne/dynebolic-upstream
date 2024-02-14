@@ -66,10 +66,8 @@ stage2: need-suid extract-stage1 apt-get-update
 	$(info Open first stage bootstrap)
 	$(call install-packages,base-packages)
 	$(call chroot-script,install-users.sh)
+	$(call install-packages,live-boot.txt)
 	$(call chroot-script,install-live-boot.sh)
-	$(call chroot-script,install-locale.sh)
-
-locales:
 	$(call chroot-script,install-locale.sh)
 
 pack-stage2: need-suid
