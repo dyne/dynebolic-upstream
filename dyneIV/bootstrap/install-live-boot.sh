@@ -1,9 +1,5 @@
 #!/bin/sh
 
-DEBIAN_FRONTEND=noninteractive \
-apt-get -q -y install mount live-boot zstd direnv patch \
-		openrc sysvinit-core psmisc e2fsprogs orphan-sysvinit-scripts
-
 cat <<EOF > /etc/live/boot.conf
 MINIMAL=false
 PERSISTENCE_FSCK=false
