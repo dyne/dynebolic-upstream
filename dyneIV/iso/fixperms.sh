@@ -14,6 +14,7 @@ find /bin \! -user root -o \! -group root -exec chown root:root '{}' \;
 find /usr \! -user root -o \! -group root -exec chown root:root '{}' \;
 
 # WARNING: SUID BIT
+chown root:messagebus /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod 4754 \
 	  /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 # /usr/sbin/pppd
