@@ -13,6 +13,13 @@ chown -R root:root /etc /home /lib /lib64 \
 find /bin \! -user root -o \! -group root -exec chown root:root '{}' \;
 find /usr \! -user root -o \! -group root -exec chown root:root '{}' \;
 
+# WARNING: SUID BIT
+chmod 4754 \
+	  /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+# /usr/sbin/pppd
+# chmod 3775 \
+# 	  /usr/share/ppd/custom
+
 chown -R dyne:dyne /home/dyne
 chmod 755 /etc/sddm.conf.d \
 	  /etc/sysctl.d \
@@ -35,6 +42,27 @@ chmod 640 \
 chmod 440 \
 	  /etc/sudoers.d/* \
 	  /etc/sudoers
+
+# chmod 750 \
+# 	  /usr/libexec/sssd/proxy_child \
+# 	  /usr/libexec/sssd/krb5_child \
+# 	  /usr/libexec/sssd/ldap_child \
+# 	  /usr/libexec/sssd/selinux_child
+
+# chmod 744 \
+# 	  /usr/lib/cups/backend-available/lpd \
+# 	  /usr/lib/cups/backend-available/usb \
+# 	  /usr/lib/cups/backend-available/dnssd \
+# 	  /usr/lib/cups/backend/implicitclass \
+# 	  /usr/lib/cups/backend/mdns \
+# 	  /usr/lib/cups/backend/lpd \
+# 	  /usr/lib/cups/backend/usb \
+# 	  /usr/lib/cups/backend/serial \
+# 	  /usr/lib/cups/backend/dnssd
+
+# chmod 444 \
+# 	  /usr/lib/udev/hwdb.bin
+
 
 # Notes:
 #
