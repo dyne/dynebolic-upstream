@@ -55,14 +55,15 @@ stage1: need-suid
 	daedalus ${SRC}/${STAGE1} http://deb.devuan.org/merged; \
 	fi
 
-stage2: need-suid
-	$(if $(wildcard ${ROOT}),,$(error Stage 1 bootstrap not completed, ROOT not found in ${ROOT}))
-	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
-	$(info Open first stage bootstrap)
+extract-stage1: need-suid
+	mkdir -p ${ROOT}
 	@tar -C ${ROOT} -xf ${SRC}/${STAGE1}
 	@cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/
+	$(call chroot-script,install-apt-conf.sh)
 	$(call chroot-script,install-kernel-libre.sh)
-	@chroot ${ROOT} apt-get update -q -y
+
+stage2: need-suid extract-stage1 apt-get-update
+	$(info Open first stage bootstrap)
 	$(call install-packages,base-packages)
 	$(call chroot-script,install-users.sh)
 	$(call chroot-script,install-live-boot.sh)
@@ -75,7 +76,6 @@ pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
-	@chroot ${ROOT} apt-get clean
 	@du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE2}
 
 # setup a local apt-proxy cache

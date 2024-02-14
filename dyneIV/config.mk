@@ -44,11 +44,23 @@ static-overlay:
 	@rsync -raX ${SRC}/static/* ${ROOT}/
 	@$(call chroot-script,fixperms.sh)
 
+apt-get-update: need-suid
+	@echo "--\n-- Apt Get Update"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" \
+		> ${ROOT}/update.sh
+	mount -o bind /proc ${ROOT}/proc
+	@chroot ${ROOT} bash -e /update.sh
+	umount ${ROOT}/proc
+	@rm -f ${ROOT}/update.sh
+	@echo "-- Done Apt Get Update\n--"
+
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"
 	@cp    "${1}" ${ROOT}/script.sh
+	mount -o bind /proc ${ROOT}/proc
 	@chroot ${ROOT} bash -e /script.sh
+	umount ${ROOT}/proc
 	@rm -f ${ROOT}/script.sh
 	@echo "-- Done ${1}\n--"
 endef
@@ -58,7 +70,9 @@ define install-packages
 	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
 	@echo "-- Install ${1}\n--"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/install.sh
+	mount -o bind /proc ${ROOT}/proc
 	chroot ${ROOT} bash -e /install.sh
+	umount ${ROOT}/proc
 	rm -f ${ROOT}/install.sh
 	@echo "-- Done ${1}\n--"
 endef

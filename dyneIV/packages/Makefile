@@ -28,7 +28,7 @@ help:
 
 include ${SRC}/config.mk
 
-all: need-suid cli-utils desktop-kde creative-multimedia fun-games dyne-software
+all: need-suid apt-get-update cli-utils desktop-kde creative-multimedia fun-games dyne-software
 
 cli-utils: ##
 	$(call install-packages,cli-utils.txt)
