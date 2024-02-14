@@ -25,6 +25,7 @@ include ${SRC}/config.mk
 
 squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -f ${SRC}/${STAGE3}
 	$(info Squashing dynebolic read-only filesystem)
 	$(info Please wait while compressing the filesystem...)

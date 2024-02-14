@@ -178,10 +178,14 @@ reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
 
 restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
 	$(info Restore ROOT from ${STAGE2})
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -rf ${ROOT}
-	@mkdir -p ${ROOT} && cd ${ROOT} && tar xf ${SRC}/${STAGE2}
+	@mkdir -p ${ROOT} && cd ${ROOT} && \
+		tar -xf ${SRC}/${STAGE2} && \
+		tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives
 
 clean: need-suid ## 🧹  Delete ROOT
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -rf ${ROOT}
 
 ######
