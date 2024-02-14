@@ -35,11 +35,12 @@ squash: need-suid static-overlay prepare-excludes
 	tar -c -C ${ROOT} ${DEV_PATHS} \
 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
+iso: ISO ?= dynebolic.iso
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
 iso: need-suid
 	$(info Check grub configuration syntax)
 	grub-script-check grub.cfg
-	$(info Toast the ISO file to dynebolic.iso)
+	$(info Toast the ISO file to ${ISO})
 	@rm -rf staging
 	@mkdir -p staging/EFI/BOOT
 	@mkdir -p staging/boot/grub/x86_64-efi
@@ -48,6 +49,8 @@ iso: need-suid
 	@rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
+	$(info Please wait while computing SHA512 integrity hash sums)
+	@cd staging/live && sha512sum * >sha512sums.txt
 	@cp -f isolinux.cfg staging/isolinux/
 	@cp -f grub.cfg staging/boot/grub/
 	@cp -f grub.cfg staging/EFI/BOOT
@@ -70,7 +73,7 @@ iso: need-suid
     "EFI/BOOT/BOOTIA32.EFI"					\
     "EFI/BOOT/BOOTx64.EFI"					\
     "boot/grub/grub.cfg" ::/EFI/BOOT/
-	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/dynebolic.iso"			\
+	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/${ISO}"			\
 		-full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable	\
 		-partition_offset 16 -joliet -joliet-long -rational-rock		\
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot	\

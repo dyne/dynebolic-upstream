@@ -30,31 +30,35 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
+sync-iso: ISO ?= dynebolic.iso
 sync-iso: ## 📥 Download latest development ISO
-	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso dynebolic.iso
+	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso ${ISO}
 
+qemu-usb: ISO ?= dynebolic.iso
 qemu-usb: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-usb: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
 qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	$(info Launch QEMU emulator on ISO using UEFI BIOS)
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
-	-cdrom dynebolic.iso ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
+	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
 _: ##
 -----: ## __ More emulator functions:
 
+qemu-dvd: ISO ?= dynebolic.iso
 qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-dvd: ## 📀 Emulate DVD boot using qemu
 	$(info Launch QEMU emulator on ISO)
-	qemu-system-x86_64 -enable-kvm -cdrom dynebolic.iso ${persist}	\
+	qemu-system-x86_64 -enable-kvm -cdrom ${ISO} ${persist}	\
 	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
 
+qemu-spice: ISO ?= dynebolic.iso
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
 	$(info Launch SPICE server on LAN port 5900)
 	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
-	/usr/share/ovmf/OVMF.fd -cdrom dynebolic.iso ${persist} --boot	\
+	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot	\
 	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl	\
 	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device	\
 	virtio-serial-pci -device virtio-serial -chardev				\
@@ -152,12 +156,13 @@ squash: ## 🗜️ Compress the filesystem with squashfs
 iso: ## 🏁 Toast the final ISO image for release
 	make -C iso iso
 
+burn: ISO ?= dynebolic.iso
 burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
-	$(if $(wildcard dynebolic.iso),,$(error dynebolic.iso not found.))
+	$(if $(wildcard ${ISO}),,$(error ${ISO} not found.))
 	$(if $(wildcard ${USB}),,$(error USB device not found: ${USB}))
 	$(info This will delete all contents of device: ${USB})
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-	dd if=dynebolic.iso of=${USB} bs=1M oflag=direct status=progress
+	dd if=${ISO} of=${USB} bs=1M oflag=direct status=progress
 
 _: ##
 -----: ## __ Undo and restart from scratch
@@ -182,10 +187,17 @@ clean: need-suid ## 🧹  Delete ROOT
 ######
 ## Publishing operations (ssh key restricted)
 
+publish: ISO ?= dynebolic.iso
+publish: rcd := /srv/ftp/dynebolic/development
 publish: date := $(shell date +%Y%m%d)
 publish:
-	rsync -P dynebolic.iso dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}.iso
-	ssh dyne.files 'cd /srv/ftp/dynebolic/development && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
+	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest.iso dyneIV-${date}.iso'
+	rsync -P ${ISO} dyne.files:${rcd}/dyneIV-${date}.iso
+	ssh dyne.files 'cd ${rcd} && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
+
+# 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest-dev.tar.xz dyneIV-${date}-dev.tar.xz'
+# 	rsync -P dyneIV-system-${ARCH}-dev.tar.xz dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}-dev.tar.xz
+#  && ln -sf dyneIV-${date}-dev.tar.xz dyneIV-latest-dev.tar.xz
 
 rsync-server: tmp := $(shell mktemp)
 rsync-server: here := $(shell pwd)
