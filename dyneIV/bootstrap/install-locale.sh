@@ -1,11 +1,5 @@
 #!/bin/sh
-#DEBIAN_FRONTEND=noninteractive apt-get -q -y install locales-all util-linux-locales
-# echo \
-# 	 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\nLC_ALL="en_US.UTF-8"\n' \
-# 	 > /etc/default/locale
-# echo "locales locales/default_environment_locale select en_US.UTF-8" | debconf-set-selections
-# echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8" | debconf-set-selections
-#rm -f "/etc/locale.gen"
+
 echo \
 	 'LANG="C"\nLANGUAGE="en_US"\nLC_ALL="C"\n' \
 	 > /etc/default/locale

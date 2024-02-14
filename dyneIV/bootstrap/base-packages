@@ -1,5 +1,6 @@
-linux-libre
-linux-libre-headers
+# kernel installed by script
+# linux-libre-6.1
+# linux-libre-headers
 locales-all
 util-linux-locales
 sudo
