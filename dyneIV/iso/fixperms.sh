@@ -10,7 +10,7 @@ chmod 700 /root
 chown -R dyne:dyne /home/dyne
 chmod 700 /home/dyne
 # chown clears suid & guid permission bits occasionally set under /bin & /usr/bin
-find /etc /home /lib /lib64 /media /mnt /opt /sbin /srv /usr /var \
+find /etc /home /lib /lib64 /media /mnt /opt /sbin /srv /usr /var /bin \
 	 -not -path /usr/share -not -path /var/cache/apt \
 	 \! -user root -o \! -group root -exec \
 	 chown root:root '{}' \;
