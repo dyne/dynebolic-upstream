@@ -26,12 +26,12 @@ include ${SRC}/config.mk
 squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	@rm -f ${SRC}/${STAGE3}
+	$(call chroot-script,fixperms.sh)
 	$(info Squashing dynebolic read-only filesystem)
 	$(info Please wait while compressing the filesystem...)
 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-		| tar2sqfs -r ${ROOT} -x -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
 	$(info Saving development package for reset...)
 	tar -c -C ${ROOT} ${DEV_PATHS} \
 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}

@@ -34,15 +34,15 @@ endef
 prepare-excludes:
 	@rm -f /tmp/dyneIV-excludes
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
-		${SRC}/exclude-from-iso.txt | tee /tmp/dyneIV-excludes
-	@bash -c "printf '${ROOT}/%s\n' ${DEV_PATHS}" | tee /tmp/dyneIV-excludes
+		${SRC}/exclude-from-iso.txt > /tmp/dyneIV-excludes
+	@bash -c "printf '${ROOT}/%s\n' ${DEV_PATHS}" >> /tmp/dyneIV-excludes
 
 static-overlay: usrsrc := ${SRC}/static/usr/src
 static-overlay: repo := $(shell dirname ${SRC})
 static-overlay:
-	@mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf dyneIV-SDK && git clone --depth 1 file://${repo} dyneIV-SDK
+	@mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf * && \
+		git clone --depth 1 file://${repo} dyneIV-SDK
 	@rsync -raX ${SRC}/static/* ${ROOT}/
-	@$(call chroot-script,fixperms.sh)
 
 apt-get-update: need-suid
 	@echo "--\n-- Apt Get Update"
@@ -53,6 +53,14 @@ apt-get-update: need-suid
 	umount ${ROOT}/proc
 	@rm -f ${ROOT}/update.sh
 	@echo "-- Done Apt Get Update\n--"
+
+fix-root-permissions: need-suid
+	@echo "--\n-- Fixing file permissions in ROOT"
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@cp    ${SRC}/iso/fixperms.sh ${ROOT}/fixperms.sh
+	@chroot ${ROOT} bash -e /fixperms.sh
+	@rm -f ${ROOT}/fixperms.sh
+	@echo "-- Done ${1}\n--"
 
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
