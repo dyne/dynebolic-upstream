@@ -86,3 +86,4 @@ gwenview # fast, well featured image viewer that integrates well in KDE
 bluetooth
 bluez
 bluedevil # bluetooth utilities, unable to test in qemu so far
+kactivitymanagerd # enable the Activites entry in system setting, to create environements for the different workflows
