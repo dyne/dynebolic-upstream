@@ -16,11 +16,11 @@ RELEASE=guix-binary-${VERSION}.${ARCH}-linux.tar.xz
 
 pushd /tmp
 
->& echo "GNU Guix setup version ${VERSION} on ${ARCH}"
+>&2 echo "GNU Guix setup version ${VERSION} on ${ARCH}"
 
 [ -r ${RELEASE} ] || wget https://ftp.gnu.org/gnu/guix/${RELEASE}
 
-wget 'https://sv.gnu.org/people/viewgpg.php?user_id=15145' -q - | gpg --import -
+wget 'https://sv.gnu.org/people/viewgpg.php?user_id=15145' -q -O - | gpg --import -
 
 wget https://ftp.gnu.org/gnu/guix/${RELEASE}.sig
 gpg --verify ${RELEASE}.sig
