@@ -1,0 +1,25 @@
+# see https://dev1galaxy.org/viewtopic.php?pid=46270#p46270
+#
+# kill any existing pipewire instance to restore sound
+pkill -u "$USER" -fx /usr/bin/pipewire-pulse 1>/dev/null 2>&1
+pkill -u "$USER" -fx /usr/bin/wireplumber 1>/dev/null 2>&1
+pkill -u "$USER" -fx /usr/bin/pipewire 1>/dev/null 2>&1
+
+exec /usr/bin/pipewire &
+
+# wait for pipewire to start before attempting to start related daemons
+while [ "$(pgrep -f /usr/bin/pipewire)" = "" ] ; do
+   sleep 1
+done
+
+exec /usr/bin/wireplumber &
+
+exec /usr/bin/pipewire-pulse &
+
+# TODO
+# or see https://dev1galaxy.org/viewtopic.php?pid=47569#p47569 
+# and    https://dev1galaxy.org/viewtopic.php?pid=47006#p47006
+# - requires backport from ceres of daemon & [e]logind
+# /usr/bin/daemon --bind --respawn --pidfiles=$XDG_RUNTIME_DIR --name=pipewire-wireplumber /usr/bin/wireplumber
+# /usr/bin/daemon --bind --respawn --pidfiles=$XDG_RUNTIME_DIR --name=pipewire /usr/bin/pipewire
+# /usr/bin/daemon --bind --respawn --pidfiles=$XDG_RUNTIME_DIR --name=pipewire-pulse /usr/bin/pipewire-pulse
