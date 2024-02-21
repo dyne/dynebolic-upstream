@@ -4,6 +4,8 @@ ROOT
 *.tar.xz
 *.iso
 *.squash
+*.qcow2
 staging
 dyneIV-SDK
 iso/boot
+mnt
