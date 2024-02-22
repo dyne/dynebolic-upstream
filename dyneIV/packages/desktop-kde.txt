@@ -88,3 +88,4 @@ bluez
 bluedevil # bluetooth utilities, unable to test in qemu so far
 kactivitymanagerd # enable the Activites entry in system setting, to create environements for the different workflows
 kactivities-bin # Command Line Tool for KActivities
+qml-module-kde-activities # necessary for Activities to show in system settings
