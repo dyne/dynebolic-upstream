@@ -4,11 +4,11 @@ function err() {
 	>&2 echo "$0: $*"
 }
 
-cmd="$1"
-dev="$2"
+dev="$1"
+cmd="${2:-persist}"
 
 [ "$cmd" = "" ] && {
-	>&2 echo "Usage: $0 [ iso | persist ] /output/destination"
+	>&2 echo "Usage: $0 /output/destination [ iso ] "
 	>&2 echo "  it will create a 'dyne' folder inside destination"
 	exit 1
 }
@@ -33,19 +33,20 @@ function mkiso() {
 }
 
 function mkpersist() {
-	# TEMP
-	size=${size:-1000}
+	# default 3GiB
+	default=$(( 1048576 * 3 ))
+	size=${size:-$default}
 	[[ -n "$size"	]] || err "size argument missing, use -s"
 	[[ $size == <-> ]] || err "size must be an integer (MB)"
 	[[ $size -ge 512 ]] || err "size can't be smaller than 512 MB"
-	persist="$dev/dyne/persistence.ext2"
+	persist="$dev/dyne/dyne.nst"
 	mkdir -p "$dev/dyne"
 	dd if=/dev/zero of="$persist" \
 	    bs=1048576 count="$size" oflag=direct status=progress
 	loop=`losetup -f`
 	losetup -f "$persist"
 	mkfs.ext4 -L persistence "$loop"
-	mkdir /mnt/dynebolic-persistence-temp
+	mkdir -p /mnt/dynebolic-persistence-temp
 	mount "$loop" /mnt/dynebolic-persistence-temp
 	echo "/ union" > "/mnt/dynebolic-persistence-temp/persistence.conf"
 	umount /mnt/dynebolic-persistence-temp
