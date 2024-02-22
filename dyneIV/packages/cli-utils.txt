@@ -38,6 +38,7 @@ schroot
 uidmap
 qemu-utils
 qemu-system-x86
+qemu-system-gui
 ovmf
 dpkg-dev
 
@@ -94,6 +95,9 @@ syslinux
 grub2
 grml-rescueboot
 clonezilla
+cryptsetup
+cryptsetup-initramfs
+keyutils
 
 # ============================================================================
 # Network
