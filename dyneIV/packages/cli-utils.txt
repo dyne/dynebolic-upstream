@@ -15,6 +15,7 @@ libmtp-runtime
 daemonize
 xz-utils
 gpg-agent # required for gpg use in guix-setup
+
 # ===========================================================================
 # Self-devel
 # ===========================================================================
@@ -49,6 +50,7 @@ tmux
 screen
 htop
 iotop
+iftop
 suckless-tools
 software-properties-common
 jq
@@ -63,6 +65,8 @@ file
 rsync
 # pandoc # too big
 gettext
+powertop
+btop
 
 # ============================================================================
 # Filesystem
