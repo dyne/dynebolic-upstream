@@ -46,6 +46,14 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 _: ##
 -----: ## __ More emulator functions:
 
+qemu-nonest: ISO ?= dynebolic.iso
+qemu-nonest: ## 🖥️ Emulate USB boot using qemu, no nesting
+	$(info Launch QEMU emulator on ISO using UEFI BIOS)
+	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
+	-cdrom ${ISO} --boot once=d -m 1024 -smp 2	\
+	${QEMU_CONF}
+
+
 qemu-dvd: ISO ?= dynebolic.iso
 qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-dvd: ## 📀 Emulate DVD boot using qemu
