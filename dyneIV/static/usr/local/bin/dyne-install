@@ -1,0 +1,63 @@
+#!/bin/zsh
+
+function err() {
+	>&2 echo "$0: $*"
+}
+
+cmd="$1"
+dev="$2"
+
+[ "$cmd" = "" ] && {
+	>&2 echo "Usage: $0 [ iso | persist ] /output/destination"
+	>&2 echo "  it will create a 'dyne' folder inside destination"
+	exit 1
+}
+
+[ -r "$dev" ] || {
+	err "device not found: $dev"
+	exit 1
+}
+
+function mkiso() {
+	mkdir -p "$dev/dyne"
+	xorriso -as mkisofs -iso-level 3 -o "$dev"/dyne/dynebolic.iso \
+        -full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable    \
+        -partition_offset 16 -joliet -joliet-long -rational-rock        \
+        -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot    \
+        isolinux/isolinux.bin -no-emul-boot -boot-load-size 4           \
+        -boot-info-table --eltorito-catalog isolinux/isolinux.cat       \
+        -eltorito-alt-boot -e --interval:appended_partition_2:all::     \
+        -no-emul-boot -isohybrid-gpt-basdat -append_partition 2         \
+        `uuidgen` \
+        /var/run/live/medium/efiboot.img /var/run/live/medium         
+}
+
+function mkpersist() {
+	# TEMP
+	size=${size:-1000}
+	[[ -n "$size"	]] || err "size argument missing, use -s"
+	[[ $size == <-> ]] || err "size must be an integer (MB)"
+	[[ $size -ge 512 ]] || err "size can't be smaller than 512 MB"
+	persist="$dev/dyne/persistence.ext2"
+	mkdir -p "$dev/dyne"
+	dd if=/dev/zero of="$persist" \
+	    bs=1048576 count="$size" oflag=direct status=progress
+	loop=`losetup -f`
+	losetup -f "$persist"
+	mkfs.ext4 -L persistence "$loop"
+	losetup -d "$loop"
+	echo "/ union" > "$dev/dyne/persistence.conf"
+}
+
+case "$cmd" in
+	status) ;;
+	init) ;;
+	scan) ;;
+	iso) mkiso ;;
+	persist) mkpersist ;;
+	*)
+		err "command not found: $cmd"
+		exit 1 ;;
+esac
+
+
