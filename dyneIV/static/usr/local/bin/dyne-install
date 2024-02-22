@@ -33,9 +33,8 @@ function mkiso() {
 }
 
 function mkpersist() {
-	# default 3GiB
-	default=$(( 1048576 * 3 ))
-	size=${size:-$default}
+	# default 3.9GiB
+	size=${size:-3900}
 	[[ -n "$size"	]] || err "size argument missing, use -s"
 	[[ $size == <-> ]] || err "size must be an integer (MB)"
 	[[ $size -ge 512 ]] || err "size can't be smaller than 512 MB"
