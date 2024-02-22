@@ -28,7 +28,7 @@
 *__pycache__
 *.log
 
-/usr/bin/apt
-/usr/bin/dpkg
-*apt-*
-*dpkg-*
+# /usr/bin/apt
+# /usr/bin/dpkg
+# *apt-*
+# *dpkg-*
