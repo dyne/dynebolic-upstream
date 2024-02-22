@@ -37,7 +37,9 @@ pv
 schroot
 uidmap
 qemu-utils
+qemu-system-x86
 ovmf
+dpkg-dev
 
 # ============================================================================
 # Shell
@@ -67,6 +69,7 @@ rsync
 gettext
 powertop
 btop
+inxi
 
 # ============================================================================
 # Filesystem
@@ -109,6 +112,7 @@ smbclient
 wireless-tools
 opensnitch
 python3-opensnitch-ui
+openssh-server
 
 # ============================================================================
 # Development
