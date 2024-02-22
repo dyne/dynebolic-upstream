@@ -45,8 +45,12 @@ function mkpersist() {
 	loop=`losetup -f`
 	losetup -f "$persist"
 	mkfs.ext4 -L persistence "$loop"
+	mkdir /mnt/dynebolic-persistence-temp
+	mount "$loop" /mnt/dynebolic-persistence-temp
+	echo "/ union" > "/mnt/dynebolic-persistence-temp/persistence.conf"
+	umount /mnt/dynebolic-persistence-temp
+	rmdir /mnt/dynebolic-persistence-temp
 	losetup -d "$loop"
-	echo "/ union" > "$dev/dyne/persistence.conf"
 }
 
 case "$cmd" in
