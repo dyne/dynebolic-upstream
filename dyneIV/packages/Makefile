@@ -45,3 +45,5 @@ fun-games: ##
 dyne-software: ##
 	$(call chroot-script,dyne-software.sh)
 
+cli-emacs: ##
+	$(call install-packages,cli-emacs.txt)
