@@ -12,7 +12,9 @@ STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
 STAGE3DEV := ${FILEPFX}-system-${ARCH}-dev.tar.xz
-DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf
+
+# check also exclude-from-iso.txt to avoid excludes
+# DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 

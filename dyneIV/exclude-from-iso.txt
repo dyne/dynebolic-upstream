@@ -28,6 +28,7 @@
 *__pycache__
 *.log
 
+# check also DEV_PATHS in config.mk to avoid deleting apt
 # /usr/bin/apt
 # /usr/bin/dpkg
 # *apt-*
