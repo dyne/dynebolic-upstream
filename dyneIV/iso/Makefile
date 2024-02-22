@@ -36,28 +36,35 @@ squash: need-suid static-overlay prepare-excludes
 	tar -c -C ${ROOT} ${DEV_PATHS} \
 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
-iso: ISO ?= dynebolic.iso
-iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
-iso: need-suid
-	$(info Check grub configuration syntax)
-	grub-script-check grub.cfg
-	$(info Toast the ISO file to ${ISO})
+#	@rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
+
+iso-staging:
+	$(info Initializing ISO staging environment)
 	@rm -rf staging
 	@mkdir -p staging/EFI/BOOT
 	@mkdir -p staging/boot/grub/x86_64-efi
 	@mkdir -p staging/isolinux
 	@mkdir -p staging/live
-	@rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
+	@ln -f ${SRC}/${STAGE3} staging/live/filesystem.squashfs
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
-	$(info Please wait while computing SHA512 integrity hash sums)
-	@cd staging/live && sha512sum * >sha512sums.txt
 	@cp -f isolinux.cfg staging/isolinux/
 	@cp -f grub.cfg staging/boot/grub/
 	@cp -f grub.cfg staging/EFI/BOOT
 	@cp -f /usr/lib/ISOLINUX/isolinux.bin staging/isolinux/
 	@cp -f /usr/lib/syslinux/modules/bios/* staging/isolinux/
 	@cp -rf /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
+
+iso-checksum:
+	$(info Please wait while computing SHA512 integrity hash sums)
+	@cd staging/live && sha512sum * >sha512sums.txt
+
+grub-check:
+	$(info Check grub configuration syntax)
+	@grub-script-check grub.cfg
+
+grub-make:
+	$(info Build the Grub configuration to boot)
 	@grub-mkstandalone -O i386-efi \
 		--modules="${grub-mods}" \
 		--locales="" --themes="" --fonts=""	\
@@ -68,6 +75,33 @@ iso: need-suid
 		--locales="" themes="" fonts="" \
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
 	    "boot/grub/grub.cfg=grub-embed.cfg"
+
+
+iso-release: ISO ?= dynebolic.iso
+iso-release: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
+iso-release: need-suid grub-check iso-staging grub-make iso-checksum
+	$(info Toast the ISO file to ${ISO})
+	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
+		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
+		mcopy -vi efiboot.img												\
+    "EFI/BOOT/BOOTIA32.EFI"					\
+    "EFI/BOOT/BOOTx64.EFI"					\
+    "boot/grub/grub.cfg" ::/EFI/BOOT/
+	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/${ISO}"			\
+		-full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable	\
+		-partition_offset 16 -joliet -joliet-long -rational-rock		\
+		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot	\
+		isolinux/isolinux.bin -no-emul-boot -boot-load-size 4			\
+		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
+		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
+		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
+		`cat /proc/sys/kernel/random/uuid` \
+		staging/efiboot.img staging
+
+iso: ISO ?= dynebolic.iso
+iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
+iso: need-suid iso-staging grub-check grub-make
+	$(info Toast the ISO file to ${ISO})
 	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
 		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
 		mcopy -vi efiboot.img												\
