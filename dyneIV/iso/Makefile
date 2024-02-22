@@ -82,7 +82,7 @@ iso: need-suid
 		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
 		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
 		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
-		`uuidgen` \
+		`cat /proc/sys/kernel/random/uuid` \
 		staging/efiboot.img staging
 
 
