@@ -23,6 +23,7 @@ all: squash iso
 
 include ${SRC}/config.mk
 
+squash: EXCLUDE_FOR := release
 squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
@@ -31,6 +32,15 @@ squash: need-suid static-overlay prepare-excludes
 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+
+squash-devel: EXCLUDE_FOR := devel
+squash-devel: need-suid static-overlay prepare-excludes
+	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	$(info Squashing dynebolic read-only filesystem)
+	$(info Please wait while compressing the filesystem...)
+	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 #	$(info Saving development package for reset...)
 #	tar -c -C ${ROOT} ${DEV_PATHS} \
@@ -105,6 +115,31 @@ iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso966
 iso: need-suid iso-staging grub-check grub-make
 	$(info Toast the ISO file to ${ISO})
 	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
+		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
+		mcopy -vi efiboot.img												\
+    "EFI/BOOT/BOOTIA32.EFI"					\
+    "EFI/BOOT/BOOTx64.EFI"					\
+    "boot/grub/grub.cfg" ::/EFI/BOOT/
+	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/${ISO}"			\
+		-full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable	\
+		-partition_offset 16 -joliet -joliet-long -rational-rock		\
+		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot	\
+		isolinux/isolinux.bin -no-emul-boot -boot-load-size 4			\
+		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
+		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
+		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
+		`cat /proc/sys/kernel/random/uuid` \
+		staging/efiboot.img staging
+
+iso-snapshot: ISO ?= dynebolic.iso
+iso-snapshot: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
+iso-snapshot: need-suid iso-staging grub-check grub-make
+	$(if $(wildcard ${SRC}/${FILE}),,$(error Snapshot not found: ${SRC}/${FILE}))
+	$(info Toast the temporary snapshot test ISO file to ${ISO})
+	@ln -f ${SRC}/${FILE} staging/live/ && echo "${FILE}" \
+		| tee -a staging/live/filesystem.module
+	@cd staging && ls -lh live && \
+		dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
 		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
 		mcopy -vi efiboot.img												\
     "EFI/BOOT/BOOTIA32.EFI"					\
