@@ -1,6 +1,6 @@
 [KFileDialog Settings]
 Recent Files[$e]=icon.svg,file:///usr/share/icons/dynebolic/icon.svg
-Recent URLs[$e]=file:///usr/share/icons/dynebolic/
+Recent URLs[$e]=file:///usr/share/icons/dynebolic/icon.svg/
 detailViewIconSize=16
 
 [PlasmaViews][Panel 2][Defaults]
