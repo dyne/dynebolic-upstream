@@ -21,6 +21,7 @@ gpg-agent # required for gpg use in guix-setup
 # ===========================================================================
 mmdebstrap
 squashfs-tools
+squash-fuse
 xorriso
 isolinux
 syslinux
