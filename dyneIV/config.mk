@@ -5,7 +5,7 @@ ARCH ?= amd64
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 # Configure custom proxy apt cache
-APT_PROXY_OVERRIDE := ""
+APT_PROXY_OVERRIDE := "192.168.89.64:3142"
 #APT_PROXY_OVERRIDE := "127.0.0.2:3142"
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
@@ -14,7 +14,7 @@ STAGE3    := ${FILEPFX}-system-${ARCH}.squash
 STAGE3DEV := ${FILEPFX}-system-${ARCH}-dev.tar.xz
 
 # check also exclude-from-iso.txt to avoid excludes
-# DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf
+# DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf /usr/src
 
 .PHONY: check-root chroot-script need-suid static-overlay chroot desktop bwrap prepare-excludes
 
@@ -45,6 +45,8 @@ static-overlay:
 	@mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf * && \
 		git clone --depth 1 file://${repo} dyneIV-SDK
 	@rsync -raX ${SRC}/static/* ${ROOT}/
+	$(call chroot-script,${SRC}/fixperms.sh)
+
 
 apt-get-update: need-suid
 	@echo "--\n-- Apt Get Update"

@@ -26,15 +26,15 @@ include ${SRC}/config.mk
 squash: need-suid static-overlay prepare-excludes
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	$(call chroot-script,fixperms.sh)
 	$(info Squashing dynebolic read-only filesystem)
 	$(info Please wait while compressing the filesystem...)
 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
-	$(info Saving development package for reset...)
-	tar -c -C ${ROOT} ${DEV_PATHS} \
-		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
+
+#	$(info Saving development package for reset...)
+#	tar -c -C ${ROOT} ${DEV_PATHS} \
+#		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 #	@rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
 
@@ -45,7 +45,9 @@ iso-staging:
 	@mkdir -p staging/boot/grub/x86_64-efi
 	@mkdir -p staging/isolinux
 	@mkdir -p staging/live
+	@echo "filesystem.squashfs" > staging/live/filesystem.module
 	@ln -f ${SRC}/${STAGE3} staging/live/filesystem.squashfs
+	@for i in ${SRC}/filesystem.*.squashfs; do fn=`basename $$i`; echo "$$fn" | tee -a staging/live/filesystem.module; ln -f $$i staging/live/ ; done
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	@cp -f isolinux.cfg staging/isolinux/
