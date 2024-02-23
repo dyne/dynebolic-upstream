@@ -30,9 +30,14 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-sync-iso: ISO ?= dynebolic.iso
-sync-iso: ## 📥 Download latest development ISO
-	rsync -PL files.dyne.org::dynebolic/dyneIV-latest.iso ${ISO}
+sync-sdk: SDK := dyneIV-sdk-${ARCH}.squashfs
+sync-sdk: ISO ?= dynebolic.iso
+sync-sdk: ## 📥 Download latest Simple Development Kit
+	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
+	$(info Downloading and restoring the latest SDK environment)
+	rsync -PL files.dyne.org::dynebolic/sdk/${SDK} ${SDK}
+	mkdir -p ${ROOT}
+	tar -C ${ROOT} -xf ${SDK}
 
 qemu-usb: ISO ?= dynebolic.iso
 qemu-usb: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
@@ -42,6 +47,10 @@ qemu-usb: ## 🖥️ Emulate USB boot using qemu
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
 	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
+
+test-snap: need-suid ## 🧨 Test a squashed snapshot FILE=path
+	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
+	make -C iso iso-snapshot FILE=${FILE}
 
 _: ##
 -----: ## __ More emulator functions:
@@ -160,6 +169,10 @@ _: ##
 
 squash: ## 🗜️ Compress the filesystem with squashfs
 	make -C iso squash
+	make -C modules modsquash
+
+sdk: ## 🦺 Pack the SDK for developers
+	make -C iso squash-devel
 	make -C modules modsquash
 
 iso: ## 🏁 Toast the final ISO image for release

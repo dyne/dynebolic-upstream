@@ -11,7 +11,7 @@ APT_PROXY_OVERRIDE := "192.168.89.64:3142"
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
-STAGE3DEV := ${FILEPFX}-system-${ARCH}-dev.tar.xz
+STAGE3DEV := ${FILEPFX}-sdk-${ARCH}.tar.xz
 
 # check also exclude-from-iso.txt to avoid excludes
 # DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf /usr/src
@@ -34,9 +34,11 @@ endef
 
 # use adding to tar  --exclude-from=/tmp/dyneIV-excludes
 prepare-excludes:
+	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
+	$(info Preparing root tree filters for: ${EXCLUDE_FOR})
 	@rm -f /tmp/dyneIV-excludes
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
-		${SRC}/exclude-from-iso.txt > /tmp/dyneIV-excludes
+		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
 	@bash -c "printf '${ROOT}/%s\n' ${DEV_PATHS}" >> /tmp/dyneIV-excludes
 
 static-overlay: usrsrc := ${SRC}/static/usr/src
