@@ -1,0 +1,79 @@
+#!/bin/zsh
+
+function mm() {
+	>&2 echo "--"
+	>&2 echo "$*"
+}
+HOSTNAME="https://zorro.zenr.io"
+SSH="sftp_download@zorro.zenr.io"
+
+[[ -r /run/live/persistence ]] || {
+	mm "not running on a dynebolic system"
+	exit 1
+}
+
+ls /run/live/persistence | grep loop && {
+   mm "a nest is in use, aborting operation"
+   exit 1
+}
+
+[[ $UID = 0 ]] || {
+	mm "need root to make a snapshot: su dyne"
+	exit 1
+}
+
+mm "Snapshot current changes on dyne:bolic"
+
+let MINIMUM_LEN=8
+let MAXIMUM_LEN=16
+set -A CHARS a b c d e f g h i j k l m n o p q r s t u v w x y z \
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
+0 1 2 3 4 5 6 7 8 9
+CNUM="${#CHARS[@]}"
+MAXLEN=$(( $MINIMUM_LEN + ( $RANDOM % ( $MAXIMUM_LEN - $MINIMUM_LEN ) ) ))
+RANDSTR=""
+let POSCNT=0;
+while [ 1 -eq 1 ]
+    do
+    if [ $POSCNT -ge $MAXLEN ]
+        then
+            break;
+    fi
+    let POSCNT=$POSCNT+1
+    RANDSTR="${RANDSTR}${CHARS[${RANDOM}%${CNUM}]}"
+done
+RANDSTR="${RANDSTR}${CHARS[${RANDOM}%${CNUM}]}"
+
+outfile="dyneIV-snapshot-`date +'%d%m%y'`-${RANDSTR}.squashfs"
+mm "New: $outfile"
+
+mm "Compressing snapshot..."
+outmp=`mktemp`
+tar -c /run/live/overlay/rw | tar2sqfs -r /run/live/overlay/rw -f -q -c xz ${outmp}
+
+mm "Uploading..."
+tmpkey=`mktemp`
+cat <<EOF > "$tmpkey"
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACAVw1tcoHB++zHVtOi/vvqWXROq2WdBTqc7LXVU6O3zqQAAAJBF6JivReiY
+rwAAAAtzc2gtZWQyNTUxOQAAACAVw1tcoHB++zHVtOi/vvqWXROq2WdBTqc7LXVU6O3zqQ
+AAAEAHddkkEUn7kF9K5a78A4R9mIGL/NdTFK3g+r1PaUAcgxXDW1ygcH77MdW06L+++pZd
+E6rZZ0FOpzstdVTo7fOpAAAADW1hZGUgZm9yIGR5bmU=
+-----END OPENSSH PRIVATE KEY-----
+EOF
+# ssh pubkey
+# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXDW1ygcH77MdW06L+++pZdE6rZZ0FOpzstdVTo7fOp made for dyne
+scp -i "${tmpkey}" "${outmp}" "${SSH}:snapshots/${outfile}"
+[[ $? = 0 ]] || {
+	mm "SSH transfer error."
+	exit 1
+}
+
+URL="${HOSTNAME}/snapshots/$outfile"
+mm "$URL"
+echo "$URL" | qrencode -t ansi
+mm "$URL"
+
+rm -f "${tmpkey}" "${outmp}"
+mm "Success!"
