@@ -82,9 +82,13 @@ persist-create: need-suid ## 💾 Create persistance storage for qemu
 	qemu-img create -f qcow2 persistence.qcow2 10G
 	qemu-nbd -c /dev/nbd${NBD} persistence.qcow2
 	parted -s /dev/nbd${NBD} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
-	mkfs.ext4 -L persistence /dev/nbd${NBD}p1
+	mkfs.ext4 -L dyne.nst /dev/nbd${NBD}p1
 	mkdir -p mnt && mount /dev/nbd${NBD}p1 mnt \
-	  && echo "/ union" > mnt/persistence.conf \
+	&& echo "/home union"  > mnt/persistence.conf \
+	&& echo "/root union" >> mnt/persistence.conf \
+	&& echo "/etc union" >> mnt/persistence.conf \
+	&& echo "/var union" >> mnt/persistence.conf \
+	&& echo "/usr union" >> mnt/persistence.conf \
 	  && umount mnt
 	qemu-nbd -d /dev/nbd${NBD}
 	chmod a+rw persistence.qcow2
@@ -159,7 +163,7 @@ _: ##
 -----: ## __ Release the live bootable system
 
 
-squash: ## 🗜️ Compress the filesystem with squashfs
+squash: ## 🗜️ Compress the filesystem for release
 	make -C iso squash
 	make -C modules modsquash
 
@@ -167,7 +171,7 @@ squash-dev: ## 🦺 Compress the filesystem for developers
 	make -C iso squash-devel
 	make -C modules modsquash
 
-buildroot: ## 🏗️ Package the build ROOT for developers
+buildroot: ## 🏗️ Package the build ROOT  for developers
 	make -C iso buildroot
 
 iso: ## 🏁 Toast the current ISO image
@@ -184,7 +188,7 @@ burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
 _: ##
 -----: ## __ Undo and restart from scratch
 
-reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
+reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
 	$(if $(wildcard ${STAGE3}),,$(error System squash not found: ${STAGE3}))
 	$(if $(wildcard ${STAGE3DEV}),,$(error Development archive not found: ${STAGE3DEV}))
 	$(info Restore ROOT from ${STAGE3} and ${STAGE3DEV})
@@ -193,7 +197,7 @@ reset: need-suid ## ♻️  Reset current ROOT to dyneIV-system
 		unsquashfs -d . ${SRC}/${STAGE3} && \
 		tar xf ${SRC}/${STAGE3DEV}
 
-restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
+restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 	$(info Restore ROOT from ${STAGE2})
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -rf ${ROOT}
