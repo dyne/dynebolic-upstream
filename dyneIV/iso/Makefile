@@ -40,6 +40,17 @@ squash-devel: need-suid static-overlay prepare-excludes
 	$(info Squashing dynebolic read-only filesystem)
 	$(info Please wait while compressing the filesystem...)
 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+
+
+buildroot: EXCLUDE_FOR := devel
+buildroot: need-suid static-overlay prepare-excludes
+	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	$(info Squashing dynebolic read-only filesystem)
+	$(info Please wait while compressing the filesystem...)
+	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 #	$(info Saving development package for reset...)

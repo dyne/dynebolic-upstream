@@ -30,42 +30,34 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-sync-sdk: SDK := dyneIV-sdk-${ARCH}.tar.xz
-sync-sdk: ISO ?= dynebolic.iso
-sync-sdk: ## 📥 Download latest Simple Development Kit
+sync-root: SDK := dyneIV-sdk-${ARCH}.tar.xz
+sync-root: ISO ?= dynebolic.iso
+sync-root: ## 📥 Download the latest SDK build ROOT
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
 	rsync -PL files.dyne.org::dynebolic/sdk/${SDK} ${SDK}
 	mkdir -p ${ROOT}
 	tar -C ${ROOT} -xf ${SDK}
 
-qemu-usb: ISO ?= dynebolic.iso
-qemu-usb: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-usb: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
-qemu-usb: ## 🖥️ Emulate USB boot using qemu
+snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
+	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
+	make -C iso iso-snapshot FILE=${FILE}
+
+qemu-grub: ISO ?= dynebolic.iso
+qemu-grub: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-grub: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
+qemu-grub: ## 🖥️ Emulate UEFI USB boot using qemu
 	$(info Launch QEMU emulator on ISO using UEFI BIOS)
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
 	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
 
-test-snap: need-suid ## 🧨 Test a squashed snapshot FILE=path
-	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
-	make -C iso iso-snapshot FILE=${FILE}
-
 _: ##
 -----: ## __ More emulator functions:
 
-qemu-nonest: ISO ?= dynebolic.iso
-qemu-nonest: ## 🖥️ Emulate USB boot using qemu, no nesting
-	$(info Launch QEMU emulator on ISO using UEFI BIOS)
-	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
-	-cdrom ${ISO} --boot once=d -m 1024 -smp 2	\
-	${QEMU_CONF}
-
-
-qemu-dvd: ISO ?= dynebolic.iso
-qemu-dvd: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-dvd: ## 📀 Emulate DVD boot using qemu
+qemu-isolinux: ISO ?= dynebolic.iso
+qemu-isolinux: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu-isolinux: ## 📀 Emulate DVD boot using qemu
 	$(info Launch QEMU emulator on ISO)
 	qemu-system-x86_64 -enable-kvm -cdrom ${ISO} ${persist}	\
 	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
@@ -171,11 +163,14 @@ squash: ## 🗜️ Compress the filesystem with squashfs
 	make -C iso squash
 	make -C modules modsquash
 
-sdk: ## 🦺 Pack the SDK for developers
+squash-dev: ## 🦺 Compress the filesystem for developers
 	make -C iso squash-devel
 	make -C modules modsquash
 
-iso: ## 🏁 Toast the final ISO image for release
+buildroot: ## 🏗️ Package the build ROOT for developers
+	make -C iso buildroot
+
+iso: ## 🏁 Toast the current ISO image
 	make -C iso iso
 
 burn: ISO ?= dynebolic.iso
