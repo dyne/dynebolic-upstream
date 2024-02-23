@@ -30,7 +30,7 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-sync-sdk: SDK := dyneIV-sdk-${ARCH}.squashfs
+sync-sdk: SDK := dyneIV-sdk-${ARCH}.tar.xz
 sync-sdk: ISO ?= dynebolic.iso
 sync-sdk: ## 📥 Download latest Simple Development Kit
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
