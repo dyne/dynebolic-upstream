@@ -28,6 +28,11 @@
 *__pycache__
 *.log
 
+# included in the local filesystem module
+/home
+/root
+/usr/local
+
 # check also DEV_PATHS in config.mk to avoid deleting apt
 # /usr/bin/apt
 # /usr/bin/dpkg

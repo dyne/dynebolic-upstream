@@ -160,6 +160,7 @@ _: ##
 
 squash: ## 🗜️ Compress the filesystem with squashfs
 	make -C iso squash
+	make -C modules modsquash
 
 iso: ## 🏁 Toast the final ISO image for release
 	make -C iso iso
@@ -189,8 +190,9 @@ restrap: need-suid ## ♻️  Reset current ROOT to dyneIV-bootstrap
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && \
-		tar -xf ${SRC}/${STAGE2} && \
-		tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives
+		tar -xf ${SRC}/${STAGE2}
+	@if [ -r ${SRC}/${STAGE3DEV} ]; then \
+		tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
 clean: need-suid ## 🧹  Delete ROOT
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
