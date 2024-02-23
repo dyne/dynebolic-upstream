@@ -94,7 +94,7 @@ chmod 755 /etc/sddm.conf.d \
 	  /etc/sysctl.d \
 	  /etc/sudoers.d \
 	  /etc/pam.d \
-	  /etc/apt /etc/apt/apt.conf.d /etc/apt/sources.list.d \
+	  /etc/apt /etc/apt/apt.conf.d \
 	  /etc/apt/keyrings /etc/apt/trusted.gpg.d /etc/apt/auth.conf.d \
 	  /etc/apt/preferences.d
 chmod 700 \
@@ -103,7 +103,6 @@ chmod 700 \
 chmod 644 \
 	  /etc/pam.d/* \
 	  /etc/sysctl.d/* \
-	  /etc/apt/sources.list.d/* \
 	  /etc/apt/preferences.d/*
 chmod 640 \
 	  /etc/gshadow* \
