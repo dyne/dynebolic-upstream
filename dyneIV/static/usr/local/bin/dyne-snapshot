@@ -64,16 +64,19 @@ E6rZZ0FOpzstdVTo7fOpAAAADW1hZGUgZm9yIGR5bmU=
 EOF
 # ssh pubkey
 # ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXDW1ygcH77MdW06L+++pZdE6rZZ0FOpzstdVTo7fOp made for dyne
+chown g+r "${outmp}"
 scp -i "${tmpkey}" "${outmp}" "${SSH}:snapshots/${outfile}"
 [[ $? = 0 ]] || {
 	mm "SSH transfer error."
+	rm -f "${tmpkey}"
 	exit 1
 }
+rm -f "${tmpkey}"
 
 URL="${HOSTNAME}/snapshots/$outfile"
 mm "$URL"
 echo "$URL" | qrencode -t ansi
 mm "$URL"
 
-rm -f "${tmpkey}" "${outmp}"
+mv "${outmp}" "${outfile}"
 mm "Success!"
