@@ -9,3 +9,4 @@ rm -f /usr/src/${FREESH}
 DEBIAN_FRONTEND=noninteractive apt-get update -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
 							   linux-libre linux-libre-headers
+rm -f /etc/apt/sources.list.d/freesh.sources
