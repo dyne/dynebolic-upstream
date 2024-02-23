@@ -7,9 +7,9 @@ function err() {
 dev="$1"
 cmd="${2:-persist}"
 
-[ "$cmd" = "" ] && {
-	>&2 echo "Usage: $0 /output/destination [ iso ] "
-	>&2 echo "  it will create a 'dyne' folder inside destination"
+[ "$dev" = "" ] && {
+	>&2 echo "Usage: $0 /output/destination"
+	>&2 echo "  will create a 'dyne' folder with your nest inside destination"
 	exit 1
 }
 
@@ -39,6 +39,7 @@ function mkpersist() {
 	[[ $size == <-> ]] || err "size must be an integer (MB)"
 	[[ $size -ge 512 ]] || err "size can't be smaller than 512 MB"
 	persist="$dev/dyne/dyne.nst"
+	err "creating nest of $size MiB in $persist"
 	mkdir -p "$dev/dyne"
 	dd if=/dev/zero of="$persist" \
 	    bs=1048576 count="$size" oflag=direct status=progress
@@ -47,18 +48,34 @@ function mkpersist() {
 	mkfs.ext4 -L persistence "$loop"
 	mkdir -p /mnt/dynebolic-persistence-temp
 	mount "$loop" /mnt/dynebolic-persistence-temp
-	echo "/ union" > "/mnt/dynebolic-persistence-temp/persistence.conf"
+	cat << EOF > "/mnt/dynebolic-persistence-temp/persistence.conf"
+/home union
+/root union
+/etc union
+/var union
+/usr union
+EOF
 	umount /mnt/dynebolic-persistence-temp
 	rmdir /mnt/dynebolic-persistence-temp
 	losetup -d "$loop"
 }
 
 case "$cmd" in
-	status) ;;
 	init) ;;
 	scan) ;;
 	iso) mkiso ;;
-	persist) mkpersist ;;
+	persist)
+		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
+			err "running system is already nested"
+		[[ -r "${dev}"/dyne/dyne.nst ]] && {
+			err "cannot overwrite nest: $dev/dyne/dyne.nst"
+			exit 1
+		}
+		mkpersist
+		err "--"
+		err "nest succesfully created! reboot to activate."
+		err "--"
+		;;
 	*)
 		err "command not found: $cmd"
 		exit 1 ;;
