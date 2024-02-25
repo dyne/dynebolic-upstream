@@ -52,7 +52,7 @@ stage1: need-suid
 		--include='devuan-keyring' \
 		--include='ca-certificates locales apt-transport-https curl apt-utils netcat-openbsd' \
 		--comp=main --arch=${ARCH} \
-	daedalus ${SRC}/${STAGE1} http://deb.devuan.org/merged; \
+	daedalus ${SRC}/${STAGE1} http://packages.devuan.org/merged; \
 	fi
 
 extract-stage1: need-suid
