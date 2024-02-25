@@ -5,8 +5,9 @@ ARCH ?= amd64
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 
 # Configure custom proxy apt cache
-APT_PROXY_OVERRIDE := "192.168.89.64:3142"
+#APT_PROXY_OVERRIDE := "192.168.122.168:3142"
 #APT_PROXY_OVERRIDE := "127.0.0.2:3142"
+APT_PROXY_OVERRIDE := ""
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
