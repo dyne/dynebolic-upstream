@@ -14,6 +14,8 @@ STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
 STAGE3DEV := ${FILEPFX}-sdk-${ARCH}.tar.xz
 
+SQFSCONF ?= -c xz -X level=9
+
 # check also exclude-from-iso.txt to avoid excludes
 # DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf /usr/src
 
@@ -36,11 +38,10 @@ endef
 # use adding to tar  --exclude-from=/tmp/dyneIV-excludes
 prepare-excludes:
 	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
-	$(info Preparing root tree filters for: ${EXCLUDE_FOR})
+	$(info Filesystem exclusion mask target: ${EXCLUDE_FOR})
 	@rm -f /tmp/dyneIV-excludes
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
-	@bash -c "printf '${ROOT}/%s\n' ${DEV_PATHS}" >> /tmp/dyneIV-excludes
 
 static-overlay: usrsrc := ${SRC}/static/usr/src
 static-overlay: repo := $(shell dirname ${SRC})
@@ -78,6 +79,22 @@ define chroot-script
 	umount ${ROOT}/proc
 	@rm -f ${ROOT}/script.sh
 	@echo "-- Done ${1}\n--"
+endef
+
+define chroot-script-into
+	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
+	$(if $(wildcard ${2}),,$(error Folder not found: ${2}))
+	@echo "--\n-- Execute: ${1} into ${2}"
+	@cp    "${1}" ${2}/script.sh
+	mkdir ${2}/proc ${2}/dev
+	mount -o bind /proc ${2}/proc
+	mount -o bind /dev ${2}/dev
+	@chroot ${2} bash -e /script.sh
+	umount ${2}/proc
+	umount ${2}/dev
+	rmdir ${2}/proc ${2}/dev
+	@rm -f ${2}/script.sh
+	@echo "--\n-- Done ${1} into ${2}\n--"
 endef
 
 define install-packages

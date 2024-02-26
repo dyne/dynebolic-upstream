@@ -17,20 +17,80 @@
 
 SRC=$(shell dirname $(shell pwd))
 
-.SECONDEXPANSION:
-all: module
+.PHONY: kde multimedia games
+
+all: kde multimedia games
 
 include ${SRC}/config.mk
+
+
+# use adding to tar  --exclude-from=/tmp/dyneIV-excludes
+module-excludes:
+	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
+	$(info Filesystem exclusion mask target: ${EXCLUDE_FOR})
+	@rm -f /tmp/dyneIV-mod-${MOD}-excludes
+	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${MOD}-mnt"'%s\n",$$1)}' ${SRC}/exclude-for-${EXCLUDE_FOR}.txt | tee /tmp/dyneIV-mod-${MOD}-excludes
+	$(info /tmp/dyneIV-mod-${MOD}-excludes)
+
+apt-module:
+	$(if $(wildcard ${MOD}-apt.txt),,$(error Package file not found: ${MOD}-apt.txt))
+	mkdir -p ${MOD}-mnt ${MOD}-work buildroot
+	fuse-overlayfs -o lowerdir=${ROOT} -o upperdir=${MOD}-mnt \
+	 -o workdir=${MOD}-work  buildroot
+	@echo "-- Install APT packaged for module: ${MOD}\n--"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" > buildroot/install.sh
+	mount -o bind /proc buildroot/proc
+	mount -o bind /dev  buildroot/dev
+	chroot buildroot bash -e /install.sh
+	umount buildroot/proc
+	umount buildroot/dev
+	rm -f  buildroot/install.sh
+	fusermount -u buildroot
+	rm -rf ${MOD}-work buildroot
+	@echo "-- Done ${MOD}\n--"
+
+# $1: target
+# $2: folder
+squash-module:
+	$(if $(wildcard ${MOD}-mnt),,$(error Folder not found: ${MOD}-mnt))
+	$(if $(wildcard ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs),$(error Cannot overwrite: ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs))
+	@echo "--\n-- Squash build: ${MOD} to ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs"
+	@mkdir -p ${SRC}/build
+	@tar -c --exclude-from=/tmp/dyneIV-mod-${MOD}-excludes ${MOD}-mnt \
+		| pv -p -s `du -sb ${MOD}-mnt | awk '{print $$1}'` \
+		| tar2sqfs -r ${MOD}-mnt -f -q ${SQFSCONF} \
+			"${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs"
+	@echo "--\n-- Done: ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs\n--"
+
+kde: MOD := kde
+kde: EXCLUDE_FOR := release
+kde: apt-module module-excludes squash-module
+
+multimedia: MOD := multimedia
+multimedia: EXCLUDE_FOR := release
+multimedia: apt-module module-excludes squash-module
+
+games: MOD := games
+games: EXCLUDE_FOR := release
+games: apt-module module-excludes squash-module
+
+kde-squash: MOD := kde
+kde-squash: EXCLUDE_FOR := release
+kde-squash: module-excludes squash-module
+
+games-squash: MOD := games
+games-squash: EXCLUDE_FOR := release
+games-squash: module-excludes squash-module
+
+clean:
+	rm -rf *-mnt
+	rm -f ${SRC}/build/dyneIV-mod-*
 
 prepare-modfiles:
 	$(if $(wildcard ${MOD}-files.txt),,$(error Module not found: ${MOD}-files.txt))
 	@rm -f /tmp/dyneIV-${MOD}-files
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' ${MOD}-files.txt > /tmp/dyneIV-${MOD}-files
 
-modsquash: MOD ?= local
-modsquash: target := dyneIV-module-${MOD}.squash
-modsquash: need-suid static-overlay prepare-modfiles
-	$(if $(wildcard ${MOD}-files.txt),,$(error Module not found: ${MOD}-files.txt))
-	$(info Squashing module: ${MOD}-files.txt)
-	tar -c --files-from=/tmp/dyneIV-${MOD}-files \
-		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/filesystem.${MOD}.squashfs
+fixperms: need-suid
+	$(if $(wildcard ${MOD}-mnt),,$(error Build mount not found: ${MOD}-mnt))
+	$(call chroot-script-into,${SRC}/fixperms.sh,${MOD}-mnt)
