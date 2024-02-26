@@ -43,7 +43,8 @@ Quick list of dependencies:
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux			\
     syslinux syslinux-efi syslinux-common syslinux-utils grub-pc-bin	\
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools				\
-    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget xz-utils
+    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget      \
+	xz-utils fuse-overlayfs
 ```
 
 
@@ -63,14 +64,29 @@ Install all default applications found in dyne:IV. Additional AppImages can be a
 make system
 ```
 
-Look for `install-*.sh` files inside the `packages` subdir to see the lists, which are simply formatted with one package name per line, supporting comments. Please leave comments if you change them!
+Look for `*-apt.txt` files inside the `system` subdir to see the lists, which are simply formatted with one package name per line, supporting comments. Please leave comments if you change them!
 
-### 4. Pack the ISO
+### 4. Install all modules
+
+Additional modules can be added using the SDK. The default modules built are:
+
+- `kde` for the desktop
+- `multimedia` for all sort of media applications
+- `games` for having fun
+
+In order to install all these modules one has just to launch the command:
+```
+make modules
+```
+
+Look for `*-apt.txt` files inside the `modules` subdir to see the list of packages.
+
+### 5. Pack the ISO
 
 Create the bootable live iso that can run from a USB stick or a DVD or even in QEMU.
 
 ```
-make squash && make iso
+make iso
 ```
 
 If you want help burning the USB then make sure to know its device and do:
@@ -84,17 +100,17 @@ QEMU (KVM) can be used to run in emulation, also with a virtual harddisk providi
 
 Start the LIVE DVD emulator:
 ```
-make qemu-dvd
+make qemu-isolinux
 ```
 
 Start the LIVE USB emulator:
 ```
-make qemu-usb
+make qemu-grub
 ```
 
 Create a persitence file
 ```
-make qemu-persistence
+make persistence-create
 ```
 
 # Get in touch

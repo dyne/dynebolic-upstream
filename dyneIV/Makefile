@@ -125,7 +125,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
-    xz-utils
+    xz-utils fuse-overlayfs
 
 bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
 	@make -C bootstrap
@@ -138,7 +138,7 @@ upgrade: ## 🔝 Update all system packages
 	@make -C system all
 
 chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
-chroot: ## 🚪 Enter the current build ROOT via CLI
+chroot: # 🚪 Enter the current build ROOT via CLI
 	@-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
 	@-if ! [ -r ${SCONF} ]; then \
 		cp schroot.conf ${SCONF} && echo "directory=${ROOT}" >> ${SCONF}; fi
