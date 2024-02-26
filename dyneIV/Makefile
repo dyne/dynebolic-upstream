@@ -17,7 +17,7 @@
 
 # Use this makefile as root
 
-.PHONY: bootstrap packages iso
+.PHONY: bootstrap system modules iso
 
 SRC=$(shell pwd)
 
@@ -131,11 +131,11 @@ bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
 system: ## 🗿 Install the full system: dyneIV-system
-	@make -C packages all
+	@make -C system all
 
 upgrade: ## 🔝 Update all system packages
 	$(call upgrade-packages)
-	@make -C packages all
+	@make -C system all
 
 chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 chroot: ## 🚪 Enter the current build ROOT via CLI
@@ -158,6 +158,13 @@ bwrap:
 	@command -v bwrap || exit 1
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
+
+_: ##
+-----: ## __ Module development:  (PATH=modname)
+modules: ## 🧩 Build all default modules
+	-make -C modules kde
+	-make -C modules multimedia
+	-make -C modules games
 
 _: ##
 -----: ## __ Release the live bootable system
@@ -194,21 +201,23 @@ reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
 	$(info Restore ROOT from ${STAGE3} and ${STAGE3DEV})
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && \
-		unsquashfs -d . ${SRC}/${STAGE3} && \
-		tar xf ${SRC}/${STAGE3DEV}
+		unsquashfs -d . ${SRC}/${STAGE3}
 
 restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 	$(info Restore ROOT from ${STAGE2})
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@rm -rf ${ROOT}
-	@mkdir -p ${ROOT} && cd ${ROOT} && \
-		tar -xf ${SRC}/${STAGE2}
-	@if [ -r ${SRC}/${STAGE3DEV} ]; then \
-		tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
+	@mkdir -p ${ROOT} && cd ${ROOT} && tar -xf ${SRC}/${STAGE2}
+
+# @if [ -r ${SRC}/${STAGE3DEV} ]; then \
+# 	tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
 clean: need-suid ## 🧹  Delete ROOT
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 	@rm -rf ${ROOT}
+	@rm -rf modules/*-mnt
+	@rm -rf build
 
 ######
 ## Publishing operations (ssh key restricted)

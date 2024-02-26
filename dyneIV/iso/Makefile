@@ -18,40 +18,41 @@
 
 SRC=$(shell dirname $(shell pwd))
 
-.SECONDEXPANSION:
-all: squash iso
-
 include ${SRC}/config.mk
 
-squash: EXCLUDE_FOR := release
-squash: need-suid static-overlay prepare-excludes
-	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	$(info Squashing dynebolic read-only filesystem)
-	$(info Please wait while compressing the filesystem...)
-	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
-
-squash-devel: EXCLUDE_FOR := devel
-squash-devel: need-suid static-overlay prepare-excludes
-	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	$(info Squashing dynebolic read-only filesystem)
-	$(info Please wait while compressing the filesystem...)
-	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+.SECONDEXPANSION:
+all: iso
 
 
-buildroot: EXCLUDE_FOR := devel
-buildroot: need-suid static-overlay prepare-excludes
-	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	$(info Squashing dynebolic read-only filesystem)
-	$(info Please wait while compressing the filesystem...)
-	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
+# squash: EXCLUDE_FOR := release
+# squash: need-suid static-overlay prepare-excludes
+# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+# 	$(info Squashing dynebolic read-only filesystem)
+# 	$(info Please wait while compressing the filesystem...)
+# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+# 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+# 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+
+# squash-devel: EXCLUDE_FOR := devel
+# squash-devel: need-suid static-overlay prepare-excludes
+# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+# 	$(info Squashing dynebolic read-only filesystem)
+# 	$(info Please wait while compressing the filesystem...)
+# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+# 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+# 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
+
+
+# buildroot: EXCLUDE_FOR := devel
+# buildroot: need-suid static-overlay prepare-excludes
+# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
+# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+# 	$(info Squashing dynebolic read-only filesystem)
+# 	$(info Please wait while compressing the filesystem...)
+# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+# 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 #	$(info Saving development package for reset...)
 #	tar -c -C ${ROOT} ${DEV_PATHS} \
@@ -66,9 +67,13 @@ iso-staging:
 	@mkdir -p staging/boot/grub/x86_64-efi
 	@mkdir -p staging/isolinux
 	@mkdir -p staging/live
-	@echo "filesystem.squashfs" > staging/live/filesystem.module
-	@ln -f ${SRC}/${STAGE3} staging/live/filesystem.squashfs
-	@for i in ${SRC}/filesystem.*.squashfs; do fn=`basename $$i`; echo "$$fn" | tee -a staging/live/filesystem.module; ln -f $$i staging/live/ ; done
+	@ln -f ${SRC}/build/dyneIV-* staging/live/
+	@echo "dyneIV-root-amd64.squashfs" > staging/live/filesystem.module
+	@echo "dyneIV-home-amd64.squashfs" >> staging/live/filesystem.module
+	@echo "dyneIV-static-amd64.squashfs" >> staging/live/filesystem.module
+	@echo "dyneIV-mod-kde-amd64.squashfs" >> staging/live/filesystem.module
+	@echo "dyneIV-mod-multimedia-amd64.squashfs" >> staging/live/filesystem.module
+	@echo "dyneIV-mod-games-amd64.squashfs" >> staging/live/filesystem.module
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	@cp -f isolinux.cfg staging/isolinux/
@@ -79,8 +84,8 @@ iso-staging:
 	@cp -rf /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
 
 iso-checksum:
-	$(info Please wait while computing SHA512 integrity hash sums)
-	@cd staging/live && sha512sum * >sha512sums.txt
+	$(info Please wait while computing SHA256 integrity hash sums)
+	@cd staging/live && sha256sum * >sha256sums.txt
 
 grub-check:
 	$(info Check grub configuration syntax)

@@ -1,0 +1,77 @@
+alsa-tools
+alsa-tools-gui
+alsa-utils
+faad
+flac
+vorbis-tools
+speex
+libfftw3-bin
+lame
+ffmpeg
+
+pipewire-audio
+pipewire-alsa
+pipewire-jack
+pipewire-v4l2
+pipewire-pulse
+
+#  dkms will not function properly if /proc is not mounted
+# v4l2loopback-dkms
+
+vlc
+vlc-plugin-pipewire
+dvgrab
+blender
+kdenlive
+
+obs-studio
+ardour
+ardour-data
+ardour-lv2-plugins
+
+audacity
+audacity-data
+
+mixxx
+mixxx-data
+
+butt
+
+ffado-tools
+ffado-mixer-qt4
+
+jack-tools
+jack-stdio
+multimedia-jack
+qjackctl
+jamin
+
+soundkonverter
+# soundconverter - gnome
+
+kid3
+
+darktable
+gimp
+krita
+
+digikam
+inkscape
+scribus
+
+# firefox-esr
+thunderbird
+
+# matrix
+neochat
+
+# irc
+weechat
+
+imagemagick
+
+# lsp-plugins
+swh-plugins
+frei0r-plugins
+
+
