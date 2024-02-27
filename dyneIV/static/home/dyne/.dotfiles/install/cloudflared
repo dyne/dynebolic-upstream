@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. need-suid.sh
+
+apt-get install -y -q daemontools
+
+wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+dpkg -i cloudflared-linux-amd64.deb
+
+cat << EOF
+# CLOUDFLARE INSTALLED. TUNNEL HOWTO:
+cloudflared tunnel login
+	authenticate and choose the <DOMAIN>
+cloudflared tunnel create <NAME>
+	creates also the *.cfargotunnel.com CNAME entries
+cloudflared tunnel list
+ls -l .cloudflared/  and copy the <UID>
+vi ~/.cloudflared/config.yml
+---
+url: ssh://localhost:22
+tunnel: <UID>
+credentials-file: /home/<USER>/.cloudflared/<UID>.json
+---
+cloudflared tunnel route dns <NAME> <NAME>.<DOMAIN>
+vi /etc/rc.local
+---
+HOME=/home/<USER> setuidgid <USER> nohup cloudflared tunnel run <NAME> >> /home/<USER>/cloudflared.log &
+---
+EOF

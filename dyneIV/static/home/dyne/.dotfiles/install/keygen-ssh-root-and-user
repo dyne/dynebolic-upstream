@@ -1,0 +1,28 @@
+#!/bin/sh
+
+type=${type:-ed25519}
+me=`id -un`
+user=`id -un 1000`
+[ -d "/home/$user" ] || user=`id -un 1001`
+
+echo "Creating ssh key for $me"
+if [ -r "$HOME/.ssh/id_$type" ]; then
+    echo "Key already created: $HOME/.ssh/id_$type"
+else
+    ssh-keygen -t $type -N "" -C "made for $me" -f "$HOME/.ssh/id_$type"
+fi
+
+[ "$me" = "root" ] &&
+	[ -d "/home/$user" ] || { sha256sum "$HOME/.ssh/id_$type"; exit 0;}
+    [ -r "/home/$user/.ssh/id_$type" ] || {
+	echo "Sharing ssh root key with $user"
+	mkdir -p "/home/$user/.ssh"
+	ssh-keygen -f "$HOME/.ssh/id_$type" -y > "/home/$user/.ssh/id_$type.pub"
+	[ $? = 0 ] && {
+	    cp -v "$HOME/.ssh/id_$type" "/home/$user/.ssh/id_$type"
+	    chown -R "$user:$user" "/home/$user/.ssh"
+	}
+    sha256sum "/home/$user/.ssh/id_$type"
+}
+
+sha256sum "$HOME/.ssh/id_$type"

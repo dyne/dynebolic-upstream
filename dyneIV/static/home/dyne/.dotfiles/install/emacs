@@ -1,0 +1,15 @@
+#!/bin/sh
+
+apt-get install emacs-nox elpa-ivy elpa-monokai-theme elpa-yaml-mode \
+		elpa-dockerfile-mode elpa-rust-mode elpa-meson-mode \
+		elpa-lua-mode elpa-smex elpa-pkg-info \
+		elpa-muttrc-mode elpa-markdown-mode elpa-htmlize \
+		elpa-graphviz-dot-mode elpa-folding elpa-flx elpa-flx-ido \
+		elpa-diminish elpa-csv-mode elpa-color-theme-modern \
+		elpa-browse-kill-ring elpa-bar-cursor elpa-avy elpa-org \
+		elpa-helm-org elpa-imenu-list pandoc elpa-ws-butler \
+		elpa-anzu elpa-flycheck elpa-s elpa-websocket elpa-notmuch \
+		elpa-magit elpa-rainbow-delimiters elpa-editorconfig \
+		editorconfig
+
+# only found in ubuntu:		elpa-darkroom elpa-doom-themes

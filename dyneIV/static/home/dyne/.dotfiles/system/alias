@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# Shortcuts
+if command -v vim > /dev/null; then alias vi='vim'; fi
+
+alias .f="cd $HOME/.dotfiles"
+alias .o="cd $HOME/OneDrive"
+alias .s="cd $HOME/shell"
+alias .d="cd $HOME/OneDrive/Documents"
+alias .alias="vi $HOME/.dotfiles/system/alias"
+alias .path="vi $HOME/.dotfiles/system/path"
+alias .env="vi $HOME/.dotfiles/system/env"
+alias g="git status --untracked-files=no"
+alias e='emacsclient -n'
+
+alias .f-install-tmux="touch $HOME/.tmux_startup"
+
+# Global aliases
+alias G="| grep -i"
+alias H="| head"
+alias T="| tail"
+alias L="| less"
+
+# Useful aliases
+alias grep="grep $GREP_OPTIONS"
+alias zl="zfs list -o name,used,avail,readonly,compression"
+
+# Hide tomb commands
+alias tomb=" tomb"
+
+# List declared aliases, functions, paths
+
+alias aliases="alias | sed 's/=.*//'"
+alias functions="declare -f | grep '^[a-z].* ()' | sed 's/{$//'"
+alias paths='echo -e ${PATH//:/\\n}'
+
+sys="`uname -s`"
+
+# package management
+case "$sys" in
+	FreeBSD)
+	    alias pks='pkg search'
+	    alias pki='pkg install -y'
+	    ;;
+	Linux)
+	# kill all leftover mosh sessions excluding the current one
+	alias moshkill="pgrep mosh-server | grep -v $(ps -o ppid --no-headers $$) | xargs kill"
+	# Directory listing/traversal
+	LS_COLORS='--color -G'
+	LS_TIMESTYLEISO='--time-style=long-iso'
+	LS_GROUPDIRSFIRST='--group-directories-first'
+	#alias ls="ls -rt $LS_COLORS"
+	alias l="ls -lrtahA $LS_COLORS $LS_GROUPDIRSFIRST"
+	alias ll="ls -lrthA $LS_COLORS"
+	alias lt="ls -lhAtr $LS_COLORS $LS_GROUPDIRSFIRST"
+	alias ld="ls -lrtd $LS_COLORS */"
+	alias lp="stat -c '%a %n' *"
+	unset LS_COLORS LS_TIMESTYLEISO LS_GROUPDIRSFIRST
+	# Network
+	alias ipl="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+	alias aps='apt-cache search'
+	alias apti='sudo apt-get install -y'
+	alias aptu='sudo apt-get update && sudo apt-get dist-upgrade'
+	;;
+esac
+
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias -- -="cd -"                  # Go to previous dir with -
+alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
+

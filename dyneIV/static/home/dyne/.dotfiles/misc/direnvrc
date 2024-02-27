@@ -1,0 +1,19 @@
+use_nvm() {
+    NODE_VERSION="$1"
+    if [ "$NODE_VERSION" == "" ]; then NODE_VERSION='--lts'; fi
+    type nvm >/dev/null 2>&1 || . ~/.config/nvm/nvm.sh
+    nvm use "$NODE_VERSION"
+    tmp=`mktemp`
+    npm completion > $tmp
+    . $tmp
+    rm $tmp
+}
+
+use_emsdk() {
+   if [ -r emsdk ]; then . emsdk/emsdk_env.sh; fi
+}
+
+# cat README.nfo in each dir 
+use_readme() {
+    if [ -r README.nfo ]; then echo '--- readme.nfo ---' && cat README.nfo && echo '------------------'; fi
+}

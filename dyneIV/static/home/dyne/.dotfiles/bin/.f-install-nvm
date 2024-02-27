@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "use_nvm" >> .envrc
+direnv allow
+nvm install --lts
+nvm use --lts

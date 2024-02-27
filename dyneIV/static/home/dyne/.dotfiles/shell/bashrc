@@ -1,0 +1,81 @@
+# Source the dotfiles (order matters)
+. ${HOME}/.dotfiles/loader.sh
+
+# Hook for extra/custom stuff
+
+
+# Clean up
+
+unset CURRENT_SCRIPT SCRIPT_PATH DOTFILE
+
+# Export
+
+export DOTFILES_DIR
+
+# load direnv
+eval "$(direnv hook bash)"
+
+# Case-insensitive globbing (used in pathname expansion)
+
+shopt -s nocaseglob
+
+# Recursive globbing with "**"
+
+if [ ${BASH_VERSINFO[0]} -ge 4 ]; then
+  shopt -s globstar
+fi
+
+# Append to the Bash history file, rather than overwriting it
+
+shopt -s histappend
+
+# Autocorrect typos in path names when using `cd`
+
+shopt -s cdspell
+
+# Do not autocomplete when accidentally pressing Tab on an empty line.
+
+shopt -s no_empty_cmd_completion
+
+# Check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+
+shopt -s checkwinsize
+
+
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+arrow=$'\u25B6'
+c_gray='\033[01;30m'
+c_blue='\033[0;34m'
+cyan='\033[0;36m'
+reset='\033[0m'
+
+system=`uname -s`
+
+>&2 printf "${arrow} ${cyan}Welcome to ${reset}`hostname -s` ($system)"
+>&2 echo
+
+if [[ "$system" == Linux ]]; then
+ps axf | grep '[t]mux' > /dev/null
+if [ $? == 0 ] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+    >&2 printf "${arrow} ${cyan}TMUX running sessions:${reset}\n"
+    >&2 tmux ls
+    >&2 echo
+fi
+fi
+
+if [[ "$system" =~ Linux ]]; then
+    >&2 printf "${arrow} ${cyan}System `uptime -p`${reset}\n"
+else
+    >&2 printf "${arrow} ${cyan}System `uptime`${reset}\n"
+fi
+
+>&2 echo
+
+if command -v tmux &> /dev/null && [ -r "$HOME/.tmux_startup" ] && [ -n "$PS1" ] \
+       && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ] \
+       && [[ "$SSH_TTY" != "" ]]; then
+    exec tmux
+fi

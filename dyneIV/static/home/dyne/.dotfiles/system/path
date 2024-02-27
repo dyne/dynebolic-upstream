@@ -1,0 +1,40 @@
+#!/bin/sh
+
+PATH=""
+
+# snap binary path
+if [ -r /snap/bin ]; then prepend-path "/snap/bin"; fi
+# cosmopolitan toolchain
+if [ -x /opt/cosmo ];  then prepend-path "/opt/cosmo/bin"; fi
+if [ -x /opt/cosmos ]; then prepend-path "/opt/cosmos/bin"; fi
+
+# language frameworks
+prepend-path "$HOME/.cargo/bin"
+prepend-path "$HOME/go/bin"
+prepend-path "/usr/local/go/bin"
+
+# distro's bin paths
+prepend-path "/bin"
+prepend-path "/usr/bin"
+prepend-path "/usr/local/bin"
+
+echo "$HOME" | grep termux > /dev/null && prepend-path "/data/data/com.termux/files/usr/bin"
+
+# private bin paths
+prepend-path "$DOTFILES_DIR/bin"
+prepend-path "$HOME/bin"
+prepend-path "$HOME/local/bin"
+# prepend-path "$HOME/.local/bin"
+
+# distro's sysadmin bin paths
+prepend-path "/sbin"
+prepend-path "/usr/sbin"
+prepend-path "/usr/local/sbin"
+
+# Remove duplicates (preserving prepended items)
+# Source: http://unix.stackexchange.com/a/40755
+PATH=$(echo -n $PATH | awk -v RS=: '{ if (!arr[$0]++) {printf("%s%s",!ln++?"":":",$0)}}')
+
+# Wrap up
+
+export PATH

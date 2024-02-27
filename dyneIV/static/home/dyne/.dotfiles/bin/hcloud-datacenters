@@ -1,0 +1,17 @@
+#!/bin/sh
+
+tok=`cat ~/.config/hcloud/cli.toml | awk '/token/ {print $3}' | xargs `
+datacenters=`mktemp`
+
+curl -sLH "Authorization: Bearer $tok" 'https://api.hetzner.cloud/v1/datacenters' > $datacenters
+
+cat << EOF | zenroom -z -a $datacenters  2>/dev/null
+Given I have a 'string dictionary' named 'datacenters'
+When I create the 'string array' named 'wanted'
+and I insert string 'description' in 'wanted'
+and I insert string 'name' in 'wanted'
+and I filter 'wanted' fields from 'datacenters'
+Then print 'datacenters'
+EOF
+
+rm -f $datacenters

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+pkg_add bash bash-completion git tig gmake mosh tree wget curl direnv
+
+
+cat << EOF > /etc/rc.local
+#!/bin/sh
+# start ssh-agent daemons and save runtime configs
+export PATH=$PATH:/usr/local/bin
+U=jrml rm -f /home/$U/.ssh-agent; /usr/local/bin/setuidgid $U ssh-agent > /home/$U/.ssh-agent
+U=dyne rm -f /home/$U/.ssh-agent; /usr/local/bin/setuidgid $U ssh-agent > /home/$U/.ssh-agent
+EOF
+chmod +x /etc/rc.local
+
+

@@ -1,0 +1,45 @@
+[user]
+	name = Jaromil
+	email = jaromil@dyne.org
+[core]
+	editor = vim
+
+[color]
+        branch = auto
+        diff = auto
+        interactive = auto
+        status = auto
+
+[merge]
+	tool = emerge
+	no-log = true
+
+[alias]
+	l = log --stat
+	co = checkout
+	st = status
+	up = pull --rebase
+	br = branch -av --sort=-committerdate
+	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+	ll = log --pretty=oneline --abbrev-commit --pretty=format:'%C(yellow)%h%Creset %s %Cgreen(%cr)%Creset'
+	changes = log --oneline --reverse
+	ly = log --pretty='tformat:%h %an (%ar): %s' --since=yesterday
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+	w = whatchanged
+	ls = ls-files
+	storia = log --pretty=medium --graph --abbrev-commit --date=relative --decorate
+	istoria = log --pretty=medium --reverse --abbrev-commit --date=relative --decorate
+	storiona = log --pretty=medium --graph --abbrev-commit --date=relative --stat --summary --decorate
+
+[branch "master"]
+	remote = origin
+	merge = master
+	rebase = true
+
+[push]
+	default = current
+	autoSetupRemote = true
+[pull]
+	rebase = true
+	autoSetupRemote = true
+	default = current

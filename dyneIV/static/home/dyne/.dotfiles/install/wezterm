@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if ! [ -r build/wezterm/target/release/wezterm ]; then
+	mkdir -p build && cd build
+	git clone --depth=1 --branch=main --recursive https://github.com/wez/wezterm.git
+	cd wezterm
+	./get-deps
+	cargo build --release
+fi
+
+echo
+echo "BUILD ready in target"
+echo
+if [ -r target/release ]; then
+	cd target/release
+else
+	cd build/wezterm/target/release
+fi
+
+bin=wezterm		&& strip $bin && cp $bin ~/bin
+bin=wezterm-gui		&& strip $bin && cp $bin ~/bin
+bin=wezterm-mux-server	&& strip $bin && cp $bin ~/bin
+bin=sync-color-schemes  && strip $bin && cp $bin ~/bin
+bin=strip-ansi-escapes  && strip $bin && cp $bin ~/bin
+echo
+echo "INSTALLED in ~/bin"
+echo

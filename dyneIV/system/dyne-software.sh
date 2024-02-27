@@ -61,23 +61,6 @@ tombver=2.10
 	mv zenroom zencode-exec /usr/local/bin
 }
 
-[ -r /root/.dotfiles ] || {
-	rm -f dotfiles.sh
-	>&2 echo " install Jaromil's dotfiles"
-	wget https://jaromil.dyne.org/dotfiles.sh
-	bash dotfiles.sh
-	pushd /root/.dotfiles && make && popd
-	tmp=`mktemp`
-	awk '/^.user/{next} /name =/{next} /email =/{next} {print $0}' \
-		/root/.gitconfig > $tmp && mv $tmp /root/.gitconfig
-	export HOME=/home/dyne
-	setuidgid dyne bash dotfiles.sh
-	pushd /home/dyne/.dotfiles && setuidgid dyne make && popd
-	awk '/^.user/{next} /name =/{next} /email =/{next} {print $0}' \
-		/home/dyne/.gitconfig > $tmp && mv $tmp /home/dyne/.gitconfig
-	rm -f dotfiles.sh
-}
-
 [ -r /usr/local/bin/hasciicam ] || {
 	rm -rf hasciicam
 	deps gcc libaa1-dev autoconf automake

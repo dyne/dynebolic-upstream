@@ -19,25 +19,9 @@
 
 SRC=$(shell dirname $(shell pwd))
 
-
-# # $1: target
-# # $2: folder
-# define squash-build
-# 	$(if $(wildcard ${2}),,$(error Folder not found: ${2}))
-# 	$(if $(wildcard ${SRC}/build/dyneIV-${1}-${ARCH}.squashfs),$(error Cannot overwrite: ${SRC}/build/dyneIV-${1}-${ARCH}.squashfs))
-# 	@echo "--\n-- Squash build: ${2} to ${SRC}/build/dyneIV-${1}-${ARCH}.squashfs"
-# 	@mkdir -p ${SRC}/build
-# 	@tar -c ${2} \
-# 		| pv -p -s `du -sb ${2} | awk '{print $$1}'` \
-# 		| tar2sqfs -r ${2} -f -q -c xz \
-# 			"${SRC}/build/dyneIV-${1}-${ARCH}.squashfs"
-# 	@echo "--\n-- Done: ${SRC}/build/dyneIV-${1}-${ARCH}.squashfs\n--"
-# endef
-
 include ${SRC}/config.mk
 
 .SECONDEXPANSION:
-
 
 all: need-suid apt-get-update build-root dyne-software squash-root squash-home squash-static
 
@@ -60,12 +44,13 @@ squash-root: need-suid prepare-excludes
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
 
-squash-home: folder := home
+home: build-home squash-home
+
 squash-home: need-suid
 	@echo "--\n-- Squash build: home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
 	@tar -c --exclude ${SRC}/static/usr --exclude ${SRC}/static/etc \
-			--owner 1000:1000 ${SRC}/static \
+		${SRC}/static \
 		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
 			"${SRC}/build/dyneIV-home-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-home-${ARCH}.squashfs\n--"
@@ -73,7 +58,7 @@ squash-home: need-suid
 squash-static: need-suid
 	@echo "--\n-- Squash build: static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
-	@tar -c --exclude ${SRC}/static/home \
+	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
 			--owner 1:1 ${SRC}/static \
 		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
 			"${SRC}/build/dyneIV-static-${ARCH}.squashfs"

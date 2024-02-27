@@ -1,11 +1,24 @@
 #!/bin/zsh
+#
+# Copyright (C) 2023-2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-function mm() {
-	>&2 echo "--"
-	>&2 echo "$*"
-}
-HOSTNAME="https://zorro.zenr.io"
-SSH="sftp_download@zorro.zenr.io"
+source /etc/dyne/utils.sh
+source /etc/dyne/snapshot.conf
 
 [[ -r /run/live/persistence ]] || {
 	mm "not running on a dynebolic system"
@@ -52,26 +65,14 @@ outmp=`mktemp`
 tar -c /run/live/overlay/rw | tar2sqfs -r /run/live/overlay/rw -f -q -c xz ${outmp}
 
 mm "Uploading..."
-tmpkey=`mktemp`
-cat <<EOF > "$tmpkey"
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAVw1tcoHB++zHVtOi/vvqWXROq2WdBTqc7LXVU6O3zqQAAAJBF6JivReiY
-rwAAAAtzc2gtZWQyNTUxOQAAACAVw1tcoHB++zHVtOi/vvqWXROq2WdBTqc7LXVU6O3zqQ
-AAAEAHddkkEUn7kF9K5a78A4R9mIGL/NdTFK3g+r1PaUAcgxXDW1ygcH77MdW06L+++pZd
-E6rZZ0FOpzstdVTo7fOpAAAADW1hZGUgZm9yIGR5bmU=
------END OPENSSH PRIVATE KEY-----
-EOF
-# ssh pubkey
-# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXDW1ygcH77MdW06L+++pZdE6rZZ0FOpzstdVTo7fOp made for dyne
+
 chmod g+r "${outmp}"
-scp -i "${tmpkey}" "${outmp}" "${SSH}:snapshots/${outfile}"
+scp -i /etc/dyne/snapshot.sk "${outmp}" "${SSH}:snapshots/${outfile}"
 [[ $? = 0 ]] || {
 	mm "SSH transfer error."
 	rm -f "${tmpkey}"
 	exit 1
 }
-rm -f "${tmpkey}"
 
 URL="${HOSTNAME}/snapshots/$outfile"
 mm "$URL"

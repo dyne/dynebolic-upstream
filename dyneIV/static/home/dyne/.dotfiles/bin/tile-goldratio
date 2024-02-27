@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# minimalistic tiling manager based on golden ratio
+# uses only zsh, awk and wmctrl
+# Copyleft (C) 2020-2021 by Jaromil
+#
+# usage: tile [ center | left | right | top ]
+if [ "$1" = "" ]; then
+	echo >&2 "usage: $(basename $0) [ center | left | right | top ]"
+	exit 1
+fi
+#
+# geometry of tiles:
+# ________________
+# |     top      |
+# |--+--------+--|
+# |  |        |  |
+# |l | center | r|
+# |__|________|__|
+# +---task bar---+
+#
+# Manual Tweaks
+#########################
+# config main screen size
+IFS='x'
+read -a autodetect <<< "`wmctrl -d | awk '/ \* DG:/ { print $4 }'`"
+W=${autodetect[0]}
+H=${autodetect[1]}
+# echo >&2 "desktop geometry: $W x $H"
+
+# override width or height to keep on one monitor if dual screen
+# H=2160
+# config taskbar height
+TH=100
+# config border
+B=20
+B2=$(( $B + $B ))
+# use bc to calculate and round
+# Calculations
+########################
+# (%.* modifier is to round floats)
+calc() { local res=`echo "$1" | bc`; echo ${res%.*}; }
+#
+# center width
+#cwf=`echo "( $W / 2.5 ) * 1.6" | bc -l`
+cw=`calc "( $W / 2.5 ) * 1.6"`
+# center x origin
+cxo=`calc "( $W - $cw ) / 2"`
+# center height
+ch=`calc "( $H / 2.5 ) * 1.6"`
+# center y origin
+cyo=`calc "( $H - $ch ) / 3"`
+# echo "$cw x $ch at x$cxo y$cyo"
+case "$1" in
+    center)
+        wmctrl -r :ACTIVE: -e 0,$cxo,$cyo,$cw,$(( $H - $cyo - $TH))
+        ;;
+    left)
+        wmctrl -r :ACTIVE: -e 0,$B,$B,$(( $cxo - $B )),$(( $H - $TH - $B))
+        ;;
+    right)
+        wmctrl -r :ACTIVE: -e 0,$(( $cxo + $cw )),20,$(( $cxo - $B )),$(( $H - $TH - $B ))
+        ;;
+    top)
+        wmctrl -r :ACTIVE: -e 0,$(( $B + $cxo )),0,$(( $W - $cxo - $cxo - $B2 )),$(( $cyo - $B2 ))
+esac

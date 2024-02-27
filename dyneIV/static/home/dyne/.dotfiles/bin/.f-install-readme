@@ -1,0 +1,16 @@
+#!/bin/sh
+if [ -r README.nfo ]; then
+	echo "Cannot overwrite README.nfo"
+	exit 1
+fi
+if [ -r .envrc ]; then
+	if grep '^use readme' .envrc; then
+		# echo ".envrc is already using readme"
+		break
+	fi
+else
+	echo "use readme" | tee -a .envrc
+fi
+direnv allow
+vi README.nfo
+

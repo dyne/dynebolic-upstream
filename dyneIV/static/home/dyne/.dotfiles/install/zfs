@@ -1,0 +1,21 @@
+
+# proc=`uname -p`
+# arch="generic"
+
+# case $proc in
+# 	x86_64) arch=amd64 ;;
+# 	*) echo "arch $arch" ; exit 1 ;;
+# esac
+
+# apt-get install linux-headers-$arch
+
+cat << EOF
+On Devuan make sure to have backports:
+
+deb http://deb.debian.org/debian bullseye-backports main contrib
+deb-src http://deb.debian.org/debian bullseye-backports main contrib
+EOF
+
+
+apt-get install -q -y module-assistant dpkg-dev linux-headers-generic linux-image-generic
+DEBIAN_FRONTEND=noninteractive apt-get install -q -y zfs-dkms zfsutils-linux

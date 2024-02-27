@@ -1,0 +1,5 @@
+. install/need-suid.sh
+
+apt-get install -y -q mlocate apt-file
+echo "Starting mlocate and apt-file database updates in background"
+(updatedb ; apt-file update) &
