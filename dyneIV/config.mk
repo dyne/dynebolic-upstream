@@ -43,15 +43,6 @@ prepare-excludes:
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
 
-static-overlay: usrsrc := ${SRC}/static/usr/src
-static-overlay: repo := $(shell dirname ${SRC})
-static-overlay:
-	@mkdir -p ${usrsrc} && cd ${usrsrc} && rm -rf * && \
-		git clone --depth 1 file://${repo} dyneIV-SDK
-	@rsync -raX ${SRC}/static/* ${ROOT}/
-	$(call chroot-script,${SRC}/fixperms.sh)
-
-
 apt-get-update: need-suid
 	@echo "--\n-- Apt Get Update"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" \
