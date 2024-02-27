@@ -24,6 +24,8 @@
 /var/log/dpkg.log
 /var/log/fsck
 
+/usr/src/*
+
 # from breeze plasma theme
 /usr/share/wallpapers/Next
 

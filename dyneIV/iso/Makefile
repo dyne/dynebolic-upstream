@@ -23,28 +23,6 @@ include ${SRC}/config.mk
 .SECONDEXPANSION:
 all: iso
 
-
-# squash: EXCLUDE_FOR := release
-# squash: need-suid static-overlay prepare-excludes
-# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-# 	$(info Squashing dynebolic read-only filesystem)
-# 	$(info Please wait while compressing the filesystem...)
-# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-# 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-# 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
-
-# squash-devel: EXCLUDE_FOR := devel
-# squash-devel: need-suid static-overlay prepare-excludes
-# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-# 	$(info Squashing dynebolic read-only filesystem)
-# 	$(info Please wait while compressing the filesystem...)
-# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-# 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-# 		| tar2sqfs -r ${ROOT} -f -q -c xz -X level=9 ${SRC}/${STAGE3}
-
-
 # buildroot: EXCLUDE_FOR := devel
 # buildroot: need-suid static-overlay prepare-excludes
 # 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
@@ -53,12 +31,6 @@ all: iso
 # 	$(info Please wait while compressing the filesystem...)
 # 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 # 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
-
-#	$(info Saving development package for reset...)
-#	tar -c -C ${ROOT} ${DEV_PATHS} \
-#		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
-
-#	@rsync -P ${SRC}/${STAGE3} staging/live/filesystem.squashfs
 
 iso-staging:
 	$(info Initializing ISO staging environment)

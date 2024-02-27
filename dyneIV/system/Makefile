@@ -49,6 +49,8 @@ home: build-home squash-home
 squash-home: need-suid
 	@echo "--\n-- Squash build: home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
+	@chown -R 1000:1000 ${SRC}/static/home/dyne
+	@chown -R root:root ${SRC}/static/root
 	@tar -c --exclude ${SRC}/static/usr --exclude ${SRC}/static/etc \
 		${SRC}/static \
 		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
