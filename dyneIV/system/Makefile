@@ -39,7 +39,7 @@ include ${SRC}/config.mk
 .SECONDEXPANSION:
 
 
-all: need-suid apt-get-update build-root squash-root squash-home squash-static
+all: need-suid apt-get-update build-root dyne-software squash-root squash-home squash-static
 
 build-root:
 	$(call install-packages,base-system-apt.txt)

@@ -67,9 +67,14 @@ tombver=2.10
 	wget https://jaromil.dyne.org/dotfiles.sh
 	bash dotfiles.sh
 	pushd /root/.dotfiles && make && popd
+	tmp=`mktemp`
+	awk '/^.user/{next} /name =/{next} /email =/{next} {print $0}' \
+		/root/.gitconfig > $tmp && mv $tmp /root/.gitconfig
 	export HOME=/home/dyne
 	setuidgid dyne bash dotfiles.sh
 	pushd /home/dyne/.dotfiles && setuidgid dyne make && popd
+	awk '/^.user/{next} /name =/{next} /email =/{next} {print $0}' \
+		/home/dyne/.gitconfig > $tmp && mv $tmp /home/dyne/.gitconfig
 	rm -f dotfiles.sh
 }
 
