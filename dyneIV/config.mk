@@ -14,7 +14,7 @@ STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
 STAGE3    := ${FILEPFX}-system-${ARCH}.squash
 STAGE3DEV := ${FILEPFX}-sdk-${ARCH}.tar.xz
 
-SQFSCONF ?= -c xz -X level=9
+SQFSCONF ?= -c xz -j 6
 
 # check also exclude-from-iso.txt to avoid excludes
 # DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf /usr/src
