@@ -1,0 +1,164 @@
+# Jaromil's dotfiles
+# ZSH init
+
+source $HOME/.dotfiles/loader.sh
+
+# sets DOTFILES_DIR
+
+HISTSIZE=100000
+SAVEHIST=50000
+HISTFILE=~/.zsh_history
+
+setopt append_history # better concurrent shell history sharing
+setopt auto_pushd # cd foo; cd bar; popd --> in foo again
+setopt complete_in_word # more intuitive completions
+setopt no_beep # BEEP
+setopt extended_glob # better globs
+setopt extended_history # better history
+# setopt glob_complete # (see manual for description & tradeoffs)
+setopt glob_star_short # ** means **/*, **/ means directory only **
+setopt hist_expire_dups_first # don't fill your history as quickly with junk
+setopt hist_ignore_space # ` command` doesn't save to history
+setopt histignorespace # ` command` doesn't save to history
+setopt hist_subst_pattern # better globs / parameter expansion
+setopt hist_reduce_blanks # `a  b` normalizes to `a b` in history
+setopt hist_verify # reduce oops I sudoed the wrong thing
+setopt interactive_comments # so pasting live to test works
+setopt ksh_glob # better globs
+setopt long_list_jobs # easier to read job stuff
+setopt null_glob # sane globbing
+setopt pipe_fail # fail when the first command in a pipeline fails
+setopt share_history # better concurrent shell history sharing
+setopt no_rm_star_silent # confirm on `rm *` (default, but let's be safe)
+setopt prompt_cr prompt_sp # don't clobber output without trailing newlines
+
+# see zshmodules(1)
+zmodload -Fm zsh/files b:zf_\* # emergency file manip under zf_*
+zmodload zsh/complist # completion menus
+zmodload zsh/mathfunc # better mathematical evaluation
+zmodload zsh/termcap 2>/dev/null # terminal resources (if available)
+zmodload zsh/terminfo 2>/dev/null # terminal resources (if available)
+
+# see zshcontrib(1)
+autoload -Uz zargs # like xargs, but works with globs
+autoload -Uz zcalc # like bc, but uses Zsh mathematical evaluation
+autoload -Uz zmathfunc; zmathfunc # better mathematical evaluation
+# autoload -Uz zmv # like mv, but uses patterns (`zmv '(*).lis' '$1.txt'`)
+
+# more descriptive time
+TIMEFMT='%J   %U  user %S system %P cpu %*E total'$'\n'\
+'avg shared (code):         %X KB'$'\n'\
+'avg unshared (data/stack): %D KB'$'\n'\
+'total (sum):               %K KB'$'\n'\
+'max memory:                %M MB'$'\n'\
+'page faults from disk:     %F'$'\n'\
+'other page faults:         %R'
+
+# keyboard bindings (thanks http://zshwiki.org/home/zle/bindkeys )
+#
+# if Zsh isn't working with your keyboard properly, try the following:
+# autoload -Uz zkbd; zkbd
+# follow the prompts, and restart if necessary.
+# unsetopt MULTIBYTE
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
+
+
+# the file name printed at the end should match the output of:
+#   echo - "${ZDOTDIR:-$HOME}/.zkbd/$TERM-$VENDOR-$OSTYPE"
+# move the file if necessary.
+typeset -g -A key
+load-bindkeys() {
+#  local zkbd_file="${ZDOTDIR:-$HOME}/.zkbd/${1:-$TERM-$VENDOR-$OSTYPE}"
+#  if [[ -e "$zkbd_file" ]]; then source "$zkbd_file"; fi
+
+  _key-set() {
+    local k="$1"; shift
+    if (( ${+key[$k]} )); then return; fi
+    while (( ${+1} )); do
+      1="$(cat -v <<< "$1")"
+      # print -r "key: changing $k from ${(q+)key[$k]} to ${(q+)1}"
+      key[$k]="$1"
+      if [[ -n "$1" ]]; then break; else shift; fi
+    done
+  }
+
+  _key-set F1 "$terminfo[kf1]" "$termcap[k1]"
+  _key-set F2 "$terminfo[kf2]" "$termcap[k2]"
+  _key-set F3 "$terminfo[kf3]" "$termcap[k3]"
+  _key-set F4 "$terminfo[kf4]" "$termcap[k4]"
+  _key-set F5 "$terminfo[kf5]" "$termcap[k5]"
+  _key-set F6 "$terminfo[kf6]" "$termcap[k6]"
+  _key-set F7 "$terminfo[kf7]" "$termcap[k7]"
+  _key-set F8 "$terminfo[kf8]" "$termcap[k8]"
+  _key-set F9 "$terminfo[kf9]" "$termcap[k9]"
+  _key-set F10 "$terminfo[kf10]" "$termcap[F1]"
+  _key-set F11 "$terminfo[kf11]" "$termcap[F2]"
+  _key-set F12 "$terminfo[kf12]" "$termcap[F3]"
+  _key-set Backspace "$terminfo[kbs]" "$termcap[kb]"
+  _key-set Insert "$terminfo[kich1]" "$termcap[kI]"
+  _key-set Home "$terminfo[khome]" "$termcap[kh]"
+  _key-set PageUp "$terminfo[kpp]" "$termcap[kP]"
+  _key-set Delete "$terminfo[kdch1]" "$termcap[kD]"
+  _key-set End "$terminfo[kend]" "$termcap[@7]"
+  _key-set PageDown "$terminfo[knp]" "$termcap[kN]"
+  _key-set BackTab "''${terminfo[cbt]}" "''${termcap[bt]}"
+  _key-set Tab "''${terminfo[ht]}" "''${termcap[ta]}"
+  _key-set Up "$terminfo[kcuu1]" "$termcap[ku]"
+  _key-set Left "$terminfo[kcub1]" "$termcap[kl]"
+  _key-set Down "$terminfo[kcud1]" "$termcap[kd]"
+  _key-set Right "$terminfo[kcuf1]" "$termcap[kr]"
+
+  [[ -n "${key[BackTab]}" ]] && bindkey -M menuselect "${key[BackTab]}" reverse-menu-complete
+  # search in completion menus with `?` & `/`
+  bindkey -M menuselect '/' history-incremental-search-backward
+  bindkey -M menuselect '?' history-incremental-search-forward
+
+  # zsh-history-substring search setup (remove if not using that plugin)
+  if [ -r $HOME/.dotfiles/oh-my-zsh/oh-my-zsh.sh ]; then
+    [[ -n "${key[Up]}" ]] && bindkey "${key[Up]}" history-substring-search-up
+    [[ -n "${key[Down]}" ]] && bindkey "${key[Down]}" history-substring-search-down
+    bindkey -M emacs '^P' history-substring-search-up
+    bindkey -M emacs '^N' history-substring-search-down
+    bindkey -M vicmd 'k' history-substring-search-up
+    bindkey -M vicmd 'j' history-substring-search-down
+  fi
+  unset -f _key-set
+}
+load-bindkeys
+
+
+# make sure term is in application mode when zle is active (for terminfo)
+if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
+  zle-line-init() { echoti smkx }; zle -N zle-line-init
+  zle-line-finish() { echoti rmkx }; zle -N zle-line-finish
+fi
+
+# use direnv to load .envrc from folders
+eval "$(direnv hook zsh)"
+
+# Init oh-my-zsh
+save_aliases=$(alias -L)
+if [ -r $HOME/.dotfiles/oh-my-zsh/oh-my-zsh.sh ]; then
+   export ZSH="$DOTFILES_DIR/oh-my-zsh"
+   export ZSH_THEME=agkozak
+   export AGKOZAK_MULTILINE=0
+   zstyle ':omz:update' mode disabled
+   # Uncomment the following line if pasting URLs and other text is messed up.
+   # DISABLE_MAGIC_FUNCTIONS="true"
+   # COMPLETION_WAITING_DOTS="true"
+   export DISABLE_UNTRACKED_FILES_DIRTY="true"
+   export HIST_STAMPS="dd.mm..yyyy"
+   export ZSH_CUSTOM="$DOTFILES_DIR/zsh"
+   plugins=(git tmux vscode fzf zsh-history-substring-search)
+   plugins+=(zsh-interactive-cd tig rsync man cp debian)
+   plugins+=(dirhistory docker ag)
+   # maybe also: pip pipenv minikube npm nvm npx golang helm
+   source $ZSH/oh-my-zsh.sh
+fi
+eval $save_aliases; unset save_aliases
+
+source ~/.zsh_local
+
+# vim: et:sw=2
+#

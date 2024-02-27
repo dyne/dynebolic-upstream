@@ -1,0 +1,23 @@
+# When inside WSL this install copies dotfiles inside the windows host
+# user directory
+
+. system/function_fs
+
+user=`winuser`
+winhome="/mnt/c/Users/${user}"
+if [ -r "${winhome}" ]; then
+	# echo "Installing in ${winhome} ..."
+	# rsync -r --exclude '.git' * "${winhome}/.dotfiles/"
+	echo "Installing Emacs in ~/AppData/Roaming ..."
+	mkdir -p "${winhome}/.dotfiles"
+	rsync -r --exclude '.git' * "${winhome}/AppData/Roaming/.dotfiles/"
+	cp emacs/emacs "${winhome}/AppData/Roaming/.emacs"
+	echo "Installing Git configs in ~/ ..."
+	cp git/gitconfig "${winhome}/.gitconfig"
+	cp git/gitignore "${winhome}/.gitignore"
+	cp misc/editorconfig "${winhome}/.editorconfig"
+	cat << EOF > "${winhome}/.wslconfig"
+[wsl2]
+guiApplications=false
+EOF
+fi

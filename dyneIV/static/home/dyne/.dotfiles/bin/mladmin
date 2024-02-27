@@ -1,0 +1,57 @@
+#!/usr/bin/env zsh
+
+# quick command to open a browser ready on the mailman admin page
+# configured with password retrieved from password-store
+
+pass_store=${PASSWORD_STORE_DIR:-"$HOME/.password-store"}
+pass_prefix=ml
+mailman_url=https://mailinglists.dyne.org/cgi-bin/mailman/admin/
+browser=(firefox)
+
+listname="$1"
+
+[[ "$listname" = "" ]] && {
+	print "usage: $0 listname"
+	pass ls $pass_prefix
+	return 1
+}
+
+found=""
+for i in ${(f)"$(ls $pass_store/$pass_prefix)"}; do
+	[[ "$i" = "${listname}.gpg" ]] && {
+		found="${i%.*}"
+		break }
+done
+[[ "$found" = "" ]] && {
+	print "entry not found: $pass_prefix/$listname"
+	return 1
+}
+print -- "found: $found"
+
+typeset -H pw
+pw=`pass show $pass_prefix/$found`
+
+tmp=`mktemp`
+
+cat <<EOF >> $tmp
+<html>
+<head>
+<title>Mailman admin for $found</title>
+</head>
+<body>
+
+<h1>Go to mailman admin: $found</h1>
+<FORM METHOD=POST ACTION="${mailman_url}/$found" name="f">
+<INPUT TYPE="password" NAME="adminpw" Value="${pw}" SIZE="30">
+<INPUT type="SUBMIT" name="admlogin" value="Let me in..." autofocus>
+</FORM>
+
+</body>
+</html>
+EOF
+
+browser+=("file://${tmp}")
+${=browser}
+
+(sleep 10; rm $tmp) &
+

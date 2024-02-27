@@ -1,0 +1,17 @@
+apt-get install -y -q --no-install-recommends ufw
+
+ufw --force reset
+
+ufw allow 60000:61000/udp
+ufw limit ssh
+
+# mosh
+
+# dhcp server
+# ufw allow bootps
+# ufw allow 53/udp
+# ufw allow 53/tcp
+
+ufw default deny
+ufw enable
+ufw reload

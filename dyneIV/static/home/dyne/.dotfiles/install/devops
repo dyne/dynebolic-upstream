@@ -1,0 +1,46 @@
+#!/bin/sh
+
+DISTRO=${DISTRO:-`lsb_release -cs`}
+REPO=${REPO:-all}
+
+case $DISTRO in
+	beowulf|bionic)  DISTRO=buster ;;
+	chimaera|focal)  DISTRO=bullseye ;;
+	daedalus|impish) DISTRO=bullseye ;;  # bookworm ;;
+esac
+
+echo "Target distro: $DISTRO"
+echo "Target repo: $REPO"
+
+hascicorp() {
+echo
+echo "Install HasciiCorp"
+keys=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+if ! [ -r $keys ]; then curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o $keys; fi
+echo "deb [arch=$(dpkg --print-architecture) signed-by=$keys] https://apt.releases.hashicorp.com $DISTRO main" \
+	> /etc/apt/sources.list.d/hascicorp.list
+}
+
+docker() {
+echo
+echo "Install Docker"
+keys=/usr/share/keyrings/docker-archive-keyring.gpg
+if ! [ -r $keys ]; then curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o $keys; fi
+echo "deb [arch=$(dpkg --print-architecture) signed-by=$keys] https://download.docker.com/linux/debian $DISTRO stable" \
+	> /etc/apt/sources.list.d/docker.list
+}
+
+kubernetes() {
+echo
+echo "Install Kubernetes"
+keys=/usr/share/keyrings/kubernetes-archive-keyring.gpg
+if ! [ -r $keys ]; then curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o $keys; fi
+echo "deb [arch=$(dpkg --print-architecture) signed-by=$keys] https://apt.kubernetes.io/ kubernetes-xenial main" \
+	> /etc/apt/sources.list.d/kubernetes.list
+}
+
+if [ "$REPO" = "all" ]; then
+    echo "Choose REPO to install: hascicorp, docker or kubernetes"
+else
+    $REPO
+fi

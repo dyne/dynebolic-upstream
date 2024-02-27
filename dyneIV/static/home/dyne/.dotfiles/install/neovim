@@ -1,0 +1,20 @@
+#!/bin/sh
+
+git clone --depth 1 --branch release-0.6 https://github.com/neovim/neovim.git
+cd neovim
+git checkout release-0.6
+echo
+echo "Reminder! make sure deps are installed:"
+echo "gettext cmake (or dotfiles make install-devtools"
+echo [press enter to proceed]
+read
+make CMAKE_BUILD_TYPE=Release
+make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX=$HOME/.dotfiles install
+mkdir -p ~/.config
+if [ -r ~/.config/nvim ]; then mv ~/.config/nvim ~/.config/nvim.backup; fi
+ln -s $HOME/.dotfiles/vim/nvim ~/.config/nvim
+mkdir -p ~/.local/share/nvim/site
+ln -s $HOME/.dotfiles/vim/nvim/autoload ~/.local/share/nvim/site/autoload
+
+if [ -d ${HOME}/.config/nvim ]; then mv ${HOME}/.config/nvim ${HOME}/.config/nvim.bck; fi
+ln -s ${DOTFILES}/vim/nvim ${HOME}/.config/

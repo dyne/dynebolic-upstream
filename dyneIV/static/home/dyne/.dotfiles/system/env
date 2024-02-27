@@ -1,0 +1,49 @@
+#!/bin/sh
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export EDITOR="vim"
+
+# History
+
+export HISTSIZE=32768;
+export HISTFILESIZE="${HISTSIZE}";
+export SAVEHIST=4096
+export HISTCONTROL=ignoredups:erasedups:ignorespace
+export HISTIGNORE='mosh *:tomb *:'
+# Enable colors
+
+export CLICOLOR=1
+export TERM=tmux
+# export COLORTERM=truecolor
+
+# Prefer US English and use UTF-8
+
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US"
+
+# Highlight section titles in man pages
+
+export LESS_TERMCAP_md="${yellow}";
+
+# Keep showing man page after exit
+
+export MANPAGER='less -X';
+
+# use the ssh-agent if running on the system
+if [ -r run/user/$UID/keyring/ssh ]; then
+	export SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+fi
+
+# Tell grep to highlight matches
+if [ "$sys" == "Linux" ]; then
+	GREP_OPTIONS+=" --color=auto"
+	for PATTERN in .cvs .git .hg .svn; do
+		GREP_OPTIONS+=" --exclude-dir=$PATTERN"
+	done
+fi
+export GREP_OPTIONS
+export GREP_COLOR='1;32'
+
+if [ -r $HOME/OneDrive/Shell/private-env ]; then
+	. $HOME/OneDrive/Shell/private-env
+fi

@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# Copyright (C) 2017-2022 Dyne.org Foundation
+#
+# designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, write to: Free Software Foundation, Inc.,
+# 675 Mass Ave, Cambridge, MA 02139, USA.
+
+keyfile="$1"
+[ -r "$keyfile" ] || keyfile="$HOME/shell/ssh-pubkeys/$1.pub"
+[ -r "$keyfile" ] || keyfile="$HOME/.ssh/$1.pub"
+[ -r "$keyfile" ] || {
+   echo "usage: adduser-remove path/to/ssh-key/friend.pub"
+   echo "the username used will be 'friend', or next argument"
+   exit 1
+}
+
+key=$(basename $keyfile)
+username=${2:-$(echo "$key" | cut -d. -f1)}
+tmp=$(mktemp)
+
+cat <<EOF > $tmp
+if ! test "\$(id -u)" = "0"; then
+    echo "[adduser-remote] --------------------------------"
+    echo "[adduser-remote] cannot add ssh key for $username"
+    echo "[adduser-remote] you must be root."
+    echo "[adduser-remote] --------------------------------"
+else
+if ! test -r  /home/$username; then
+   if [ "\$(uname -s)" = "FreeBSD" ]; then
+    pw user add -n $username -d /home/$username -m -s /usr/local/bin/bash
+   else
+    useradd -m $username
+   fi
+else
+   echo "user already exists"
+fi
+mkdir -p /home/$username/.ssh
+if ! test -r /home/$username/.ssh/authorized_keys; then
+    touch /home/$username/.ssh/authorized_keys
+fi
+cat <<EOFF >> /home/$username/.ssh/authorized_keys
+$(cat $keyfile)
+EOFF
+chmod -R go-rwx /home/$username/.ssh
+chown -R $username:$username /home/$username/.ssh
+fi
+EOF
+
+if command -v xclip; then
+    cat $tmp | xclip -i -selection clipboard
+    echo "adduser-remote script for $username is ready in your clipboard"
+else
+    echo
+    echo "# adduser-remote script for $username"
+    echo
+    cat $tmp
+fi
+rm -f $tmp
+

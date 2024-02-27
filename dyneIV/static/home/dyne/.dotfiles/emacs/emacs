@@ -1,0 +1,166 @@
+(add-to-list 'custom-theme-load-path (expand-file-name "~/.dotfiles/emacs/themes/"))
+(add-to-list 'load-path (expand-file-name "~/.dotfiles/emacs"))
+(set-face-attribute 'default nil :font "Hack")
+
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(unless (fboundp 'package-activate-all) (package-initialize))
+
+
+(require 'doom-themes)
+(setq doom-themes-enable-bold t      ; if nil, bold is universally disabled
+      doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+(load-theme 'doom-monokai-spectrum t nil)
+
+;; complimentary theme to make magit readable
+(load-theme 'unobtrusive-magit t nil)
+
+;; (doom-themes-visual-bell-config)
+;; Enable custom neotree theme
+;; (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+
+(editorconfig-mode)
+(cua-mode)
+(ivy-mode)
+(server-start)
+(menu-bar-mode -1)
+;; (toggle-scroll-bar -1)
+;; (tool-bar-mode -1)
+;; (display-line-numbers-mode
+(setq vc-follow-symlinks t)
+(setq confirm-kill-emacs 'y-or-n-p)
+(setq-default tab-width 4)
+(electric-indent-mode -1)
+(global-display-line-numbers-mode -1)
+(setq split-window-threshold 110)
+(setq copyright-year-ranges t)
+
+(require 'rainbow-delimiters)
+(require 'ws-butler)
+;; automatic whitespace trimming in programming modes
+(add-hook 'prog-mode-hook #'ws-butler-mode)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+(require 'mood-line)
+(add-to-list 'global-mode-string '(" 🐬"))
+(add-to-list 'global-mode-string '("💾%I"))
+(mood-line-mode)
+
+;; nyan-mode looks better in X
+;; (add-to-list 'load-path (expand-file-name "~/.dotfiles/emacs/nyan-mode"))
+;; (require 'nyan-mode)
+;; (nyan-mode 1)
+
+;; helm setup
+(require 'helm-swoop)
+(setq helm-multi-swoop-edit-save t)
+(setq helm-swoop-split-with-multiple-windows nil)
+(setq helm-swoop-split-direction 'split-window-vertically) ;;  'split-window-horizontally
+(setq helm-imenu-split-direction 'split-window-vertically) ;;  'split-window-
+(setq helm-swoop-speed-or-color t) ;; nil is faster
+(setq helm-swoop-move-to-line-cycle t)
+(setq helm-swoop-use-line-number-face t)
+(setq helm-swoop-use-fuzzy-match t)
+;; Always use the previous search
+(setq helm-swoop-pre-input-function
+      (lambda () (if (boundp 'helm-swoop-pattern)
+                     helm-swoop-pattern "")))
+(require 'helm-flx)
+(setq helm-flx-for-helm-find-files t ;; t by default
+      helm-flx-for-helm-locate t) ;; nil by default
+
+(autoload 'notmuch "notmuch" "notmuch mail" t)
+(require 'go-mode)
+
+(require 'helm-ag)
+
+(global-unset-key [(control x)(control z)])
+(global-set-key (kbd "M-x") 'helm-M-x)
+;; M-l in qwerty is soft on right hand and I use it also in tmux
+(global-set-key (kbd "M-l") 'helm-M-x) ;; this overrides an ugly lowercase hotkey
+(global-set-key (kbd "M-k") 'kill-buffer) ;; I'm not using it to delete lower block
+(global-set-key (kbd "M-i") 'helm-imenu)
+(global-set-key (kbd "M-,") 'helm-ag-project-root)
+(global-set-key (kbd "M-.") 'helm-ag)
+(global-set-key (kbd "C-x g") 'magit)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-o") 'helm-multi-swoop-all)
+;(global-set-key (kbd "C-x o") 'helm-multi-swoop)
+(global-set-key (kbd "M-o") 'other-frame)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-<S-s>") 'helm-multi-swoop-all)
+
+;; vim like cursor movements
+(global-set-key (kbd "M-k") 'next-line)
+(global-set-key (kbd "M-j") 'previous-line)
+(global-set-key (kbd "M-l") 'forward-char)
+(global-set-key (kbd "M-h") 'backward-char)
+
+;; function keys
+(global-set-key [f9] 'magit)
+
+;; easier split window
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
+
+;; because I'm sloppy
+(global-set-key (kbd "M-f") 'helm-find-files)
+(global-set-key (kbd "M-s") 'save-buffer)
+; (global-set-key (kbd "C-o") 'other-window)
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "C-b") 'helm-buffers-list)
+(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+(global-set-key (kbd "M-p") 'helm-buffers-list) ;; right hand easy
+
+(global-unset-key (kbd "M-c")) ;; sloppy and not useful
+
+; org-mode transparent encryption
+(epa-file-enable)
+(setq epa-armor t) ; armor in ascii for mobile-org compat
+
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+;; separate custom confs in .emacs.d/custom.el
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file) (load custom-file :noerror))
+;; local confs in .emacs.d/local.el
+(setq local-file (expand-file-name "local.el" user-emacs-directory))
+(when (file-exists-p local-file) (load local-file :noerror))
+
+;; spelling using hunspell (libreoffice engine)
+(with-eval-after-load "ispell"
+  (setenv "LANG" "en_US.UTF-8")
+  (setq ispell-program-name "hunspell")
+  (setq ispell-dictionary "en_GB")
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "en_GB")
+  ;; For saving words to the personal dictionary, don't infer it from
+  ;; the locale, otherwise it would save to ~/.hunspell_de_DE.
+  (setq ispell-personal-dictionary
+		(expand-file-name "hunspell_personal" user-emacs-directory))
+  ;; The personal dictionary file has to exist, otherwise hunspell will
+  ;; silently not use it.
+  (unless (file-exists-p ispell-personal-dictionary)
+	(write-region "" nil ispell-personal-dictionary nil 0))
+  )
+
+;; (require 'flycheck-grammarly)
+;; (with-eval-after-load 'flycheck
+;;   (flycheck-grammarly-setup))
+
+;; store lockfiles in a separate directory
+(setq lock-file-name-transforms
+      '(("\\`/.*/\\([^/]+\\)\\'" "/var/tmp/\\1" t)))
+
+;; line based comments in C
+(add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
+;; ctrl + mouse scrol to zoom text
+(global-set-key (kbd "<C-mouse-4>") 'text-scale-decrease)
+(global-set-key (kbd "<C-mouse-5>") 'text-scale-increase)
+
+
+;; unfill paragraphs to remove newlines
+(require 'unfill)

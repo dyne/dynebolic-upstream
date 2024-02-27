@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. install/need-suid.sh
+
+curl -sSL https://packages.microsoft.com/keys/microsoft.asc \
+	| apt-key add -
+echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list
+apt update -y && apt install code
+
+# TODO: check if works really
+extensions="ms-vscode.cpptools ms-azuretools.vscode-docker docsmsft.docs-yaml dcr30.lualinter rog2.luacheck psioniq.psi-header ms-vscode-remote.remote-containers stkb.rewrap"
+for EXT in $extensions; do code --install-extension $$EXT; done

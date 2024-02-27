@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+keep=(master gh-pages dependabot new-github-actions fixes andrea-docs)
+
+branch=`git branch -a`
+
+for i in ${(f)branch}; do
+	remove=1
+	br=`print $i | awk '/remotes\/origin/ { print $1 }' | cut -d/ -f3`
+	if [[ "$br" == "" ]]; then continue; fi
+	if [[ "$br" == "HEAD" ]]; then continue; fi
+	for i in ${keep}; do
+		if [[ "$i" == "$br" ]]; then print "keep $i"; remove=0; fi
+	done
+	if [[ $remove == 1 ]]; then
+		print "remove $br"
+		git push origin :$br
+	fi
+done

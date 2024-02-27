@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# remove duplicate files from rdfind's results.txt
+
+if ! [ -r ./results.txt ]; then
+        >&2 echo "Remove duplicate files from rdfind's results.txt"
+        >&2 echo "$0 : results file not found: results.txt"
+        exit 1
+else
+        >&2 echo "results file found"
+        ls -lh results.txt
+        >&2 echo "Usage: cat results.txt | $0"
+        >&2 echo "       Ctrl+C if you still see this message"
+fi
+
+while read -r type x x x x x x path
+do
+    case "$type" in
+
+        DUPTYPE_FIRST_OCCURRENCE)
+            name="${path##*/}"
+            echo "New path for $name" >&2
+            ;;
+
+        DUPTYPE_WITHIN_SAME_TREE|DUPTYPE_OUTSIDE_TREE)
+            if [[ -n "$name" ]] && [[ ${path##*/} == $name ]]; then
+              echo "Remove duplicate $path" >&2
+              rm -f "$path"
+            fi
+            ;;
+    esac
+done

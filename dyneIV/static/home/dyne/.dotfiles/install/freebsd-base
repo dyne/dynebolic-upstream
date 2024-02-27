@@ -1,0 +1,68 @@
+#!/bin/sh
+
+echo " install base packages"
+pkg install -y gmake bash bash-completion tmux zsh htop vim fusefs-ntfs-2022.5.17 \
+	emacs-nox magit-emacs_nox markdown-mode.el-emacs_nox \
+	lua-mode-emacs_nox notmuch-emacs_nox yaml-mode.el-emacs_nox \
+	fzf fd-find ncurses terminfo-db opendircolors mosh wget direnv \
+	psearch ccache gnu-watch portmaster the_silver_searcher findutils \
+	hunspell en-hunspell nl-hunspell fr-hunspell es-hunspell it-hunspell \
+	unbound
+
+cat << EOF > /etc/periodic.conf.local
+echo " avoid huge filesystem activity"
+security_status_chksetuid_enable="NO"
+security_status_neggrpperm_enable="NO"
+EOF
+
+echo " change first user uid to 1000"
+pw user show 1000 || {
+    firstuser=`pw user show 1001 | cut -d: -f1`
+    [ "$firstuser" = "" ] || {
+	pw usermod $firstuser -u 1000
+	chown -R 1000:1001 /home/$firstuser
+    }
+}
+
+echo " install make.conf"
+
+cat << EOF > /etc/make.conf
+# Build
+MAKE_JOBS_NUMBER?=2
+WITH_CCACHE_BUILD=yes
+
+# Optimizations
+CPUTYPE?=native
+OPTIMIZED_CFLAGS=YES
+BUILD_OPTIMIZED=YES
+WITH_CPUFLAGS=YES
+WITH="OPTIMIZED_CFLAGS"
+OPTIONS_SET=OPTIMIZED_CFLAGS CPUFLAGS
+
+# Headless server options
+OPTIONS_SET+=ICONV NLS
+OPTIONS_UNSET=CUPS DEBUG DOCS INFO FONTCONFIG X11
+WITHOUT_MODULES=sound ntfs linux
+WITHOUT_X11=yes
+WITHOUT_DEBUG=YES
+WITHOUT_CUPS=yes
+WITHOUT_FONTCONFIG=yes
+WITHOUT="DOCS"
+NO_PROFILE=YES
+NO_WERROR=
+WERROR=
+
+# Disable sendmail!
+NO_SENDMAIL=true
+
+# Fresh OpenSSL from Ports
+DEFAULT_VERSIONS+=ssl=openssl
+EOF
+
+echo " install portmaster conf"
+cat << EOF > /usr/local/etc/portmaster.rc
+BACKUP=bopt
+SAVE_SHARED=wopt
+ALWAYS_SCRUB_DISTFILES=dopt
+PM_LOG=/var/log/portmaster.log
+EOF

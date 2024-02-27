@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "dms  -ifname eth0 -friendlyName jaromil -path `pwd`"
+dms  -ifname eth0 -friendlyName jaromil -path `pwd`
+

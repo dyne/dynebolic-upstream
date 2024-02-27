@@ -1,0 +1,1 @@
+/root/.dotfiles/shell/bashrc

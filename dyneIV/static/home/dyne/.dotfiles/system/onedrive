@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# create symlinks to handy onedrive dirs
+exec 3>&2
+exec 2> /dev/null
+# (do stuff where you don't want to see the stderr.)
+upath="`winhome`"
+exec 2>&3
+if [ -d "$upath" ]; then
+
+	if ! [ -r "${HOME}/OneDrive" ]; then
+		if [ -r "${upath}/OneDrive" ]; then
+			echo "Creating home link to OneDrive ..."
+			ln -s "${upath}/OneDrive" "${HOME}/OneDrive"
+			if ! [ -r "${HOME}/Desktop" ]; then
+				ln -s "${HOME}/OneDrive/Desktop" "${HOME}/Desktop"; fi
+		fi
+	fi
+
+	linkdir() {	[ -r "${HOME}/$1" ] || ln -s "${upath}/$1" "${HOME}/$1"; }
+	linkdir "Downloads"
+	linkdir "Videos"
+	linkdir "AppData"
+
+fi

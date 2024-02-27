@@ -1,0 +1,37 @@
+# guix package manager
+[ -r ${HOME}/.config/guix/current/etc/profile ] && {
+	GUIX_PROFILE="${HOME}/.config/guix/current"
+	source "${GUIX_PROFILE}/etc/profile"       
+}
+
+# nodejs version manager
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm
+
+if command -v fd >/dev/null; then
+  export FZF_DEFAULT_COMMAND='fd --type file --color=always'
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  export FZF_DEFAULT_OPTS="--ansi"
+fi
+
+# fzf completions and triggers
+if [ -r /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+  export FZF_ALT_C_OPTS="--preview 'tree -L 2 -C {} | head -200'"
+  export FZF_COMPLETION_TRIGGER='~~'
+  export FZF_COMPLETION_OPTS='--border --info=inline'
+  . /usr/share/doc/fzf/examples/key-bindings.bash
+  . $HOME/.dotfiles/completions/fzf
+else
+  bind '"\e[A": history-substring-search-backward'
+  bind '"\e[B": history-substring-search-forward'
+fi
+
+# ZFS completion
+. $HOME/.dotfiles/completions/zfs
+. $HOME/.dotfiles/completions/git
+
+# bash-completion system package
+t=/usr/local/share/bash-completion/bash_completion; [ -r $t ] && . $t
+t=/usr/share/bash-completion/bash_completion; [ -r $t ] && . $t
+. $HOME/.dotfiles/completions/ssh
+

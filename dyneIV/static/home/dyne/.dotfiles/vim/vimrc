@@ -1,0 +1,19 @@
+set mouse=v
+syn on
+colorscheme elflord
+
+" cmap w!! w !sudo tee % >/dev/null
+" set fo=tcrq
+" set tw=72
+map <C-j> {gq}
+imap <C-j> <esc>{gq}i
+
+set noanti
+" set number
+
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
+
+
