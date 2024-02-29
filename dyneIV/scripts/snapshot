@@ -1,0 +1,65 @@
+#!/bin/zsh
+
+function mm() {
+	>&2 echo "snapshot: $*"
+}
+
+let MINIMUM_LEN=8
+let MAXIMUM_LEN=16
+set -A CHARS a b c d e f g h i j k l m n o p q r s t u v w x y z \
+	A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
+	0 1 2 3 4 5 6 7 8 9
+CNUM="${#CHARS[@]}"
+MAXLEN=$(( $MINIMUM_LEN + ( $RANDOM % ( $MAXIMUM_LEN - $MINIMUM_LEN ) ) ))
+RANDSTR=""
+let POSCNT=0;
+while [ 1 -eq 1 ]
+do
+	if [ $POSCNT -ge $MAXLEN ]
+	then
+		break;
+	fi
+	let POSCNT=$POSCNT+1
+	RANDSTR="${RANDSTR}${CHARS[${RANDOM}%${CNUM}]}"
+done
+RANDSTR="${RANDSTR}${CHARS[${RANDOM}%${CNUM}]}"
+
+mm "Snapshot the current persistence.qcow2 install used in Qemu"
+[ ${UID} = 0 ] || { mm "Run as root." && exit 1 }
+
+TEMPDIR=/tmp/dyneIV-persist-snap
+SNAPFILE=dyneIV-snapshot-`date +'%d%m%y'`-${RANDSTR}.squashfs
+COW=persistence.qcow2
+COWMNT=/tmp/dyneIV-persist-cowmnt
+LOOPMNT=/tmp/dyneIV-persist-loopmnt
+SQFSCONF=(-c xz -j 6)
+
+[ -r ${COW} ] || {
+   mm "Cannot find ${COW}"
+   exit 1 }
+
+mkdir -p $COWMNT
+modprobe nbd
+qemu-nbd --connect=/dev/nbd0 "${COW}"
+mount /dev/nbd0p1 "${COWMNT}"
+
+[ -r ${COWMNT}/dyne/dyne.nst ] || {
+	mm "File not found in ${COW}: dyne/dyne.nst"
+	umount "${COWMNT}"
+	qemu-nbd --disconnect /dev/nbd0
+	exit 1 }
+
+mkdir -p ${LOOPMNT}
+mount -o loop ${COWMNT}/dyne/dyne.nst ${LOOPMNT}
+
+rm -rf ${TEMPDIR}; mkdir -p ${TEMPDIR}
+
+cp -ra ${LOOPMNT}/home/rw ${TEMPDIR}/home && chown -R 1000:1000 ${TEMPDIR}/home/*
+cp -ra ${LOOPMNT}/root/rw ${TEMPDIR}/root && chown -R 1:1 ${TEMPDIR}/root
+cp -ra ${LOOPMNT}/etc/rw ${TEMPDIR}/etc
+find ${TEMPDIR} -name .cache -exec rm -rf {} +
+umount ${LOOPMNT}
+umount ${COWMNT}
+qemu-nbd --disconnect /dev/nbd0
+tar -c ${TEMPDIR} | tar2sqfs -r ${TEMPDIR} -f -q ${SQFSCONF} ${SNAPFILE}
+mm "Snapshot created: ${SNAPFILE}"
