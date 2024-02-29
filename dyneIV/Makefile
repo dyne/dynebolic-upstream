@@ -125,7 +125,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
-    xz-utils fuse-overlayfs
+    xz-utils fuse-overlayfs qemu-system-x86
 
 bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
 	@make -C bootstrap
