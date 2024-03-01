@@ -55,7 +55,7 @@ mount -o loop ${COWMNT}/dyne/dyne.nst ${LOOPMNT}
 rm -rf ${TEMPDIR}; mkdir -p ${TEMPDIR}
 
 cp -ra ${LOOPMNT}/home/rw ${TEMPDIR}/home && chown -R 1000:1000 ${TEMPDIR}/home/*
-cp -ra ${LOOPMNT}/root/rw ${TEMPDIR}/root && chown -R 1:1 ${TEMPDIR}/root
+cp -ra ${LOOPMNT}/root/rw ${TEMPDIR}/root && chown -R 0:0 ${TEMPDIR}/root
 cp -ra ${LOOPMNT}/etc/rw ${TEMPDIR}/etc
 find ${TEMPDIR} -name .cache -exec rm -rf {} +
 umount ${LOOPMNT}
