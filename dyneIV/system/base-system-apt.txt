@@ -15,6 +15,8 @@ libmtp-runtime
 daemonize
 xz-utils
 gpg-agent # required for gpg use in guix-setup
+anacron
+pkexec
 
 # ===========================================================================
 # Self-devel

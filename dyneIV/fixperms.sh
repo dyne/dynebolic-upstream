@@ -7,6 +7,7 @@ set -e
 #>&2 echo "Fixing permissions in ROOT folders..."
 chown -R root:root /root
 chmod 700 /root
+chown root:root /home
 chown -R dyne:dyne /home/dyne
 chmod 700 /home/dyne
 # chown clears suid & guid permission bits occasionally set under /bin & /usr/bin
@@ -38,11 +39,9 @@ chown root:shadow \
     /etc/shadow \
     /etc/gshadow- \
     /etc/gshadow
-chown root:games \
-    /usr/games/tecnoballz \
-    /usr/games/lbreakout2
-chown root:crontab \
-    /usr/bin/crontab
+# anacron doesn't needs this
+# chown root:crontab \
+#     /usr/bin/crontab
 chown polkitd:root \
     /usr/share/polkit-1/rules.d \
     /etc/polkit-1/rules.d
@@ -77,10 +76,7 @@ chmod 2755 \
     /usr/bin/ssh-agent \
     /usr/bin/expiry \
     /usr/bin/chage \
-    /sbin/unix_chkpwd \
-    /usr/games/tecnoballz \
-    /usr/games/lbreakout2 \
-    /usr/bin/crontab
+    /sbin/unix_chkpwd
 chmod 1777 \
     /run/screen \
     /run/lock
@@ -90,6 +86,7 @@ chmod 1777 \
 
 #####
 # /etc
+mkdir /etc/sddm.conf.d # used by kde-config-sddm
 chmod 755 /etc/sddm.conf.d \
 	  /etc/sysctl.d \
 	  /etc/sudoers.d \
