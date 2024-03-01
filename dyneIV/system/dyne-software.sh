@@ -4,8 +4,7 @@
 TMP_DEPS=""
 
 [ -r /usr/local/bin/tomb ] && [ -r /usr/local/share/jaromail ] && \
-[ -r /usr/local/bin/zenroom ] && [ -r /root/.dotfiles ] && \
-[ -r /usr/local/bin/hasciicam ] && {
+[ -r /usr/local/bin/zenroom ] && [ -r /usr/local/bin/hasciicam ] && {
 	>&2 echo "-- Dyne.org software found already installed."
 	exit 0
 }
