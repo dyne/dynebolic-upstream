@@ -30,16 +30,16 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-devroot: SDK := dyneIV-devroot-${ARCH}.tar.xz
+devroot: SDK := dyneIV-devroot-${ARCH}.squashfs
 devroot: ISO ?= dynebolic.iso
 devroot: ## 📥 Download the latest SDK build ROOT
-	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
-	$(info Downloading and restoring the latest SDK environment)
-	rsync -PL files.dyne.org::dynebolic/${SDK} ${SDK}
-	mkdir -p ${ROOT} mnt
-	squashfuse ${SDK} mnt
-	rsync -raX mnt/* ROOT/
-	umount mnt
+	$(if $(wildcard ${ROOT}),$(error Cannot overwrite: ${ROOT}))
+	$(info Downloading and restoring the latest development ROOT)
+	mkdir -p ${SRC}/build
+	rsync -PL files.dyne.org::dynebolic/${SDK} ${SRC}/build/${SDK}
+	$(info Extracting ROOT, please wait...)
+	unsquashfs -d ${ROOT} ${SRC}/build/${SDK}
+	$(info ROOT ready: make system && make modules)
 
 snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
 	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
