@@ -7,6 +7,9 @@
 # found runtime in /run/live/boot
 /boot
 
+# flag used in chroot script control
+/fail
+
 # these are moved to ${DEV_PATHS} in config.mk
 /usr/bin/apt
 /usr/bin/dpkg

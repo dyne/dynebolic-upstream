@@ -7,6 +7,9 @@
 # found runtime in /run/live/boot
 /boot
 
+# flag used in chroot script control
+/fail
+
 /var/log/apt
 /var/log/dpkg.log
 /var/log/fsck
