@@ -25,6 +25,12 @@ include ${SRC}/config.mk
 
 all: need-suid apt-get-update build-root dyne-software squash-root squash-home squash-static
 
+clean:
+	rm -f ${SRC}/build/dyneIV-root-amd64.squashfs
+	rm -f ${SRC}/build/dyneIV-home-amd64.squashfs
+	rm -f ${SRC}/build/dyneIV-static-amd64.squashfs
+	rm -f ${SRC}/build/dyneIV-devroot-amd64.squashfs
+
 build-root:
 	$(call install-packages,base-system-apt.txt)
 
@@ -38,13 +44,32 @@ squash-root: need-suid prepare-excludes
 	@mkdir -p ${SRC}/build
 	@$(if $(wildcard ${ROOT}),,$(error Folder not found: ${ROOT}))
 	@$(if $(wildcard ${target}),$(error Cannot overwrite: ${target}))
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+	$(call chroot-script,${SRC}/fixperms.sh)
 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
 
-home: build-home squash-home
+# @$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+# @$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+
+root: need-suid apt-get-update build-root dyne-software squash-root
+
+squash-devroot: EXCLUDE_FOR := devel
+squash-devroot: target := ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs
+squash-devroot: need-suid prepare-excludes
+	@echo "--\n-- Squash build: root to ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs"
+	@mkdir -p ${SRC}/build
+	@$(if $(wildcard ${ROOT}),,$(error Folder not found: ${ROOT}))
+	@$(if $(wildcard ${target}),$(error Cannot overwrite: ${target}))
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+	@$(call chroot-script,${SRC}/fixperms.sh)
+	@chroot ${ROOT} apt-get clean
+	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
+
+home: squash-home
 
 squash-home: need-suid
 	@echo "--\n-- Squash build: home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs"
@@ -57,6 +82,8 @@ squash-home: need-suid
 			"${SRC}/build/dyneIV-home-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-home-${ARCH}.squashfs\n--"
 
+static: squash-static
+
 squash-static: need-suid
 	@echo "--\n-- Squash build: static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
@@ -66,17 +93,17 @@ squash-static: need-suid
 			"${SRC}/build/dyneIV-static-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
 
-cli-utils: ##
-	$(call install-packages,cli-utils.txt)
+# cli-utils: ##
+# 	$(call install-packages,cli-utils.txt)
 
-desktop-kde: ##
-	$(call install-packages,desktop-kde.txt)
+# desktop-kde: ##
+# 	$(call install-packages,desktop-kde.txt)
 
-creative-multimedia: ##
-	$(call install-packages,creative-multimedia.txt)
+# creative-multimedia: ##
+# 	$(call install-packages,creative-multimedia.txt)
 
-fun-games: ##
-	$(call install-packages,fun-games.txt)
+# fun-games: ##
+# 	$(call install-packages,fun-games.txt)
 
-cli-emacs: ##
-	$(call install-packages,cli-emacs.txt)
+# cli-emacs: ##
+# 	$(call install-packages,cli-emacs.txt)
