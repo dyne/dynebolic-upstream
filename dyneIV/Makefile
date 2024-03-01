@@ -181,8 +181,15 @@ squash-dev: ## 🦺 Compress the filesystem for developers
 buildroot: ## 🏗️ Package the build ROOT  for developers
 	make -C iso buildroot
 
-iso: ## 🏁 Toast the current ISO image
-	make -C iso iso
+iso: # 🏁 Toast the current ISO image
+	make -C iso grub-check iso-staging grub-make iso-checksum iso \
+		ISO=dynebolic.iso \
+		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
+
+iso-devel: ## 🏁 Toast the current ISO image
+	make -C iso grub-check iso-staging grub-make iso \
+		ISO=dynebolic-dev.iso \
+		COMPONENTS="devroot home static mod-kde mod-multimedia mod-games"
 
 burn: ISO ?= dynebolic.iso
 burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
