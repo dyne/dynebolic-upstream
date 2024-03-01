@@ -30,23 +30,25 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-sync-root: SDK := dyneIV-sdk-${ARCH}.tar.xz
-sync-root: ISO ?= dynebolic.iso
-sync-root: ## 📥 Download the latest SDK build ROOT
+devroot: SDK := dyneIV-devroot-${ARCH}.tar.xz
+devroot: ISO ?= dynebolic.iso
+devroot: ## 📥 Download the latest SDK build ROOT
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
-	rsync -PL files.dyne.org::dynebolic/sdk/${SDK} ${SDK}
-	mkdir -p ${ROOT}
-	tar -C ${ROOT} -xf ${SDK}
+	rsync -PL files.dyne.org::dynebolic/${SDK} ${SDK}
+	mkdir -p ${ROOT} mnt
+	squashfuse ${SDK} mnt
+	rsync -raX mnt/* ROOT/
+	umount mnt
 
 snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
 	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
 	make -C iso iso-snapshot FILE=${FILE}
 
-qemu-grub: ISO ?= dynebolic.iso
-qemu-grub: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-grub: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
-qemu-grub: ## 🖥️ Emulate UEFI USB boot using qemu
+qemu: ISO ?= dynebolic.iso
+qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
+qemu: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
+qemu: ## 🖥️ Emulate UEFI USB boot using qemu
 	$(info Launch QEMU emulator on ISO using UEFI BIOS)
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
 	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
@@ -79,7 +81,7 @@ persist-create: need-suid ## 💾 Create persistance storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
 	$(info Creating persistence qcow2 file for Qemu)
 	modprobe nbd
-	qemu-img create -f qcow2 persistence.qcow2 10G
+	qemu-img create -f qcow2 persistence.qcow2 4G
 	qemu-nbd -c /dev/nbd${NBD} persistence.qcow2
 	parted -s /dev/nbd${NBD} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
 	mkfs.ext4 -L dyne.nst /dev/nbd${NBD}p1
@@ -104,17 +106,6 @@ persist-umount: MNT ?= mnt
 persist-umount: need-suid ## ⏏️ Unmount persistance contents
 	$(call umount-qcow2,${MNT})
 
-persist-sync: FILE ?= persistence.qcow2
-persist-sync: MNT ?= mnt
-persist-sync: need-suid
-	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
-	mkdir -p ${MNT}
-	$(call mount-qcow2,${FILE},${MNT})
-	rsync -raX ${MNT}/rw/home/dyne/.config/* ${SRC}/static/home/dyne/.config/ \
-		--exclude libaccounts-glib --exclude kdeconnect
-	rsync -raX ${MNT}/rw/usr/share/wallpapers/dyne ${SRC}/static/usr/share/wallpapers/
-	$(call umount-qcow2,${MNT})
-
 _: ##
 -----: ## __ Build from sources:
 
@@ -125,7 +116,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
     squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
-    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui
+    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
 bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
 	@make -C bootstrap

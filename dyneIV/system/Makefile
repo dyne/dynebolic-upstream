@@ -88,7 +88,7 @@ squash-static: need-suid
 	@echo "--\n-- Squash build: static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
 	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
-			--owner 1:1 ${SRC}/static \
+			--owner 0:0 ${SRC}/static \
 		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
 			"${SRC}/build/dyneIV-static-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
