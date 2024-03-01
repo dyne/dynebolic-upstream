@@ -32,6 +32,8 @@ all: iso
 # 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 # 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
+
+iso-staging: COMPONENTS ?= root static home mod-kde mod-multimedia mod-games
 iso-staging:
 	$(info Initializing ISO staging environment)
 	@rm -rf staging
@@ -39,13 +41,10 @@ iso-staging:
 	@mkdir -p staging/boot/grub/x86_64-efi
 	@mkdir -p staging/isolinux
 	@mkdir -p staging/live
-	@ln -f ${SRC}/build/dyneIV-* staging/live/
-	@echo "dyneIV-root-amd64.squashfs" > staging/live/filesystem.module
-	@echo "dyneIV-home-amd64.squashfs" >> staging/live/filesystem.module
-	@echo "dyneIV-static-amd64.squashfs" >> staging/live/filesystem.module
-	@echo "dyneIV-mod-kde-amd64.squashfs" >> staging/live/filesystem.module
-	@echo "dyneIV-mod-multimedia-amd64.squashfs" >> staging/live/filesystem.module
-	@echo "dyneIV-mod-games-amd64.squashfs" >> staging/live/filesystem.module
+	@for i in ${COMPONENTS}; do \
+		ln -f ${SRC}/build/dyneIV-$$i-amd64.squashfs staging/live/ ;\
+		echo dyneIV-$$i-amd64.squashfs | tee -a staging/live/filesystem.module ;\
+	done
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	@cp -f isolinux.cfg staging/isolinux/
@@ -76,31 +75,10 @@ grub-make:
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
 	    "boot/grub/grub.cfg=grub-embed.cfg"
 
-
-iso-release: ISO ?= dynebolic.iso
-iso-release: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
-iso-release: need-suid grub-check iso-staging grub-make iso-checksum
-	$(info Toast the ISO file to ${ISO})
-	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
-		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
-		mcopy -vi efiboot.img												\
-    "EFI/BOOT/BOOTIA32.EFI"					\
-    "EFI/BOOT/BOOTx64.EFI"					\
-    "boot/grub/grub.cfg" ::/EFI/BOOT/
-	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/${ISO}"			\
-		-full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable	\
-		-partition_offset 16 -joliet -joliet-long -rational-rock		\
-		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot	\
-		isolinux/isolinux.bin -no-emul-boot -boot-load-size 4			\
-		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
-		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
-		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
-		`cat /proc/sys/kernel/random/uuid` \
-		staging/efiboot.img staging
-
+# requires iso-*-staging before
 iso: ISO ?= dynebolic.iso
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
-iso: need-suid iso-staging grub-check grub-make
+iso: need-suid
 	$(info Toast the ISO file to ${ISO})
 	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
 		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
@@ -143,7 +121,6 @@ iso-snapshot: need-suid iso-staging grub-check grub-make
 		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
 		`cat /proc/sys/kernel/random/uuid` \
 		staging/efiboot.img staging
-
 
 #  --install-modules="${grub-install-modules}"
 #iso: grub-install-modules := linux normal iso9660 memdisk search tar ls png gfxmenu
