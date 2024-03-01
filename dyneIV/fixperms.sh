@@ -86,7 +86,7 @@ chmod 1777 \
 
 #####
 # /etc
-mkdir /etc/sddm.conf.d # used by kde-config-sddm
+mkdir -p /etc/sddm.conf.d # used by kde-config-sddm
 chmod 755 /etc/sddm.conf.d \
 	  /etc/sysctl.d \
 	  /etc/sudoers.d \
