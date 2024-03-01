@@ -64,11 +64,15 @@ fix-root-permissions: need-suid
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"
+	@rm -f ${ROOT}/fail
 	@cp    "${1}" ${ROOT}/script.sh
-	mount -o bind /proc ${ROOT}/proc
-	@chroot ${ROOT} bash -e /script.sh
-	umount ${ROOT}/proc
+	@mount -o bind /proc ${ROOT}/proc
+	@mount -o bind /dev ${ROOT}/dev
+	chroot ${ROOT} bash -e /script.sh || touch ${ROOT}/fail
+	@umount ${ROOT}/dev
+	@umount ${ROOT}/proc
 	@rm -f ${ROOT}/script.sh
+	@test ! -r ${ROOT}/fail || echo "-- Fail: ${1}\n--"
 	@echo "-- Done ${1}\n--"
 endef
 
@@ -76,15 +80,17 @@ define chroot-script-into
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	$(if $(wildcard ${2}),,$(error Folder not found: ${2}))
 	@echo "--\n-- Execute: ${1} into ${2}"
+	@rm -f ${2}/fail
 	@cp    "${1}" ${2}/script.sh
-	mkdir ${2}/proc ${2}/dev
-	mount -o bind /proc ${2}/proc
-	mount -o bind /dev ${2}/dev
-	@chroot ${2} bash -e /script.sh
-	umount ${2}/proc
-	umount ${2}/dev
-	rmdir ${2}/proc ${2}/dev
+	@mkdir ${2}/proc ${2}/dev
+	@mount -o bind /proc ${2}/proc
+	@mount -o bind /dev ${2}/dev
+	chroot ${2} bash -e /script.sh || touch ${2}/fail
+	@umount ${2}/dev
+	@umount ${2}/proc
+	@rmdir ${2}/proc ${2}/dev
 	@rm -f ${2}/script.sh
+	@test ! -r ${2}/fail || echo "-- Fail: ${1} into ${2}\n--"
 	@echo "--\n-- Done ${1} into ${2}\n--"
 endef
 
