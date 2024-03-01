@@ -30,16 +30,15 @@ include config.mk
 
 ----: ## __ Quick test on emulator:
 
-devroot: SDK := dyneIV-devroot-${ARCH}.squashfs
-devroot: ISO ?= dynebolic.iso
-devroot: ## 📥 Download the latest SDK build ROOT
-	$(if $(wildcard ${ROOT}),$(error Cannot overwrite: ${ROOT}))
-	$(info Downloading and restoring the latest development ROOT)
+devsetup: MODULES := devroot mod-kde mod-multimedia mod-games
+devsetup: ## 📥 Download the latest development ROOT modules
+	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
+	$(info Downloading and restoring the latest SDK environment)
 	mkdir -p ${SRC}/build
-	rsync -PL files.dyne.org::dynebolic/${SDK} ${SRC}/build/${SDK}
-	$(info Extracting ROOT, please wait...)
-	unsquashfs -d ${ROOT} ${SRC}/build/${SDK}
-	$(info ROOT ready: make system && make modules)
+	for i in ${MODULES}; do \
+		rsync -PL files.dyne.org::dynebolic/modules/dyneIV-$$i-${ARCH}.squashfs \
+		${SRC}/build/; done
+	make reset
 
 snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
 	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
@@ -202,8 +201,9 @@ burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
 _: ##
 -----: ## __ Undo and restart from scratch
 
+reset: DEVROOT ?= ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs
 reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
-	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make devroot))
+	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make devsetup))
 	$(info Restore ROOT from ${DEVROOT})
 	$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
