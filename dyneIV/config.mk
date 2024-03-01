@@ -11,8 +11,7 @@ APT_PROXY_OVERRIDE := ""
 
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
 STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
-STAGE3    := ${FILEPFX}-system-${ARCH}.squash
-STAGE3DEV := ${FILEPFX}-sdk-${ARCH}.tar.xz
+DEVROOT := ${SRC}/build/${FILEPFX}-devroot-${ARCH}.squashfs
 
 SQFSCONF ?= -c xz -j 6
 
