@@ -42,13 +42,14 @@ prepare-excludes:
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
 
+# remove freesh repos because kernel is installed only by bootstrap
 apt-get-update: need-suid
 	@echo "--\n-- Apt Get Update"
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" \
-		> ${ROOT}/update.sh
-	mount -o bind /proc ${ROOT}/proc
+	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
+	@mount -o bind /proc ${ROOT}/proc
 	@chroot ${ROOT} bash -e /update.sh
-	umount ${ROOT}/proc
+	@umount ${ROOT}/proc
 	@rm -f ${ROOT}/update.sh
 	@echo "-- Done Apt Get Update\n--"
 
