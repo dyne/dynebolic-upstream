@@ -45,6 +45,15 @@ snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
 	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
 	make -C iso iso-snapshot FILE=${FILE}
 
+snap-mount: need-suid ##
+	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
+	mkdir -p snap-mount
+	squashfuse ${FILE} snap-mount
+
+snap-umount: need-suid ##
+	$(if $(wildcard snap-mount),,$(error snap-mount not found))
+	fusermount -u snap-mount
+
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
@@ -194,16 +203,18 @@ _: ##
 -----: ## __ Undo and restart from scratch
 
 reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
-	$(if $(wildcard ${STAGE3}),,$(error System squash not found: ${STAGE3}))
-	$(if $(wildcard ${STAGE3DEV}),,$(error Development archive not found: ${STAGE3DEV}))
-	$(info Restore ROOT from ${STAGE3} and ${STAGE3DEV})
-	@rm -rf ${ROOT}
-	@mkdir -p ${ROOT} && cd ${ROOT} && \
-		unsquashfs -d . ${SRC}/${STAGE3}
+	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make devroot))
+	$(info Restore ROOT from ${DEVROOT})
+	$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+	rm -rf ${ROOT}
+	unsquashfs -d ${ROOT} ${DEVROOT}
 
 restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 	$(info Restore ROOT from ${STAGE2})
+	$(if $(wildcard ${STAGE2}),,$(error Bootstrap not found: make bootstrap))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 	@rm -rf ${ROOT}
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar -xf ${SRC}/${STAGE2}
 
@@ -215,7 +226,6 @@ clean: need-suid ## 🧹  Delete ROOT
 	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 	@rm -rf ${ROOT}
 	@rm -rf modules/*-mnt
-	@rm -rf build
 
 ######
 ## Publishing operations (ssh key restricted)
