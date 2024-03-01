@@ -17,8 +17,9 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-source /etc/dyne/utils.sh
 source /etc/dyne/snapshot.conf
+
+function mm() {	>&2 echo "dyne-snapshot: $*"; }
 
 [[ -r /run/live/persistence ]] || {
 	mm "not running on a dynebolic system"
@@ -66,13 +67,15 @@ tar -c /run/live/overlay/rw | tar2sqfs -r /run/live/overlay/rw -f -q -c xz ${out
 
 mm "Uploading..."
 
-chmod g+r "${outmp}"
-scp -i /etc/dyne/snapshot.sk "${outmp}" "${SSH}:snapshots/${outfile}"
+chmod a+r "${outmp}"
+sktmp=`mktemp`; echo "$SK" | base64 -d > $sktmp
+scp -i "${sktmp}" "${outmp}" "${SSH}:snapshots/${outfile}"
 [[ $? = 0 ]] || {
 	mm "SSH transfer error."
-	rm -f "${tmpkey}"
+	rm -f "${sktmp}"
 	exit 1
 }
+rm -f "${sktmp}"
 
 URL="${HOSTNAME}/snapshots/$outfile"
 mm "$URL"
