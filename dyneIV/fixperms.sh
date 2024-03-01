@@ -5,13 +5,13 @@ set -e
 # sudo find ROOT/etc -printf '%m %p\0' | xargs --null -n1 | grep -v 777 | grep -v 755 | grep -v 644
 
 #>&2 echo "Fixing permissions in ROOT folders..."
-chown -R root:root /root
-chmod 700 /root
-chown root:root /home
-chown -R dyne:dyne /home/dyne
-chmod 700 /home/dyne
+#chown -R root:root /root
+#chmod 700 /root
+#chown root:root /home
+#chown -R dyne:dyne /home/dyne
+#chmod 700 /home/dyne
 # chown clears suid & guid permission bits occasionally set under /bin & /usr/bin
-find /etc /home /lib /lib64 /media /mnt /opt /sbin /srv /usr /var /bin \
+find /etc /lib /lib64 /media /mnt /opt /sbin /srv /usr /var /bin \
 	 -not -path /usr/share -not -path /var/cache/apt \
 	 \! -user root -o \! -group root -exec \
 	 chown root:root '{}' \;
@@ -22,8 +22,7 @@ find /etc /home /lib /lib64 /media /mnt /opt /sbin /srv /usr /var /bin \
 # Set particular ownerships
 chown root:messagebus \
 	/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-chown root:staff \
-    /usr/local/share/fonts
+#chown root:staff /usr/local/share/fonts
 chown root:utmp \
     /usr/lib/x86_64-linux-gnu/utempter/utempter
 chown root:tty \
@@ -66,8 +65,7 @@ chmod 4755 \
     /bin/mount \
     /bin/fusermount3 \
     /usr/lib/dbus-1.0/dbus-daemon-launch-helper
-chmod 2775 \
-    /usr/local/share/fonts
+# chmod 2775 /usr/local/share/fonts
 chmod 2755 \
     /usr/lib/x86_64-linux-gnu/utempter/utempter \
     /usr/lib/mc/cons.saver \
