@@ -43,14 +43,12 @@ squash-root: need-suid prepare-excludes
 	@echo "--\n-- Squash build: root to ${SRC}/build/dyneIV-root-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
 	@$(if $(wildcard ${ROOT}),,$(error Folder not found: ${ROOT}))
-	@$(if $(wildcard ${target}),$(error Cannot overwrite: ${target}))
-	$(call chroot-script,${SRC}/fixperms.sh)
-	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+	@$(call chroot-script,${SRC}/fixperms.sh)
+	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
-
-# @$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-# @$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 
 root: need-suid apt-get-update build-root dyne-software squash-root
 
@@ -60,12 +58,11 @@ squash-devroot: need-suid prepare-excludes
 	@echo "--\n-- Squash build: root to ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
 	@$(if $(wildcard ${ROOT}),,$(error Folder not found: ${ROOT}))
-	@$(if $(wildcard ${target}),$(error Cannot overwrite: ${target}))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 	@$(call chroot-script,${SRC}/fixperms.sh)
 	@chroot ${ROOT} apt-get clean
-	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
 
