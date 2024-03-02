@@ -39,8 +39,8 @@ deps: need-suid ## 🛠️ Install development dependencies
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
     xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
-devsetup: MODULES := devroot mod-kde
-devsetup: ## 📥 Download the latest development ROOT modules
+setup: MODULES := devroot mod-kde
+setup: ## 📥 Download the latest development ROOT modules
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
 	mkdir -p ${SRC}/build
@@ -145,19 +145,30 @@ persist-umount: need-suid # ⏏️ Unmount persistance contents
 	$(call umount-qcow2,${MNT})
 
 _: ##
------: ## __ Build from sources:
+-----: ## __ Build from scratch:
 
 bootstrap: ## 🚀 Build the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
-modules: ## 🧩 Build all system modules
+system: ## 🗿 Build the root system: dyneIV-root
+	@make -C system all
+
+modules: ## 🧩 Build all system modules (takes long...)
 	-make -C modules kde
 	-make -C modules multimedia
 	-make -C modules games
 
-upgrade: ## 🔝 Update all system packages
+upgrade: ## 🔝 Update root system packages
 	$(call upgrade-packages)
 	@make system
+
+iso: ## 🏁 Create the current ISO image
+	make -C iso grub-check iso-staging grub-make iso-checksum iso \
+		ISO=dynebolic.iso \
+		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
+
+_: #
+-----: # __ Advanced development function
 
 chroot: # 🚪 Enter the current build ROOT via CLI
 	$(info Enter ROOT)
@@ -166,6 +177,14 @@ chroot: # 🚪 Enter the current build ROOT via CLI
 	@chroot ${ROOT} /bin/bash
 	@umount ${ROOT}/dev
 	@umount ${ROOT}/proc
+
+devroot: # 🏗️ Package the ROOT for developers
+	make -C system squash-devroot
+
+iso-devel: # 🏁 Toast the development ISO image
+	make -C iso grub-check iso-staging grub-make iso \
+		ISO=dynebolic-dev.iso \
+		COMPONENTS="devroot home static mod-kde mod-multimedia mod-games"
 
 desktop: need-suid
 	$(info Launch the Desktop)
@@ -180,17 +199,6 @@ bwrap:
 	@command -v bwrap || exit 1
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
-
-_: ##
------: ## __ Release the live bootable system
-
-devroot: ## 🏗️ Package the ROOT for developers
-	make -C system squash-devroot
-
-iso-devel: ## 🏁 Toast the development ISO image
-	make -C iso grub-check iso-staging grub-make iso \
-		ISO=dynebolic-dev.iso \
-		COMPONENTS="devroot home static mod-kde mod-multimedia mod-games"
 
 _: ##
 -----: ## __ Undo and restart from scratch

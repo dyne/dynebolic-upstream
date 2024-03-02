@@ -23,7 +23,7 @@ make deps
 
 Download the latest development ROOT: 
 ```
-make devroot
+make setup
 ```
 
 Build the system components (will take a while...):
@@ -94,7 +94,7 @@ Happy hacking!
 👇🏽 List of targets:
  ----             __ Quick start:
  deps             🛠️ Install development dependencies
- devsetup         📥 Download the latest development ROOT modules
+ setup            📥 Download the latest development ROOT modules
  system           🗿 Build the root system: dyneIV-root
  iso              🏁 Create the current ISO image
  qemu             🖥️ Emulate UEFI USB boot using qemu
@@ -109,14 +109,12 @@ Happy hacking!
  snap-mount       👀 Explore the contents of a snapshot FILE=path
  snap-umount      🔌 Stop exploring and unplug the snapshot
  _               
- -----            __ Build from sources:
+ -----            __ Build from scratch:
  bootstrap        🚀 Build the base system: dyneIV-bootstrap
- modules          🧩 Build all system modules
- upgrade          🔝 Update all system packages
- _               
- -----            __ Release the live bootable system
- devroot          🏗️ Package the ROOT for developers
- iso-devel        🏁 Toast the development ISO image
+ system           🗿 Build the root system: dyneIV-root
+ modules          🧩 Build all system modules (takes long...)
+ upgrade          🔝 Update root system packages
+ iso              🏁 Create the current ISO image
  _               
  -----            __ Undo and restart from scratch
  reset            ♻️  Reset current ROOT to the latest downloaded
