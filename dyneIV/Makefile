@@ -28,9 +28,18 @@ help:
 
 include config.mk
 
-----: ## __ Quick test on emulator:
+----: ## __ Quick start:
 
-devsetup: MODULES := devroot mod-kde mod-multimedia mod-games
+# local system dependencies needed to build a live system
+deps: need-suid ## 🛠️ Install development dependencies
+	$(info Install all development dependencies)
+	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
+    syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools              \
+    squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
+    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
+
+devsetup: MODULES := devroot
 devsetup: ## 📥 Download the latest development ROOT modules
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
@@ -40,18 +49,13 @@ devsetup: ## 📥 Download the latest development ROOT modules
 		${SRC}/build/; done
 	make reset
 
-snap-test: need-suid ## 🧨 Test a squashed snapshot FILE=path
-	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
-	make -C iso iso-snapshot FILE=${FILE}
+system: ## 🗿 Build the root system: dyneIV-root
+	@make -C system all
 
-snap-mount: need-suid ##
-	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
-	mkdir -p snap-mount
-	squashfuse ${FILE} snap-mount
-
-snap-umount: need-suid ##
-	$(if $(wildcard snap-mount),,$(error snap-mount not found))
-	fusermount -u snap-mount
+iso: ## 🏁 Create the current ISO image
+	make -C iso grub-check iso-staging grub-make iso-checksum iso \
+		ISO=dynebolic.iso \
+		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
 
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
@@ -61,6 +65,14 @@ qemu: ## 🖥️ Emulate UEFI USB boot using qemu
 	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
 	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
 	${QEMU_CONF}
+
+burn: ISO ?= dynebolic.iso
+burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
+	$(if $(wildcard ${ISO}),,$(error ${ISO} not found.))
+	$(if $(wildcard ${USB}),,$(error USB device not found: ${USB}))
+	$(info This will delete all contents of device: ${USB})
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	dd if=${ISO} of=${USB} bs=1M oflag=direct status=progress
 
 _: ##
 -----: ## __ More emulator functions:
@@ -84,8 +96,26 @@ qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
 	spicevmc,id=vdagent,debug=0,name=vdagent -device				\
 	virtserialport,chardev=vdagent,name=com.redhat.spice.0
 
+_: ##
+-----: ## __ Snapshot testing functions:
+snap-iso: need-suid ## 🧨 Test a squashed snapshot as ISO FILE=path
+	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
+	make -C iso iso-snapshot FILE=${FILE}
+
+snap-mount: need-suid ## 👀 Explore the contents of a snapshot FILE=path
+	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
+	mkdir -p snap-mount
+	squashfuse ${FILE} snap-mount
+
+snap-umount: need-suid ## 🔌 Stop exploring and unplug the snapshot
+	$(if $(wildcard snap-mount),,$(error snap-mount not found))
+	fusermount -u snap-mount
+
+
+
+
 persist-create: NBD ?= 14
-persist-create: need-suid ## 💾 Create persistance storage for qemu
+persist-create: need-suid # 💾 Create persistance storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
 	$(info Creating persistence qcow2 file for Qemu)
 	modprobe nbd
@@ -105,44 +135,37 @@ persist-create: need-suid ## 💾 Create persistance storage for qemu
 
 persist-mount: FILE ?= persistence.qcow2
 persist-mount: MNT ?= mnt
-persist-mount: need-suid ## 🔍 Mount persistance contents in qcow2
+persist-mount: need-suid # 🔍 Mount persistance contents in qcow2
 	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
 	mkdir -p ${MNT}
 	$(call mount-qcow2,${FILE},${MNT})
 
 persist-umount: MNT ?= mnt
-persist-umount: need-suid ## ⏏️ Unmount persistance contents
+persist-umount: need-suid # ⏏️ Unmount persistance contents
 	$(call umount-qcow2,${MNT})
 
 _: ##
 -----: ## __ Build from sources:
 
-# local system dependencies needed to build a live system
-deps: need-suid ## 🛠️ Install development dependencies
-	$(info Install all development dependencies)
-	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
-    syslinux-efi syslinux-common syslinux-utils grub-pc-bin           \
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools            \
-    squashfs-tools-ng pv schroot uidmap qemu-utils ovmf rsync wget    \
-    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
-
-bootstrap: ## 🚀 Install the base system: dyneIV-bootstrap
+bootstrap: ## 🚀 Build the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
-system: ## 🗿 Install the full system: dyneIV-system
-	@make -C system all
+modules: ## 🧩 Build all system modules
+	-make -C modules kde
+	-make -C modules multimedia
+	-make -C modules games
 
 upgrade: ## 🔝 Update all system packages
 	$(call upgrade-packages)
-	@make -C system all
+	@make system
 
-chroot: SCONF := /etc/schroot/chroot.d/dynebolic.conf
 chroot: # 🚪 Enter the current build ROOT via CLI
-	@-[ -r /etc/schroot/dyne ] || sh schroot-setup.sh
-	@-if ! [ -r ${SCONF} ]; then \
-		cp schroot.conf ${SCONF} && echo "directory=${ROOT}" >> ${SCONF}; fi
 	$(info Enter ROOT)
-	@schroot -c dyne -u root -d /root
+	@mount -o bind /proc ${ROOT}/proc
+	@mount -o bind /dev ${ROOT}/dev
+	@chroot ${ROOT} /bin/bash
+	@umount ${ROOT}/dev
+	@umount ${ROOT}/proc
 
 desktop: need-suid
 	$(info Launch the Desktop)
@@ -159,44 +182,15 @@ bwrap:
 		--uid 0 --gid 0 bash
 
 _: ##
------: ## __ Module development:  (PATH=modname)
-modules: ## 🧩 Build all default modules
-	-make -C modules kde
-	-make -C modules multimedia
-	-make -C modules games
-
-_: ##
 -----: ## __ Release the live bootable system
 
+devroot: ## 🏗️ Package the ROOT for developers
+	make -C system squash-devroot
 
-squash: ## 🗜️ Compress the filesystem for release
-	make -C iso squash
-	make -C modules modsquash
-
-squash-dev: ## 🦺 Compress the filesystem for developers
-	make -C iso squash-devel
-	make -C modules modsquash
-
-buildroot: ## 🏗️ Package the build ROOT  for developers
-	make -C iso buildroot
-
-iso: # 🏁 Toast the current ISO image
-	make -C iso grub-check iso-staging grub-make iso-checksum iso \
-		ISO=dynebolic.iso \
-		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
-
-iso-devel: ## 🏁 Toast the current ISO image
+iso-devel: ## 🏁 Toast the development ISO image
 	make -C iso grub-check iso-staging grub-make iso \
 		ISO=dynebolic-dev.iso \
 		COMPONENTS="devroot home static mod-kde mod-multimedia mod-games"
-
-burn: ISO ?= dynebolic.iso
-burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
-	$(if $(wildcard ${ISO}),,$(error ${ISO} not found.))
-	$(if $(wildcard ${USB}),,$(error USB device not found: ${USB}))
-	$(info This will delete all contents of device: ${USB})
-	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-	dd if=${ISO} of=${USB} bs=1M oflag=direct status=progress
 
 _: ##
 -----: ## __ Undo and restart from scratch
@@ -233,11 +227,13 @@ clean: need-suid ## 🧹  Delete ROOT
 publish: ISO ?= dynebolic.iso
 publish: rcd := /srv/ftp/dynebolic/development
 publish: date := $(shell date +%Y%m%d)
+publish: MODULES := devroot mod-kde mod-multimedia mod-games
 publish:
 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest.iso dyneIV-${date}.iso'
 	rsync -P ${ISO} dyne.files:${rcd}/dyneIV-${date}.iso
 	ssh dyne.files 'cd ${rcd} && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
-
+	for i in ${MODULES}; do \
+		rsync -P ${SRC}/build/dyneIV-$$i-${ARCH}.squashfs dyne.files:${rcd}/modules/; done
 # 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest-dev.tar.xz dyneIV-${date}-dev.tar.xz'
 # 	rsync -P dyneIV-system-${ARCH}-dev.tar.xz dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}-dev.tar.xz
 #  && ln -sf dyneIV-${date}-dev.tar.xz dyneIV-latest-dev.tar.xz

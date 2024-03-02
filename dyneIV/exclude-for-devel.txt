@@ -5,7 +5,7 @@
 # lines starting with # are.... uh.... guess what? :^)
 
 # found runtime in /run/live/boot
-/boot
+# /boot
 
 # flag used in chroot script control
 /fail
@@ -24,8 +24,8 @@
 *.log
 
 # included in the local filesystem module
-/home
-/root
-/usr/local
+#/home
+#/root
+#/usr/local
 
 
