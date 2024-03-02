@@ -42,8 +42,10 @@ iso-staging:
 	@mkdir -p staging/isolinux
 	@mkdir -p staging/live
 	@for i in ${COMPONENTS}; do \
-		ln -f ${SRC}/build/dyneIV-$$i-amd64.squashfs staging/live/ ;\
-		echo dyneIV-$$i-amd64.squashfs | tee -a staging/live/filesystem.module ;\
+		if [ -r ${SRC}/build/dyneIV-$$i-amd64.squashfs ]; then \
+			ln -f ${SRC}/build/dyneIV-$$i-amd64.squashfs staging/live/ ;\
+			echo dyneIV-$$i-amd64.squashfs | tee -a staging/live/filesystem.module ;\
+		fi ;\
 	done
 	@cp -f ${ROOT}/boot/vmlinuz-* staging/live/vmlinuz
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd

@@ -39,7 +39,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
     xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
-devsetup: MODULES := devroot
+devsetup: MODULES := devroot mod-kde
 devsetup: ## 📥 Download the latest development ROOT modules
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
