@@ -31,12 +31,9 @@ Build the system components (will take a while...):
 make system
 ```
 
-Build the modules (will take a longer time...):
-```
-make modules
-```
+Thanks for your patience! Once you arrived here, you will not need to repeat the steps above anymore.
 
-Thanks for your patience! Once you arrived here, you will not need to repeat the steps above anymore. Your SDK is ready for development and test cycles.
+Your SDK is ready for development and test cycles.
 
 Create the live bootable ISO (filename `dynebolic.iso`):
 ```
@@ -95,33 +92,31 @@ Happy hacking!
 ✨ Welcome to the Dyne:IV SDK by Dyne.org!
 🛟 Usage: make <target>
 👇🏽 List of targets:
- ----             __ Quick test on emulator:
- devroot          📥 Download the latest SDK build ROOT
- snap-test        🧨 Test a squashed snapshot FILE=path
+ ----             __ Quick start:
+ deps             🛠️ Install development dependencies
+ devsetup         📥 Download the latest development ROOT modules
+ system           🗿 Build the root system: dyneIV-root
+ iso              🏁 Create the current ISO image
  qemu             🖥️ Emulate UEFI USB boot using qemu
+ burn             🔥 Write the ISO to a removable USB=/dev/sd?
  _               
  -----            __ More emulator functions:
  qemu-isolinux    📀 Emulate DVD boot using qemu
  qemu-spice       🖥️ Emulate via SPICE (requires LAN client)
- persist-create   💾 Create persistance storage for qemu
- persist-mount    🔍 Mount persistance contents in qcow2
- persist-umount   ⏏️ Unmount persistance contents
+ _               
+ -----            __ Snapshot testing functions:
+ snap-iso         🧨 Test a squashed snapshot as ISO FILE=path
+ snap-mount       👀 Explore the contents of a snapshot FILE=path
+ snap-umount      🔌 Stop exploring and unplug the snapshot
  _               
  -----            __ Build from sources:
- deps             🛠️ Install development dependencies
- bootstrap        🚀 Install the base system: dyneIV-bootstrap
- system           🗿 Install the full system: dyneIV-system
+ bootstrap        🚀 Build the base system: dyneIV-bootstrap
+ modules          🧩 Build all system modules
  upgrade          🔝 Update all system packages
  _               
- -----            __ Module development:  (PATH=modname)
- modules          🧩 Build all default modules
- _               
  -----            __ Release the live bootable system
- squash           🗜️ Compress the filesystem for release
- squash-dev       🦺 Compress the filesystem for developers
- buildroot        🏗️ Package the build ROOT  for developers
- iso-devel        🏁 Toast the current ISO image
- burn             🔥 Write the ISO to a removable USB=/dev/sd?
+ devroot          🏗️ Package the ROOT for developers
+ iso-devel        🏁 Toast the development ISO image
  _               
  -----            __ Undo and restart from scratch
  reset            ♻️  Reset current ROOT to the latest downloaded
