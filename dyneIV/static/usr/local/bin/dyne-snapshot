@@ -21,7 +21,7 @@ source /etc/dyne/snapshot.conf
 
 function mm() {	>&2 echo "dyne-snapshot: $*"; }
 
-[[ -r /run/live/persistence ]] || {
+[[ -r /usr/local/bin/dyne-install ]] || {
 	mm "not running on a dynebolic system"
 	exit 1
 }

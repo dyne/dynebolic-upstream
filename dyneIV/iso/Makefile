@@ -99,12 +99,12 @@ iso: need-suid
 		`cat /proc/sys/kernel/random/uuid` \
 		staging/efiboot.img staging
 
-iso-snapshot: ISO ?= dynebolic.iso
+iso-snapshot: ISO ?= dynebolic-snapshot.iso
 iso-snapshot: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
 iso-snapshot: need-suid iso-staging grub-check grub-make
-	$(if $(wildcard ${SRC}/${FILE}),,$(error Snapshot not found: ${SRC}/${FILE}))
+	$(if $(wildcard ${FILE}),,$(error Snapshot not found: ${FILE}))
 	$(info Toast the temporary snapshot test ISO file to ${ISO})
-	@ln -f ${SRC}/${FILE} staging/live/ && echo "${FILE}" \
+	@ln -f ${FILE} staging/live/ && echo "$(notdir ${FILE})" \
 		| tee -a staging/live/filesystem.module
 	@cd staging && ls -lh live && \
 		dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
