@@ -45,7 +45,7 @@ setup: ## 📥 Download the latest development ROOT modules
 	$(info Downloading and restoring the latest SDK environment)
 	mkdir -p ${SRC}/build
 	for i in ${MODULES}; do \
-		rsync -PL files.dyne.org::dynebolic/modules/dyneIV-$$i-${ARCH}.squashfs \
+		rsync -PL files.dyne.org::dynebolic/development/modules/dyneIV-$$i-${ARCH}.squashfs \
 		${SRC}/build/; done
 	make reset
 
@@ -245,6 +245,7 @@ publish:
 	ssh dyne.files 'cd ${rcd} && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
 	for i in ${MODULES}; do \
 		rsync -P ${SRC}/build/dyneIV-$$i-${ARCH}.squashfs dyne.files:${rcd}/modules/; done
+
 # 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest-dev.tar.xz dyneIV-${date}-dev.tar.xz'
 # 	rsync -P dyneIV-system-${ARCH}-dev.tar.xz dyne.files:/srv/ftp/dynebolic/development/dyneIV-${date}-dev.tar.xz
 #  && ln -sf dyneIV-${date}-dev.tar.xz dyneIV-latest-dev.tar.xz
