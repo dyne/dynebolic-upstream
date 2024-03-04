@@ -98,9 +98,12 @@ qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
 
 _: ##
 -----: ## __ Snapshot testing functions:
+snap-iso: QEMU ?= qemu
+snap-iso: iso := $(realpath ${FILE})
 snap-iso: need-suid ## 🧨 Test a squashed snapshot as ISO FILE=path
-	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
-	make -C iso iso-snapshot FILE=${FILE}
+	$(if $(wildcard ${iso}),,$(error FILE env var not found: ${iso}))
+	make -C iso iso-snapshot FILE=${iso}
+	make ${QEMU} ISO=dynebolic-snapshot.iso
 
 snap-mount: need-suid ## 👀 Explore the contents of a snapshot FILE=path
 	$(if $(wildcard ${FILE}),,$(error FILE env var not found: ${FILE}))
