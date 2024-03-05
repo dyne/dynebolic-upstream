@@ -65,8 +65,11 @@ plugin=org.kde.plasma.marginsseparator
 
 [Containments][2][Applets][22]
 immutability=1
-plugin=org.kde.plasma.windowlist
-transient=true
+plugin=org.kde.plasma.panelspacer
+
+[Containments][2][Applets][23]
+immutability=1
+plugin=org.kde.plasma.panelspacer
 
 [Containments][2][Applets][3]
 immutability=1
@@ -129,7 +132,7 @@ DialogWidth=1280
 PreloadWeight=34
 
 [Containments][2][General]
-AppletOrder=3;20;21;5;6;7;15;16
+AppletOrder=3;21;5;22;20;23;6;7;15;16
 
 [Containments][8]
 activityId=
