@@ -23,17 +23,11 @@ function mm() {
 	>&2 echo "dyne-install: $*"
 }
 
-dev="$1"
+dev="${1:-.}"
 cmd="${2:-persist}"
 
-[ "$dev" = "" ] && {
-	>&2 echo "Usage: $0 /output/destination"
-	>&2 echo "  will create a 'dyne' folder with your nest inside destination"
-	exit 1
-}
-
-[ -r "$dev" ] || {
-	mm "device not found: $dev"
+[ -w "$dev" ] || {
+	mm "device not found or not writable: $dev"
 	exit 1
 }
 
