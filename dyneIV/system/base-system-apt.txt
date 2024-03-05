@@ -17,6 +17,7 @@ xz-utils
 gpg-agent # required for gpg use in guix-setup
 anacron
 pkexec
+firmware-linux-free
 
 # ===========================================================================
 # Self-devel
@@ -123,6 +124,7 @@ wireless-tools
 opensnitch
 python3-opensnitch-ui
 openssh-server
+firmware-ath9k-htc
 
 # ============================================================================
 # Development
