@@ -114,8 +114,13 @@ snap-umount: need-suid ## 🔌 Stop exploring and unplug the snapshot
 	$(if $(wildcard snap-mount),,$(error snap-mount not found))
 	fusermount -u snap-mount
 
-
-
+test-changes: QEMU ?= qemu
+test-changes: ISO ?= dynebolic-test.iso
+test-changes: need-suid ## 🍳 Test current changes in home and static
+	$(if $(wildcard ${ROOT}),,$(error ROOT not found: first make setup))
+	make -C system home static
+	make -C iso iso ISO=${ISO}
+	make ${QEMU} ISO=${ISO}
 
 persist-create: NBD ?= 14
 persist-create: need-suid # 💾 Create persistance storage for qemu
