@@ -9,11 +9,17 @@ libfftw3-bin
 lame
 ffmpeg
 
-pipewire-audio
+pipewire
 pipewire-alsa
+pipewire-audio
+pipewire-audio-client-libraries
+pipewire-bin
+pipewire-doc
 pipewire-jack
-pipewire-v4l2
+pipewire-libcamera
 pipewire-pulse
+pipewire-tests
+pipewire-v4l2
 
 #  dkms will not function properly if /proc is not mounted
 # v4l2loopback-dkms
