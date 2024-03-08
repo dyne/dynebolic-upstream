@@ -9,7 +9,7 @@ RightButton;NoModifier=org.kde.contextmenu
 ItemGeometries-1024x768=
 ItemGeometries-1280x800=
 ItemGeometriesHorizontal=
-activityId=11ef8bae-bab7-4ae7-8532-9975b77e7ac6
+activityId=audio_activity_UID
 formfactor=0
 immutability=1
 lastScreen=0
@@ -109,7 +109,7 @@ DialogHeight=510
 DialogWidth=680
 
 [Containments][2][Applets][5][Configuration][General]
-launchers=[6ac36a91-bb87-4ab4-b008-01835e626754]\napplications:org.kde.kdenlive.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b\\,6ac36a91-bb87-4ab4-b008-01835e626754]\napplications:blender.desktop,[6ac36a91-bb87-4ab4-b008-01835e626754]\napplications:hasciicam.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6\\,6ac36a91-bb87-4ab4-b008-01835e626754]\napplications:jamin.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b]\napplications:gimp.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b]\napplications:org.kde.krita.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b]\napplications:org.inkscape.Inkscape.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b]\napplications:org.kde.digikam.desktop,[65d3282b-19f0-4245-affe-a3389e1c3b9b]\napplications:org.darktable.darktable.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:org.rncbc.qjackctl.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:ardour.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:org.mixxx.Mixxx.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:audacity.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:soundkonverter.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6]\napplications:org.kde.kid3.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:libreoffice-startcenter.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:scribus.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:com.obsproject.Studio.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:butt.desktop,[11ef8bae-bab7-4ae7-8532-9975b77e7ac6\\,6ac36a91-bb87-4ab4-b008-01835e626754\\,71798361-884c-43ad-af75-2a5b6fda7486]\napplications:vlc.desktop
+launchers=[video_activity_UID]\napplications:org.kde.kdenlive.desktop,[graphic_activity_UID\\,video_activity_UID]\napplications:blender.desktop,[video_activity_UID]\napplications:hasciicam.desktop,[audio_activity_UID\\,video_activity_UID]\napplications:jamin.desktop,[graphic_activity_UID]\napplications:gimp.desktop,[graphic_activity_UID]\napplications:org.kde.krita.desktop,[graphic_activity_UID]\napplications:org.inkscape.Inkscape.desktop,[graphic_activity_UID]\napplications:org.kde.digikam.desktop,[graphic_activity_UID]\napplications:org.darktable.darktable.desktop,[audio_activity_UID]\napplications:org.rncbc.qjackctl.desktop,[audio_activity_UID]\napplications:ardour.desktop,[audio_activity_UID]\napplications:org.mixxx.Mixxx.desktop,[audio_activity_UID]\napplications:audacity.desktop,[audio_activity_UID]\napplications:soundkonverter.desktop,[audio_activity_UID]\napplications:org.kde.kid3.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:libreoffice-startcenter.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:scribus.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:com.obsproject.Studio.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:butt.desktop,[audio_activity_UID\\,video_activity_UID\\,71798361-884c-43ad-af75-2a5b6fda7486]\napplications:vlc.desktop
 
 [Containments][2][Applets][6]
 immutability=1
@@ -177,7 +177,7 @@ url=file:///home/dyne/Desktop/Streaming
 Color=85,0,127
 
 [Containments][26]
-activityId=6ac36a91-bb87-4ab4-b008-01835e626754
+activityId=video_activity_UID
 formfactor=0
 immutability=1
 lastScreen=0
@@ -197,7 +197,7 @@ url=file:///home/dyne/Desktop/Video
 Color=170,0,127
 
 [Containments][27]
-activityId=65d3282b-19f0-4245-affe-a3389e1c3b9b
+activityId=graphic_activity_UID
 formfactor=0
 immutability=1
 lastScreen=0
