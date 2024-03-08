@@ -1,23 +1,23 @@
 [activities]
-11ef8bae-bab7-4ae7-8532-9975b77e7ac6=Audio
-65d3282b-19f0-4245-affe-a3389e1c3b9b=Graphics
-6ac36a91-bb87-4ab4-b008-01835e626754=Video
-71798361-884c-43ad-af75-2a5b6fda7486=Streaming
-e6af4a46-06b9-4c54-88f7-29ae3931b2c0=Publishing
+audio_activity_UID=Audio
+graphic_activity_UID=Graphics
+video_activity_UID=Video
+streaming_activity_UID=Streaming
+publishing_activity_UID=Publishing
 
 [activities-descriptions]
-11ef8bae-bab7-4ae7-8532-9975b77e7ac6=Audio Activity
-65d3282b-19f0-4245-affe-a3389e1c3b9b=Graphics Activity
-6ac36a91-bb87-4ab4-b008-01835e626754=Video Activity
-71798361-884c-43ad-af75-2a5b6fda7486=Streaming Activity
-e6af4a46-06b9-4c54-88f7-29ae3931b2c0=Publishing Activity
+audio_activity_UID=Audio Activity
+graphic_activity_UID=Graphics Activity
+video_activity_UID=Video Activity
+streaming_activity_UID=Streaming Activity
+publishing_activity_UID=Publishing Activity
 
 [activities-icons]
-11ef8bae-bab7-4ae7-8532-9975b77e7ac6=filename-sample-rate
-65d3282b-19f0-4245-affe-a3389e1c3b9b=oilpaint
-6ac36a91-bb87-4ab4-b008-01835e626754=kdenlive-split-audio
-71798361-884c-43ad-af75-2a5b6fda7486=kstars_satellites
-e6af4a46-06b9-4c54-88f7-29ae3931b2c0=accessories-dictionary-symbolic
+audio_activity_UID=filename-sample-rate
+graphic_activity_UID=oilpaint
+video_activity_UID=kdenlive-split-audio
+streaming_activity_UID=kstars_satellites
+publishing_activity_UID=accessories-dictionary-symbolic
 
 [main]
-currentActivity=11ef8bae-bab7-4ae7-8532-9975b77e7ac6
+currentActivity=audio_activity_UID
