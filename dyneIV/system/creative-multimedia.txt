@@ -29,6 +29,7 @@ vlc-plugin-pipewire
 dvgrab
 blender
 kdenlive
+subtitleeditor # application to write and synchronize subtitles
 
 obs-studio
 ardour
@@ -62,8 +63,10 @@ gimp
 krita
 
 digikam
+rapid-photo-downloader # powerful app for managing downloading photos and video from removable media
 inkscape
 scribus
+okular # pdf reader / editor / annotator
 
 # firefox-esr
 thunderbird
