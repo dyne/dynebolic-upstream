@@ -109,7 +109,7 @@ DialogHeight=510
 DialogWidth=680
 
 [Containments][2][Applets][5][Configuration][General]
-launchers=[video_activity_UID]\napplications:org.kde.kdenlive.desktop,[graphic_activity_UID\\,video_activity_UID]\napplications:blender.desktop,[video_activity_UID]\napplications:hasciicam.desktop,[audio_activity_UID\\,video_activity_UID]\napplications:jamin.desktop,[graphic_activity_UID]\napplications:gimp.desktop,[graphic_activity_UID]\napplications:org.kde.krita.desktop,[graphic_activity_UID]\napplications:org.inkscape.Inkscape.desktop,[graphic_activity_UID]\napplications:org.kde.digikam.desktop,[graphic_activity_UID]\napplications:org.darktable.darktable.desktop,[audio_activity_UID]\napplications:org.rncbc.qjackctl.desktop,[audio_activity_UID]\napplications:ardour.desktop,[audio_activity_UID]\napplications:org.mixxx.Mixxx.desktop,[audio_activity_UID]\napplications:audacity.desktop,[audio_activity_UID]\napplications:soundkonverter.desktop,[audio_activity_UID]\napplications:org.kde.kid3.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:libreoffice-startcenter.desktop,[e6af4a46-06b9-4c54-88f7-29ae3931b2c0]\napplications:scribus.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:com.obsproject.Studio.desktop,[71798361-884c-43ad-af75-2a5b6fda7486]\napplications:butt.desktop,[audio_activity_UID\\,video_activity_UID\\,71798361-884c-43ad-af75-2a5b6fda7486]\napplications:vlc.desktop
+launchers=[video_activity_UID]\napplications:org.kde.kdenlive.desktop,[graphic_activity_UID\\,video_activity_UID]\napplications:blender.desktop,[video_activity_UID]\napplications:hasciicam.desktop,[audio_activity_UID\\,video_activity_UID]\napplications:jamin.desktop,[graphic_activity_UID]\napplications:gimp.desktop,[graphic_activity_UID]\napplications:org.kde.krita.desktop,[graphic_activity_UID]\napplications:org.inkscape.Inkscape.desktop,[graphic_activity_UID]\napplications:org.kde.digikam.desktop,[graphic_activity_UID]\napplications:org.darktable.darktable.desktop,[audio_activity_UID]\napplications:org.rncbc.qjackctl.desktop,[audio_activity_UID]\napplications:ardour.desktop,[audio_activity_UID]\napplications:org.mixxx.Mixxx.desktop,[audio_activity_UID]\napplications:audacity.desktop,[audio_activity_UID]\napplications:soundkonverter.desktop,[audio_activity_UID]\napplications:org.kde.kid3.desktop,[publishing_activity_UID]\napplications:libreoffice-startcenter.desktop,[publishing_activity_UID]\napplications:scribus.desktop,[streaming_activity_UID]\napplications:com.obsproject.Studio.desktop,[streaming_activity_UID]\napplications:butt.desktop,[audio_activity_UID\\,video_activity_UID\\,streaming_activity_UID]\napplications:vlc.desktop
 
 [Containments][2][Applets][6]
 immutability=1
@@ -137,7 +137,7 @@ PreloadWeight=34
 AppletOrder=3;21;5;22;20;23;6;7;15;16
 
 [Containments][24]
-activityId=e6af4a46-06b9-4c54-88f7-29ae3931b2c0
+activityId=publishing_activity_UID
 formfactor=0
 immutability=1
 lastScreen=0
@@ -157,7 +157,7 @@ url=file:///home/dyne/Desktop/Publishing
 Color=170,170,127
 
 [Containments][25]
-activityId=71798361-884c-43ad-af75-2a5b6fda7486
+activityId=streaming_activity_UID
 formfactor=0
 immutability=1
 lastScreen=0
