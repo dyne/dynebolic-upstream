@@ -52,6 +52,8 @@ squash-root: need-suid prepare-excludes
 
 root: need-suid apt-get-update build-root dyne-software squash-root
 
+devroot: need-suid apt-get-update build-root dyne-software squash-devroot
+
 squash-devroot: EXCLUDE_FOR := devel
 squash-devroot: target := ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs
 squash-devroot: need-suid prepare-excludes
