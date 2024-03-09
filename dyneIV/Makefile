@@ -159,7 +159,10 @@ bootstrap: ## 🚀 Build the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
 system: ## 🗿 Build the root system: dyneIV-root
-	@make -C system all
+	@make -C system root
+	@make -C system home
+	@make -C system static
+
 
 modules: ## 🧩 Build all system modules (takes long...)
 	-make -C modules kde
@@ -187,12 +190,13 @@ chroot: # 🚪 Enter the current build ROOT via CLI
 	@umount ${ROOT}/proc
 
 devroot: # 🏗️ Package the ROOT for developers
-	make -C system squash-devroot
+	make -C system devroot
+	make -C system home static
 
 iso-devel: # 🏁 Toast the development ISO image
 	make -C iso grub-check iso-staging grub-make iso \
 		ISO=dynebolic-dev.iso \
-		COMPONENTS="devroot home static mod-kde mod-multimedia mod-games"
+		COMPONENTS="devroot home static mod-kde mod-multimedia"
 
 desktop: need-suid
 	$(info Launch the Desktop)
