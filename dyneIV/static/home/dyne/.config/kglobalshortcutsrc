@@ -1,6 +1,6 @@
 [ActivityManager]
-_k_friendly_name=System Settings
-switch-to-activity-start_activity_UID=,none,Switch to activity "Start"
+_k_friendly_name=Activity Manager
+switch-to-activity-start_activity_UID=none,none,Switch to activity "Start"
 switch-to-activity-audio_activity_UID=none,none,Switch to activity "Audio"
 switch-to-activity-graphic_activity_UID=none,none,Switch to activity "Graphics"
 switch-to-activity-publishing_activity_UID=none,none,Switch to activity "Publishing"
@@ -204,7 +204,7 @@ _k_friendly_name=Emoji Selector
 _launch=Meta+.\tMeta+Ctrl+Alt+Shift+Space,Meta+.\tMeta+Ctrl+Alt+Shift+Space,Emoji Selector
 
 [plasmashell]
-_k_friendly_name=Activity switching
+_k_friendly_name=Plasma
 activate task manager entry 1=Meta+1,Meta+1,Activate Task Manager Entry 1
 activate task manager entry 10=none,Meta+0,Activate Task Manager Entry 10
 activate task manager entry 2=Meta+2,Meta+2,Activate Task Manager Entry 2
@@ -223,8 +223,8 @@ cycleNextAction=none,,Next History Item
 cyclePrevAction=none,,Previous History Item
 edit_clipboard=none,,Edit Contents…
 manage activities=Meta+Q,Meta+Q,Show Activity Switcher
-next activity=Meta+Tab,none,Walk through activities
-previous activity=Meta+Shift+Tab,none,Walk through activities (Reverse)
+next activity=Meta+Tab,Meta+Tab,Walk through activities
+previous activity=Meta+Shift+Tab,Meta+Shift+Tab,Walk through activities (Reverse)
 repeat_action=Meta+Ctrl+R,Meta+Ctrl+R,Manually Invoke Action on Current Clipboard
 show dashboard=Ctrl+F12,Ctrl+F12,Show Desktop
 show-barcode=none,,Show Barcode…
