@@ -1,2 +1,2 @@
 [Plugin-org.kde.ActivityManager.Resources.Scoring]
-off-the-record-activities=audio_activity_UID,video_activity_UID,graphic_activity_UID,publishing_activity_UID,streaming_activity_UID
+off-the-record-activities=audio_activity_UID,video_activity_UID,graphic_activity_UID,publishing_activity_UID,streaming_activity_UID,start_activity_UID

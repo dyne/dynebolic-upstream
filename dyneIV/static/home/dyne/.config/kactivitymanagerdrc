@@ -1,23 +1,26 @@
 [activities]
+start_activity_UID=Start
 audio_activity_UID=Audio
 graphic_activity_UID=Graphics
-video_activity_UID=Video
-streaming_activity_UID=Streaming
 publishing_activity_UID=Publishing
+streaming_activity_UID=Streaming
+video_activity_UID=Video
 
 [activities-descriptions]
+start_activity_UID=Main activity
 audio_activity_UID=Audio Activity
 graphic_activity_UID=Graphics Activity
-video_activity_UID=Video Activity
-streaming_activity_UID=Streaming Activity
 publishing_activity_UID=Publishing Activity
+streaming_activity_UID=Streaming Activity
+video_activity_UID=Video Activity
 
 [activities-icons]
+start_activity_UID=mark-location-symbolic
 audio_activity_UID=filename-sample-rate
 graphic_activity_UID=oilpaint
-video_activity_UID=kdenlive-split-audio
-streaming_activity_UID=kstars_satellites
 publishing_activity_UID=accessories-dictionary-symbolic
+streaming_activity_UID=kstars_satellites
+video_activity_UID=kdenlive-split-audio
 
 [main]
-currentActivity=audio_activity_UID
+currentActivity=start_activity_UID
