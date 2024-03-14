@@ -31,7 +31,7 @@ positions={"1280x800":[]}
 url=file:///home/dyne/Desktop/Audio
 
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=/usr/share/wallpapers/dyne/dynebolic-23.png
+Image=/usr/share/wallpapers/dyne/audio.svg
 SlidePaths=/usr/share/wallpapers/
 
 [Containments][2]
@@ -109,7 +109,7 @@ DialogHeight=510
 DialogWidth=680
 
 [Containments][2][Applets][5][Configuration][General]
-launchers=[video_activity_UID]\napplications:org.kde.kdenlive.desktop,[graphic_activity_UID\\,video_activity_UID]\napplications:blender.desktop,[video_activity_UID]\napplications:hasciicam.desktop,[audio_activity_UID\\,video_activity_UID]\napplications:jamin.desktop,[graphic_activity_UID]\napplications:gimp.desktop,[graphic_activity_UID]\napplications:org.kde.krita.desktop,[graphic_activity_UID]\napplications:org.inkscape.Inkscape.desktop,[graphic_activity_UID]\napplications:org.kde.digikam.desktop,[graphic_activity_UID]\napplications:org.darktable.darktable.desktop,[audio_activity_UID]\napplications:org.rncbc.qjackctl.desktop,[audio_activity_UID]\napplications:ardour.desktop,[audio_activity_UID]\napplications:org.mixxx.Mixxx.desktop,[audio_activity_UID]\napplications:audacity.desktop,[audio_activity_UID]\napplications:soundkonverter.desktop,[audio_activity_UID]\napplications:org.kde.kid3.desktop,[publishing_activity_UID]\napplications:libreoffice-startcenter.desktop,[publishing_activity_UID]\napplications:scribus.desktop,[streaming_activity_UID]\napplications:com.obsproject.Studio.desktop,[streaming_activity_UID]\napplications:butt.desktop,[audio_activity_UID\\,video_activity_UID\\,streaming_activity_UID]\napplications:vlc.desktop
+launchers=[video_activity_UID]\napplications:org.kde.kdenlive.desktop,[video_activity_UID\\,graphic_activity_UID]\napplications:blender.desktop,[video_activity_UID]\napplications:hasciicam.desktop,[audio_activity_UID\\,video_activity_UID]\napplications:jamin.desktop,[graphic_activity_UID]\napplications:gimp.desktop,[graphic_activity_UID]\napplications:org.kde.krita.desktop,[graphic_activity_UID]\napplications:org.inkscape.Inkscape.desktop,[graphic_activity_UID]\napplications:org.kde.digikam.desktop,[graphic_activity_UID]\napplications:org.darktable.darktable.desktop,[audio_activity_UID]\napplications:org.rncbc.qjackctl.desktop,[audio_activity_UID]\napplications:ardour.desktop,[audio_activity_UID]\napplications:org.mixxx.Mixxx.desktop,[audio_activity_UID]\napplications:audacity.desktop,[audio_activity_UID]\napplications:soundkonverter.desktop,[audio_activity_UID]\napplications:org.kde.kid3.desktop,[publishing_activity_UID]\napplications:libreoffice-startcenter.desktop,[publishing_activity_UID]\napplications:scribus.desktop,[streaming_activity_UID]\napplications:com.obsproject.Studio.desktop,[streaming_activity_UID]\napplications:butt.desktop,[audio_activity_UID\\,video_activity_UID\\,streaming_activity_UID]\napplications:vlc.desktop,[start_activity_UID]\napplications:org.kde.dolphin.desktop,applications:systemsettings.desktop,[start_activity_UID]\napplications:org.kde.konsole.desktop,[start_activity_UID]\napplications:org.kde.plasma.emojier.desktop,[start_activity_UID]\napplications:org.kde.konqueror.desktop
 
 [Containments][2][Applets][6]
 immutability=1
@@ -143,7 +143,7 @@ immutability=1
 lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.color
+wallpaperplugin=org.kde.image
 
 [Containments][24][ConfigDialog]
 DialogHeight=510
@@ -156,6 +156,10 @@ url=file:///home/dyne/Desktop/Publishing
 [Containments][24][Wallpaper][org.kde.color][General]
 Color=170,170,127
 
+[Containments][24][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/dyne/publishing.svg
+SlidePaths=/usr/share/wallpapers/
+
 [Containments][25]
 activityId=streaming_activity_UID
 formfactor=0
@@ -163,7 +167,7 @@ immutability=1
 lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.color
+wallpaperplugin=org.kde.image
 
 [Containments][25][ConfigDialog]
 DialogHeight=510
@@ -176,6 +180,10 @@ url=file:///home/dyne/Desktop/Streaming
 [Containments][25][Wallpaper][org.kde.color][General]
 Color=85,0,127
 
+[Containments][25][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/dyne/streaming.svg
+SlidePaths=/usr/share/wallpapers/
+
 [Containments][26]
 activityId=video_activity_UID
 formfactor=0
@@ -183,7 +191,7 @@ immutability=1
 lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.color
+wallpaperplugin=org.kde.image
 
 [Containments][26][ConfigDialog]
 DialogHeight=510
@@ -196,6 +204,10 @@ url=file:///home/dyne/Desktop/Video
 [Containments][26][Wallpaper][org.kde.color][General]
 Color=170,0,127
 
+[Containments][26][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/dyne/video.svg
+SlidePaths=/usr/share/wallpapers/
+
 [Containments][27]
 activityId=graphic_activity_UID
 formfactor=0
@@ -203,7 +215,7 @@ immutability=1
 lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.color
+wallpaperplugin=org.kde.image
 
 [Containments][27][ConfigDialog]
 DialogHeight=510
@@ -215,6 +227,33 @@ url=file:///home/dyne/Desktop/Graphics
 
 [Containments][27][Wallpaper][org.kde.color][General]
 Color=255,170,0
+
+[Containments][27][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/dyne/graphics.svg
+SlidePaths=/usr/share/wallpapers/
+
+[Containments][28]
+activityId=start_activity_UID
+formfactor=0
+immutability=1
+lastScreen=0
+location=0
+plugin=org.kde.plasma.folder
+wallpaperplugin=org.kde.image
+
+[Containments][28][ConfigDialog]
+DialogHeight=510
+DialogWidth=680
+
+[Containments][28][General]
+ToolBoxButtonState=topcenter
+ToolBoxButtonX=281
+positions={"1280x800":[]}
+url=file:///home/dyne/Desktop/start
+
+[Containments][28][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/dyne/dynebolic-23.png
+SlidePaths=/usr/share/wallpapers/
 
 [Containments][8]
 activityId=

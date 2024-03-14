@@ -1,6 +1,11 @@
 [ActivityManager]
-_k_friendly_name=Activity Manager
-switch-to-activity-audio_activity_UID=none,none,Switch to activity "Default"
+_k_friendly_name=System Settings
+switch-to-activity-start_activity_UID=,none,Switch to activity "Start"
+switch-to-activity-audio_activity_UID=none,none,Switch to activity "Audio"
+switch-to-activity-graphic_activity_UID=none,none,Switch to activity "Graphics"
+switch-to-activity-publishing_activity_UID=none,none,Switch to activity "Publishing"
+switch-to-activity-streaming_activity_UID=none,none,Switch to activity "Streaming"
+switch-to-activity-video_activity_UID=none,none,Switch to activity "Video"
 
 [KDE Keyboard Layout Switcher]
 Switch to Next Keyboard Layout=Meta+Alt+K,none,Switch to Next Keyboard Layout
@@ -199,7 +204,7 @@ _k_friendly_name=Emoji Selector
 _launch=Meta+.\tMeta+Ctrl+Alt+Shift+Space,Meta+.\tMeta+Ctrl+Alt+Shift+Space,Emoji Selector
 
 [plasmashell]
-_k_friendly_name=Plasma
+_k_friendly_name=Activity switching
 activate task manager entry 1=Meta+1,Meta+1,Activate Task Manager Entry 1
 activate task manager entry 10=none,Meta+0,Activate Task Manager Entry 10
 activate task manager entry 2=Meta+2,Meta+2,Activate Task Manager Entry 2
