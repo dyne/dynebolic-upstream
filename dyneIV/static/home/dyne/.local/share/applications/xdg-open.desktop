@@ -1,0 +1,13 @@
+[Desktop Entry]
+Comment=
+Exec=xdg-open 'https://irc.dyne.org/?channels=dynebolic'
+Icon=system-help
+Name=dyne:bolic support
+NoDisplay=false
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=

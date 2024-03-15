@@ -1,0 +1,25 @@
+<!DOCTYPE Menu PUBLIC '-//freedesktop//DTD Menu 1.0//EN' 'http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd'>
+<Menu>
+ <Menu>
+  <Name>Utilities</Name>
+  <Layout>
+   <Merge type="files"/>
+   <Filename>xdg-open.desktop</Filename>
+   <Merge type="menus"/>
+   <Menuname>XUtilities</Menuname>
+   <Filename>org.kde.plasma.emojier.desktop</Filename>
+   <Filename>org.kde.kate.desktop</Filename>
+   <Filename>org.kde.kfind.desktop</Filename>
+   <Filename>org.kde.kwrite.desktop</Filename>
+   <Filename>mc.desktop</Filename>
+   <Filename>mcedit.desktop</Filename>
+   <Filename>info.desktop</Filename>
+   <Filename>vim.desktop</Filename>
+   <Separator/>
+   <Menuname>More</Menuname>
+  </Layout>
+  <Include>
+   <Filename>xdg-open.desktop</Filename>
+  </Include>
+ </Menu>
+</Menu>
