@@ -1,0 +1,774 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.dynebolic.org/developers/">
+      
+      
+        <link rel="prev" href="../getting_started/">
+      
+      
+        <link rel="next" href="../appendix/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
+    
+    
+      
+        <title>Contribute to d:b - dyne:bolic documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#for-developers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="dyne:bolic documentation" class="md-header__button md-logo" aria-label="dyne:bolic documentation" data-md-component="logo">
+      
+  <img src="../images/db-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            dyne:bolic documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contribute to d:b
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="dyne:bolic documentation" class="md-nav__button md-logo" aria-label="dyne:bolic documentation" data-md-component="logo">
+      
+  <img src="../images/db-icon.svg" alt="logo">
+
+    </a>
+    dyne:bolic documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Contribute to d:b
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Contribute to d:b
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Source code
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#come-talk-to-us" class="md-nav__link">
+    <span class="md-ellipsis">
+      Come talk to us
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dynebolic-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      The dyne:bolic SDK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynebolic-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      dyne:bolic Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developing-for-the-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing For The Desktop
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developing For The Desktop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-dynebolic-development-up-and-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting dyne:bolic development up and running
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-changes-to-commit-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inspecting changes to commit them.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#appendix-i-a-brief-history-of-dynebolic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix I: A Brief History of dyne:bolic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://git.devuan.org/jaromil/dynebolic" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Source code
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Appendix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disclaimer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Disclaimer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Source code
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#come-talk-to-us" class="md-nav__link">
+    <span class="md-ellipsis">
+      Come talk to us
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dynebolic-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      The dyne:bolic SDK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynebolic-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      dyne:bolic Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developing-for-the-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing For The Desktop
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developing For The Desktop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-dynebolic-development-up-and-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting dyne:bolic development up and running
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-changes-to-commit-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inspecting changes to commit them.
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#appendix-i-a-brief-history-of-dynebolic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix I: A Brief History of dyne:bolic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="for-developers">For Developers</h1>
+<p><strong>Greetings, fellow devel!</strong> 🖖🏽</p>
+<p><em>dyne:bolic</em> welcomes contributions, big and small. You are here by invited to <a href="https://git.devuan.org/jaromil/dynebolic">clone the repository</a> localy and <a href="https://git.devuan.org/user/sign_up">get yourself an account on the Devuan Gitea</a>. For your convenience the repository is mirrored on <a href="https://github.com/dyne/dynebolic/">GitHub</a>. However, due to the ownership model of GitHub we encourage you to stick to the Devuan Gitea. From the Gitea interface you will be able to fork the repository and <a href="https://docs.gitea.com/next/usage/pull-request">send Pull Requests</a>. But you are welcome to ask for write permission in the bridged chat.</p>
+<h2 id="source-code">Source code</h2>
+<p><strong><a href="https://git.devuan.org/jaromil/dynebolic">https://git.devuan.org/jaromil/dynebolic</a></strong></p>
+<h2 id="come-talk-to-us">Come talk to us</h2>
+<ul>
+<li><a href="https://irc.dyne.org/?channels=dynebolic">IRC</a></li>
+<li><a href="https://socials.dyne.org/matrix-dynebolic">Matrix</a></li>
+<li><a href="https://socials.dyne.org/discord-dynebolic">Discord</a></li>
+<li><a href="https://socials.dyne.org/telegram-dynebolic">Telegram</a></li>
+</ul>
+<p>These channels are all bridge, meaning it doesn't matter whether you are using one or the other, you will be able to communicate with everyone.</p>
+<h2 id="the-dynebolic-sdk">The dyne:bolic SDK</h2>
+<h2 id="dynebolic-modules">dyne:bolic Modules</h2>
+<h2 id="system-development">System Development</h2>
+<h2 id="developing-for-the-desktop">Developing For The Desktop</h2>
+<p>The <em>dyne:bolic</em> SDK offers various workflows. To get the full list of targets, <code>cd</code> into your cloned repository and run <code>make</code>. This will present you with a list of Make targets that will help you contribute to the project.</p>
+<h3 id="getting-dynebolic-development-up-and-running">Getting dyne:bolic development up and running</h3>
+<p>The two workflows Desktop devleopers are interested in are "Quick start":</p>
+<pre><code> ----             __ Quick start:
+ deps             🛠 Install development dependencies
+ setup            📥 Download the latest development ROOT modules
+ system           🗿 Build the root system: dyneIV-root
+ iso              🏁 Create the current ISO image
+ qemu             🖥 Emulate UEFI USB boot using qemu
+ burn             🔥 Write the ISO to a removable USB=/dev/sd?
+</code></pre>
+<p>and "Snapshot testing"</p>
+<pre><code> -----            __ Snapshot testing functions:
+ snap-iso         🧨 Test a squashed snapshot as ISO FILE=path
+ snap-mount       👀 Explore the contents of a snapshot FILE=path
+ snap-umount      🔌 Stop exploring and unplug the snapshot
+ test-changes     🍳 Test current changes in home and static
+
+</code></pre>
+<p>Most of these <code>make</code> commands need to be run as root. This can be achieved in different ways depending on your operating system.</p>
+<p>To bootstrap your Desktop development environement, follow this sequence:</p>
+<ol>
+<li><code>make deps</code> (requires root)</li>
+<li><code>make setup</code> (requires root)</li>
+<li><code>make system</code> (requires root)</li>
+<li><code>make iso</code> (requires root)</li>
+</ol>
+<p>Each command will take a moment to complete and be quite verbose. Don't fear it. It might look scary, but your computer is talking to you, so listen!</p>
+<p>Once you have ran all of the four commands, there will be a new file in your local repository called <code>dynebolic.iso</code>. This is an image of the dyne:bolic install disk.</p>
+<p>You can now test it by running:</p>
+<ol>
+<li><code>make qemu</code></li>
+</ol>
+<p>This will start a virtual environement in which dyne:bolic will boot. If everything was made correctly, you will see the grub menu. Pick the first entry.</p>
+<figure>
+  <img alt="Image title" src="../images/grub.webp" />
+  <figcaption>grub menu</figcaption>
+</figure>
+<p>Soon see the desktop appear. Once it does, you can proceed and make changes to the desktop and then export them. Even though it is slightly more time consuming, it is advisable to make one change and export at the time.</p>
+<h3 id="export-changes">Export changes</h3>
+<p>Once you have made the desired changes, from within the virutal d:b dekstop, start a terminal and become root. To do this type: <code>su</code>. The system will ask you for a password. <strong>The password is <code>dyne</code></strong>. It will look like this:</p>
+<pre><code>dyne@dynebolic ~ ❯ su
+Password:
+root@dynebolic:/home/dyne#
+</code></pre>
+<p>The user changed to root, and you may now export your changes. To do this, type:</p>
+<p><code>dyne-snapshot</code></p>
+<p>Accept the identity of the remote server, by typing <code>yes</code> and hitting enter.</p>
+<p>This will fetch any modified file, package them into a single file and upload them to the snapshot server. You will be presented with a URL. Using this method, you won't be able to copy it from your virtual machine to your machine. To fetch this snapshot, either use the QR code with your phone to transfer it to yourself. Or head over to the <a href="https://zorro.zenr.io/snapshots/">snapshot server</a> and sort the files by "Last Modified".</p>
+<h3 id="inspecting-changes-to-commit-them">Inspecting changes to commit them.</h3>
+<p>Terminate the virutal machine for now. To inspect your snapshot, download your snapshot to the root of your cloned repository and mount it.</p>
+<ul>
+<li><code>sudo su</code> (become root)</li>
+<li><code>make snap-mount FILE=/path/to/your-snapshot-file</code></li>
+</ul>
+<p>This will create a folder in the root of your cloned repository called "snap-mount" containing all the modified files. Navigate into it and run <code>ncdu</code>.</p>
+<pre><code>cd snap-mount
+ncdu
+</code></pre>
+<p>This will show you a browser like view where you can browse through the modified files. <strong>To close it, hit the "Q" key on your keyboard</strong></p>
+<p>Still as root, copy the files you are interested in to a different folder:</p>
+<ul>
+<li><code>mkdir ../snap-export</code> create folder.</li>
+<li><code>cp -ra . ../snap-export</code> copy all files recursively</li>
+<li><code>chown -R 1000:1000 ../snap-export</code> transfer ownership of the copied file to your own user.</li>
+<li><code>make snap-umount</code> unmount the snapshot from the file system ⚠️</li>
+</ul>
+<p>In the root of your cloned repository, there is a folder called <code>static</code>. This is where the configuration files for the desktop and system are residing. Copy over the files to this folder following the same structure. If your file is <code>snap-export/home/dyne/.config/my-amazing-settings.conf</code>, move it to <code>static/home/dyne/.config/my-amazing-settings.conf</code></p>
+<p>Once you have done this, you need to make sure that your changes are going to give the desired effect. This because, maybe you forgot something? Maybe there are more files responsible for the changes you want?</p>
+<ul>
+<li><code>make test-changes</code></li>
+</ul>
+<p>This will launch a virtual machine taking into account your changes. When the desktop appears, you should be able to see your changes. If you do, commit them to the repository:</p>
+<ul>
+<li><code>git add path/to/changed.file</code></li>
+<li><code>git commit -m "write a description of your changes in present tense here"</code></li>
+<li><code>git push</code></li>
+</ul>
+<!-- ### The Guix package manager -->
+
+<!-- ### Nesting dyne:bolic (?) -->
+
+<h2 id="appendices">Appendices</h2>
+<h3 id="appendix-i-a-brief-history-of-dynebolic">Appendix I: A Brief History of dyne:bolic</h3>
+<!-- A bit of history: pre-0.5 and the origins of d:b: -->
+
+<!-- https://web.archive.org/web/20051101220229/http://lists.dyne.org/dynebolic/msg00214.php -->
+
+<ul>
+<li>Context (technological, social, political) of first release of <em>dyne:bolic</em></li>
+<li>Evolution of <em>dyne:bolic</em></li>
+<li><em>dyne:bolic</em> now.</li>
+</ul>
+<p>The first edition of <em>dyne:bolic</em> was released</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      
+    
+  </body>
+</html>
