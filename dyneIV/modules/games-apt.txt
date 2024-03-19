@@ -5,15 +5,16 @@ oss-compat
 timidity
 
 # arkanoid clones
-lbreakout2
+# lbreakout2
 tecnoballz
 
 # strategy
-tagua
-fairymax
-freeciv-server
-freeciv-client-qt
-freeciv-client-extras
+# tagua
+# fairymax
+xboard
+# freeciv-server
+# freeciv-client-qt
+# freeciv-client-extras
 
 # racing
 extremetuxracer
@@ -23,13 +24,13 @@ whichwayisup
 freegish
 
 # computing skills
-tuxmath
+# tuxmath
 
 # shoot'em up
 # rrootage
 wordwarvi
 # ii-esu
-overgod
+# overgod
 
 # volley
 blobby
