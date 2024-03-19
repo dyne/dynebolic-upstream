@@ -1,0 +1,179 @@
+#!/usr/bin/env zsh
+#
+# Copyright (C) 2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
+
+ARCH=amd64
+SQFSCONF=(-j 6)
+
+set -e
+# set -x
+autoload colors; colors
+function rastasoft() {
+	print -n "\
+$fg_bold[black]$bg[green]RAS\
+$bg[yellow]TAS\
+$bg[red]OFT\
+$fg_no_bold[white]$bg[black]"
+}
+function pfx() { print -n "$fg_bold[green]${*}$fg_no_bold[white]"; }
+function mm() {	>&2 print "$fg_bold[green]dyne-sdk$fg_no_bold[white]: $*\n"; }
+function found() { set +e
+				   [[ "$1" == "" ]] && { mm "missing argument"; exit 1
+				   set -e }; }
+function usage() {
+	mm "tool to create dynebolic modules by `rastasoft`"
+	>&2 print "`pfx usage`: dyne-sdk command [ arguments ]"
+	>&2 print
+	>&2 print \
+		"`pfx 'command   arguments'`"
+	>&2 print \
+		" setup    path devroot"
+	>&2 print \
+		" create   path [ info ] [ apt ] [ shell ]"
+	>&2 print \
+		" build    [ path ]"
+	>&2 print \
+		" pack     [ path ]"
+	>&2 print
+}
+function parse_apt() {
+	set +e
+	[[ -r "$1" ]] || { mm "apt file not found: $1"; exit 1 }
+	set -e
+	print `awk '
+/^\$/ { next }
+!/^#/ { printf("%s ",\$1) }
+' ${1}
+`
+}
+function check_packages() {
+	set +e
+	apt-cache policy "`parse_apt $1`" | grep '^N:'
+	# N: Unable to locate package
+	local res=$?
+	[[ $res = 1 ]] || { mm "error in apt file: $1"; exit 1 }
+	set -e
+}
+# TODO: detect when on a running dyne:bolic and use space into a
+# mounted hdd storage instead of inside a nest
+# [[ -r /usr/local/bin/dyne-install ]] || {
+# 	mm "not running on a dynebolic system"
+# 	exit 1
+# }
+
+[[ $UID = 0 ]] || {	mm "need root to work with modules."; exit 1; }
+cmd="$1";
+[[ "$cmd" == "" ]] && { usage; exit 1; }
+
+case "$cmd" in
+	create|new)
+		shift 1; where="$1"; found "$where"
+		name=`basename $where`
+		mm "$cmd $where"
+		[[ -r "$where" ]] && { mm "cannot overwrite existing folder"; exit 1; }
+		mkdir -p "$where"
+		shift 1; info="$1"
+		if [[ -r "$info" ]]; then
+			mm "create with info file: $info"
+			cp -v "$info" "${where}/info.txt"
+		else
+			mm "create new info file"
+			cat <<EOF > "${where}/info.txt"
+modname="$name"
+author="anonymous"
+version="0.1"
+desc="No description found."
+EOF
+		fi
+		shift 1; apt="$1"
+		if [[ -r "$apt" ]]; then
+			mm "create with apt file: $apt"
+			check_packages "$apt"
+			cp "$apt" "${where}/apt.txt"
+		else
+			mm "create new apt file"
+			cat <<EOF > "${where}/apt.txt"
+# List of APT packages to be installed in dyne-mod $name
+#
+# Fill them here below one per line
+EOF
+		fi
+		shift 1; shell="$1"
+		if [[ -r "$shell" ]]; then
+			mm "create with script file: $shell"
+			# TODO: use shellcheck to validate script
+			cp -v "$shell" "${where}/script.sh"
+		else
+			cat <<EOF > "${where}/script.sh"
+# Script to be executed inside dyne-mod $name
+#
+# Fill bash commands to be chrooted below
+EOF
+		fi
+		;;
+
+	build|make)
+		shift 1; where="${1:-.}"; found "$where"
+		mm "$cmd $where"
+		pushd "$where"
+		[[ -r info.txt ]] || { mm "File not found: info.txt"; exit 1; }
+		source info.txt
+		[[ -r apt.txt ]] && {
+			mm "APT install packages"
+			check_packages apt.txt
+			mkdir -p "${modname}-mnt" "${modname}-work" "${modname}-buildroot"
+			fuse-overlayfs -o lowerdir=${ROOT} -o upperdir="${modname}-mnt" \
+						   -o workdir="${modname}-work" "${modname}-buildroot"
+			local packages=`awk '
+/^\$/ { next }
+!/^#/ { printf("%s ",\$1) }
+' ${modname}-apt.txt
+`
+			cat <<EOF > "${modname}-buildroot/install.sh"
+DEBIAN_FRONTEND=noninteractive apt-get install -q -y ${packages}
+EOF
+			mount -o bind /proc "${modname}-buildroot"/proc
+			mount -o bind /dev  "${modname}-buildroot"/dev
+			chroot "${modname}-buildroot" bash -e /install.sh
+			umount "${modname}-buildroot"/proc
+			umount "${modname}-buildroot"/dev
+			fusermount -u "${modname}-buildroot"
+			rm -rf "${modname}-work" "${modname}-buildroot"
+			rm -f  "${modname}-mnt"/install.sh
+			mm "APT done"
+		}
+		;;
+
+	pack|squash)
+		shift 1; where="${1:-.}"; found "$where"
+		pushd "$where"
+		[[ -r info.txt ]] || { mm "File not found: info.txt"; exit 1; }
+		source info.txt
+		out="dyneIV-mod-${modname}-${ARCH}.dyne"
+		prepare_excludes "/tmp/excludes-${out}"
+		mkdir -p build
+		tar -c --exclude-from="/tmp/excludes-${out}" ${modname}-mnt \
+		| pv -p -s `du -sb ${modname}-mnt | awk '{print $$1}'` \
+		| tar2sqfs -r ${modname}-mnt -f -q -c xz ${SQFSCONF} "build/${out}"
+		;;
+
+	*)
+		mm "command not found: $cmd"
+		usage; exit 1
+		;;
+esac
