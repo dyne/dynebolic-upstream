@@ -9,11 +9,17 @@ libfftw3-bin
 lame
 ffmpeg
 
-pipewire-audio
+pipewire
 pipewire-alsa
+pipewire-audio
+pipewire-audio-client-libraries
+pipewire-bin
+pipewire-doc
 pipewire-jack
-pipewire-v4l2
+pipewire-libcamera
 pipewire-pulse
+pipewire-tests
+pipewire-v4l2
 
 #  dkms will not function properly if /proc is not mounted
 # v4l2loopback-dkms
@@ -23,6 +29,7 @@ vlc-plugin-pipewire
 dvgrab
 blender
 kdenlive
+subtitleeditor # application to write and synchronize subtitles
 
 obs-studio
 ardour
@@ -51,13 +58,15 @@ soundkonverter
 
 kid3
 
-darktable
+# darktable #removed to save space: digikam is kde app
 gimp
-krita
+# krita # removed to save space: gnu imp is more familiar
 
 digikam
+# rapid-photo-downloader # powerful app for managing downloading photos and video from removable media
 inkscape
 scribus
+okular # pdf reader / editor / annotator
 
 # firefox-esr
 thunderbird
@@ -73,5 +82,3 @@ imagemagick
 # lsp-plugins
 swh-plugins
 frei0r-plugins
-
-
