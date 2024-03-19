@@ -27,7 +27,7 @@ pipewire-v4l2
 vlc
 vlc-plugin-pipewire
 dvgrab
-blender
+# blender # packaged is 3.4 too old, better install by hand
 kdenlive
 subtitleeditor # application to write and synchronize subtitles
 
