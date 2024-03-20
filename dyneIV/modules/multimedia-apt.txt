@@ -58,11 +58,11 @@ soundkonverter
 
 kid3
 
-# darktable #removed to save space: digikam is kde app
 gimp
 # krita # removed to save space: gnu imp is more familiar
 
-digikam
+darktable
+# digikam
 # rapid-photo-downloader # powerful app for managing downloading photos and video from removable media
 inkscape
 scribus
