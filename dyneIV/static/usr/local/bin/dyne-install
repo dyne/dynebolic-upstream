@@ -23,11 +23,19 @@ function mm() {
 	>&2 echo "dyne-install: $*"
 }
 
-dev="${1:-.}"
-cmd="${2:-persist}"
+cmd="${1:-persist}"
+
+dev=`pwd`
 
 [ -w "$dev" ] || {
-	mm "device not found or not writable: $dev"
+	mm "needs super-user powers: sudo dyne-install"
+	mm "volume not writable: $dev"
+	exit 1
+}
+
+findmnt -M "${dev}" || {
+	mm "needs the root of a storage volume"
+	mm "invalid location: $dev"
 	exit 1
 }
 
@@ -76,7 +84,16 @@ EOF
 case "$cmd" in
 	init) ;;
 	scan) ;;
-	iso) mkiso ;;
+	iso)
+		[[ -r "${dev}"/dyne/dynebolic.iso ]] && {
+			mm "cannot overwrite iso: $dev/dyne/dynebolic.iso"
+			exit 1
+		}
+		mkiso
+		mm "--"
+		mm "iso succesfully created! reboot to activate."
+		mm "--"
+		;;
 	persist)
 		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
 			mm "running system is already nested"
