@@ -44,6 +44,6 @@
 # included in the local filesystem module
 /home
 /root
-/usr/local
+# /usr/local
 
 
