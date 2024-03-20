@@ -1,2 +1,7 @@
 [$Version]
 update_info=webenginepart.upd:MoveNonPasswordStorableSites
+
+[UserSettings]
+HomeURL=https://dynebolic.org
+StartURL=https://dynebolic.org
+
