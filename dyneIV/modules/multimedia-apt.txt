@@ -1,3 +1,7 @@
+# ===========================================================================
+# Multimedia Utilities
+# ===========================================================================
+
 alsa-tools
 alsa-tools-gui
 alsa-utils
@@ -21,17 +25,27 @@ pipewire-pulse
 pipewire-tests
 pipewire-v4l2
 
-#  dkms will not function properly if /proc is not mounted
-# v4l2loopback-dkms
-
 vlc
 vlc-plugin-pipewire
 dvgrab
-# blender # packaged is 3.4 too old, better install by hand
-kdenlive
-subtitleeditor # application to write and synchronize subtitles
 
-obs-studio
+imagemagick
+
+#  dkms will not function properly if /proc is not mounted
+# v4l2loopback-dkms
+
+ffado-tools
+ffado-mixer-qt4
+
+jack-tools
+jack-stdio
+multimedia-jack
+qjackctl
+
+# ===========================================================================
+# Audio
+# ===========================================================================
+
 ardour
 ardour-data
 ardour-lv2-plugins
@@ -42,31 +56,52 @@ audacity-data
 mixxx
 mixxx-data
 
-butt
-
-ffado-tools
-ffado-mixer-qt4
-
-jack-tools
-jack-stdio
-multimedia-jack
-qjackctl
 jamin
-
 soundkonverter
-# soundconverter - gnome
-
 kid3
+
+# lsp-plugins
+
+# ===========================================================================
+# Graphics
+# ===========================================================================
 
 gimp
 # krita # removed to save space: gnu imp is more familiar
-
 darktable
 # digikam
 # rapid-photo-downloader # powerful app for managing downloading photos and video from removable media
 inkscape
+
+# ===========================================================================
+# Publishing
+# ===========================================================================
+
 scribus
 okular # pdf reader / editor / annotator
+
+# ===========================================================================
+# Streaming
+# ===========================================================================
+
+obs-studio
+butt
+
+# ===========================================================================
+# Video
+# ===========================================================================
+
+# blender # packaged is 3.4 too old, better install by hand
+kdenlive
+subtitleeditor # application to write and synchronize subtitles
+
+swh-plugins
+frei0r-plugins
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Should be in another module
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # firefox-esr
 thunderbird
@@ -77,8 +112,7 @@ neochat
 # irc
 weechat
 
-imagemagick
 
-# lsp-plugins
-swh-plugins
-frei0r-plugins
+
+
+
