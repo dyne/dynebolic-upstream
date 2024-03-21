@@ -12,7 +12,6 @@ speex
 libfftw3-bin
 lame
 ffmpeg
-
 pipewire
 pipewire-alsa
 pipewire-audio
@@ -24,19 +23,14 @@ pipewire-libcamera
 pipewire-pulse
 pipewire-tests
 pipewire-v4l2
-
 vlc
 vlc-plugin-pipewire
 dvgrab
-
 imagemagick
-
-#  dkms will not function properly if /proc is not mounted
+# dkms # will not function properly if /proc is not mounted
 # v4l2loopback-dkms
-
 ffado-tools
 ffado-mixer-qt4
-
 jack-tools
 jack-stdio
 multimedia-jack
@@ -49,17 +43,13 @@ qjackctl
 ardour
 ardour-data
 ardour-lv2-plugins
-
 audacity
 audacity-data
-
 mixxx
 mixxx-data
-
 jamin
 soundkonverter
 kid3
-
 # lsp-plugins
 
 # ===========================================================================
@@ -79,6 +69,7 @@ inkscape
 
 scribus
 okular # pdf reader / editor / annotator
+libreoffice
 
 # ===========================================================================
 # Streaming
@@ -94,25 +85,5 @@ butt
 # blender # packaged is 3.4 too old, better install by hand
 kdenlive
 subtitleeditor # application to write and synchronize subtitles
-
 swh-plugins
 frei0r-plugins
-
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# Should be in another module
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-# firefox-esr
-thunderbird
-
-# matrix
-neochat
-
-# irc
-weechat
-
-
-
-
-
