@@ -69,7 +69,9 @@ inkscape
 
 scribus
 okular # pdf reader / editor / annotator
-libreoffice
+default-jre
+#libreoffice
+#libreoffice-java-common
 
 # ===========================================================================
 # Streaming

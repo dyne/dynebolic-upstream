@@ -49,6 +49,22 @@ apt-module:
 	rm -rf ${MOD}-work buildroot
 	@echo "-- Done ${MOD}\n--"
 
+script-module:
+	$(if $(wildcard ${MOD}-script.sh),,$(error Package file not found: ${MOD}-script.sh))
+	mkdir -p ${MOD}-mnt ${MOD}-work buildroot
+	fuse-overlayfs -o lowerdir=${ROOT} -o upperdir=${MOD}-mnt \
+	 -o workdir=${MOD}-work  buildroot
+	cp ${MOD}-script.sh buildroot/script.sh
+	mount -o bind /proc buildroot/proc
+	mount -o bind /dev  buildroot/dev
+	chroot buildroot bash -e /script.sh
+	umount buildroot/proc
+	umount buildroot/dev
+	rm -f  buildroot/script.sh
+	fusermount -u buildroot
+	rm -rf ${MOD}-work buildroot
+	@echo "-- Done ${MOD}\n--"
+
 # $1: target
 # $2: folder
 squash-module:
@@ -68,7 +84,7 @@ kde: apt-module module-excludes squash-module
 
 multimedia: MOD := multimedia
 multimedia: EXCLUDE_FOR := release
-multimedia: apt-module module-excludes squash-module
+multimedia: apt-module script-module module-excludes squash-module
 
 games: MOD := games
 games: EXCLUDE_FOR := release
