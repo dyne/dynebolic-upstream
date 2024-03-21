@@ -1,6 +1,7 @@
 # ============================================================================
 # Xorg
 # ============================================================================
+
 xorg
 xinit
 xterm
@@ -26,8 +27,9 @@ xserver-xorg-video-radeon
 # xserver-xorg-video-vmware
 
 # ============================================================================
-# fonts 
+# fonts
 # ============================================================================
+
 fonts-noto-color-emoji
 # fonts-noto-core
 # fonts-noto-ui-core
@@ -36,38 +38,24 @@ fonts-dejavu
 fonts-liberation
 xfonts-scalable
 
-
-
-# ============================================================================
-# office
-# ============================================================================
-libreoffice-base
-libreoffice-java-common
-libreoffice-writer
-libreoffice-calc
-libreoffice-draw
-libreoffice-plasma
-libreoffice-qt5
-libreoffice-kf5
-libreoffice-style-breeze
-unoconv
-
 # ============================================================================
 # openbox
 # ============================================================================
+
 # openbox
 # python3-xdg
 
 # ============================================================================
 # DM
 # ============================================================================
+
 sddm
 devuan-xdm-config-override
-
 
 # ===========================================================================
 # KDE Plasma
 # ===========================================================================
+
 libqt5quick5
 kde-plasma-desktop
 kdeconnect
@@ -89,3 +77,14 @@ bluedevil # bluetooth utilities, unable to test in qemu so far
 kactivitymanagerd # enable the Activites entry in system setting, to create environements for the different workflows
 kactivities-bin # Command Line Tool for KActivities
 qml-module-org-kde-activities # necessary for Activities to show in system settings
+
+# ===========================================================================
+# Internet
+# ===========================================================================
+
+# firefox-esr
+thunderbird
+# matrix
+neochat
+# irc
+weechat
