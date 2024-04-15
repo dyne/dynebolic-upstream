@@ -69,7 +69,7 @@ inkscape
 
 scribus
 okular # pdf reader / editor / annotator
-default-jre
+#default-jre
 #libreoffice
 #libreoffice-java-common
 
