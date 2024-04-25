@@ -11,17 +11,15 @@
 /fail
 
 # these are moved to ${DEV_PATHS} in config.mk
-/usr/bin/apt
-/usr/bin/dpkg
-/var/lib/apt
-/var/lib/dpkg
+#/usr/bin/apt
+#/usr/bin/dpkg
+#/var/lib/apt
+#/var/lib/dpkg
 /var/cache/apt
 /var/cache/debconf
 # check also DEV_PATHS in config.mk to avoid deleting apt
-/usr/bin/apt
-/usr/bin/dpkg
-*apt-*
-*dpkg-*
+# *apt-*
+# *dpkg-*
 
 /var/log/apt
 /var/log/dpkg.log
