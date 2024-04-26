@@ -20,6 +20,15 @@ pipewire-libcamera
 pipewire-pulse
 pipewire-tests
 pipewire-v4l2
+libpipewire-0.3-0
+libpipewire-0.3-common
+libpipewire-0.3-modules
+libpipewire-0.3-dev
+gstreamer1.0-pipewire
+libwireplumber-0.4-0
+libwireplumber-0.4-dev
+libspa-0.2-dev
+libspa-0.2-modules
 
 #  dkms will not function properly if /proc is not mounted
 # v4l2loopback-dkms
