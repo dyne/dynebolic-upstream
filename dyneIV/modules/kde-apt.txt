@@ -55,12 +55,9 @@ devuan-xdm-config-override
 # ===========================================================================
 # KDE Plasma
 # ===========================================================================
-
 libqt5quick5
 kde-plasma-desktop
 kdeconnect
-# kde-config-flatpak
-# plasma-discover-backend-flatpak
 kde-config-screenlocker
 kde-config-sddm
 # kde-config-plymouth
@@ -77,6 +74,11 @@ bluedevil # bluetooth utilities, unable to test in qemu so far
 kactivitymanagerd # enable the Activites entry in system setting, to create environements for the different workflows
 kactivities-bin # Command Line Tool for KActivities
 qml-module-org-kde-activities # necessary for Activities to show in system settings
+
+# Discover + flatpak
+kde-config-flatpak
+plasma-discover-backend-flatpak
+plasma-discover-flatpak
 
 # ===========================================================================
 # Internet
