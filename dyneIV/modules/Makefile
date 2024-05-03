@@ -41,7 +41,7 @@ apt-module:
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" > buildroot/install.sh
 	mount -o bind /proc buildroot/proc
 	mount -o bind /dev  buildroot/dev
-	chroot buildroot bash -e /install.sh
+	-chroot buildroot bash -e /install.sh
 	umount buildroot/proc
 	umount buildroot/dev
 	rm -f  buildroot/install.sh
