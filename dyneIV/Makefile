@@ -79,14 +79,14 @@ _: ##
 
 qemu-isolinux: ISO ?= dynebolic.iso
 qemu-isolinux: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-isolinux: ## 📀 Emulate DVD boot using qemu
+qemu-isolinux: ## 📀 Emulate legacy boot (non-UEFI) using qemu
 	$(info Launch QEMU emulator on ISO)
 	qemu-system-x86_64 -enable-kvm -cdrom ${ISO} ${persist}	\
 	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
 
 qemu-spice: ISO ?= dynebolic.iso
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
+qemu-spice: ## 🖥️ E mulate via SPICE (requires LAN client)
 	$(info Launch SPICE server on LAN port 5900)
 	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
 	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot	\
