@@ -15,8 +15,8 @@
 #/usr/bin/dpkg
 #/var/lib/apt
 #/var/lib/dpkg
-/var/cache/apt
-/var/cache/debconf
+/var/cache/apt/archives
+#/var/cache/debconf
 # check also DEV_PATHS in config.mk to avoid deleting apt
 # *apt-*
 # *dpkg-*
