@@ -39,7 +39,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
     xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
-setup: MODULES := devroot mod-kde
+setup: MODULES := root mod-kde static home
 setup: ## 📥 Download the latest development ROOT modules
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
@@ -189,15 +189,6 @@ chroot: # 🚪 Enter the current build ROOT via CLI
 	@umount ${ROOT}/dev
 	@umount ${ROOT}/proc
 
-devroot: # 🏗️ Package the ROOT for developers
-	make -C system devroot
-	make -C system home static
-
-iso-devel: # 🏁 Toast the development ISO image
-	make -C iso grub-check iso-staging grub-make iso \
-		ISO=dynebolic-dev.iso \
-		COMPONENTS="devroot home static mod-kde mod-multimedia"
-
 desktop: need-suid
 	$(info Launch the Desktop)
 	xhost + local:
@@ -215,9 +206,9 @@ bwrap:
 _: ##
 -----: ## __ Undo and restart from scratch
 
-reset: DEVROOT ?= ${SRC}/build/dyneIV-devroot-${ARCH}.squashfs
+reset: DEVROOT ?= ${SRC}/build/dyneIV-root-${ARCH}.squashfs
 reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
-	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make devsetup))
+	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make setup))
 	$(info Restore ROOT from ${DEVROOT})
 	$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
@@ -247,7 +238,7 @@ clean: need-suid ## 🧹  Delete ROOT
 publish: ISO ?= dynebolic.iso
 publish: rcd := /srv/ftp/dynebolic/development
 publish: date := $(shell date +%Y%m%d)
-publish: MODULES := devroot mod-kde mod-multimedia mod-games
+publish: MODULES := root mod-kde static home
 publish:
 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest.iso dyneIV-${date}.iso'
 	rsync -P ${ISO} dyne.files:${rcd}/dyneIV-${date}.iso
