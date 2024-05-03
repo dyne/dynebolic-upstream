@@ -78,7 +78,6 @@ qml-module-org-kde-activities # necessary for Activities to show in system setti
 # Discover + flatpak
 kde-config-flatpak
 plasma-discover-backend-flatpak
-plasma-discover-flatpak
 
 # ===========================================================================
 # Internet
