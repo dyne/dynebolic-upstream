@@ -1,0 +1,58 @@
+baseURL = "https://dyne.org/dynebolic"
+languageCode = "en-us"
+title = "Dynebolic"
+# enableGitInfo = "true"
+theme = "dyne-soft"
+disableKinds = ["taxonomy, term"]
+enableRobotsTXT = "false"
+
+[taxonomies]
+  tag = "tags"
+
+[params]
+  description = "Dynebolic is the 100% free GNU+Linux distribution by the Dyne.org foundation."
+  moto = "Liberate yourself from mental slavery and try something different on your computer."
+  publisher = "Dyne.org"
+  google_analytics_id = ""
+  logo = "assets/img/software-logo.svg"
+  icon = "assets/img/dyne-icon.svg"
+  footerIcon = "assets/img/dyne-icon.svg"
+  email = "info@dyne.org"
+  download = "download"
+  documentation = "https://dyne.org/docs/dynebolic/"
+
+  [params.geo]
+    timezone = "Europe/Netherlands"
+    lat = "52.39679"
+    long = "4.87996"
+    region = "NL"
+    street = "Haparandadam 7"
+    locality = "Amsterdam"
+    country = "Netherlands"
+    postalcode = "1013AK "
+    org_nr = "34237525 at KvK.NL"
+
+
+  [params.homepage_meta_tags]
+    meta_og_type = "website"
+    meta_og_image = "images/dynebolic.png"
+    meta_twitter_site = "@dyneorg"
+    meta_twitter_creator = "@dyneorg"
+
+[permalinks]
+  posts = "/blog/:year-:month-:day-:slug/"
+  pages = "/:filename/"
+
+[frontmatter]
+  date = ["date", "publishDate"]
+  expiryDate = ["expiryDate"]
+  lastmod = [":fileModTime"]
+  publishDate = ["publishDate", "date"]
+
+[params._editor]
+  default_path = "/"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
