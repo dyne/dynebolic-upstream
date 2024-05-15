@@ -1,5 +1,5 @@
 ---
-title: Download Dowse
+title: Download Dynebolic
 description_markdown: "🔑 Root password is: `dyne`\n\n
   Don't forget to check the [Sha512sum](https://files.dyne.org/dynebolic/dynebolic-4.0.0-beta.iso.sha512sum)\n\n
   Chose a mirror:"
