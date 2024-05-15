@@ -1,0 +1,8 @@
+---
+- name: Git
+  URL: https://git.devuan.org/jaromil/dynebolic
+  icon: fa-git
+- name: Mastodon
+  URL: https://toot.community/@dyne
+  icon: fa-mastodon
+---
