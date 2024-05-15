@@ -1,5 +1,5 @@
 ---
-title: Dowse
+title: Dynebolic
 image: "images/rastalion-hero.webp"
 sections:
 - title: ✊🏿 There can be no peace without justice.

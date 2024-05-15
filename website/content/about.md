@@ -1,27 +1,7 @@
 ---
 title: About Dynebolic
 description_markdown: "Ten years have passed and today we are back with a brand new Dynebolic 4.0 based on Devuan 5 *Daedalus*, live-boot and the Linux kernel 6.8 series."
-image: 'images/dowse-dataprevention-campaign-1024x576.jpg'
-sections:
-- title: "Experiment along"
-  content_markdown: "Dowse talks back to your devices. It uses open standards: MQTT,
-    Websockets, Open Sound Control. So many types of devices can treasure the messages
-    that Dowse publishes to turn them to action. It is a good starting point for artists,
-    hobbyists and makers to create amazing network-aware effects and interfaces. \n\n**We try
-    to help a community of dowsers to explore this possibility.**"
-  image: "images/dowsing_on_map.png"
-  button:
-    URL: "community"
-    label: Become a dowser
-- title: Peaceful Zone
-  content_markdown: "Your local area network should be a safe-sapce. A zone of peace of mind.
-  Knowing what happens in the digital realm can seem like worrysome sorcery or black-magic.\n\n
-  **Dowse is meant to help you preserve the peace of mind by creating awareness and
-  demystifying the communication taking place between your devices.**"
-  image: "images/dowse-dataprevention-campaign-thumb.jpg"
-  button:
-    URL: "download"
-    label: This is the Way
+image: 'images/rastalion-hero-reggae.webp'
 layout: about
 ---
 
