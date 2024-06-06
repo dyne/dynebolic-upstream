@@ -95,8 +95,8 @@ case "$cmd" in
 		mm "--"
 		;;
 	persist)
-		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
-			mm "running system is already nested"
+#		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
+#			mm "running system is already nested"
 		[[ -r "${dev}"/dyne/dyne.nst ]] && {
 			mm "cannot overwrite nest: $dev/dyne/dyne.nst"
 			exit 1
