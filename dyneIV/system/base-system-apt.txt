@@ -39,7 +39,7 @@ mtools
 dosfstools
 squashfs-tools-ng
 pv
-schroot
+# schroot
 uidmap
 qemu-utils
 qemu-system-x86
@@ -48,6 +48,30 @@ ovmf
 dpkg-dev
 
 # ============================================================================
+# Kernel
+# ============================================================================
+build-essential
+gcc
+g++
+autoconf
+automake
+libtool
+pkg-config
+libltdl-dev
+bc
+kmod
+cpio
+flex
+bison
+libncurses5-dev
+libelf-dev
+libssl-dev
+dwarves
+dkms
+dh-dkms
+menu
+fakeroot
+
 # Shell
 # ============================================================================
 direnv
