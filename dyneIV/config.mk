@@ -21,6 +21,9 @@ ARCH ?= amd64
 # TODO: live-boot supports only .squashfs extension
 # MODEXT ?= dyne
 
+# ISO components in mount order
+COMPONENTS ?= root home mod-kde mod-multimedia mod-games static
+
 # temporary rootfs in RAM to speed up and avoid ssd usage
 # ROOT ?= /dev/shm/dynebolic-rootfs
 ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT

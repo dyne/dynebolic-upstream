@@ -33,7 +33,7 @@ all: iso
 # 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
 
 
-iso-staging: COMPONENTS ?= root static home mod-kde mod-multimedia mod-games
+# needs COMPONENTS to be set (in config.mk)
 iso-staging:
 	$(info Initializing ISO staging environment)
 	@rm -rf staging

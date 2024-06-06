@@ -54,8 +54,7 @@ system: ## 🗿 Build the root system: dyneIV-root
 
 iso: ## 🏁 Create the current ISO image
 	make -C iso grub-check iso-staging grub-make iso-checksum iso \
-		ISO=dynebolic.iso \
-		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
+		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"
 
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
@@ -175,8 +174,7 @@ upgrade: ## 🔝 Update root system packages
 
 iso: ## 🏁 Create the current ISO image
 	make -C iso grub-check iso-staging grub-make iso-checksum iso \
-		ISO=dynebolic.iso \
-		COMPONENTS="root home static mod-kde mod-multimedia mod-games"
+		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"
 
 _: #
 -----: # __ Advanced development function
