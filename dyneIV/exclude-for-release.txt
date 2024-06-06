@@ -27,6 +27,9 @@
 
 /usr/src/*
 
+# zero flatpak in vanilla iso
+/var/lib/flatpak
+
 # from breeze plasma theme
 /usr/share/wallpapers/Next
 

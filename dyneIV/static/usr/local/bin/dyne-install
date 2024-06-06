@@ -106,6 +106,22 @@ case "$cmd" in
 		mm "nest succesfully created! reboot to activate."
 		mm "--"
 		;;
+	flatpak)
+		[[ -r /var/lib/flatpak/.dyne ]] && {
+			mm "cannot overwrite flatpak:"
+			ls -l /var/lib/flatpak
+			mm "created on: `cat /var/lib/flatpak/.dyne`"
+			exit 1
+		}
+		mkdir -p ${dev}/dyne/flatpak
+		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
+		# apt-get install -qy flatpak kde-config-flatpak plasma-discover-backend-flatpak
+		flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+		date > /var/lib/flatpak/.dyne
+		mm "--"
+		mm "flatpak remote repository succesfully configured!"
+		mm "--"
+		;;
 	*)
 		mm "command not found: $cmd"
 		exit 1 ;;
