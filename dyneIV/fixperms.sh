@@ -50,7 +50,6 @@ chmod 4755 \
     /usr/lib/polkit-1/polkit-agent-helper-1 \
     /usr/lib/openssh/ssh-keysign \
     /usr/bin/sudo \
-    /usr/bin/schroot \
     /usr/bin/pkexec \
     /usr/bin/passwd \
     /usr/bin/newuidmap \
@@ -65,6 +64,8 @@ chmod 4755 \
     /bin/mount \
     /bin/fusermount3 \
     /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+#    /usr/bin/schroot
+
 # chmod 2775 /usr/local/share/fonts
 chmod 2755 \
     /usr/lib/x86_64-linux-gnu/utempter/utempter \
@@ -80,7 +81,6 @@ chmod 1777 \
     /run/lock
 # chmod 3775 \
 # 	  /usr/share/ppd/custom
-
 
 #####
 # /etc
