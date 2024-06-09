@@ -17,11 +17,10 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-set -e
+source /etc/boot.d/_dyne_utils
+mm "dyne-install $*: `date`"
 
-function mm() {
-	>&2 echo "dyne-install: $*"
-}
+set -e
 
 cmd="${1:-persist}"
 
