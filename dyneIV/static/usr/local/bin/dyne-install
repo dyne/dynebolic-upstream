@@ -81,10 +81,20 @@ EOF
 	losetup -d "$loop"
 }
 
+function mkflatpak() {
+		mkdir -p ${dev}/dyne/flatpak
+		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
+		# apt-get install -qy \
+		#	flatpak kde-config-flatpak plasma-discover-backend-flatpak
+		flatpak remote-add --if-not-exists \
+				flathub https://flathub.org/repo/flathub.flatpakrepo
+		date > /var/lib/flatpak/.dyne
+}
+
 case "$cmd" in
 	init) ;;
 	scan) ;;
-	iso)
+	iso|dock)
 		[[ -r "${dev}"/dyne/dynebolic.iso ]] && {
 			mm "cannot overwrite iso: $dev/dyne/dynebolic.iso"
 			exit 1
@@ -94,7 +104,7 @@ case "$cmd" in
 		mm "iso succesfully created! reboot to activate."
 		mm "--"
 		;;
-	persist)
+	persist|nest)
 #		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
 #			mm "running system is already nested"
 		[[ -r "${dev}"/dyne/dyne.nst ]] && {
@@ -113,11 +123,7 @@ case "$cmd" in
 			mm "created on: `cat /var/lib/flatpak/.dyne`"
 			exit 1
 		}
-		mkdir -p ${dev}/dyne/flatpak
-		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
-		# apt-get install -qy flatpak kde-config-flatpak plasma-discover-backend-flatpak
-		flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-		date > /var/lib/flatpak/.dyne
+		mkflatpak
 		mm "--"
 		mm "flatpak remote repository succesfully configured!"
 		mm "--"
