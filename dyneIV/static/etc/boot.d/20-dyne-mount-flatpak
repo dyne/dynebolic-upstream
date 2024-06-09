@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+touch /var/log/dyne-boot.log
+function mm() {
+	>&2 echo "$0: $*"
+	echo "$0: $*" >> /var/log/dyne-boot.log
+}
+
+[[ -r /run/live/dynetab ]] || {
+   mm "dynetab not found"
+   exit 0
+}
+
+eval `awk '$4 ~ /flatpak/ { print "MOUNT="$1; print "DEV="$2 }' /run/live/dynetab`
+
+[[ "$DEV" == "" ]] && {
+	mm "flatpak not found in dynetab"
+	exit 0
+}
+
+mm "flatpak found in $DEV"
+
+[[ "$MOUNT" == "none" ]] && {
+	eval `lsblk -P -o LABEL ${DEV}`
+	[[ "$LABEL" == "" ]] && LABEL=`basename $DEV`
+	mm "mount $DEV on /media/$LABEL"
+	mkdir -p /media/"${LABEL}"
+	mount ${DEV} /media/"$LABEL"
+	MOUNT=/media/"$LABEL"
+	mm "mount $DEV on $MOUNT"
+}
+
+[[ -r "$MOUNT"/dyne/flatpak ]] || {
+	mm "flatpak not found in mounted $DEV"
+	[[ "$LABEL" == "" ]] || umount /media"$LABEL"
+	exit 0
+}
+
+mm "activate flatpak in $MOUNT"
+mkdir -p /var/lib/flatpak
+mount -o bind "$MOUNT"/dyne/flatpak /var/lib/flatpak
+flatpak remote-add --if-not-exists \
+		flathub https://flathub.org/repo/flathub.flatpakrepo
+date > /var/lib/flatpak/.dyne

@@ -1,0 +1,87 @@
+#!/bin/zsh
+#
+# Copyright (C) 2023-2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
+
+# format of /run/live/dynetab
+# mountpoint device fstype [flags ..]
+# flags: rw,noatime,nest,iso,flatpak,mountopts
+
+touch /var/log/dyne-boot.log
+function mm() {
+	>&2 echo "$0: $*"
+	echo "$0: $*" >> /var/log/dyne-boot.log
+}
+
+mm "$0"
+
+[[ -r /run/live/persistence ]] && {
+	 # detect nests
+	 # /run/live/persistence/loop?
+	 nstloop=`find /run/live/persistence -maxdepth 1 -type d -name 'loop[0-9]*'`
+	 for i in ${(f)nstloop}; do
+		 [[ -r ${i}/persistence.conf ]] && {
+			 touch /run/live/dynetab
+			 mm "running system has an active nest"
+			 local entry=`findmnt -n -M ${i}`
+			 echo "$entry,nest" >> /run/live/dynetab
+		 }
+	 done
+
+	 nstdev=`find /run/live/persistence -maxdepth 1 -type d | grep -v /loop`
+	 for i in ${(f)nstdev}; do
+		 touch /run/live/dynetab
+		 mm "storage found: $i"
+		 local flags=""
+		 [[ -r ${i}/dyne/flatpak ]] && flags="${flags}flatpak,"
+		 [[ -r ${i}/dyne/dynebolic.iso ]] && flags="${flags}iso,"
+		 local entry=`findmnt -n -M ${i}`
+		 flags=`echo "$flags"|sed 's/,$//'`
+		 echo "${entry},${flags}" >> /run/live/dynetab
+	 done
+
+} # [[ -r /run/live/persistence] &&
+
+# TODO: filter supported FSTYPE?
+parts=`lsblk -n -l -o TYPE,NAME | awk '/^part/{print $0}'`
+for i in ${(f)parts}; do
+	touch /run/live/dynetab
+	local dev="/dev/`echo $i | awk '{print $2}'`"
+	eval `lsblk -P -o NAME,FSTYPE,MOUNTPOINT,PARTFLAGS ${dev}`
+	local flags="$PARTFLAGS"
+	if [[ "$MOUNTPOINT" == "" ]]; then
+		MOUNTPOINT=none
+		mkdir -p /run/live/mnt
+		mount -o ro /dev/${NAME} /run/live/mnt
+		[[ -r /run/live/mnt/dyne/flatpak ]] &&
+			flags="${flags}flatpak,"
+		[[ -r /run/live/mnt/dyne/dynebolic.iso ]] &&
+			flags="${flags}iso,"
+		umount /run/live/mnt
+	else
+		[[ -r ${MOUNTPOINT}/dyne/flatpak ]] &&
+			flags="${flags}flatpak,"
+		[[ -r ${MOUNTPOINT}/dyne/dynebolic.iso ]] &&
+			flags="${flags}iso,"
+	fi
+	flags=`echo "$flags"|sed 's/,$//'`
+	echo "$MOUNTPOINT \t /dev/${NAME} \t ${FSTYPE} \t $flags" \
+		 >> /run/live/dynetab
+done
+
+
+exit 0
