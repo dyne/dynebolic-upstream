@@ -21,13 +21,8 @@
 # mountpoint device fstype [flags ..]
 # flags: rw,noatime,nest,iso,flatpak,mountopts
 
-touch /var/log/dyne-boot.log
-function mm() {
-	>&2 echo "$0: $*"
-	echo "$0: $*" >> /var/log/dyne-boot.log
-}
-
-mm "$0"
+source /etc/boot.d/_dyne_utils
+mm "dyne-detect-storage: `date`"
 
 [[ -r /run/live/persistence ]] && {
 	 # detect nests
