@@ -123,6 +123,7 @@ autopsy
 extlinux
 syslinux
 grub2
+os-prober
 grml-rescueboot
 clonezilla
 cryptsetup
