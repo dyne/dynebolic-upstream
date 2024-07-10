@@ -164,9 +164,7 @@ system: ## 🗿 Build the root system: dyneIV-root
 
 
 modules: ## 🧩 Build all system modules (takes long...)
-	-make -C modules kde
-	-make -C modules multimedia
-	-make -C modules games
+	make -C modules
 
 upgrade: ## 🔝 Update root system packages
 	$(call upgrade-packages)

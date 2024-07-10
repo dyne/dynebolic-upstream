@@ -34,42 +34,44 @@ module-excludes:
 
 apt-module:
 	$(if $(wildcard ${MOD}-apt.txt),,$(error Package file not found: ${MOD}-apt.txt))
-	mkdir -p ${MOD}-mnt ${MOD}-work buildroot
+	mkdir -p ${MOD}-mnt ${MOD}-work ${MOD}-buildroot
 	fuse-overlayfs -o lowerdir=${ROOT} -o upperdir=${MOD}-mnt \
-	 -o workdir=${MOD}-work  buildroot
+	 -o workdir=${MOD}-work  ${MOD}-buildroot
 	@echo "-- Install APT packaged for module: ${MOD}\n--"
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" > buildroot/install.sh
-	mount -o bind /proc buildroot/proc
-	mount -o bind /dev  buildroot/dev
-	-chroot buildroot bash -e /install.sh
-	umount buildroot/proc
-	umount buildroot/dev
-	rm -f  buildroot/install.sh
-	fusermount -u buildroot
-	rm -rf ${MOD}-work buildroot
-	@echo "-- Done ${MOD}\n--"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" > ${MOD}-buildroot/install.sh
+	mount -o bind /proc ${MOD}-buildroot/proc
+	mount -o bind /dev  ${MOD}-buildroot/dev
+	chroot ${MOD}-buildroot /bin/bash -e /install.sh
+	umount ${MOD}-buildroot/proc
+	umount ${MOD}-buildroot/dev
+	rm -f  ${MOD}-buildroot/install.sh
+	umount ${MOD}-buildroot
+	@echo "-- Done ${MOD} apt\n--"
+
+#	rm -rf ${MOD}-work ${MOD}-buildroot
 
 script-module:
 	$(if $(wildcard ${MOD}-script.sh),,$(error Package file not found: ${MOD}-script.sh))
-	mkdir -p ${MOD}-mnt ${MOD}-work buildroot
+	mkdir -p ${MOD}-mnt ${MOD}-work ${MOD}-buildroot
 	fuse-overlayfs -o lowerdir=${ROOT} -o upperdir=${MOD}-mnt \
-	 -o workdir=${MOD}-work  buildroot
-	cp ${MOD}-script.sh buildroot/script.sh
-	mount -o bind /proc buildroot/proc
-	mount -o bind /dev  buildroot/dev
-	chroot buildroot bash -e /script.sh
-	umount buildroot/proc
-	umount buildroot/dev
-	rm -f  buildroot/script.sh
-	fusermount -u buildroot
-	rm -rf ${MOD}-work buildroot
-	@echo "-- Done ${MOD}\n--"
+	 -o workdir=${MOD}-work  ${MOD}-buildroot
+	cp ${MOD}-script.sh ${MOD}-buildroot/script.sh
+	mount -o bind /proc ${MOD}-buildroot/proc
+	mount -o bind /dev  ${MOD}-buildroot/dev
+	chroot ${MOD}-buildroot /bin/bash -e /script.sh
+	umount ${MOD}-buildroot/proc
+	umount ${MOD}-buildroot/dev
+	rm -f  ${MOD}-buildroot/script.sh
+	umount ${MOD}-buildroot
+	@echo "-- Done ${MOD} script\n--"
+
+#	rm -rf ${MOD}-work ${MOD}-buildroot
 
 # $1: target
 # $2: folder
 squash-module:
 	$(if $(wildcard ${MOD}-mnt),,$(error Folder not found: ${MOD}-mnt))
-	$(if $(wildcard ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs),$(error Cannot overwrite: ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs))
+	rm -f ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs
 	@echo "--\n-- Squash build: ${MOD} to ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs"
 	@mkdir -p ${SRC}/build
 	@tar -c --exclude-from=/tmp/dyneIV-mod-${MOD}-excludes ${MOD}-mnt \
@@ -78,9 +80,11 @@ squash-module:
 			"${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs\n--"
 
+#	$(if $(wildcard ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs),$(error Cannot overwrite: ${SRC}/build/dyneIV-mod-${MOD}-${ARCH}.squashfs))
+
 kde: MOD := kde
 kde: EXCLUDE_FOR := release
-kde: apt-module module-excludes squash-module
+kde: apt-module script-module module-excludes squash-module
 
 multimedia: MOD := multimedia
 multimedia: EXCLUDE_FOR := release
