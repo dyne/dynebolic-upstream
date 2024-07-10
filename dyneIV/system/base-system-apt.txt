@@ -81,8 +81,10 @@ fzf
 tmux
 screen
 htop
+btop
 iotop
 iftop
+lsof
 suckless-tools
 software-properties-common
 jq
@@ -98,7 +100,6 @@ rsync
 # pandoc # too big
 gettext
 powertop
-btop
 inxi
 bzip2
 qrencode
