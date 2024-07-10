@@ -84,7 +84,7 @@ kde: apt-module module-excludes squash-module
 
 multimedia: MOD := multimedia
 multimedia: EXCLUDE_FOR := release
-multimedia: apt-module module-excludes squash-module
+multimedia: apt-module script-module module-excludes squash-module
 
 # script-module in multimedia includes libreoffice
 
