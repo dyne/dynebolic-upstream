@@ -1,0 +1,11 @@
+[Desktop Entry]
+Exec=wireplumber
+OnlyShowIn=KDE;
+Type=Application
+X-KDE-autostart-after=pipewire
+X-KDE-StartupNotify=false
+X-DBUS-StartupType=Unique
+Icon=kmix
+GenericName=Sound session manager
+Name=wireplumber
+Categories=Qt;KDE;AudioVideo;Audio;Mixer;
