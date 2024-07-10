@@ -3,7 +3,7 @@
 # ===========================================================================
 
 alsa-tools
-alsa-tools-gui
+# alsa-tools-gui
 alsa-utils
 faad
 flac
@@ -23,6 +23,7 @@ pipewire-libcamera
 pipewire-pulse
 pipewire-tests
 pipewire-v4l2
+wireplumber
 vlc
 vlc-plugin-pipewire
 dvgrab
@@ -50,6 +51,7 @@ mixxx-data
 jamin
 soundkonverter
 kid3
+kmix
 # lsp-plugins
 
 # ===========================================================================
