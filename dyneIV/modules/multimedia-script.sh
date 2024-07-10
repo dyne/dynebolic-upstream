@@ -6,6 +6,13 @@
 apt-mark hold libpulse-mainloop-glib0
 
 
+# missing asound conf to use pipewire
+# fruity, 10 July 2024
+cat < EOF > /etc/asoundrc
+pcm.!default pipewire
+ctl.!default pipewire
+EOF
+
 
 #############
 # LIBREOFFICE
