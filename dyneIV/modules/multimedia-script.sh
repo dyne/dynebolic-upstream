@@ -8,6 +8,8 @@ pcm.!default pipewire
 ctl.!default pipewire
 EOF
 
+# add dyne group for audio
+usermod -a -G audio,pipewire dyne
 
 #############
 # LIBREOFFICE
