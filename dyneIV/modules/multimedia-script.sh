@@ -3,10 +3,11 @@
 
 # missing asound conf to use pipewire
 # fruity, 10 July 2024
-cat << EOF > /etc/asoundrc
-pcm.!default pipewire
-ctl.!default pipewire
-EOF
+# now in static/etc/asoundrc
+#cat << EOF > /etc/asoundrc
+#pcm.!default pipewire
+#ctl.!default pipewire
+#EOF
 
 # add dyne group for audio
 usermod -a -G audio,pipewire dyne
