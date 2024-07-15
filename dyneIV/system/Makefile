@@ -52,8 +52,6 @@ squash-root: need-suid prepare-excludes
 
 root: need-suid apt-get-update build-root dyne-software squash-root
 
-devroot: need-suid apt-get-update build-root dyne-software squash-devroot
-
 home: squash-home
 
 squash-home: need-suid
