@@ -42,6 +42,7 @@ mm "dyne-detect-storage: `date`"
 		 touch /run/live/dynetab
 		 mm "storage found: $i"
 		 local flags=""
+		 [[ -r ${i}/dyne/apt ]] && flags="${flags}apt,"
 		 [[ -r ${i}/dyne/flatpak ]] && flags="${flags}flatpak,"
 		 [[ -r ${i}/dyne/dynebolic.iso ]] && flags="${flags}iso,"
 		 local entry=`findmnt -n -M ${i}`
@@ -62,16 +63,14 @@ for i in ${(f)parts}; do
 		MOUNTPOINT=none
 		mkdir -p /run/live/mnt
 		mount -o ro /dev/${NAME} /run/live/mnt
-		[[ -r /run/live/mnt/dyne/flatpak ]] &&
-			flags="${flags}flatpak,"
-		[[ -r /run/live/mnt/dyne/dynebolic.iso ]] &&
-			flags="${flags}iso,"
+		[[ -r /run/live/mnt/dyne/apt ]] && flags="${flags}apt,"
+		[[ -r /run/live/mnt/dyne/flatpak ]] && flags="${flags}flatpak,"
+		[[ -r /run/live/mnt/dyne/dynebolic.iso ]] && flags="${flags}iso,"
 		umount /run/live/mnt
 	else
-		[[ -r ${MOUNTPOINT}/dyne/flatpak ]] &&
-			flags="${flags}flatpak,"
-		[[ -r ${MOUNTPOINT}/dyne/dynebolic.iso ]] &&
-			flags="${flags}iso,"
+		[[ -r ${MOUNTPOINT}/dyne/apt ]] && flags="${flags}apt,"
+		[[ -r ${MOUNTPOINT}/dyne/flatpak ]] && flags="${flags}flatpak,"
+		[[ -r ${MOUNTPOINT}/dyne/dynebolic.iso ]] && flags="${flags}iso,"
 	fi
 	flags=`echo "$flags"|sed 's/,$//'`
 	echo "$MOUNTPOINT \t /dev/${NAME} \t ${FSTYPE} \t $flags" \
