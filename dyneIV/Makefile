@@ -168,7 +168,6 @@ modules: ## 🧩 Build all system modules (takes long...)
 
 upgrade: ## 🔝 Update root system packages
 	$(call upgrade-packages)
-	@make system
 
 iso: ## 🏁 Create the current ISO image
 	make -C iso grub-check iso-staging grub-make iso-checksum iso \

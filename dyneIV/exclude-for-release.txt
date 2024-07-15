@@ -21,9 +21,22 @@
 # *apt-*
 # *dpkg-*
 
+# these are created by the SDK
+/script.sh
+/update.sh
+/upgrade.sh
+/install.sh
+/remove.sh
+/apply.patch
+/fixperms.sh
+
+# logs aren't needed
 /var/log/apt
 /var/log/dpkg.log
 /var/log/fsck
+/var/log/alternatives.log
+/var/log/fontconfig.log
+
 
 /usr/src/*
 

@@ -74,7 +74,6 @@ apt-get-update: need-suid
 	@mount -o bind /proc ${ROOT}/proc
 	@chroot ${ROOT} bash -e /update.sh
 	@umount ${ROOT}/proc
-	@rm -f ${ROOT}/update.sh
 	@echo "-- Done Apt Get Update\n--"
 
 fix-root-permissions: need-suid
@@ -82,7 +81,6 @@ fix-root-permissions: need-suid
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@cp    ${SRC}/iso/fixperms.sh ${ROOT}/fixperms.sh
 	@chroot ${ROOT} bash -e /fixperms.sh
-	@rm -f ${ROOT}/fixperms.sh
 	@echo "-- Done ${1}\n--"
 
 define chroot-script
@@ -95,7 +93,6 @@ define chroot-script
 	chroot ${ROOT} bash -e /script.sh || touch ${ROOT}/fail
 	@umount ${ROOT}/dev
 	@umount ${ROOT}/proc
-	@rm -f ${ROOT}/script.sh
 	@test ! -r ${ROOT}/fail || echo "-- Fail: ${1}\n--"
 	@echo "-- Done ${1}\n--"
 endef
@@ -113,7 +110,6 @@ define chroot-script-into
 	@umount ${2}/dev
 	@umount ${2}/proc
 	@rmdir ${2}/proc ${2}/dev
-	@rm -f ${2}/script.sh
 	@test ! -r ${2}/fail || echo "-- Fail: ${1} into ${2}\n--"
 	@echo "--\n-- Done ${1} into ${2}\n--"
 endef
@@ -126,7 +122,6 @@ define install-packages
 	mount -o bind /proc ${ROOT}/proc
 	chroot ${ROOT} bash -e /install.sh
 	umount ${ROOT}/proc
-	rm -f ${ROOT}/install.sh
 	@echo "-- Done ${1}\n--"
 endef
 
@@ -136,7 +131,6 @@ define remove-paths
 	@echo "-- Remove ${1}\n--"
 	@echo "rm -rf $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/remove.sh
 	chroot ${ROOT} bash -e /remove.sh
-	rm -f ${ROOT}/remove.sh
 	@echo "-- Done ${1}\n--"
 endef
 
@@ -146,7 +140,6 @@ define upgrade-packages
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get update -q -y" > ${ROOT}/upgrade.sh
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y" > ${ROOT}/upgrade.sh
 	chroot ${ROOT} bash -e /upgrade.sh
-	rm -f ${ROOT}/upgrade.sh
 	@echo "-- Done\n--"
 endef
 
@@ -156,7 +149,6 @@ define apply-patch
 	@echo "-- Patch ${1}\n--"
 	cp ${2} ${ROOT}/apply.patch
 	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
-	rm -f ${ROOT}/apply.patch
 endef
 
 define mount-qcow2
