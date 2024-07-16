@@ -32,16 +32,12 @@ include config.mk
 # local system dependencies needed to build a live system
 # and checks existence to not download them over again \o/ yey
 deps: need-suid ## 🛠️ Install development dependencies
-	@echo "Checking and installing dependencies..."
-	for pkg in mmdebstrap squashfs-tools xorriso isolinux syslinux \
-				syslinux-efi syslinux-common syslinux-utils grub-pc-bin \
-				grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools \
-				squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget \
-				xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse; do \
-		if ! dpkg -s $$pkg >/dev/null 2>&1; then \
-			apt-get install -y $$pkg; \
-		fi; \
-	done
+	$(info Install all development dependencies)
+	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
+    syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools              \
+    squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
+    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
 # modules selection through a variable, can be customized and overwritten
 MODULES ?= root mod-kde static home
@@ -93,14 +89,14 @@ qemu-isolinux: ## 📀 Emulate legacy boot (non-UEFI) using qemu
 
 qemu-spice: ISO ?= dynebolic.iso
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
+qemu-spice: ## 🖥️ E mulate via SPICE (requires LAN client)
 	$(info Launch SPICE server on LAN port 5900)
-	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios \
-	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot \
-	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl \
-	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device \
-	virtio-serial-pci -device virtio-serial -chardev \
-	spicevmc,id=vdagent,debug=0,name=vdagent -device \
+	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
+	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot	\
+	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl	\
+	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device	\
+	virtio-serial-pci -device virtio-serial -chardev				\
+	spicevmc,id=vdagent,debug=0,name=vdagent -device				\
 	virtserialport,chardev=vdagent,name=com.redhat.spice.0
 
 _: ##
@@ -202,10 +198,11 @@ bwrap:
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
 
------: # __ Undo and restart from scratch
+_: ##
+-----: ## __ Undo and restart from scratch
 
 reset: DEVROOT ?= ${SRC}/build/dyneIV-root-${ARCH}.squashfs
-reset: need-suid # ♻️  Reset current ROOT to the latest downloaded
+reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
 	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make setup))
 	$(info Restore ROOT from ${DEVROOT})
 	$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
@@ -225,15 +222,12 @@ restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 # @if [ -r ${SRC}/${STAGE3DEV} ]; then \
 # 	tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
-clean: need-suid ## 🧹  Delete ROOT and all builds, keep only stage1
-	@if mountpoint -q ROOT/proc; then umount ROOT/proc; fi
-	@if mountpoint -q ROOT/dev; then umount ROOT/dev; fi
-	@rm -rf build/*
-	@rm -rf ROOT
-	@rm -rf dyneIV*bootstrap*
-	@git clean -fd modules
+clean: need-suid ## 🧹  Delete all ROOT, modules and build
+	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
+	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
+	@rm -rf ${ROOT}
 	@rm -rf modules/*-mnt
-	@echo "All build deleted"
+	@rm -rf build/*
 
 ######
 ## Publishing operations (ssh key restricted)
