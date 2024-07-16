@@ -237,7 +237,7 @@ publish: MODULES := root mod-kde static home
 publish:
 	ssh dyne.files 'cd ${rcd} && cp -L dyneIV-latest.iso dyneIV-${date}.iso'
 	rsync -P ${ISO} dyne.files:${rcd}/dyneIV-${date}.iso
-	ssh dyne.files 'cd ${rcd} && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso *tar* | grep -v latest | tee SHA512SUMS.txt'
+	ssh dyne.files 'cd ${rcd} && ln -sf dyneIV-${date}.iso dyneIV-latest.iso && sha512sum *iso | grep -v latest | tee SHA512SUMS.txt'
 
 # for i in ${MODULES}; do \
 # 	rsync -P ${SRC}/build/dyneIV-$$i-${ARCH}.squashfs dyne.files:${rcd}/modules/; done

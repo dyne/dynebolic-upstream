@@ -18,13 +18,13 @@ function deps() {
 
 pushd /usr/src
 
-tombver=2.10
+tombver=2.11
 [ -r /usr/local/bin/tomb ] || {
 	rm -rf Tomb-${tombver}*
 	deps g++ libgcrypt20-dev qt5-qmake qtbase5-dev qtdeclarative5-dev
 	>&2 echo " install Tomb from latest source"
 	[ -r Tomb-${tombver}.tar.gz ] ||
-		wget https://files.dyne.org/tomb/Tomb-${tombver}.tar.gz
+		wget https://files.dyne.org/tomb/releases/Tomb-${tombver}.tar.gz
 	rm -rf Tomb-${tombver}
 	tar xf Tomb-${tombver}.tar.gz
 	pushd Tomb-${tombver}
