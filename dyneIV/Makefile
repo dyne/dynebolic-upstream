@@ -35,9 +35,10 @@ deps: need-suid ## 🛠️ Install development dependencies
 	$(info Install all development dependencies)
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools              \
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools netcat-openbsd \
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
-    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
+    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse \
+	qemu-system-modules-spice
 
 setup: MODULES := root mod-kde static home
 setup: ## 📥 Download the latest development ROOT modules
