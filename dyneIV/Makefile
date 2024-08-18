@@ -37,8 +37,7 @@ deps: need-suid ## 🛠️ Install development dependencies
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
     grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools netcat-openbsd \
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
-    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse \
-	qemu-system-modules-spice
+    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
 setup: MODULES := root mod-kde static home
 setup: ## 📥 Download the latest development ROOT modules
@@ -217,16 +216,14 @@ restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
 	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
 	@rm -rf ${ROOT}
+	@rm -rf modules/*-mnt modules/*-work modules/*-buildroot
 	@mkdir -p ${ROOT} && cd ${ROOT} && tar -xf ${SRC}/${STAGE2}
 
 # @if [ -r ${SRC}/${STAGE3DEV} ]; then \
 # 	tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
 clean: need-suid ## 🧹  Delete ROOT
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
-	@rm -rf ${ROOT}
-	@rm -rf modules/*-mnt
+	@rm -rf build/*
 
 ######
 ## Publishing operations (ssh key restricted)

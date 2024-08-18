@@ -4,7 +4,8 @@
 TMP_DEPS=""
 
 [ -r /usr/local/bin/tomb ] && [ -r /usr/local/share/jaromail ] && \
-[ -r /usr/local/bin/zenroom ] && [ -r /usr/local/bin/hasciicam ] && {
+[ -r /usr/local/bin/zenroom ] && [ -r /usr/local/bin/hasciicam ] && \
+[ -r /usr/local/bin/flask ] && {
 	>&2 echo "-- Dyne.org software found already installed."
 	exit 0
 }
@@ -69,6 +70,12 @@ tombver=2.11
 		make && make install && popd
 	rm -rf hasciicam
 }
+
+# python flask for splash
+DEBIAN_FRONTEND=noninteractive \                                                                                                                                                                apt-get install -q -y python3-dotenv python3-greenlet python3-asgiref python3-pip
+pip install flask
+
+
 
 DEBIAN_FRONTEND=noninteractive \
 	apt-get remove --purge -q -y ${TMP_DEPS}
