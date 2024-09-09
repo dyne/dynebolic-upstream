@@ -23,16 +23,6 @@ include ${SRC}/config.mk
 .SECONDEXPANSION:
 all: iso
 
-# buildroot: EXCLUDE_FOR := devel
-# buildroot: need-suid static-overlay prepare-excludes
-# 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-# 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-# 	$(info Squashing dynebolic read-only filesystem)
-# 	$(info Please wait while compressing the filesystem...)
-# 	tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-# 		| xz -v -z -T0 --memlimit-compress=70% > ${SRC}/${STAGE3DEV}
-
-
 # needs COMPONENTS to be set (in config.mk)
 iso-staging:
 	$(info Initializing ISO staging environment)
@@ -77,10 +67,20 @@ grub-make:
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
 	    "boot/grub/grub.cfg=grub-embed.cfg"
 
+
+squash-static:
+	$(info Squash static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs)
+	@mkdir -p ${SRC}/build
+	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
+		--owner 0:0 ${SRC}/static \
+        | tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
+            "${SRC}/build/dyneIV-static-${ARCH}.squashfs"
+	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
+
 # requires iso-*-staging before
 iso: ISO ?= dynebolic.iso
 iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
-iso: need-suid
+iso:
 	$(info Toast the ISO file to ${ISO})
 	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
 		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
