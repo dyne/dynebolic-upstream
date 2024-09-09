@@ -52,10 +52,6 @@ setup: ## 📥 Download the latest development ROOT modules
 system: ## 🗿 Build the root system: dyneIV-root
 	@make -C system all
 
-iso: ## 🏁 Create the current ISO image
-	make -C iso grub-check iso-staging grub-make iso-checksum iso \
-		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"
-
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
@@ -170,7 +166,7 @@ upgrade: ## 🔝 Update root system packages
 	$(call upgrade-packages)
 
 iso: ## 🏁 Create the current ISO image
-	make -C iso grub-check iso-staging grub-make iso-checksum iso \
+	make -C iso grub-check squash-static iso-staging grub-make iso-checksum iso \
 		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"
 
 _: #
