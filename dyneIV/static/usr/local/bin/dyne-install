@@ -83,8 +83,6 @@ EOF
 function mkflatpak() {
 		mkdir -p ${dev}/dyne/flatpak
 		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
-		# apt-get install -qy \
-		#	flatpak kde-config-flatpak plasma-discover-backend-flatpak
 		flatpak remote-add --if-not-exists \
 				flathub https://flathub.org/repo/flathub.flatpakrepo
 		date > /var/lib/flatpak/.dyne
@@ -104,8 +102,6 @@ case "$cmd" in
 		mm "--"
 		;;
 	persist|nest)
-#		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
-#			mm "running system is already nested"
 		[[ -r "${dev}"/dyne/dyne.nst ]] && {
 			mm "cannot overwrite nest: $dev/dyne/dyne.nst"
 			exit 1
@@ -133,3 +129,7 @@ case "$cmd" in
 esac
 
 
+# notes, tests, snippets:
+
+#		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
+#			mm "running system is already nested"
