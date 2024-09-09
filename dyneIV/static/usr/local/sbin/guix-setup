@@ -26,8 +26,9 @@ wget https://ftp.gnu.org/gnu/guix/${RELEASE}.sig
 gpg --verify ${RELEASE}.sig
 
 tar --warning=no-timestamp -xf ${RELEASE}
-rm -rf /var/guix && mv var/guix /var/
-rm -rf /gnu && mv gnu /
+cp -ra var/guix/* /var/guix/
+cp -ra gnu /gnu/*
+rm -rf var/guix gnu
 
 popd
 

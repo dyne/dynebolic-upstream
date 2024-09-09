@@ -80,6 +80,15 @@ EOF
 	losetup -d "$loop"
 }
 
+function mkguix() {
+		mkdir -p ${dev}/dyne/guix ${dev}/dyne/gnu
+		mount -o bind ${dev}/dyne/guix /var/guix
+		mount -o bind ${dev}/dyne/gnu /gnu
+		/usr/local/sbin/guix-setup
+		date > /var/guix/.dyne
+		date > /gnu/.dyne
+}
+
 function mkflatpak() {
 		mkdir -p ${dev}/dyne/flatpak
 		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
@@ -115,12 +124,24 @@ case "$cmd" in
 		[[ -r /var/lib/flatpak/.dyne ]] && {
 			mm "cannot overwrite flatpak:"
 			ls -l /var/lib/flatpak
-			mm "created on: `cat /var/lib/flatpak/.dyne`"
+			mm "last access: `cat /var/lib/flatpak/.dyne`"
 			exit 1
 		}
 		mkflatpak
 		mm "--"
-		mm "flatpak remote repository succesfully configured!"
+		mm "flatpak repository succesfully configured!"
+		mm "--"
+		;;
+	guix)
+		[[ -r /var/guix/.dyne ]] && {
+			mm "cannot overwrite guix:"
+			ls -l /var/guix
+			mm "last access: `cat /var/guix/.dyne`"
+			exit 1
+		}
+		mkguix
+		mm "--"
+		mm "guix repository succesfully configured!"
 		mm "--"
 		;;
 	*)

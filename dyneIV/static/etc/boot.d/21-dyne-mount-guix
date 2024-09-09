@@ -1,0 +1,57 @@
+#!/bin/zsh
+# Copyright (C) 2023-2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
+
+source /etc/boot.d/_dyne_utils
+mm "dyne-mount-guix: `date`"
+
+[[ -r /run/live/dynetab ]] || {
+   mm "dynetab not found"
+   exit 0
+}
+
+eval `awk '$4 ~ /guix/ { print "MOUNT="$1; print "DEV="$2 }' /run/live/dynetab`
+
+[[ "$DEV" == "" ]] && {
+	mm "guix not found in dynetab"
+	exit 0
+}
+
+mm "guix found in $DEV"
+
+[[ "$MOUNT" == "none" ]] && {
+	eval `lsblk -P -o LABEL ${DEV}`
+	[[ "$LABEL" == "" ]] && LABEL=`basename $DEV`
+	mm "mount $DEV on /media/$LABEL"
+	mkdir -p /media/"${LABEL}"
+	mount ${DEV} /media/"$LABEL"
+	MOUNT=/media/"$LABEL"
+	mm "mount $DEV on $MOUNT"
+}
+
+[[ -r "$MOUNT"/dyne/guix ]] || {
+	mm "guix not found in mounted $DEV"
+	[[ "$LABEL" == "" ]] || umount /media"$LABEL"
+	exit 0
+}
+
+mm "activate guix in $MOUNT"
+mkdir -p /var/guix /gnu
+mount -o bind "$MOUNT"/dyne/guix /var/guix
+mount -o bind "$MOUNT"/dyne/gnu /gnu
+date > /var/guix/.dyne
+date > /gnu/.dyne
