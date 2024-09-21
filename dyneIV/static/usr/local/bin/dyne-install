@@ -81,12 +81,46 @@ EOF
 }
 
 function mkguix() {
-		mkdir -p ${dev}/dyne/guix ${dev}/dyne/gnu
-		mount -o bind ${dev}/dyne/guix /var/guix
-		mount -o bind ${dev}/dyne/gnu /gnu
-		/usr/local/sbin/guix-setup
-		date > /var/guix/.dyne
-		date > /gnu/.dyne
+	# check if a nested guix already exist
+	if [ ! -d "${dev}/dyne/guix-nest" ] ; then
+		mm "Guix storage directory not existing, creating it"	
+		#mkdir -p ${dev}/dyne/guix-nest
+	fi
+	# check for content directories
+	if [ ! -d "${dev}/dyne/guix-nest/var/guix" ] ; then
+		mm "guix directory missing, creating it"
+		mkdir -p ${dev}/dyne/guix-nest/var/guix /var/guix
+	fi
+        if [ ! -d "${dev}/dyne/guix-nest/gnu" ] ; then
+	       mm "gnu directory not existing, creating it"
+	       mkdir -p ${dev}/dyne/guix-nest/gnu /gnu
+	fi
+	
+	# Binding mount points
+	if findmnt /gnu > /dev/null ; then
+		mount -o remount,bind ${dev}/dyne/guix-nest/var/guix /var/guix
+		mount -o remount,bind ${dev}/dyne/guix-nest/gnu /gnu
+	else
+		mount -o bind ${dev}/dyne/guix-nest/var/guix /var/guix
+		mount -o bind ${dev}/dyne/guix-nest/gnu /gnu
+	fi
+
+	# execute guix-setup script for version 1.4.0
+	#
+	mm "Executing guix-setup script"
+	/usr/local/sbin/guix-setup
+	date > /var/guix/.dyne
+	date > /gnu/.dyne
+
+	# check for profile installation and source it just to be sure
+	# if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+	if [ ! -x /root/.config/guix/current ] ; then
+		mm "Something went wrong with linking guix profile in /root/.config/guix/current"
+	else
+		mm "Guix profile is linked from \
+			${dev}/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix to ~root/.config/guix/current"
+		mm "It will be sourced from /etc/profile for new shells"
+	fi
 }
 
 function mkflatpak() {
@@ -142,6 +176,7 @@ case "$cmd" in
 		mkguix
 		mm "--"
 		mm "guix repository succesfully configured!"
+		mm "start a new shell or reboot"
 		mm "--"
 		;;
 	*)

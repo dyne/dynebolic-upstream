@@ -8,11 +8,17 @@ VERSION="1.4.0"
 RELEASE=guix-binary-${VERSION}.${ARCH}-linux.tar.xz 
 # TODO: support other architectures here
 
-[ -r /var/guix ] && {
-	>&2 echo "Guix is already setted up on this machine"
-	>&2 echo "To delete: rm -rf /var/guix /gnu /root/.config/guix"
-	exit 1
-}
+# added by fruity to isolate guix into /dyne/guix-nest
+dev=`pwd`
+
+# added by fruity, most important checks and directories
+# are done in dyne-install
+# not required here
+#[ -r /var/guix ] && {
+#	>&2 echo "Guix is already setted up on this machine"
+#	>&2 echo "To delete: rm -rf /var/guix /gnu /root/.config/guix"
+#	exit 1
+#}
 
 pushd /tmp
 
@@ -26,25 +32,25 @@ wget https://ftp.gnu.org/gnu/guix/${RELEASE}.sig
 gpg --verify ${RELEASE}.sig
 
 tar --warning=no-timestamp -xf ${RELEASE}
-cp -ra var/guix/* /var/guix/
-cp -ra gnu /gnu/*
+cp -ra var/guix/* $dev/dyne/guix-nest/var/guix
+cp -ra gnu/* $dev/dyne/guix-nest/gnu
 rm -rf var/guix gnu
 
 popd
 
 mkdir -p ~root/.config/guix
-ln -sf /var/guix/profiles/per-user/root/current-guix ~root/.config/guix/current
+ln -sf $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix ~root/.config/guix/current
 
 >&2 echo " make guix available to all users"
-mkdir -p /usr/local/bin
-pushd /usr/local/bin
-ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix
+mkdir -p $dev/dyne/guix-nest/usr/local/bin
+pushd $dev/dyne/guix-nest/usr/local/bin
+ln -sf $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bin/guix
 popd
 
 >&2 echo " link the info manual"
-mkdir -p /usr/local/share/info
-pushd /usr/local/share/info
-for i in /var/guix/profiles/per-user/root/current-guix/share/info/* ;
+mkdir -p $dev/dyne/guix-nest/usr/local/share/info
+pushd $dev/dyne/guix-nest/usr/local/share/info
+for i in $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix/share/info/* ;
   do ln -sf $i ; done
 popd
 
