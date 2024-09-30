@@ -12,20 +12,7 @@ speex
 libfftw3-bin
 lame
 ffmpeg
-pipewire
-pipewire-alsa
-pipewire-audio
-pipewire-audio-client-libraries
-pipewire-bin
-pipewire-doc
-pipewire-jack
-pipewire-libcamera
-pipewire-pulse
-pipewire-tests
-pipewire-v4l2
-wireplumber
 vlc
-vlc-plugin-pipewire
 dvgrab
 imagemagick
 # dkms # will not function properly if /proc is not mounted
