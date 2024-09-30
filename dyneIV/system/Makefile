@@ -23,7 +23,7 @@ include ${SRC}/config.mk
 
 .SECONDEXPANSION:
 
-all: need-suid apt-get-update build-root dyne-software squash-root squash-home squash-static
+all: need-suid apt-get-update build-root dyne-software install-audio squash-root squash-home squash-static
 
 clean:
 	rm -f ${SRC}/build/dyneIV-root-amd64.squashfs
@@ -36,6 +36,9 @@ build-root:
 
 dyne-software: ##
 	$(call chroot-script,dyne-software.sh)
+
+install-audio: ##
+	$(call chroot-script,install-audio.sh)
 
 squash-root: EXCLUDE_FOR := release
 squash-root: target := ${SRC}/build/dyneIV-root-${ARCH}.squashfs
@@ -50,7 +53,7 @@ squash-root: need-suid prepare-excludes
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
 
-root: need-suid apt-get-update build-root dyne-software squash-root
+root: need-suid apt-get-update build-root dyne-software install-audio squash-root
 
 home: squash-home
 
