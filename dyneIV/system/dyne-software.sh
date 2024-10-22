@@ -74,7 +74,7 @@ tombver=2.11
 # python flask for splash
 DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
 	python3-dotenv python3-greenlet python3-asgiref python3-pip
-pip install flask
+#pip install flask
 
 
 
