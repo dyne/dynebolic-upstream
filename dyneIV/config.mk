@@ -95,8 +95,10 @@ define install-packages
 	@echo "-- Install ${1}\n--"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/install.sh
 	mount -o bind /proc ${ROOT}/proc
-	chroot ${ROOT} bash -e /install.sh
-	umount ${ROOT}/proc
+	mount -o bind /dev/pts ${ROOT}/dev/pts
+	-chroot ${ROOT} bash -e /install.sh
+	-umount ${ROOT}/proc
+	-umount ${ROOT}/dev/pts
 	@echo "-- Done ${1}\n--"
 endef
 

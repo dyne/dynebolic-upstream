@@ -154,7 +154,7 @@ bootstrap: ## 🚀 Build the base system: dyneIV-bootstrap
 	@make -C bootstrap
 
 system: ## 🗿 Build the root system: dyneIV-root
-	@make -C system root
+	@make -C system all
 	@make -C system home
 	@make -C system static
 
