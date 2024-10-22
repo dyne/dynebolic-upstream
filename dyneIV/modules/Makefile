@@ -38,7 +38,9 @@ apt-module:
 	fuse-overlayfs -o lowerdir=${ROOT} -o upperdir=${MOD}-mnt \
 	 -o workdir=${MOD}-work  ${MOD}-buildroot
 	@echo "-- Install APT packaged for module: ${MOD}\n--"
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" > ${MOD}-buildroot/install.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" > ${MOD}-buildroot/install.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${MOD}-buildroot/install.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" >> ${MOD}-buildroot/install.sh
 	mount -o bind /proc ${MOD}-buildroot/proc
 	mount -o bind /dev  ${MOD}-buildroot/dev
 	chroot ${MOD}-buildroot /bin/bash -e /install.sh

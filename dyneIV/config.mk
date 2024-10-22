@@ -71,6 +71,7 @@ apt-get-update: need-suid
 	@echo "--\n-- Apt Get Update"
 	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/update.sh
 	@mount -o bind /proc ${ROOT}/proc
 	@chroot ${ROOT} bash -e /update.sh
 	@umount ${ROOT}/proc
