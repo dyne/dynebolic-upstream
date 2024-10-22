@@ -164,9 +164,6 @@ modules: ## 🧩 Build all system modules (takes long...)
 	$(MAKE) -C modules MOD=multimedia
 	$(MAKE) -C modules MOD=games
 
-upgrade: ## 🔝 Update root system packages
-	$(call upgrade-packages)
-
 iso: ## 🏁 Create the current ISO image
 	make -C iso grub-check squash-static iso-staging grub-make iso-checksum iso \
 		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"

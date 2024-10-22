@@ -58,32 +58,6 @@ define check-root
 	$(if $(wildcard ${ROOT}),,$(error "ROOT not found."))
 endef
 
-# use adding to tar  --exclude-from=/tmp/dyneIV-excludes
-prepare-excludes:
-	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
-	$(info Filesystem exclusion mask target: ${EXCLUDE_FOR})
-	@rm -f /tmp/dyneIV-excludes
-	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
-		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
-
-# remove freesh repos because kernel is installed only by bootstrap
-apt-get-update: need-suid
-	@echo "--\n-- Apt Get Update"
-	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/update.sh
-	@mount -o bind /proc ${ROOT}/proc
-	@chroot ${ROOT} bash -e /update.sh
-	@umount ${ROOT}/proc
-	@echo "-- Done Apt Get Update\n--"
-
-fix-root-permissions: need-suid
-	@echo "--\n-- Fixing file permissions in ROOT"
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	@cp    ${SRC}/iso/fixperms.sh ${ROOT}/fixperms.sh
-	@chroot ${ROOT} bash -e /fixperms.sh
-	@echo "-- Done ${1}\n--"
-
 define chroot-script
 	$(if $(wildcard ${1}),,$(error Script not found: ${1}))
 	@echo "--\n-- Execute: ${1}"
@@ -133,15 +107,6 @@ define remove-paths
 	@echo "rm -rf $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/remove.sh
 	chroot ${ROOT} bash -e /remove.sh
 	@echo "-- Done ${1}\n--"
-endef
-
-define upgrade-packages
-	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
-	@echo "-- Upgrade packages\n--"
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get update -q -y" > ${ROOT}/upgrade.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y" > ${ROOT}/upgrade.sh
-	chroot ${ROOT} bash -e /upgrade.sh
-	@echo "-- Done\n--"
 endef
 
 define apply-patch
