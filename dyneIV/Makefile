@@ -219,6 +219,9 @@ restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 
 clean: need-suid ## 🧹  Delete ROOT
 	@rm -rf build/*
+	@rm -rf ROOT
+	@rm -rf dyneIV*tar*
+	@git clean -fd modules
 
 ######
 ## Publishing operations (ssh key restricted)
