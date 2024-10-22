@@ -42,10 +42,12 @@ apt-module:
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${MOD}-buildroot/install.sh
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${MOD}-apt.txt)" >> ${MOD}-buildroot/install.sh
 	mount -o bind /proc ${MOD}-buildroot/proc
-	mount -o bind /dev  ${MOD}-buildroot/dev
-	chroot ${MOD}-buildroot /bin/bash -e /install.sh
-	umount ${MOD}-buildroot/proc
-	umount ${MOD}-buildroot/dev
+	mount -o bind /dev/pts  ${MOD}-buildroot/dev/pts
+	mount -o bind /dev/null  ${MOD}-buildroot/dev/null
+	-chroot ${MOD}-buildroot /bin/bash -e /install.sh
+	-umount ${MOD}-buildroot/proc
+	-umount ${MOD}-buildroot/dev/pts
+	-umount ${MOD}-buildroot/dev/null
 	rm -f  ${MOD}-buildroot/install.sh
 	umount ${MOD}-buildroot
 	@echo "-- Done ${MOD} apt\n--"
@@ -59,10 +61,12 @@ script-module:
 	 -o workdir=${MOD}-work  ${MOD}-buildroot
 	cp ${MOD}-script.sh ${MOD}-buildroot/script.sh
 	mount -o bind /proc ${MOD}-buildroot/proc
-	mount -o bind /dev  ${MOD}-buildroot/dev
-	chroot ${MOD}-buildroot /bin/bash -e /script.sh
-	umount ${MOD}-buildroot/proc
-	umount ${MOD}-buildroot/dev
+	mount -o bind /dev/pts  ${MOD}-buildroot/dev/pts
+	mount -o bind /dev/null  ${MOD}-buildroot/dev/null
+	-chroot ${MOD}-buildroot /bin/bash -e /script.sh
+	-umount ${MOD}-buildroot/proc
+	-umount ${MOD}-buildroot/dev/pts
+	-umount ${MOD}-buildroot/dev/null
 	rm -f  ${MOD}-buildroot/script.sh
 	umount ${MOD}-buildroot
 	@echo "-- Done ${MOD} script\n--"
