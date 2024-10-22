@@ -23,7 +23,7 @@ include ${SRC}/config.mk
 
 .SECONDEXPANSION:
 
-all: need-suid apt-get-update build-root dyne-software install-audio squash-root squash-home squash-static
+all: need-suid apt-get-upgrade build-root dyne-software install-audio squash-root squash-home squash-static
 
 clean:
 	rm -f ${SRC}/build/dyneIV-root-amd64.squashfs
@@ -40,6 +40,25 @@ dyne-software: ##
 install-audio: ##
 	$(call chroot-script,install-audio.sh)
 
+# remove freesh repos because kernel is installed only by bootstrap
+apt-get-upgrade: need-suid
+	@echo "--\n-- Apt Get Update & Upgrade"
+	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/update.sh
+	@mount -o bind /proc ${ROOT}/proc
+	@chroot ${ROOT} bash -e /update.sh
+	@umount ${ROOT}/proc
+	@echo "-- Done Apt Get Upgrade\n--"
+
+# use adding to tar  --exclude-from=/tmp/dyneIV-excludes
+prepare-excludes:
+	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
+	$(info Filesystem exclusion mask target: ${EXCLUDE_FOR})
+	@rm -f /tmp/dyneIV-excludes
+	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
+		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
+
 squash-root: EXCLUDE_FOR := release
 squash-root: target := ${SRC}/build/dyneIV-root-${ARCH}.squashfs
 squash-root: need-suid prepare-excludes
@@ -52,8 +71,6 @@ squash-root: need-suid prepare-excludes
 	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
 		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
 		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
-
-root: need-suid apt-get-update build-root dyne-software install-audio squash-root
 
 home: squash-home
 
