@@ -2,11 +2,12 @@
 
 echo "deb http://deb.debian.org/debian bookworm-backports main contrib non-free" > /etc/apt/sources.list.d/pipewire-backport.list
 
-apt-get -q update
+apt-get -qy update
 
 DEBIAN_FRONTEND=noninteractive apt-get -t bookworm-backports -q -y --reinstall install \
 	pipewire-audio pipewire pipewire-pulse pipewire-jack pipewire-bin pipewire-alsa \
-	wireplumber pipewire-libcamera pipewire-v4l pipewire-tests
+	wireplumber pipewire-libcamera pipewire-tests
+#pipewire-v4l
 
 DEBIAN_FRONTEND=noninteractive apt-get -q -y install \
 	pavucontrol pamix audacity hydrogen zynaddsubfx
