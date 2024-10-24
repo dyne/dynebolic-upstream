@@ -1,3 +1,0 @@
-{{ $options := (dict "outputStyle" "compressed" "enableSourceMap" true) }}
-{{ $js := resources.Get "assets/js/set.js" | resources.Minify | fingerprint }}
-<script src="{{ $js.RelPermalink }}"></script>
