@@ -37,9 +37,6 @@ build-root:
 dyne-software: ##
 	$(call chroot-script,dyne-software.sh)
 
-install-audio: ##
-	$(call chroot-script,install-audio.sh)
-
 # remove freesh repos because kernel is installed only by bootstrap
 apt-get-upgrade: need-suid
 	@echo "--\n-- Apt Get Update & Upgrade"

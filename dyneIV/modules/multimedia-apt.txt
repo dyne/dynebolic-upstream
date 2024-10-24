@@ -38,8 +38,9 @@ mixxx-data
 jamin
 soundkonverter
 kid3
-kmix
 # lsp-plugins
+hydrogen
+zynaddsubfx
 
 # ===========================================================================
 # Graphics

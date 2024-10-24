@@ -217,10 +217,10 @@ restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 # @if [ -r ${SRC}/${STAGE3DEV} ]; then \
 # 	tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
-clean: need-suid ## 🧹  Delete ROOT
+clean: need-suid ## 🧹  Delete ROOT and all builds, keep only stage1
 	@rm -rf build/*
 	@rm -rf ROOT
-	@rm -rf dyneIV*tar*
+	@rm -rf dyneIV*bootstrap*
 	@git clean -fd modules
 
 ######

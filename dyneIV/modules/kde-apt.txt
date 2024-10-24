@@ -93,3 +93,20 @@ thunderbird
 neochat
 # irc
 weechat
+
+# ===========================================================================
+# Basic Multimedia Subsystem (applications go in multimedia-apt.txt)
+# ===========================================================================
+pipewire
+pipewire-audio
+pipewire-pulse
+pipewire-jack
+pipewire-bin
+pipewire-alsa
+pipewire-libcamera
+pipewire-test
+wireplumber
+# pavucontrol
+pamix
+kmix
+
