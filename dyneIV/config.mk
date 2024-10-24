@@ -33,9 +33,10 @@ ROOT ?= $(shell git rev-parse --show-toplevel)/dyneIV/ROOT
 #APT_PROXY_OVERRIDE := "127.0.0.2:3142"
 APT_PROXY_OVERRIDE := ""
 
-STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar
-STAGE2 := ${FILEPFX}-bootstrap-${ARCH}.tar.xz
-DEVROOT := ${SRC}/build/${FILEPFX}-devroot-${ARCH}.squashfs
+# Bootstrap stages filenames
+STAGE0 := ${FILEPFX}-stage0-${ARCH}.tar
+STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar.xz
+STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.xz
 
 SQFSCONF ?= -c xz -j 6
 
@@ -87,6 +88,20 @@ define chroot-script-into
 	@rmdir ${2}/proc ${2}/dev
 	@test ! -r ${2}/fail || echo "-- Fail: ${1} into ${2}\n--"
 	@echo "--\n-- Done ${1} into ${2}\n--"
+endef
+
+define upgrade-packages
+	@echo "--\n-- Apt Get Update & Upgrade"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/upgrade.sh
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/upgrade.sh
+	mount -o bind /proc ${ROOT}/proc
+	mount -o bind /dev/pts ${ROOT}/dev/pts
+	mount -o bind /dev/null ${ROOT}/dev/null
+	-chroot ${ROOT} bash -e /upgrade.sh
+	-umount ${ROOT}/proc
+	-umount ${ROOT}/dev/pts
+	-umount ${ROOT}/dev/null
+	@echo "-- Done Apt Get Upgrade\n--"
 endef
 
 define install-packages

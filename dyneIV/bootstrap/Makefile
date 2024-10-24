@@ -37,8 +37,8 @@ stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
 stage1: APT_PROXY_OPT := $(shell APT_PROXY_OVERRIDE="${APT_PROXY_OVERRIDE}" ${SRC}/bootstrap/generate-proxy-opt.sh)
 stage1: need-suid
-	@if ! [ -r ${SRC}/${STAGE1} ]; then \
-	echo "Bootstrap a new stage1: ${STAGE1}"; \
+	@if ! [ -r ${SRC}/${STAGE0} ]; then \
+	echo "Bootstrap a new stage0: ${STAGE0}"; \
 	UNSHARE_USERS=1 mmdebstrap \
 		--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 		--aptopt='Apt::Install-Recommends "false"' \
@@ -52,35 +52,31 @@ stage1: need-suid
 		--include='devuan-keyring' \
 		--include='ca-certificates locales apt-transport-https curl apt-utils netcat-openbsd' \
 		--comp=main --arch=${ARCH} \
-	daedalus ${SRC}/${STAGE1} http://packages.devuan.org/merged; \
-	fi
+	daedalus ${SRC}/${STAGE0} http://packages.devuan.org/merged; \
+	else echo "Stage0 found: ${STAGE0}"; fi
+	@if ! [ -r ${SRC}/${STAGE1} ]; then \
+	  if ! [ -r ${ROOT} ]; then \
+	    mkdir -p ${ROOT} ;\
+	    tar -C ${ROOT} -xf ${SRC}/${STAGE0} ;\
+	  fi ;\
+	  echo "Bootstrap a new stage1: ${STAGE1}"; \
+	  cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/ ;\
+	  cp install-kernel-libre.sh ${ROOT}/free.sh ;\
+	  mount -o bind /proc ${ROOT}/proc ;\
+	  mount -o bind /dev/pts ${ROOT}/dev/pts ;\
+	  mount -o bind /dev/null ${ROOT}/dev/null ;\
+	  chroot ${ROOT} bash -e /free.sh ;\
+	  umount ${ROOT}/proc ;\
+	  umount ${ROOT}/dev/pts ;\
+	  umount ${ROOT}/dev/null ;\
+	  rm -f ${ROOT}/etc/apt/sources.list.d/freesh.sources ;\
+	  du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE1} ;\
+	else echo "Stage1 found: ${STAGE1}"; fi
 
-extract-stage1: need-suid
-	mkdir -p ${ROOT}
-	@tar -C ${ROOT} -xf ${SRC}/${STAGE1}
-	@cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/
-	$(call chroot-script,install-apt-conf.sh)
-	$(call chroot-script,install-kernel-libre.sh)
-
-apt-source-backports:
-	$(info Add backports to apt sources)
-	echo "deb http://deb.debian.org/debian bookworm-backports main" > ${ROOT}/etc/apt/sources.list.d/bookworm-backports.list
-
-# remove freesh repos because kernel is installed only by bootstrap
-apt-get-upgrade:
-	@echo "--\n-- Apt Get Update & Upgrade"
-	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/update.sh
-	mount -o bind /proc ${ROOT}/proc
-	mount -o bind /dev/pts ${ROOT}/dev/pts
-	-chroot ${ROOT} bash -e /update.sh
-	-umount ${ROOT}/proc
-	-umount ${ROOT}/dev/pts
-	@echo "-- Done Apt Get Upgrade\n--"
-
-stage2: need-suid extract-stage1 apt-source-backports apt-get-upgrade
+stage2:
 	$(info Open first stage bootstrap)
+	$(call chroot-script,install-apt-conf.sh)
+	$(call upgrade-packages)
 	$(call install-packages,base-packages)
 	$(call chroot-script,install-users.sh)
 	$(call install-packages,live-boot.txt)
