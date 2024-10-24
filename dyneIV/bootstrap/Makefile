@@ -62,6 +62,10 @@ extract-stage1: need-suid
 	$(call chroot-script,install-apt-conf.sh)
 	$(call chroot-script,install-kernel-libre.sh)
 
+apt-source-backports:
+	$(info Add backports to apt sources)
+	echo "deb http://deb.debian.org/debian bookworm-backports main" > ${ROOT}/etc/apt/sources.list.d/bookworm-backports.list
+
 # remove freesh repos because kernel is installed only by bootstrap
 apt-get-upgrade:
 	@echo "--\n-- Apt Get Update & Upgrade"
@@ -75,7 +79,7 @@ apt-get-upgrade:
 	-umount ${ROOT}/dev/pts
 	@echo "-- Done Apt Get Upgrade\n--"
 
-stage2: need-suid extract-stage1 apt-get-upgrade
+stage2: need-suid extract-stage1 apt-source-backports apt-get-upgrade
 	$(info Open first stage bootstrap)
 	$(call install-packages,base-packages)
 	$(call chroot-script,install-users.sh)
