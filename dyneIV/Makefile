@@ -50,7 +50,7 @@ setup: ## 📥 Download the latest development ROOT modules
 	make reset
 
 system: ## 🗿 Build the root system: dyneIV-root
-	@make -C system all
+	$(MAKE) -C system all
 
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
@@ -150,13 +150,8 @@ persist-umount: need-suid # ⏏️ Unmount persistance contents
 _: ##
 -----: ## __ Build from scratch:
 
-bootstrap: ## 🚀 Build the base system: dyneIV-bootstrap
-	@make -C bootstrap
-
-system: ## 🗿 Build the root system: dyneIV-root
-	@make -C system all
-	@make -C system home
-	@make -C system static
+bootstrap: ## 🚀 Build the stage1 bootstrap: dyneIV-bootstrap-*
+	$(MAKE) -C bootstrap
 
 
 modules: ## 🧩 Build all system modules (takes long...)
@@ -165,7 +160,8 @@ modules: ## 🧩 Build all system modules (takes long...)
 	$(MAKE) -C modules MOD=games
 
 iso: ## 🏁 Create the current ISO image
-	make -C iso grub-check squash-static iso-staging grub-make iso-checksum iso \
+	make -C iso \
+		grub-check squash-static squash-home iso-staging grub-make iso-checksum iso \
 		ISO=dynebolic.iso COMPONENTS="${COMPONENTS}"
 
 _: #
@@ -193,11 +189,10 @@ bwrap:
 	bwrap --bind ${ROOT} / --proc /proc --dev /dev --unshare-user --share-net \
 		--uid 0 --gid 0 bash
 
-_: ##
------: ## __ Undo and restart from scratch
+-----: # __ Undo and restart from scratch
 
 reset: DEVROOT ?= ${SRC}/build/dyneIV-root-${ARCH}.squashfs
-reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
+reset: need-suid # ♻️  Reset current ROOT to the latest downloaded
 	$(if $(wildcard ${DEVROOT}),,$(error Development ROOT not found: make setup))
 	$(info Restore ROOT from ${DEVROOT})
 	$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
@@ -205,7 +200,7 @@ reset: need-suid ## ♻️  Reset current ROOT to the latest downloaded
 	rm -rf ${ROOT}
 	unsquashfs -d ${ROOT} ${DEVROOT}
 
-restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
+restrap: need-suid # ♻️  Reset current ROOT to base bootstrap stage
 	$(info Restore ROOT from ${STAGE2})
 	$(if $(wildcard ${STAGE2}),,$(error Bootstrap not found: make bootstrap))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)

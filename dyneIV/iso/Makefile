@@ -67,6 +67,16 @@ grub-make:
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
 	    "boot/grub/grub.cfg=grub-embed.cfg"
 
+squash-home: need-suid
+	$(info Squash home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs)
+	@mkdir -p ${SRC}/build
+	@chown -R 1000:1000 ${SRC}/static/home/dyne
+	@chown -R root:root ${SRC}/static/root
+	@tar -c --exclude ${SRC}/static/usr --exclude ${SRC}/static/etc \
+		${SRC}/static \
+		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
+			"${SRC}/build/dyneIV-home-${ARCH}.squashfs"
+	@echo "--\n-- Done: ${SRC}/build/dyneIV-home-${ARCH}.squashfs\n--"
 
 squash-static:
 	$(info Squash static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs)

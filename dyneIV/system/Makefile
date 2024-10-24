@@ -21,32 +21,23 @@ SRC=$(shell dirname $(shell pwd))
 
 include ${SRC}/config.mk
 
-.SECONDEXPANSION:
+#.SECONDEXPANSION:
 
-all: need-suid apt-get-upgrade build-root dyne-software install-audio squash-root squash-home squash-static
+all: EXCLUDE_FOR := release
+all: target := ${SRC}/build/dyneIV-root-${ARCH}.squashfs
+all: prepare-excludes 
+	$(call upgrade-packages)
+	$(call install-packages,base-system-apt.txt)
+	$(call chroot-script,dyne-software.sh)
+	$(info Squash build: root to ${SRC}/build/dyneIV-root-${ARCH}.squashfs)
+	$(call chroot-script,${SRC}/fixperms.sh)
+	@mkdir -p ${SRC}/build
+	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
+		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
+		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
 
 clean:
 	rm -f ${SRC}/build/dyneIV-root-amd64.squashfs
-	rm -f ${SRC}/build/dyneIV-home-amd64.squashfs
-	rm -f ${SRC}/build/dyneIV-static-amd64.squashfs
-	rm -f ${SRC}/build/dyneIV-devroot-amd64.squashfs
-
-build-root:
-	$(call install-packages,base-system-apt.txt)
-
-dyne-software: ##
-	$(call chroot-script,dyne-software.sh)
-
-# remove freesh repos because kernel is installed only by bootstrap
-apt-get-upgrade: need-suid
-	@echo "--\n-- Apt Get Update & Upgrade"
-	@echo "rm -f /etc/apt/sources.list.d/freesh.sources" > ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y update" >> ${ROOT}/update.sh
-	@echo "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade" >> ${ROOT}/update.sh
-	@mount -o bind /proc ${ROOT}/proc
-	@chroot ${ROOT} bash -e /update.sh
-	@umount ${ROOT}/proc
-	@echo "-- Done Apt Get Upgrade\n--"
 
 # use adding to tar  --exclude-from=/tmp/dyneIV-excludes
 prepare-excludes:
@@ -56,54 +47,3 @@ prepare-excludes:
 	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${ROOT}"'%s\n",$$1)}' \
 		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-excludes
 
-squash-root: EXCLUDE_FOR := release
-squash-root: target := ${SRC}/build/dyneIV-root-${ARCH}.squashfs
-squash-root: need-suid prepare-excludes
-	@echo "--\n-- Squash build: root to ${SRC}/build/dyneIV-root-${ARCH}.squashfs"
-	@mkdir -p ${SRC}/build
-	@$(if $(wildcard ${ROOT}),,$(error Folder not found: ${ROOT}))
-	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)
-	@$(if $(wildcard ${ROOT}/dev/mem),umount ${ROOT}/dev)
-	@$(call chroot-script,${SRC}/fixperms.sh)
-	@tar -c --exclude-from=/tmp/dyneIV-excludes ${ROOT} \
-		| pv -p -s `du -sb ${ROOT} | awk '{print $$1}'` \
-		| tar2sqfs -r ${ROOT} -f -q ${SQFSCONF} ${target}
-
-home: squash-home
-
-squash-home: need-suid
-	@echo "--\n-- Squash build: home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs"
-	@mkdir -p ${SRC}/build
-	@chown -R 1000:1000 ${SRC}/static/home/dyne
-	@chown -R root:root ${SRC}/static/root
-	@tar -c --exclude ${SRC}/static/usr --exclude ${SRC}/static/etc \
-		${SRC}/static \
-		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
-			"${SRC}/build/dyneIV-home-${ARCH}.squashfs"
-	@echo "--\n-- Done: ${SRC}/build/dyneIV-home-${ARCH}.squashfs\n--"
-
-static: squash-static
-
-squash-static: need-suid
-	@echo "--\n-- Squash build: static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs"
-	@mkdir -p ${SRC}/build
-	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
-			--owner 0:0 ${SRC}/static \
-		| tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
-			"${SRC}/build/dyneIV-static-${ARCH}.squashfs"
-	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
-
-# cli-utils: ##
-# 	$(call install-packages,cli-utils.txt)
-
-# desktop-kde: ##
-# 	$(call install-packages,desktop-kde.txt)
-
-# creative-multimedia: ##
-# 	$(call install-packages,creative-multimedia.txt)
-
-# fun-games: ##
-# 	$(call install-packages,fun-games.txt)
-
-# cli-emacs: ##
-# 	$(call install-packages,cli-emacs.txt)
