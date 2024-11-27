@@ -34,13 +34,12 @@ done
 
 apt-get -q update
 
-DEBIAN_FRONTEND=noninteractive apt-get -t bookworm-backports -q -y --reinstall install \
+DEBIAN_FRONTEND=noninteractive apt-get -t daedalus-backports -q -y --reinstall install \
 	gstreamer1.0-pipewire libkpipewire5 libkpipewiredmabuf5 libkpipewirerecord5 \
 	libpipeline1 libpipewire-0.3-0:amd64 libpipewire-0.3-common libpipewire-0.3-dev \
 	libpipewire-0.3-modules:amd64 libpipewire-0.3-modules-x11 pipewire pipewire-alsa \
 	pipewire-audio pipewire-audio-client-libraries pipewire-bin pipewire-jack \
-	pipewire-media-session pipewire-pulse pipewire-tests pipewire-v4l2 \
-	qml-module-org-kde-pipewire
+	pipewire-pulse pipewire-tests pipewire-v4l2 qml-module-org-kde-pipewire
 
 # clear the package repository and the cache 
 # we'll leave the pinning file so that they aren't

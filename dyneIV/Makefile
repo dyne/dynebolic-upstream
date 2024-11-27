@@ -35,7 +35,7 @@ deps: need-suid ## 🛠️ Install development dependencies
 	$(info Install all development dependencies)
 	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
     syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools netcat-openbsd \
+    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools \
     squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
     xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
 
