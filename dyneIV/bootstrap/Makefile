@@ -73,7 +73,13 @@ stage1: need-suid
 	  du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE1} ;\
 	else echo "Stage1 found: ${STAGE1}"; fi
 
-stage2:
+root:
+	@if ! [ -r ${ROOT} ]; then \
+        mkdir -p ${ROOT} ;\
+        tar -C ${ROOT} -xf ${SRC}/${STAGE1} ;\
+    fi
+
+stage2: root
 	$(info Open first stage bootstrap)
 	$(call chroot-script,install-apt-conf.sh)
 	$(call upgrade-packages)
@@ -83,11 +89,13 @@ stage2:
 	$(call chroot-script,install-live-boot.sh)
 	$(call chroot-script,install-locale.sh)
 
+
 pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
-	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
 	@du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE2}
+
+#$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 
 # setup a local apt-proxy cache
 apt-proxy: need-suid

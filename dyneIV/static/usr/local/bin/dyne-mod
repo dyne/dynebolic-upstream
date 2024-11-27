@@ -42,7 +42,7 @@ function usage() {
 	>&2 print \
 		"`pfx 'command   arguments'`"
 	>&2 print \
-		" setup    path devroot"
+		" setup    ROOT_path iso"
 	>&2 print \
 		" create   path [ info ] [ apt ] [ shell ]"
 	>&2 print \

@@ -217,6 +217,7 @@ clean: need-suid ## 🧹  Delete ROOT and all builds, keep only stage1
 	@rm -rf ROOT
 	@rm -rf dyneIV*bootstrap*
 	@git clean -fd modules
+	@rm -rf modules/*-mnt
 
 ######
 ## Publishing operations (ssh key restricted)

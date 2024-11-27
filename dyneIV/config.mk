@@ -38,7 +38,11 @@ STAGE0 := ${FILEPFX}-stage0-${ARCH}.tar
 STAGE1 := ${FILEPFX}-stage1-${ARCH}.tar.xz
 STAGE2 := ${FILEPFX}-stage2-${ARCH}.tar.xz
 
+# default configuration for mksquash
 SQFSCONF ?= -c xz -j 6
+
+# backports distro name
+BACKPORTS := bookworm-backports
 
 # check also exclude-from-iso.txt to avoid excludes
 # DEV_PATHS := var/lib/apt var/lib/dpkg var/cache/apt var/cache/debconf /usr/src
@@ -105,15 +109,30 @@ define upgrade-packages
 endef
 
 define install-packages
-	$(if $(wildcard ${1}),,$(error Package file not found: ${1}))
+	$(if $(wildcard ${1}),,$(error Apt package file not found: ${1}))
 	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
-	@echo "-- Install ${1}\n--"
+	@echo "-- Install: ${1}\n--"
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/install.sh
 	mount -o bind /proc ${ROOT}/proc
 	mount -o bind /dev/pts ${ROOT}/dev/pts
 	-chroot ${ROOT} bash -e /install.sh
 	-umount ${ROOT}/proc
 	-umount ${ROOT}/dev/pts
+	@rm -f ${ROOT}/install.sh
+	@echo "-- Done ${1}\n--"
+endef
+
+define install-backports
+	$(if $(wildcard ${1}),,$(error Apt package file not found: ${1}))
+	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
+	@echo "-- Install from Backports: ${1}\n--"
+	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -t ${BACKPORTS} -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/backports.sh
+	mount -o bind /proc ${ROOT}/proc
+	mount -o bind /dev/pts ${ROOT}/dev/pts
+	-chroot ${ROOT} bash -e /backports.sh
+	-umount ${ROOT}/proc
+	-umount ${ROOT}/dev/pts
+	@rm -f ${ROOT}/backports.sh
 	@echo "-- Done ${1}\n--"
 endef
 

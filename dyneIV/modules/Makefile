@@ -29,8 +29,8 @@ module-excludes:
 	$(if $(wildcard ${SRC}/exclude-for-${EXCLUDE_FOR}.txt),,$(error Exclude file not found: ${EXCLUDE_FOR}))
 	$(info Filesystem exclusion mask target: ${EXCLUDE_FOR})
 	@rm -f /tmp/dyneIV-mod-${MOD}-excludes
-	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${MOD}-mnt"'%s\n",$$1)}' ${SRC}/exclude-for-${EXCLUDE_FOR}.txt | tee /tmp/dyneIV-mod-${MOD}-excludes
-	$(info /tmp/dyneIV-mod-${MOD}-excludes)
+	@awk '/^#/{next} /^$$/{next} /^\*/{print $$0; next} /^\//{printf("'"${MOD}-mnt"'%s\n",$$1)}' \
+		${SRC}/exclude-for-${EXCLUDE_FOR}.txt > /tmp/dyneIV-mod-${MOD}-excludes
 
 apt-module:
 	$(if $(wildcard ${MOD}-apt.txt),,$(error Package file not found: ${MOD}-apt.txt))
