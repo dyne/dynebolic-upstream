@@ -3,7 +3,7 @@
 # ===========================================================================
 
 alsa-tools
-# alsa-tools-gui
+alsa-tools-gui
 alsa-utils
 faad
 flac
@@ -39,8 +39,6 @@ jamin
 soundkonverter
 kid3
 # lsp-plugins
-hydrogen
-zynaddsubfx
 
 # ===========================================================================
 # Graphics
