@@ -8,7 +8,9 @@ dpkg -i /usr/src/${FREESH}
 rm -f /usr/src/${FREESH}
 DEBIAN_FRONTEND=noninteractive apt-get update -q -y
 DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
-	linux-image-6.11.10-gnu linux-headers-6.11.10-gnu linux-libre-6.11
+	linux-image-6.6.63-gnu linux-headers-6.6.63-gnu
 
 # commented by fruity, we still need kernels on the iso, do not wipe it off
-#rm -f /etc/apt/sources.list.d/freesh.sources
+# it will wipe the kernel down the line
+#
+# rm -f /etc/apt/sources.list.d/freesh.sources
