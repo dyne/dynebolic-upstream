@@ -25,8 +25,6 @@ for item in ${PIPEPACKS} ; do
 	apt-get -y --reinstall install -t daedalus-backports $item
 done
 
-apt-get -q -y upgrade
-
 # clear the package repository and the cache 
 # we'll leave the pinning file so that they aren't
 # overwritten during updates
