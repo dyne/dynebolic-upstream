@@ -1,0 +1,60 @@
+@font-face {
+    font-family: "Syne";
+    src: url("/static/fonts/Syne-VariableFont_wght.ttf");
+}
+  
+
+/*#region Bootstrap*/
+    /*#region Variables*/
+    :root {
+        --bs-primary-rgb: 251, 241, 234;
+        --bs-link-color: rgba(70, 70, 70, 0.55);
+        --bs-link-hover-color: rgba(70, 70, 70, 1.0);
+    }
+
+    body, .navbar {
+        font-family: 'Syne', sans-serif !important;
+    }
+
+    .navbar-brand {
+        --bs-navbar-brand-color: #fa8c01;
+        --bs-navbar-brand-hover-color: #fa8c0180;
+    }
+
+    .navbar-nav {
+        --bs-navbar-color: rgba(70, 70, 70, 0.55);
+        --bs-navbar-hover-color: rgba(70, 70, 70, 1.0);
+    }
+    /*#endregion Variables */
+
+    /*#region Components*/
+    .form-check-input {
+        border: solid 2px #fbf1eb !important;
+    }
+    
+    .form-switch input,
+    .form-switch label {
+        cursor: pointer !important;
+    }
+
+    #aboutds:hover,
+    #aboutds:focus {
+        filter: brightness(1.2);
+    }
+    /*#endregion Components */
+/*#endregion Bootstrap */
+
+/*#region RST*/
+main #pbody p {
+    margin-left: 0.2em;
+}
+
+main #pbody pre {
+    margin-left: 0.7em;
+}
+
+main #pbody blockquote {
+    font-style: italic;
+    margin-left: 0.5em;
+}
+/*#endregion RST */

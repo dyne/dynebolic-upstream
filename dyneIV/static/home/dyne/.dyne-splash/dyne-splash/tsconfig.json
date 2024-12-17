@@ -1,0 +1,13 @@
+{
+    "extends": "@tsconfig/strictest/tsconfig.json",
+    "typeAcquisition": {
+        "enable": true,
+        "include": ["jquery", "bootstrap"],
+    },
+    "compilerOptions": {
+        "sourceMap": true,
+        "types": ["jquery"],
+        "preserveConstEnums": true
+    },
+    "files": ["static/splash.ts"]
+}

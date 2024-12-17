@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Name=DyneBolic Tutorials
+Icon=utilities-terminal
+Exec=/home/dyne/.dyne-splash/app.py
+Categories=Education;
