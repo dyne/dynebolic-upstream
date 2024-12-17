@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  {% block meta_extra %}{% endblock %}
+  <title>{% block title %}Welcome{% endblock %} — Dynebolic</title>
+  <body>
+    <header>
+      {% include('navbar.html5.jinja2') %}
+    </header>
+    <div class="my-3 mx-5 page">
+      <main>
+        {% block body %}
+            EMPTY
+        {% endblock %}
+      </main>
+      <footer class="small text-muted mt-5">
+        <div class="hstack">
+            <div>
+              <a id="aboutds" href="/about" target="_top" title="About Dyne Splash">
+                <img class="me-2" src="/static/logo.webp" alt="" height="32" width="32" draggable="false">
+              </a>
+            </div>
+            <div class="nav">
+                <li class="nav-item align-content-center">
+                    <a class="nav-link" href="https://dynebolic.org/">Official website</a>
+                </li>
+                <li class="nav-item align-content-center">
+                    <a class="nav-link" href="https://dyne.org/donate/">Donations</a>
+                </li>
+                <li class="nav-item align-content-center">
+                    <a class="nav-link" href="https://dyne.org/dynebolic/community/">Assistance</a>
+                </li>
+                <li class="nav-item vstack ps-3">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="fsswitch">
+                    <label class="form-check-label text-dark user-select-none" for="fsswitch">Fullscreen</label>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="bootswitch">
+                    <label class="form-check-label text-dark user-select-none" for="bootswitch">Show at boot</label>
+                  </div>
+                </li>
+            </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/static/jquery.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+    <script src="/static/splash.js"></script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Focus mode</h1>
+          </div>
+          <div class="modal-body">
+            Read the system tutorial in full screen?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            <button id="fsmbtn" type="button" class="btn btn-primary" data-bs-dismiss="modal">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,42 @@
+{
+    "Dyne Splash": {
+        "Web Browser": {
+            "path": "/usr/bin/falkon",
+            "args": ["--no-extensions", "--open-window", "--private-browsing", "--fullscreen", "--no-remote"],
+            "Target URL": {
+                "query": "?fs=1"
+            }
+        },
+        "Local Socket": {
+            "IPv4": {
+                "host": 1
+            },
+            "Services DB": {
+                "name": "dyne-splash",
+                "proto": "tcp"
+            }
+        },
+        "Tutorial": {
+            "root": "dyne-splash/tutorial",
+            "format": "rst"
+        },
+        "Main Navigation Menu": {
+            "live": [
+                {"name":"Live system", "path":""},
+                {"name":"Chapter 1", "path":"ch1"},
+                {"name":"Chapter 2", "path":"ch2"},
+                {"name":"Chapter 3", "path":"ch3"},
+                {"name":"Chapter 4", "path":"ch4"},
+                {"name":"Chapter 5", "path":"ch5"}
+            ],
+            "installed": [
+                {"name":"Start", "path":""},
+                {"name":"Chapter 1", "path":"ch1"},
+                {"name":"Chapter 2", "path":"ch2"},
+                {"name":"Chapter 3", "path":"ch3"},
+                {"name":"Chapter 4", "path":"ch4"},
+                {"name":"Chapter 5", "path":"ch5"}
+            ]
+        }
+    }
+}

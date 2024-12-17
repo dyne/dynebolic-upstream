@@ -1,0 +1,20 @@
+<nav class="navbar navbar-expand-lg bg-primary bg-gradient shadow-sm user-select-none" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand small fw-bold" href="/">
+            Tutorial
+        </a>
+        <button class="navbar-toggler bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto">
+                {% for link in mainNavMenu[envtype] %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/{{link.path}}">{{ link.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>

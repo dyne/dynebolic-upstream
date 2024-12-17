@@ -1,0 +1,16 @@
+{% extends 'base.html5.jinja2' %}
+
+{% block body %}
+    <h1 class="my-2">{{ current_page['title'] | safe }}</h1>
+    <p class="lead">{{ current_page['subtitle'] | safe }}</p>
+    
+    <div id="pbody" class="text-dark ms-1">
+    {{ current_page['body'] | safe }}
+    </div>
+
+    <p class="small text-muted text-end font-monospace my-2">
+        <span>{{ current_page['titledata'] | safe }}</span>
+        <span id="etype" class="fst-italic me-2">{{ envtype }}</span>
+        <a id="epath" class="text-decoration-none link-info font-monospace" href="file://{{ current_page_name.absolute() }}">{{ current_page_name.name }}</a>
+    </p>
+{% endblock body %}

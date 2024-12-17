@@ -45,6 +45,10 @@ chown polkitd:root \
     /usr/share/polkit-1/rules.d \
     /etc/polkit-1/rules.d
 
+# flask tutorial splash
+chown -R dyne:dyne \
+	/home/dyne/.dyne-splash
+
 # WARNING: granting SUID BIT
 chmod 4755 \
     /usr/lib/polkit-1/polkit-agent-helper-1 \

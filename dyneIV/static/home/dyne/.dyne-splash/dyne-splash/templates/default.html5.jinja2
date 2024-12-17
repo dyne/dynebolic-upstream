@@ -1,0 +1,14 @@
+{% extends 'base.html5.jinja2' %}
+
+{% block body %}
+    <h2>Error</h2>
+    <p>
+    {{ problem | safe | default("Unknown") }}
+    </p>
+    <details>
+        <summary class="user-select-none mt-2 btn btn-sm btn-info">Extra</summary>
+        <pre class="font-monospace border border-info-subtle rounded mt-2">
+{{ details | safe | default("No details provided.") }}
+        </pre>
+    </details>
+{% endblock body %}
