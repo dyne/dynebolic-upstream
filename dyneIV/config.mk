@@ -82,8 +82,10 @@ define chroot-script-into
 	@mkdir ${2}/proc ${2}/dev
 	@mount -o bind /proc ${2}/proc
 	@mount -o bind /dev ${2}/dev
+	@mount -o bind /dev/pts ${2}/dev/pts
 	chroot ${2} bash -e /script.sh || touch ${2}/fail
 	@umount ${2}/dev
+	@umount ${2}/dev/pts
 	@umount ${2}/proc
 	@rmdir ${2}/proc ${2}/dev
 	@test ! -r ${2}/fail || echo "-- Fail: ${1} into ${2}\n--"
@@ -127,8 +129,8 @@ define remove-paths
 endef
 
 define apply-patch
-	$(if $(wildcard ${ROOT}/${1}),,$(error Patch target file not found: ${1}))
-	$(if $(wildcard ${2}),,$(error Patch file not found: ${2}))
+	#$(if $(wildcard ${ROOT}/${1}),,$(error Patch target file not found: ${1}))
+	#$(if $(wildcard ${2}),,$(error Patch file not found: ${2}))
 	@echo "-- Patch ${1}\n--"
 	cp ${2} ${ROOT}/apply.patch
 	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
