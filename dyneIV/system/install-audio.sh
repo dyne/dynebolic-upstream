@@ -22,7 +22,7 @@ for item in ${PIPEPACKS} ; do
 	echo "Pin: release n=daedalus-backports" >> /etc/apt/preferences.d/backports
 	echo "Pin-Priority: 900" >> /etc/apt/preferences.d/backports
 	printf "\n" >> /etc/apt/preferences.d/backports
-	apt-get -y --reinstall install -t daedalus-backports $item
+	apt-get -q -y --reinstall install -t daedalus-backports $item
 done
 
 # clear the package repository and the cache 

@@ -5,6 +5,7 @@
 # fruity, 10 July 2024
 apt-mark hold libpulse-mainloop-glib0
 
+rm /etc/xdg/autostart/org.kde.discover.notifier.desktop
 
 # flatpak is activated by dyne-install on user request (requires storage and awareness)
 # HOME=/home/dyne setuidgid dyne \

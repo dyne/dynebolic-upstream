@@ -30,6 +30,7 @@ all: prepare-excludes
 	$(call install-packages,base-system-apt.txt)
 	$(call chroot-script,dyne-software.sh)
 	$(call chroot-script,install-audio.sh)
+	$(call chroot-script,cleanup.sh)
 	$(info Squash build: root to ${SRC}/build/dyneIV-root-${ARCH}.squashfs)
 	$(call chroot-script,${SRC}/fixperms.sh)
 	@mkdir -p ${SRC}/build
