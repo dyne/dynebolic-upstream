@@ -50,7 +50,7 @@ stage1: need-suid
 		--hook-dir=/usr/share/mmdebstrap/hooks/eatmydata \
 		--hook-dir=/usr/share/mmdebstrap/hooks/file-mirror-automount \
 		--include='devuan-keyring' \
-		--include='ca-certificates locales apt-transport-https curl apt-utils netcat-openbsd' \
+		--include='ca-certificates locales apt-transport-https curl apt-utils netcat-openbsd dialog' \
 		--comp=main --arch=${ARCH} \
 	daedalus ${SRC}/${STAGE0} http://packages.devuan.org/merged; \
 	else echo "Stage0 found: ${STAGE0}"; fi
