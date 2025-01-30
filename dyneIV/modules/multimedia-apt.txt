@@ -50,6 +50,11 @@ darktable
 # digikam
 # rapid-photo-downloader # powerful app for managing downloading photos and video from removable media
 inkscape
+gimp-lensfun
+liblensfun-bin
+liblensfun-data-v1
+liblensfun1
+python3-lensfun
 
 # ===========================================================================
 # Publishing
