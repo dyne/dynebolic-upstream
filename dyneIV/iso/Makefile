@@ -93,7 +93,7 @@ iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso966
 iso:
 	$(info Toast the ISO file to ${ISO})
 	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
-		mkfs.vfat -F32 efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
+		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
 		mcopy -vi efiboot.img												\
     "EFI/BOOT/BOOTIA32.EFI"					\
     "EFI/BOOT/BOOTx64.EFI"					\
