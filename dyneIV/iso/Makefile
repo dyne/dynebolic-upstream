@@ -118,7 +118,7 @@ iso-snapshot: need-suid iso-staging grub-check grub-make
 		| tee -a staging/live/filesystem.module
 	@cd staging && ls -lh live && \
 		dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
-		mkfs.vfat -F32 efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
+		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
 		mcopy -vi efiboot.img												\
     "EFI/BOOT/BOOTIA32.EFI"					\
     "EFI/BOOT/BOOTx64.EFI"					\
