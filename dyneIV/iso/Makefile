@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-
 SRC=$(shell dirname $(shell pwd))
 
 include ${SRC}/config.mk
@@ -41,7 +40,7 @@ iso-staging:
 	@cp -f ${ROOT}/boot/initrd.img-* staging/live/initrd
 	@cp -f isolinux.cfg staging/isolinux/
 	@cp -f grub.cfg staging/boot/grub/
-	@cp -f grub.cfg staging/EFI/BOOT
+	@cp -f grub.cfg staging/EFI/BOOT/grub.cfg
 	@cp -f /usr/lib/ISOLINUX/isolinux.bin staging/isolinux/
 	@cp -f /usr/lib/syslinux/modules/bios/* staging/isolinux/
 	@cp -rf /usr/lib/grub/x86_64-efi/* staging/boot/grub/x86_64-efi/
@@ -55,20 +54,29 @@ grub-check:
 	@grub-script-check grub.cfg
 
 grub-make:
-	$(info Build the Grub configuration to boot)
+	$(info Building the Grub EFI binaries)
 	@grub-mkstandalone -O i386-efi \
-		--modules="${grub-mods}" \
+		--modules="linux normal search png gfxmenu part_gpt part_msdos fat iso9660 efi_gop efi_uga video_fb font" \
 		--locales="" --themes="" --fonts=""	\
 		--output="staging/EFI/BOOT/BOOTIA32.EFI"				 \
-		"boot/grub/grub.cfg=grub-embed.cfg"
+		"boot/grub/grub.cfg=grub.cfg"
 	@grub-mkstandalone -O x86_64-efi \
-		--modules="${grub-mods}" \
-		--locales="" themes="" fonts="" \
+		--modules="linux normal search png gfxmenu part_gpt part_msdos fat iso9660 efi_gop efi_uga video_fb font" \
+		--locales="" --themes="" --fonts=""	\
 		--output="staging/EFI/BOOT/BOOTx64.EFI"						\
-	    "boot/grub/grub.cfg=grub-embed.cfg"
+	    "boot/grub/grub.cfg=grub.cfg"
+
+squash-static:
+	$(info Squashing static files to ${SRC}/build/dyneIV-static-${ARCH}.squashfs)
+	@mkdir -p ${SRC}/build
+	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
+		--owner 0:0 ${SRC}/static \
+        | tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
+            "${SRC}/build/dyneIV-static-${ARCH}.squashfs"
+	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
 
 squash-home: need-suid
-	$(info Squash home to ${SRC}/build/dyneIV-home-${ARCH}.squashfs)
+	$(info Squashing home directory to ${SRC}/build/dyneIV-home-${ARCH}.squashfs)
 	@mkdir -p ${SRC}/build
 	@chown -R 1000:1000 ${SRC}/static/home/dyne
 	@chown -R root:root ${SRC}/static/root
@@ -78,36 +86,26 @@ squash-home: need-suid
 			"${SRC}/build/dyneIV-home-${ARCH}.squashfs"
 	@echo "--\n-- Done: ${SRC}/build/dyneIV-home-${ARCH}.squashfs\n--"
 
-squash-static:
-	$(info Squash static to ${SRC}/build/dyneIV-static-${ARCH}.squashfs)
-	@mkdir -p ${SRC}/build
-	@tar -c --exclude ${SRC}/static/home --exclude ${SRC}/static/root  \
-		--owner 0:0 ${SRC}/static \
-        | tar2sqfs -r ${SRC}/static -f -q ${SQFSCONF} \
-            "${SRC}/build/dyneIV-static-${ARCH}.squashfs"
-	@echo "--\n-- Done: ${SRC}/build/dyneIV-static-${ARCH}.squashfs\n--"
-
-# requires iso-*-staging before
 iso: ISO ?= dynebolic.iso
-iso: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
-iso:
-	$(info Toast the ISO file to ${ISO})
-	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 &&		\
-		mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT &&	\
-		mcopy -vi efiboot.img												\
-    "EFI/BOOT/BOOTIA32.EFI"					\
-    "EFI/BOOT/BOOTx64.EFI"					\
-    "boot/grub/grub.cfg" ::/EFI/BOOT/
+iso: squash-home squash-static iso-staging grub-make
+	$(info Creating EFI boot image)
+	@cd staging && dd if=/dev/zero of=efiboot.img bs=1M count=20
+	@mkfs.vfat staging/efiboot.img
+	@mmd -i staging/efiboot.img ::/EFI ::/EFI/BOOT
+	@mcopy -vi staging/efiboot.img \
+		"staging/EFI/BOOT/BOOTIA32.EFI" \
+		"staging/EFI/BOOT/BOOTx64.EFI" \
+		"staging/EFI/BOOT/grub.cfg" ::/EFI/BOOT/
+
+	$(info Creating ISO file: ${ISO})
 	@xorriso -as mkisofs -iso-level 3 -o "${SRC}/${ISO}"			\
 		-full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable	\
 		-partition_offset 16 -joliet -joliet-long -rational-rock		\
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot	\
 		isolinux/isolinux.bin -no-emul-boot -boot-load-size 4			\
 		-boot-info-table --eltorito-catalog isolinux/isolinux.cat		\
-		-eltorito-alt-boot -e --interval:appended_partition_2:all::		\
-		-no-emul-boot -isohybrid-gpt-basdat -append_partition 2			\
-		`cat /proc/sys/kernel/random/uuid` \
-		staging/efiboot.img staging
+		-eltorito-alt-boot -e efiboot.img -no-emul-boot \
+		-isohybrid-gpt-basdat staging
 
 iso-snapshot: ISO ?= dynebolic-snapshot.iso
 iso-snapshot: grub-mods := linux normal search png gfxmenu part_gpt part_msdos fat iso9660
