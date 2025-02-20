@@ -17,175 +17,157 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, , see <https://www.gnu.org/licenses/>.
 
+#!/bin/bash
+
 source /etc/boot.d/_dyne_utils
-mm "dyne-install $*: `date`"
+mm "dyne-install $*: $(date)"
 
 set -e
 
-cmd="${1:-persist}"
+COMMAND="${1:-persist}"
+DEVICE=$(pwd)
 
-dev=`pwd`
+# Check if the device is writable and mounted
+if [ ! -w "$DEVICE" ]; then
+    mm "Needs super-user powers: sudo dyne-install"
+    mm "Volume not writable: $DEVICE"
+    exit 1
+fi
 
-[ -w "$dev" ] || {
-	mm "needs super-user powers: sudo dyne-install"
-	mm "volume not writable: $dev"
-	exit 1
+if ! findmnt -M "${DEVICE}" > /dev/null; then
+    mm "Needs the root of a storage volume"
+    mm "Invalid location: $DEVICE"
+    exit 1
+fi
+
+function create_iso() {
+    local iso_dir="${DEVICE}/dyne"
+    local iso_file="${iso_dir}/dynebolic.iso"
+
+    if [ -r "$iso_file" ]; then
+        mm "Cannot overwrite ISO: $iso_file"
+        exit 1
+    fi
+
+    mkdir -p "$iso_dir"
+    xorriso -as mkisofs -iso-level 3 -o "$iso_file" \
+        -full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable \
+        -partition_offset 16 -joliet -joliet-long -rational-rock \
+        -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot \
+        isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 \
+        -boot-info-table --eltorito-catalog isolinux/isolinux.cat \
+        -eltorito-alt-boot -e --interval:appended_partition_2:all:: \
+        -no-emul-boot -isohybrid-gpt-basdat -append_partition 2 \
+        $(cat /proc/sys/kernel/random/uuid) \
+        /var/run/live/medium/efiboot.img /var/run/live/medium
+
+    mm "--"
+    mm "ISO successfully created! Reboot to activate."
+    mm "--"
 }
 
-findmnt -M "${dev}" || {
-	mm "needs the root of a storage volume"
-	mm "invalid location: $dev"
-	exit 1
-}
+function create_persistence() {
+    local size=${size:-3900}  # Default size is 3.9GiB
+    local persist_file="${DEVICE}/dyne/dyne.nst"
 
-function mkiso() {
-	mkdir -p "$dev/dyne"
-	xorriso -as mkisofs -iso-level 3 -o "$dev"/dyne/dynebolic.iso \
-        -full-iso9660-filenames -volid "DYNEIV" --mbr-force-bootable    \
-        -partition_offset 16 -joliet -joliet-long -rational-rock        \
-        -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot    \
-        isolinux/isolinux.bin -no-emul-boot -boot-load-size 4           \
-        -boot-info-table --eltorito-catalog isolinux/isolinux.cat       \
-        -eltorito-alt-boot -e --interval:appended_partition_2:all::     \
-        -no-emul-boot -isohybrid-gpt-basdat -append_partition 2         \
-        `cat /proc/sys/kernel/random/uuid` \
-        /var/run/live/medium/efiboot.img /var/run/live/medium         
-}
+    if [ -r "$persist_file" ]; then
+        mm "Cannot overwrite nest: $persist_file"
+        exit 1
+    fi
 
-function mkpersist() {
-	# default 3.9GiB
-	size=${size:-3900}
-	[[ -n "$size"	]] || mm "size argument missing, use -s"
-	[[ $size == <-> ]] || mm "size must be an integer (MB)"
-	[[ $size -ge 512 ]] || mm "size can't be smaller than 512 MB"
-	persist="$dev/dyne/dyne.nst"
-	mm "creating nest of $size MiB in $persist"
-	mkdir -p "$dev/dyne"
-	dd if=/dev/zero of="$persist" \
-	    bs=1048576 count="$size" oflag=direct status=progress
-	loop=`losetup -f`
-	losetup -f "$persist"
-	mkfs.ext4 -L persistence "$loop"
-	mkdir -p /mnt/dynebolic-persistence-temp
-	mount "$loop" /mnt/dynebolic-persistence-temp
-	cat << EOF > "/mnt/dynebolic-persistence-temp/persistence.conf"
+    [[ -n "$size" ]] || mm "Size argument missing, use -s"
+    [[ $size =~ ^[0-9]+$ ]] || mm "Size must be an integer (MB)"
+    [[ $size -ge 512 ]] || mm "Size can't be smaller than 512 MB"
+
+    mm "Creating nest of $size MiB in $persist_file"
+    mkdir -p "${DEVICE}/dyne"
+    dd if=/dev/zero of="$persist_file" bs=1048576 count="$size" oflag=direct status=progress
+
+    local loop_device=$(losetup -f)
+    losetup "$loop_device" "$persist_file"
+    mkfs.ext4 -L persistence "$loop_device"
+
+    local mount_point="/mnt/dynebolic-persistence-temp"
+    mkdir -p "$mount_point"
+    mount "$loop_device" "$mount_point"
+
+    cat << EOF > "${mount_point}/persistence.conf"
 /home union
 /root union
 /etc union
 /var union
 /usr union
 EOF
-	umount /mnt/dynebolic-persistence-temp
-	rmdir /mnt/dynebolic-persistence-temp
-	losetup -d "$loop"
+
+    umount "$mount_point"
+    rmdir "$mount_point"
+    losetup -d "$loop_device"
+
+    mm "--"
+    mm "Nest successfully created! Reboot to activate."
+    mm "--"
 }
 
-function mkguix() {
-	# check if a nested guix already exist
-	if [ ! -d "${dev}/dyne/guix-nest" ] ; then
-		mm "Guix storage directory not existing, creating it"	
-		#mkdir -p ${dev}/dyne/guix-nest
-	fi
-	# check for content directories
-	if [ ! -d "${dev}/dyne/guix-nest/var/guix" ] ; then
-		mm "guix directory missing, creating it"
-		mkdir -p ${dev}/dyne/guix-nest/var/guix /var/guix
-	fi
-        if [ ! -d "${dev}/dyne/guix-nest/gnu" ] ; then
-	       mm "gnu directory not existing, creating it"
-	       mkdir -p ${dev}/dyne/guix-nest/gnu /gnu
-	fi
-	
-	# Binding mount points
-	if findmnt /gnu > /dev/null ; then
-		mount -o remount,bind ${dev}/dyne/guix-nest/var/guix /var/guix
-		mount -o remount,bind ${dev}/dyne/guix-nest/gnu /gnu
-	else
-		mount -o bind ${dev}/dyne/guix-nest/var/guix /var/guix
-		mount -o bind ${dev}/dyne/guix-nest/gnu /gnu
-	fi
+function setup_guix() {
+    local guix_dir="${DEVICE}/dyne/guix-nest"
 
-	# execute guix-setup script for version 1.4.0
-	#
-	mm "Executing guix-setup script"
-	/usr/local/sbin/guix-setup
-	date > /var/guix/.dyne
-	date > /gnu/.dyne
+    if [ -r "/var/guix/.dyne" ]; then
+        mm "Cannot overwrite Guix:"
+        ls -l /var/guix
+        mm "Last access: $(cat /var/guix/.dyne)"
+        exit 1
+    fi
 
-	# check for profile installation and source it just to be sure
-	# if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
-	if [ ! -x /root/.config/guix/current ] ; then
-		mm "Something went wrong with linking guix profile in /root/.config/guix/current"
-	else
-		mm "Guix profile is linked from \
-			${dev}/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix to ~root/.config/guix/current"
-		mm "It will be sourced from /etc/profile for new shells"
-	fi
+    mkdir -p "${guix_dir}/var/guix" "${guix_dir}/gnu"
+    mount -o bind "${guix_dir}/var/guix" /var/guix
+    mount -o bind "${guix_dir}/gnu" /gnu
+
+    mm "Executing guix-setup script"
+    /usr/local/sbin/guix-setup
+    date > /var/guix/.dyne
+    date > /gnu/.dyne
+
+    if [ ! -x /root/.config/guix/current ]; then
+        mm "Something went wrong with linking Guix profile in /root/.config/guix/current"
+    else
+        mm "Guix profile is linked from ${guix_dir}/var/guix/profiles/per-user/root/current-guix to ~root/.config/guix/current"
+        mm "It will be sourced from /etc/profile for new shells"
+    fi
+
+    mm "--"
+    mm "Guix repository successfully configured!"
+    mm "Start a new shell or reboot."
+    mm "--"
 }
 
-function mkflatpak() {
-		mkdir -p ${dev}/dyne/flatpak
-		mount -o bind ${dev}/dyne/flatpak /var/lib/flatpak
-		flatpak remote-add --if-not-exists \
-				flathub https://flathub.org/repo/flathub.flatpakrepo
-		date > /var/lib/flatpak/.dyne
+function setup_flatpak() {
+    local flatpak_dir="${DEVICE}/dyne/flatpak"
+
+    if [ -r "/var/lib/flatpak/.dyne" ]; then
+        mm "Cannot overwrite Flatpak:"
+        ls -l /var/lib/flatpak
+        mm "Last access: $(cat /var/lib/flatpak/.dyne)"
+        exit 1
+    fi
+
+    mkdir -p "$flatpak_dir"
+    mount -o bind "$flatpak_dir" /var/lib/flatpak
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    date > /var/lib/flatpak/.dyne
+
+    mm "--"
+    mm "Flatpak repository successfully configured!"
+    mm "--"
 }
 
-case "$cmd" in
-	init) ;;
-	scan) ;;
-	iso|dock)
-		[[ -r "${dev}"/dyne/dynebolic.iso ]] && {
-			mm "cannot overwrite iso: $dev/dyne/dynebolic.iso"
-			exit 1
-		}
-		mkiso
-		mm "--"
-		mm "iso succesfully created! reboot to activate."
-		mm "--"
-		;;
-	persist|nest)
-		[[ -r "${dev}"/dyne/dyne.nst ]] && {
-			mm "cannot overwrite nest: $dev/dyne/dyne.nst"
-			exit 1
-		}
-		mkpersist
-		mm "--"
-		mm "nest succesfully created! reboot to activate."
-		mm "--"
-		;;
-	flatpak)
-		[[ -r /var/lib/flatpak/.dyne ]] && {
-			mm "cannot overwrite flatpak:"
-			ls -l /var/lib/flatpak
-			mm "last access: `cat /var/lib/flatpak/.dyne`"
-			exit 1
-		}
-		mkflatpak
-		mm "--"
-		mm "flatpak repository succesfully configured!"
-		mm "--"
-		;;
-	guix)
-		[[ -r /var/guix/.dyne ]] && {
-			mm "cannot overwrite guix:"
-			ls -l /var/guix
-			mm "last access: `cat /var/guix/.dyne`"
-			exit 1
-		}
-		mkguix
-		mm "--"
-		mm "guix repository succesfully configured!"
-		mm "start a new shell or reboot"
-		mm "--"
-		;;
-	*)
-		mm "command not found: $cmd"
-		exit 1 ;;
+case "$COMMAND" in
+    init|scan) ;;
+    iso|dock) create_iso ;;
+    persist|nest) create_persistence ;;
+    flatpak) setup_flatpak ;;
+    guix) setup_guix ;;
+    *)
+        mm "Command not found: $COMMAND"
+        exit 1 ;;
 esac
 
-
-# notes, tests, snippets:
-
-#		[[ -r /run/live/persistence/loop1/persistence.conf ]] && \
-#			mm "running system is already nested"

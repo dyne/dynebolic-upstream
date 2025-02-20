@@ -15,9 +15,21 @@
 # You should have received a copy of the GNU Public License along with
 # this source code; if not, , see <https://www.gnu.org/licenses/>.
 
-touch /var/log/dyne-boot.log
-function mm() {
-	local line="$*"
-	>&2 echo "$line"
-	echo "$line" >> /var/log/dyne-boot.log
+LOG_FILE="/var/log/dyne-boot.log"
+
+function log_message() {
+    local level="$1"
+    local message="$2"
+    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+    local log_entry="[$timestamp] [$level] $message"
+
+    # Print to stderr
+    >&2 echo "$log_entry"
+    
+    # Append to log file
+    echo "$log_entry" >> "$LOG_FILE"
 }
+
+# Example usage:
+# log_message "INFO" "This is an informational message"
+# log_message "ERROR" "This is an error message"
