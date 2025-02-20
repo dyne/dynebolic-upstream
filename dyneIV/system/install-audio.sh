@@ -31,13 +31,13 @@ echo "${BACKPORTS_REPO}" > "${BACKPORTS_LIST}"
 echo "Updating package lists..."
 apt-get -q update
 
-# Pin packages from backports
-echo "Pinning PipeWire packages from backports..."
-for item in ${PIPEPACKS}; do
-    echo "Package: ${item}" >> "${BACKPORTS_PREFS}"
-    echo "Pin: release n=daedalus-backports" >> "${BACKPORTS_PREFS}"
-    echo "Pin-Priority: 900" >> "${BACKPORTS_PREFS}"
-    echo "" >> "${BACKPORTS_PREFS}"
+rm -f  /etc/apt/preferences.d/backports
+for item in ${PIPEPACKS} ; do
+	echo "Package: $item" >> /etc/apt/preferences.d/backports
+	echo "Pin: release n=daedalus-backports" >> /etc/apt/preferences.d/backports
+	echo "Pin-Priority: 900" >> /etc/apt/preferences.d/backports
+	printf "\n" >> /etc/apt/preferences.d/backports
+	apt-get -y --reinstall install -t daedalus-backports $item
 done
 
 # Install PipeWire packages from backports
