@@ -1,20 +1,36 @@
 #!/bin/sh
+# Script to configure system locales non-interactively.
+# Usage: ./configure-locale.sh [LOCALE]
+# Default LOCALE is "C".
 
-echo \
-	 'LANG="C"\nLANGUAGE="en_US"\nLC_ALL="C"\n' \
-	 > /etc/default/locale
-echo "locales locales/default_environment_locale select C" | debconf-set-selections
-echo "locales locales/locales_to_be_generated multiselect C UTF-8" | debconf-set-selections
+set -e  # Exit on error
 
+# Set default locale if not provided
+LOCALE=${1:-C}
+
+# Configure /etc/default/locale
+echo "Configuring /etc/default/locale with LANG=${LOCALE}..."
+echo "LANG=\"${LOCALE}\"\nLANGUAGE=\"en_US\"\nLC_ALL=\"${LOCALE}\"\n" > /etc/default/locale
+
+# Set debconf selections for locales
+echo "Configuring debconf for locale ${LOCALE}..."
+echo "locales locales/default_environment_locale select ${LOCALE}" | debconf-set-selections
+echo "locales locales/locales_to_be_generated multiselect ${LOCALE} UTF-8" | debconf-set-selections
+
+# Reconfigure locales non-interactively
+echo "Reconfiguring locales..."
 dpkg-reconfigure --frontend=noninteractive locales
 
->&2 echo "update-locale"
-#update-locale LANG=en_US.UTF-8
-update-locale LANG=C
+# Update system locale
+echo "Updating system locale to ${LOCALE}..."
+update-locale LANG=${LOCALE}
 
->&2 echo "locale-gen"
-#locale-gen --purge en_US.UTF-8
-locale-gen --purge C
-# sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
->&2 echo "dpkg-reconfigure"
+# Generate and purge locales
+echo "Generating and purging locales..."
+locale-gen --purge ${LOCALE}
+
+# Reconfigure locales again to ensure changes are applied
+echo "Final reconfiguration of locales..."
 dpkg-reconfigure --frontend=noninteractive locales
+
+echo "Locale configuration complete. System is now using ${LOCALE}."

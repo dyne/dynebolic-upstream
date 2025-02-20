@@ -13,7 +13,7 @@
 # to the GNU Public License for more details.
 #
 # You should have received a copy of the GNU Public License along with
-# this source code; if not, , see <https://www.gnu.org/licenses/>.
+# this source code; if not, see <https://www.gnu.org/licenses/>.
 
 # Use this makefile as root
 
@@ -25,48 +25,60 @@ help:
 	@echo "✨ Welcome to the Dyne:IV SDK by Dyne.org!"
 	@awk 'BEGIN {FS = ":.*##"; printf "🛟 Usage: make \033[36m<target>\033[0m\n👇🏽 List of targets:\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf " \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5)} ' Makefile
 
-
 include config.mk
 
 ----: ## __ Quick start:
 
 # local system dependencies needed to build a live system
+# and checks existence to not download them over again \o/ yey
 deps: need-suid ## 🛠️ Install development dependencies
-	$(info Install all development dependencies)
-	apt-get install mmdebstrap squashfs-tools xorriso isolinux syslinux \
-    syslinux-efi syslinux-common syslinux-utils grub-pc-bin             \
-    grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools \
-    squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget              \
-    xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse
+	@echo "Checking and installing dependencies..."
+	for pkg in mmdebstrap squashfs-tools xorriso isolinux syslinux \
+				syslinux-efi syslinux-common syslinux-utils grub-pc-bin \
+				grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools \
+				squashfs-tools-ng pv uidmap qemu-utils ovmf rsync wget \
+				xz-utils fuse-overlayfs qemu-system-x86 qemu-system-gui squashfuse; do \
+		if ! dpkg -s $$pkg >/dev/null 2>&1; then \
+			apt-get install -y $$pkg; \
+		fi; \
+	done
 
-setup: MODULES := root mod-kde static home
+# modules selection through a variable, can be customized and overwritten
+MODULES ?= root mod-kde static home
 setup: ## 📥 Download the latest development ROOT modules
 	$(if $(wildcard ${ROOT}),$(error Existing SDK detected, first make clean))
 	$(info Downloading and restoring the latest SDK environment)
 	mkdir -p ${SRC}/build
 	for i in ${MODULES}; do \
 		rsync -PL files.dyne.org::dynebolic/development/modules/dyneIV-$$i-${ARCH}.squashfs \
-		${SRC}/build/; done
+		${SRC}/build/; \
+	done
 	make reset
 
 system: ## 🗿 Build the root system: dyneIV-root
 	$(MAKE) -C system all
 
+# checking for the OVMF file presence, if missing give error message
 qemu: ISO ?= dynebolic.iso
 qemu: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu: test-hdd := $(if $(wildcard hdd.qcow2),-hdb hdd.qcow2)
 qemu: ## 🖥️ Emulate UEFI USB boot using qemu
+	$(if $(wildcard /usr/share/ovmf/OVMF.fd),,$(error OVMF.fd not found. Install OVMF package.))
 	$(info Launch QEMU emulator on ISO using UEFI BIOS)
-	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd	\
-	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4	\
+	qemu-system-x86_64 -enable-kvm -bios /usr/share/ovmf/OVMF.fd \
+	-cdrom ${ISO} ${persist} ${test-hdd} --boot once=d -m 2048 -smp 4 \
 	${QEMU_CONF}
 
+# let's do a check for device and iso
 burn: ISO ?= dynebolic.iso
 burn: ## 🔥 Write the ISO to a removable USB=/dev/sd?
 	$(if $(wildcard ${ISO}),,$(error ${ISO} not found.))
 	$(if $(wildcard ${USB}),,$(error USB device not found: ${USB}))
 	$(info This will delete all contents of device: ${USB})
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	@if ! lsblk ${USB} >/dev/null 2>&1; then \
+		echo "Invalid USB device: ${USB}"; exit 1; \
+	fi
 	dd if=${ISO} of=${USB} bs=1M oflag=direct status=progress
 
 _: ##
@@ -76,19 +88,19 @@ qemu-isolinux: ISO ?= dynebolic.iso
 qemu-isolinux: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
 qemu-isolinux: ## 📀 Emulate legacy boot (non-UEFI) using qemu
 	$(info Launch QEMU emulator on ISO)
-	qemu-system-x86_64 -enable-kvm -cdrom ${ISO} ${persist}	\
+	qemu-system-x86_64 -enable-kvm -cdrom ${ISO} ${persist} \
 	--boot once=d -m 2048 -smp 4 ${QEMU_CONF}
 
 qemu-spice: ISO ?= dynebolic.iso
 qemu-spice: persist := $(if $(wildcard persistence.qcow2),-hda persistence.qcow2)
-qemu-spice: ## 🖥️ E mulate via SPICE (requires LAN client)
+qemu-spice: ## 🖥️ Emulate via SPICE (requires LAN client)
 	$(info Launch SPICE server on LAN port 5900)
-	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios		\
-	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot	\
-	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl	\
-	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device	\
-	virtio-serial-pci -device virtio-serial -chardev				\
-	spicevmc,id=vdagent,debug=0,name=vdagent -device				\
+	QEMU_AUDIO_DRV=spice qemu-system-x86_64 -enable-kvm -bios \
+	/usr/share/ovmf/OVMF.fd -cdrom ${ISO} ${persist} --boot \
+	once=d -m 2048 -smp 4 ${QEMU_CONF} -machine vmport=off -vga qxl \
+	-spice port=5900,addr=0.0.0.0,disable-ticketing=on -device \
+	virtio-serial-pci -device virtio-serial -chardev \
+	spicevmc,id=vdagent,debug=0,name=vdagent -device \
 	virtserialport,chardev=vdagent,name=com.redhat.spice.0
 
 _: ##
@@ -117,34 +129,36 @@ test-changes: need-suid ## 🍳 Test current changes in home and static
 	make -C iso iso ISO=${ISO}
 	make ${QEMU} ISO=${ISO}
 
-persist-create: NBD ?= 14
-persist-create: need-suid # 💾 Create persistance storage for qemu
+# added variables for disk sizes
+PERSIST_SIZE ?= 4G
+NBD_DEVICE ?= 14
+persist-create: need-suid # 💾 Create persistence storage for qemu
 	$(if $(wildcard persistence.qcow2),$(error Cannot overwrite persistence.qcow2))
 	$(info Creating persistence qcow2 file for Qemu)
 	modprobe nbd
-	qemu-img create -f qcow2 persistence.qcow2 4G
-	qemu-nbd -c /dev/nbd${NBD} persistence.qcow2
-	parted -s /dev/nbd${NBD} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
-	mkfs.ext4 -L dyne.nst /dev/nbd${NBD}p1
-	mkdir -p mnt && mount /dev/nbd${NBD}p1 mnt \
+	qemu-img create -f qcow2 persistence.qcow2 ${PERSIST_SIZE}
+	qemu-nbd -c /dev/nbd${NBD_DEVICE} persistence.qcow2
+	parted -s /dev/nbd${NBD_DEVICE} -- mklabel msdos mkpart primary ext4 1 -1 set 1 boot off
+	mkfs.ext4 -L dyne.nst /dev/nbd${NBD_DEVICE}p1
+	mkdir -p mnt && mount /dev/nbd${NBD_DEVICE}p1 mnt \
 	&& echo "/home union"  > mnt/persistence.conf \
 	&& echo "/root union" >> mnt/persistence.conf \
 	&& echo "/etc union" >> mnt/persistence.conf \
 	&& echo "/var union" >> mnt/persistence.conf \
 	&& echo "/usr union" >> mnt/persistence.conf \
-	  && umount mnt
-	qemu-nbd -d /dev/nbd${NBD}
+	&& umount mnt
+	qemu-nbd -d /dev/nbd${NBD_DEVICE}
 	chmod a+rw persistence.qcow2
 
 persist-mount: FILE ?= persistence.qcow2
 persist-mount: MNT ?= mnt
-persist-mount: need-suid # 🔍 Mount persistance contents in qcow2
+persist-mount: need-suid # 🔍 Mount persistence contents in qcow2
 	$(if $(wildcard ${FILE}),,$(error Cannot find qcow2: ${FILE}))
 	mkdir -p ${MNT}
 	$(call mount-qcow2,${FILE},${MNT})
 
 persist-umount: MNT ?= mnt
-persist-umount: need-suid # ⏏️ Unmount persistance contents
+persist-umount: need-suid # ⏏️ Unmount persistence contents
 	$(call umount-qcow2,${MNT})
 
 _: ##
@@ -152,7 +166,6 @@ _: ##
 
 bootstrap: ## 🚀 Build the stage1 bootstrap: dyneIV-bootstrap-*
 	$(MAKE) -C bootstrap
-
 
 modules: ## 🧩 Build all system modules (takes long...)
 	$(MAKE) -C modules MOD=kde
@@ -212,11 +225,12 @@ restrap: need-suid # ♻️  Reset current ROOT to base bootstrap stage
 # @if [ -r ${SRC}/${STAGE3DEV} ]; then \
 # 	tar -xf ${SRC}/${STAGE3DEV}	var/cache/apt/archives; fi
 
+# using - to ignore errors
 clean: need-suid ## 🧹  Delete ROOT and all builds, keep only stage1
-	@rm -rf build/*
-	@rm -rf ROOT
-	@rm -rf dyneIV*bootstrap*
-	@git clean -fd modules
+	-rm -rf build/*
+	-rm -rf ROOT
+	-rm -rf dyneIV*bootstrap*
+	-git clean -fd modules
 
 ######
 ## Publishing operations (ssh key restricted)
@@ -273,4 +287,3 @@ test-hdd-mount: need-suid
 test-hdd-umount: MNT ?= mnt
 test-hdd-umount: need-suid
 	$(call umount-qcow2,${MNT})
-
