@@ -44,9 +44,10 @@ stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
 stage1: APT_PROXY_OPT := $(shell APT_PROXY_OVERRIDE="${APT_PROXY_OVERRIDE}" ${SRC}/bootstrap/generate-proxy-opt.sh)
 stage1: need-suid
+	# hardcode pager to cat for avoiding double exiting the pager bug
 	@if ! [ -r ${SRC}/${STAGE0} ]; then \
 		echo "Bootstrap a new stage0: ${STAGE0}"; \
-		UNSHARE_USERS=1 mmdebstrap \
+		UNSHARE_USERS=1 PAGER=cat mmdebstrap \
 			--mode=${MODE} --variant=${VARIANT} --format=${FORMAT} \
 			${STAGE1_APT_OPTS} ${APT_PROXY_OPT} \
 			--dpkgopt='path-exclude=/usr/share/doc/*' \
@@ -73,7 +74,7 @@ stage1: need-suid
 		umount ${ROOT}/dev/pts ;\
 		umount ${ROOT}/dev/null ;\
 		rm -f ${ROOT}/etc/apt/sources.list.d/freesh.sources ;\
-		du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE1} ;\
+		du -hs ${ROOT} >&2 && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE1} ;\
 	else echo "Stage1 found: ${STAGE1}"; fi
 
 # scripts to be run in and inside stage2
