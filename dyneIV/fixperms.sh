@@ -46,8 +46,10 @@ chown polkitd:root \
     /etc/polkit-1/rules.d
 
 # flask tutorial splash
-chown -R dyne:dyne \
-	/home/dyne/.dyne-splash
+[ -r /home/dyne/.dyne-splash ] && {
+	chown -R dyne:dyne \
+		/home/dyne/.dyne-splash
+}
 
 # WARNING: granting SUID BIT
 chmod 4755 \
