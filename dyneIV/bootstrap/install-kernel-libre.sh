@@ -1,48 +1,45 @@
 #!/bin/bash
 
-echo 'LANG="C"\nLANGUAGE="en_US:en"\nLC_ALL="C"\n' \
-	 > /etc/default/locale
+echo 'LANG="C"\nLANGUAGE="en_US:en"\nLC_ALL="C"\n' > /etc/default/locale
 
 FREESH=freesh-archive-keyring_1.1_all.deb
 DEBIAN_FRONTEND=noninteractive apt install -q -y /usr/src/${FREESH}
 
-# fruity - hold up with rm -rf, we need better ways
-#rm -f /usr/src/${FREESH}
-
-# metapackages informations keep breaking on mirrors sides - fruity
 DEBIAN_FRONTEND=noninteractive apt-get update -q -y
 
-# fruity - i added the specification of the version for the kernel
-# and I commented the removal of the sources because we'll need it
-#rm -f /etc/apt/sources.list.d/freesh.sources
+# Install initramfs-tools to ensure initrd generation
+DEBIAN_FRONTEND=noninteractive apt-get install -y initramfs-tools initramfs-tools-core live-boot-initramfs-tools zstd
 
 # Attempt to install the packages directly
-#DEBIAN_FRONTEND=noninteractive apt-get install -y linux-libre-lts linux-libre-lts-headers
-
-# Check if the installation was successful
-if [ ! DEBIAN_FRONTEND=noninteractive apt-get install -y linux-libre-lts linux-libre-lts-headers  ]; then
+if DEBIAN_FRONTEND=noninteractive apt-get install -y linux-libre-lts linux-libre-lts-headers; then
     echo "Packages installed successfully."
-    exit 0
+    # Generate initrd for the installed kernel
+    update-initramfs -c -k $(uname -r)
 else
+    echo "FSFLA Freesh LTS kernel packages are broken at the moment. Initializing manual selection"
 
-	echo "FSFLA Freesh LTS kernel packages are broken at the moment. Initializing manual selection"
-	# Search for packages containing "Linux-libre" in the description
-	packages=$(apt-cache search "Linux-libre" | awk '{print $1}')
+    # Search for packages containing "Linux-libre" in the description
+    packages=$(apt-cache search "Linux-libre" | awk '{print $1}')
 
-	# Convert the list of packages into a format suitable for dialog
-	dialog_list=()
-	for pkg in $packages; do
-	    dialog_list+=("$pkg" "" off)
-	done
+    # Sort packages by version number in progressive order
+    sorted_packages=$(echo "$packages" | sort -V)
 
-	# Show the dialog interface for package selection
-	selected_packages=$(dialog --stdout --checklist "Select kernel image and headers to install:" 20 60 10 "${dialog_list[@]}")
+    # Convert the sorted list of packages into a format suitable for dialog
+    dialog_list=()
+    for pkg in $sorted_packages; do
+        dialog_list+=("$pkg" "" off)
+    done
 
-	# Check if the user selected any packages
-	if [ -n "$selected_packages" ]; then
-	    # Install the selected packages
-	    DEBIAN_FRONTEND=noninteractive apt-get install -y $selected_packages
-	else
-	    echo "No packages selected."
-	fi
+    # Show the dialog interface for package selection
+    selected_packages=$(dialog --stdout --checklist "Select kernel image and headers to install (sorted by version):" 20 60 10 "${dialog_list[@]}")
+
+    # Check if the user selected any packages
+    if [ -n "$selected_packages" ]; then
+        # Install the selected packages
+        DEBIAN_FRONTEND=noninteractive apt-get install -y $selected_packages
+        # Generate initrd for the installed kernel
+        update-initramfs -c -k $(uname -r)
+    else
+        echo "No packages selected."
+    fi
 fi
