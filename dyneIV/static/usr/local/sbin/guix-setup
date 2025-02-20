@@ -1,62 +1,90 @@
 #!/bin/bash
 
+# Copyright (C) 2023-2024 Dyne.org Foundation
+#
+# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
+# and Fruity <fruity@dyne.org>
+#
+# This source code is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This source code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  Please refer
+# to the GNU Public License for more details.
+#
+# You should have received a copy of the GNU Public License along with
+# this source code; if not, , see <https://www.gnu.org/licenses/>.
+
+
 set -e
-# Run this script to setup the Guix packaging on dyne:bolic
-# Requires network and needs to run only once on a persistent system.
+
+# Variables
 ARCH="x86_64"
 VERSION="1.4.0"
-RELEASE=guix-binary-${VERSION}.${ARCH}-linux.tar.xz 
-# TODO: support other architectures here
+RELEASE="guix-binary-${VERSION}.${ARCH}-linux.tar.xz"
+GUIX_NEST_DIR="/dyne/guix-nest"
+TMP_DIR="/tmp"
 
-# added by fruity to isolate guix into /dyne/guix-nest
-dev=`pwd`
+# Ensure the script is run as root
+if [ "$EUID" -ne 0 ]; then
+  >&2 echo "Please run this script as root."
+  exit 1
+fi
 
-# added by fruity, most important checks and directories
-# are done in dyne-install
-# not required here
-#[ -r /var/guix ] && {
-#	>&2 echo "Guix is already setted up on this machine"
-#	>&2 echo "To delete: rm -rf /var/guix /gnu /root/.config/guix"
-#	exit 1
-#}
+# Check if Guix is already installed
+if [ -r "${GUIX_NEST_DIR}/var/guix" ]; then
+  >&2 echo "Guix is already set up on this machine."
+  >&2 echo "To delete: rm -rf ${GUIX_NEST_DIR}/var/guix ${GUIX_NEST_DIR}/gnu /root/.config/guix"
+  exit 1
+fi
 
-pushd /tmp
+# Create necessary directories
+mkdir -p "${GUIX_NEST_DIR}/var/guix" "${GUIX_NEST_DIR}/gnu" "${GUIX_NEST_DIR}/usr/local/bin" "${GUIX_NEST_DIR}/usr/local/share/info"
 
->&2 echo "GNU Guix setup version ${VERSION} on ${ARCH}"
+# Download and verify Guix binary
+>&2 echo "Setting up GNU Guix version ${VERSION} on ${ARCH}"
 
-[ -r ${RELEASE} ] || wget https://ftp.gnu.org/gnu/guix/${RELEASE}
+cd "${TMP_DIR}"
+if [ ! -r "${RELEASE}" ]; then
+  wget "https://ftp.gnu.org/gnu/guix/${RELEASE}"
+fi
 
+# Import GPG key
 wget 'https://sv.gnu.org/people/viewgpg.php?user_id=15145' -q -O - | gpg --import -
 
-wget https://ftp.gnu.org/gnu/guix/${RELEASE}.sig
-gpg --verify ${RELEASE}.sig
+# Verify the release
+wget "https://ftp.gnu.org/gnu/guix/${RELEASE}.sig"
+gpg --verify "${RELEASE}.sig"
 
-tar --warning=no-timestamp -xf ${RELEASE}
-cp -ra var/guix/* $dev/dyne/guix-nest/var/guix
-cp -ra gnu/* $dev/dyne/guix-nest/gnu
+# Extract and install Guix
+tar --warning=no-timestamp -xf "${RELEASE}"
+cp -ra var/guix/* "${GUIX_NEST_DIR}/var/guix"
+cp -ra gnu/* "${GUIX_NEST_DIR}/gnu"
 rm -rf var/guix gnu
 
-popd
-
+# Set up root's Guix profile
 mkdir -p ~root/.config/guix
-ln -sf $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix ~root/.config/guix/current
+ln -sf "${GUIX_NEST_DIR}/var/guix/profiles/per-user/root/current-guix" ~root/.config/guix/current
 
->&2 echo " make guix available to all users"
-mkdir -p $dev/dyne/guix-nest/usr/local/bin
-pushd $dev/dyne/guix-nest/usr/local/bin
-ln -sf $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bin/guix
-popd
+# Make Guix available to all users
+ln -sf "${GUIX_NEST_DIR}/var/guix/profiles/per-user/root/current-guix/bin/guix" "${GUIX_NEST_DIR}/usr/local/bin/guix"
 
->&2 echo " link the info manual"
-mkdir -p $dev/dyne/guix-nest/usr/local/share/info
-pushd $dev/dyne/guix-nest/usr/local/share/info
-for i in $dev/dyne/guix-nest/var/guix/profiles/per-user/root/current-guix/share/info/* ;
-  do ln -sf $i ; done
-popd
+# Link the info manual
+for i in "${GUIX_NEST_DIR}/var/guix/profiles/per-user/root/current-guix/share/info"/*; do
+  ln -sf "$i" "${GUIX_NEST_DIR}/usr/local/share/info/"
+done
 
->&2 echo " authorize binary packages provided by the GNU project"
-guix archive --authorize < /root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
-guix archive --authorize < /root/.config/guix/current/share/guix/bordeaux.guix.gnu.org.pub
+# Authorize binary packages
+guix archive --authorize < ~root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
+guix archive --authorize < ~root/.config/guix/current/share/guix/bordeaux.guix.gnu.org.pub
 
->&2 echo "GNU Guix package manager ready! try: guix"
+# Clean up downloaded files
+>&2 echo "Cleaning up temporary files..."
+rm -f "${TMP_DIR}/${RELEASE}" "${TMP_DIR}/${RELEASE}.sig"
+
+>&2 echo "GNU Guix package manager is ready! Try: guix"
 exit 0
+
