@@ -227,10 +227,14 @@ restrap: need-suid # ♻️  Reset current ROOT to base bootstrap stage
 
 # using - to ignore errors
 clean: need-suid ## 🧹  Delete ROOT and all builds, keep only stage1
-	-rm -rf build/*
-	-rm -rf ROOT
-	-rm -rf dyneIV*bootstrap*
-	-git clean -fd modules
+	-umount ROOT/proc
+	-umount ROOT/dev
+	@rm -rf build/*
+	@rm -rf ROOT
+	@rm -rf dyneIV*bootstrap*
+	@git clean -fd modules
+	@rm -rf modules/*-mnt
+	@>&2 echo "All build deleted"
 
 ######
 ## Publishing operations (ssh key restricted)
