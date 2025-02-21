@@ -8,9 +8,27 @@ echo "============================================="
 # Set locale to avoid localization issues
 echo 'LANG="C"\nLANGUAGE="en_US:en"\nLC_ALL="C"\n' > /etc/default/locale
 
-# Install the Freesh repository keyring
+# Define the URLs to download
+URLS=(
+    "https://files.dyne.org/dynebolic/development/kernel/linux-image-6.13.3-gnu_6.13.3-gnu-3_amd64.deb"
+    "https://files.dyne.org/dynebolic/development/kernel/linux-headers-6.13.3-gnu_6.13.3-gnu-3_amd64.deb"
+    "https://files.dyne.org/dynebolic/development/kernel/linux-libc-dev_6.13.3-gnu-3_amd64.deb"
+)
+
+# Download the files to /usr/src
+echo "Downloading kernel files..."
+for url in "${URLS[@]}"; do
+    if ! wget -q -P /usr/src "$url"; then
+        echo "ERROR: Failed to download $url. Aborting installation."
+        exit 1
+    fi
+done
+
+# Install the Freesh repository keyring (if needed)
 FREESH=freesh-archive-keyring_1.1_all.deb
-DEBIAN_FRONTEND=noninteractive apt install -q -y /usr/src/${FREESH}
+if [[ -f /usr/src/${FREESH} ]]; then
+    DEBIAN_FRONTEND=noninteractive apt install -q -y /usr/src/${FREESH}
+fi
 
 # Update the package list
 DEBIAN_FRONTEND=noninteractive apt-get update -q -y
@@ -18,52 +36,28 @@ DEBIAN_FRONTEND=noninteractive apt-get update -q -y
 # Install initramfs-tools to ensure initrd generation
 DEBIAN_FRONTEND=noninteractive apt-get install -y initramfs-tools initramfs-tools-core zstd
 
-# Attempt to install the linux-libre-lts and linux-libre-lts-headers packages from the repository
-if DEBIAN_FRONTEND=noninteractive apt-get install -y linux-libre-lts linux-libre-lts-headers; then
-    echo "Packages installed successfully from the repository."
+# Install the downloaded .deb packages
+echo "Installing downloaded .deb packages..."
+for deb_file in /usr/src/*.deb; do
+    if ! DEBIAN_FRONTEND=noninteractive dpkg -i "$deb_file"; then
+        echo "ERROR: Failed to install $deb_file. Attempting to fix dependencies..."
+        DEBIAN_FRONTEND=noninteractive apt-get install -f -y
+    fi
+done
+
+# Verify that the packages were installed successfully
+if dpkg -l | grep -q "linux-image"; then
+    echo "Kernel packages installed successfully."
     # Generate initrd for the installed kernel
     update-initramfs -c -k $(uname -r)
 else
-    # Warning message for fallback to local installation
-    echo "WARNING: The linux-libre-lts and linux-libre-lts-headers packages from the repository are not available or broken."
-    echo "Falling back to installing from local .deb packages in /usr/src."
-
-    # Check if the /usr/src directory contains the necessary .deb files
-    if ls /usr/src/linux-*.deb >/dev/null 2>&1; then
-        # List the .deb and .asc files in /usr/src
-        echo "The following .deb and .asc files are available in /usr/src:"
-        ls -l /usr/src/linux-*.deb /usr/src/*.asc
-
-        # Prompt for manual verification of the .asc signature
-        echo "Please manually verify the .asc signature files before proceeding."
-
-        # Install dependencies required for the local .deb packages
-        echo "Installing dependencies for the local .deb packages..."
-        DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential libc6-dev
-
-        # Install the .deb packages from /usr/src
-        echo "Installing local .deb packages from /usr/src..."
-        for deb_file in /usr/src/linux-*.deb ; do
-            if ! DEBIAN_FRONTEND=noninteractive dpkg -i "$deb_file"; then
-                echo "ERROR: Failed to install $deb_file. Attempting to fix dependencies..."
-                DEBIAN_FRONTEND=noninteractive apt-get install -f -y
-            fi
-        done
-
-        # Verify that the packages were installed successfully
-        if dpkg -l | grep -q "linux-image"; then
-            echo "Local .deb packages installed successfully."
-            # Generate initrd for the installed kernel
-            update-initramfs -c -k $(uname -r)
-        else
-            echo "ERROR: Failed to install local .deb packages. Please check /usr/src and try again."
-            exit 1
-        fi
-    else
-        echo "ERROR: The required .deb packages are not found in /usr/src."
-        exit 1
-    fi
+    echo "ERROR: Failed to install kernel packages. Please check /usr/src and try again."
+    exit 1
 fi
+
+# Cleanup: Delete downloaded files
+echo "Cleaning up downloaded files..."
+rm -f /usr/src/*.deb
 
 # Ending of kernel installation
 echo "============================================="

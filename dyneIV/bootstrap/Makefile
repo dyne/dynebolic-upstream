@@ -64,8 +64,6 @@ stage1: need-suid
 		fi ;\
 		echo "Bootstrap a new stage1: ${STAGE1}"; \
 		cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/ ;\
-		cp kernel/*.deb ${ROOT}/usr/src/ ;\
-		cp kernel/linux-libre*.asc ${ROOT}/usr/src/ ;\
 		cp install-kernel-libre.sh ${ROOT}/free.sh ;\
 		mount -o bind /proc ${ROOT}/proc ;\
 		mount -o bind /dev/pts ${ROOT}/dev/pts ;\
