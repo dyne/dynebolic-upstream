@@ -44,7 +44,6 @@ stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
 stage1: APT_PROXY_OPT := $(shell APT_PROXY_OVERRIDE="${APT_PROXY_OVERRIDE}" ${SRC}/bootstrap/generate-proxy-opt.sh)
 stage1: need-suid
-	# hardcode pager to cat for avoiding double exiting the pager bug
 	@if ! [ -r ${SRC}/${STAGE0} ]; then \
 		echo "Bootstrap a new stage0: ${STAGE0}"; \
 		UNSHARE_USERS=1 PAGER=cat mmdebstrap \
@@ -65,6 +64,8 @@ stage1: need-suid
 		fi ;\
 		echo "Bootstrap a new stage1: ${STAGE1}"; \
 		cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/ ;\
+		cp kernel/*.deb ${ROOT}/usr/src/ ;\
+		cp kernel/linux-libre*.asc ${ROOT}/usr/src/ ;\
 		cp install-kernel-libre.sh ${ROOT}/free.sh ;\
 		mount -o bind /proc ${ROOT}/proc ;\
 		mount -o bind /dev/pts ${ROOT}/dev/pts ;\
