@@ -10,4 +10,7 @@ dyneIV-SDK
 iso/boot
 mnt
 *-mnt
+modules/*-mnt
 build
+.gitignore
+.git
