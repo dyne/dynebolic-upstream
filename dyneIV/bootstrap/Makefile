@@ -1,27 +1,3 @@
-# Copyright (C) 2023-2024 Dyne.org Foundation
-#
-# Designed, written and maintained by Denis Roio <jaromil@dyne.org>
-#
-# This source code is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This source code is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	Please refer
-# to the GNU Public License for more details.
-#
-# You should have received a copy of the GNU Public License along with
-# this source code; if not, see <https://www.gnu.org/licenses/>.
-
-# Use this makefile as root
-
-# [optional] sudo chroot ROOT (r/w)
-# [optional] squashfuse dynebolic.squash /mnt (r/o)
-# [optional] sudo chroot /mnt (r/o)
-# [optional] umount /mnt
-
 SRC=$(shell dirname $(shell pwd))
 
 # second expansion is needed to get the value of
@@ -31,6 +7,24 @@ all: stage1 stage2 pack-stage2
 
 include ${SRC}/config.mk
 
+# URLs for the kernel packages
+URL1=https://files.dyne.org/dynebolic/development/kernel/linux-image-6.13.3-gnu_6.13.3-gnu-3_amd64.deb
+URL2=https://files.dyne.org/dynebolic/development/kernel/linux-headers-6.13.3-gnu_6.13.3-gnu-3_amd64.deb
+URL3=https://files.dyne.org/dynebolic/development/kernel/linux-libc-dev_6.13.3-gnu-3_amd64.deb
+
+# Download kernel packages
+download-kernel:
+	@echo "Starting download of kernel packages..."
+	@mkdir -p kernel
+	@for url in "${URL1}" "${URL2}" "${URL3}"; do \
+		echo "Downloading $$url to kernel/ directory..."; \
+		if ! curl -f -o "kernel/$$(basename $$url)" "$$url"; then \
+			echo "Warning: Failed to download $$url"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "All kernel packages downloaded successfully to kernel/ directory."
+
 # added variables for customizations
 # packages needed to be installed for and in the stage 1
 # the options for apt during stage 1
@@ -39,6 +33,8 @@ STAGE1_PACKAGES ?= devuan-keyring ca-certificates locales apt-transport-https cu
 STAGE1_APT_OPTS ?= --aptopt='Apt::Install-Recommends "false"' --aptopt='APT::Install-Suggests "false"' --aptopt='Acquire::Retries "5"'
 STAGE1_HOOKS ?= --hook-dir=/usr/share/mmdebstrap/hooks/eatmydata --hook-dir=/usr/share/mmdebstrap/hooks/file-mirror-automount
 
+# Ensure download-kernel runs before stage1
+stage1: download-kernel
 stage1: MODE ?= unshare
 stage1: VARIANT ?= apt
 stage1: FORMAT ?= tar
@@ -64,6 +60,7 @@ stage1: need-suid
 		fi ;\
 		echo "Bootstrap a new stage1: ${STAGE1}"; \
 		cp freesh-archive-keyring_1.1_all.deb ${ROOT}/usr/src/ ;\
+		cp kernel/*.deb ${ROOT}/usr/src/ ;\
 		cp install-kernel-libre.sh ${ROOT}/free.sh ;\
 		mount -o bind /proc ${ROOT}/proc ;\
 		mount -o bind /dev/pts ${ROOT}/dev/pts ;\
@@ -76,7 +73,7 @@ stage1: need-suid
 		du -hs ${ROOT} >&2 && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE1} ;\
 	else echo "Stage1 found: ${STAGE1}"; fi
 
-# scripts to be run in and inside stage2
+# scripts to be run in and inside stage 2
 # lists of packages for stage 2
 STAGE2_SCRIPTS ?= install-apt-conf.sh install-users.sh install-live-boot.sh install-locale.sh
 STAGE2_PACKAGES ?= base-packages live-boot.txt
