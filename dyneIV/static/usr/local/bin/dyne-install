@@ -20,7 +20,7 @@
 #!/bin/bash
 
 source /etc/boot.d/_dyne_utils
-mm "dyne-install $*: $(date)"
+_log "dyne-install $*: $(date)"
 
 set -e
 
@@ -29,14 +29,14 @@ DEVICE=$(pwd)
 
 # Check if the device is writable and mounted
 if [ ! -w "$DEVICE" ]; then
-    mm "Needs super-user powers: sudo dyne-install"
-    mm "Volume not writable: $DEVICE"
+    _log "Needs super-user powers: sudo dyne-install"
+    _log "Volume not writable: $DEVICE"
     exit 1
 fi
 
 if ! findmnt -M "${DEVICE}" > /dev/null; then
-    mm "Needs the root of a storage volume"
-    mm "Invalid location: $DEVICE"
+    _log "Needs the root of a storage volume"
+    _log "Invalid location: $DEVICE"
     exit 1
 fi
 
@@ -45,7 +45,7 @@ function create_iso() {
     local iso_file="${iso_dir}/dynebolic.iso"
 
     if [ -r "$iso_file" ]; then
-        mm "Cannot overwrite ISO: $iso_file"
+        _log "Cannot overwrite ISO: $iso_file"
         exit 1
     fi
 
@@ -61,9 +61,9 @@ function create_iso() {
         $(cat /proc/sys/kernel/random/uuid) \
         /var/run/live/medium/efiboot.img /var/run/live/medium
 
-    mm "--"
-    mm "ISO successfully created! Reboot to activate."
-    mm "--"
+    _log "--"
+    _log "ISO successfully created! Reboot to activate."
+    _log "--"
 }
 
 function create_persistence() {
@@ -71,15 +71,15 @@ function create_persistence() {
     local persist_file="${DEVICE}/dyne/dyne.nst"
 
     if [ -r "$persist_file" ]; then
-        mm "Cannot overwrite nest: $persist_file"
+        _log "Cannot overwrite nest: $persist_file"
         exit 1
     fi
 
-    [[ -n "$size" ]] || mm "Size argument missing, use -s"
-    [[ $size =~ ^[0-9]+$ ]] || mm "Size must be an integer (MB)"
-    [[ $size -ge 512 ]] || mm "Size can't be smaller than 512 MB"
+    [[ -n "$size" ]] || _log "Size argument missing, use -s"
+    [[ $size =~ ^[0-9]+$ ]] || _log "Size must be an integer (MB)"
+    [[ $size -ge 512 ]] || _log "Size can't be smaller than 512 MB"
 
-    mm "Creating nest of $size MiB in $persist_file"
+    _log "Creating nest of $size MiB in $persist_file"
     mkdir -p "${DEVICE}/dyne"
     dd if=/dev/zero of="$persist_file" bs=1048576 count="$size" oflag=direct status=progress
 
@@ -103,18 +103,18 @@ EOF
     rmdir "$mount_point"
     losetup -d "$loop_device"
 
-    mm "--"
-    mm "Nest successfully created! Reboot to activate."
-    mm "--"
+    _log "--"
+    _log "Nest successfully created! Reboot to activate."
+    _log "--"
 }
 
 function setup_guix() {
     local guix_dir="${DEVICE}/dyne/guix-nest"
 
     if [ -r "/var/guix/.dyne" ]; then
-        mm "Cannot overwrite Guix:"
+        _log "Cannot overwrite Guix:"
         ls -l /var/guix
-        mm "Last access: $(cat /var/guix/.dyne)"
+        _log "Last access: $(cat /var/guix/.dyne)"
         exit 1
     fi
 
@@ -122,31 +122,31 @@ function setup_guix() {
     mount -o bind "${guix_dir}/var/guix" /var/guix
     mount -o bind "${guix_dir}/gnu" /gnu
 
-    mm "Executing guix-setup script"
+    _log "Executing guix-setup script"
     /usr/local/sbin/guix-setup
     date > /var/guix/.dyne
     date > /gnu/.dyne
 
     if [ ! -x /root/.config/guix/current ]; then
-        mm "Something went wrong with linking Guix profile in /root/.config/guix/current"
+        _log "Something went wrong with linking Guix profile in /root/.config/guix/current"
     else
-        mm "Guix profile is linked from ${guix_dir}/var/guix/profiles/per-user/root/current-guix to ~root/.config/guix/current"
-        mm "It will be sourced from /etc/profile for new shells"
+        _log "Guix profile is linked from ${guix_dir}/var/guix/profiles/per-user/root/current-guix to ~root/.config/guix/current"
+        _log "It will be sourced from /etc/profile for new shells"
     fi
 
-    mm "--"
-    mm "Guix repository successfully configured!"
-    mm "Start a new shell or reboot."
-    mm "--"
+    _log "--"
+    _log "Guix repository successfully configured!"
+    _log "Start a new shell or reboot."
+    _log "--"
 }
 
 function setup_flatpak() {
     local flatpak_dir="${DEVICE}/dyne/flatpak"
 
     if [ -r "/var/lib/flatpak/.dyne" ]; then
-        mm "Cannot overwrite Flatpak:"
+        _log "Cannot overwrite Flatpak:"
         ls -l /var/lib/flatpak
-        mm "Last access: $(cat /var/lib/flatpak/.dyne)"
+        _log "Last access: $(cat /var/lib/flatpak/.dyne)"
         exit 1
     fi
 
@@ -155,9 +155,9 @@ function setup_flatpak() {
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     date > /var/lib/flatpak/.dyne
 
-    mm "--"
-    mm "Flatpak repository successfully configured!"
-    mm "--"
+    _log "--"
+    _log "Flatpak repository successfully configured!"
+    _log "--"
 }
 
 case "$COMMAND" in
@@ -167,7 +167,7 @@ case "$COMMAND" in
     flatpak) setup_flatpak ;;
     guix) setup_guix ;;
     *)
-        mm "Command not found: $COMMAND"
+        _log "Command not found: $COMMAND"
         exit 1 ;;
 esac
 

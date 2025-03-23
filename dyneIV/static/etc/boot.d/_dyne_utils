@@ -17,7 +17,7 @@
 
 LOG_FILE="/var/log/dyne-boot.log"
 
-function log_message() {
+function _log() {
     local level="$1"
     local message="$2"
     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
