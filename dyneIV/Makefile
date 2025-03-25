@@ -213,7 +213,7 @@ reset: need-suid # ♻️  Reset current ROOT to the latest downloaded
 	rm -rf ${ROOT}
 	unsquashfs -d ${ROOT} ${DEVROOT}
 
-restrap: need-suid # ♻️  Reset current ROOT to base bootstrap stage
+restrap: need-suid ## ♻️  Reset current ROOT to base bootstrap stage
 	$(info Restore ROOT from ${STAGE2})
 	$(if $(wildcard ${STAGE2}),,$(error Bootstrap not found: make bootstrap))
 	@$(if $(wildcard ${ROOT}/proc/meminfo),umount ${ROOT}/proc)

@@ -105,7 +105,6 @@ pack-stage2: need-suid
 	$(if $(wildcard ${ROOT}),,$(error ROOT not found.))
 	$(if $(wildcard ${SRC}/${STAGE2}),$(error Cannot overwrite stage2))
 	$(info Packing Stage2)
-	# use - to ignore errors
 	@-du -hs ${ROOT} && cd ${ROOT} && tar -c . | xz -v -z -9 -T0 --memlimit-compress=70% > ${SRC}/${STAGE2}
 
 # setup a local apt-proxy cache

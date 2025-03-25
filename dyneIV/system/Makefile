@@ -28,8 +28,8 @@ all: target := ${SRC}/build/dyneIV-root-${ARCH}.squashfs
 all: prepare-excludes 
 	$(call upgrade-packages)
 	$(call install-packages,base-system-apt.txt)
+	$(call install-backports,audio-backports.txt)
 	$(call chroot-script,dyne-software.sh)
-	$(call chroot-script,install-audio.sh)
 	$(call chroot-script,cleanup.sh)
 	$(info Squash build: root to ${SRC}/build/dyneIV-root-${ARCH}.squashfs)
 	$(call chroot-script,${SRC}/fixperms.sh)

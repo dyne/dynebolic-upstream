@@ -103,6 +103,7 @@ define upgrade-packages
 	-umount ${ROOT}/proc
 	-umount ${ROOT}/dev/pts
 	-umount ${ROOT}/dev/null
+	@rm -f  ${ROOT}/upgrade.sh
 	@echo "-- Done Apt Get Upgrade\n--"
 endef
 
@@ -113,9 +114,28 @@ define install-packages
 	@echo "DEBIAN_FRONTEND=noninteractive apt-get install -q -y $(shell awk '/^$$/{next} !/^#/{printf("%s ",$$1)}' ${1})" > ${ROOT}/install.sh
 	mount -o bind /proc ${ROOT}/proc
 	mount -o bind /dev/pts ${ROOT}/dev/pts
+	mount -o bind /dev/null ${ROOT}/dev/null
 	-chroot ${ROOT} bash -e /install.sh
 	-umount ${ROOT}/proc
 	-umount ${ROOT}/dev/pts
+	-umount ${ROOT}/dev/null
+	@rm -f  ${ROOT}/install.sh
+	@echo "-- Done ${1}\n--"
+endef
+
+define install-backports
+	@echo "-- Install backports: ${1}\n--"
+	$(if $(wildcard ${1}),,$(error Package file not found: ${1}))
+	$(if $(wildcard ${ROOT}),,$(error ${ROOT} not found))
+	@sed -e '/# START PACKAGE LIST/{i ITEMS=(' -e 'r $(1)' -e 'a )' -e 'd}' ../install-backports.sh > ${ROOT}/backports.sh
+	mount -o bind /proc ${ROOT}/proc
+	mount -o bind /dev/pts ${ROOT}/dev/pts
+	mount -o bind /dev/null ${ROOT}/dev/null
+	-chroot ${ROOT} bash -e /backports.sh
+	-umount ${ROOT}/proc
+	-umount ${ROOT}/dev/pts
+	-umount ${ROOT}/dev/null
+	@rm -f  ${ROOT}/backports.sh
 	@echo "-- Done ${1}\n--"
 endef
 
@@ -128,13 +148,11 @@ define remove-paths
 	@echo "-- Done ${1}\n--"
 endef
 
-define apply-patch
-	#$(if $(wildcard ${ROOT}/${1}),,$(error Patch target file not found: ${1}))
-	#$(if $(wildcard ${2}),,$(error Patch file not found: ${2}))
-	@echo "-- Patch ${1}\n--"
-	cp ${2} ${ROOT}/apply.patch
-	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
-endef
+# define apply-patch
+# 	@echo "-- Patch ${1}\n--"
+# 	cp ${2} ${ROOT}/apply.patch
+# 	chroot ${ROOT} 'patch -p1 ${1} < /apply.patch'
+# endef
 
 define mount-qcow2
 	$(if $(wildcard ${1}),,$(error QCOW2 file not found: ${1}))
