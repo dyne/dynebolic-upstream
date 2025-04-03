@@ -23,6 +23,7 @@ jack-tools
 jack-stdio
 multimedia-jack
 qjackctl
+musescore3
 
 # ===========================================================================
 # Audio
