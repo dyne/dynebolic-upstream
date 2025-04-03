@@ -1,0 +1,12 @@
+gstreamer1.0-pipewire
+pipewire
+pipewire-alsa
+pipewire-audio
+pipewire-audio-client-libraries
+pipewire-bin
+pipewire-jack
+pipewire-media-session
+pipewire-pulse
+pipewire-tests
+pipewire-v4l2
+qml-module-org-kde-pipewire
