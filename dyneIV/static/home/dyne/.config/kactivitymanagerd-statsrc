@@ -2,10 +2,10 @@
 ordering=applications:systemsettings.desktop,applications:org.kde.konsole.desktop,applications:org.kde.dolphin.desktop,applications:konqbrowser.desktop,applications:org.kde.plasma.emojier.desktop
 
 [Favorites-org.kde.plasma.kickoff.favorites.instance-3-global]
-ordering=applications:systemsettings.desktop,applications:org.kde.dolphin.desktop,applications:konqbrowser.desktop,applications:org.kde.konsole.desktop,applications:org.kde.plasma.emojier.desktop,applications:xdg-open.desktop
+ordering=applications:systemsettings.desktop,applications:org.kde.dolphin.desktop,applications:org.kde.konsole.desktop,applications:org.kde.plasma.emojier.desktop,applications:xdg-open.desktop,applications:org.kde.falkon.desktop
 
 [Favorites-org.kde.plasma.kickoff.favorites.instance-3-start_activity_UID]
-ordering=applications:systemsettings.desktop,applications:org.kde.dolphin.desktop,applications:konqbrowser.desktop,applications:org.kde.konsole.desktop,applications:org.kde.plasma.emojier.desktop,applications:xdg-open.desktop
+ordering=applications:systemsettings.desktop,applications:org.kde.dolphin.desktop,applications:org.kde.konsole.desktop,applications:org.kde.plasma.emojier.desktop,applications:xdg-open.desktop,applications:org.kde.falkon.desktop
 
 [Favorites-org.kde.plasma.kickoff.favorites.instance-3-streaming_activity_UID]
 ordering=applications:systemsettings.desktop,applications:org.kde.konsole.desktop,applications:org.kde.dolphin.desktop,applications:konqbrowser.desktop
